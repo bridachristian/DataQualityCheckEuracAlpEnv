@@ -3,6 +3,7 @@
 #' @param SCHEDULING_DIR Directory where input file is stored
 #' @param FILE File name (.dat)
 #'
+#' @export
 #' @examples
 #' check_empty_files(SCHEDULING_DIR = "~/Data/Input/",FILE = "M4s.dat")
 #' check_empty_files(SCHEDULING_DIR = "Your input folder",FILE = "Your file to check")

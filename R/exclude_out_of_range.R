@@ -1,3 +1,14 @@
+#' This function reject all values greater than max and smaller than min in a data.frame
+#'
+#' @param DATA data.frame of timeseries
+#' @param SUPPORT_DIR directory where support files are stored
+#' @param RANGE_FILE name of filr where min/max thresholds are defined for each variable. Thi file is in SUPPORT_DIR
+#'
+#' @export
+#' @example
+#' exclude_out_of_range(DATA = mydata, SUPPORT_DIR = support_dir, RANGE_FILE = "Range.csv")
+#'
+
 exclude_out_of_range = function(DATA, SUPPORT_DIR, RANGE_FILE){
 
   # source(paste(Rfunctions_dir,"clean_data.R",sep = ""))

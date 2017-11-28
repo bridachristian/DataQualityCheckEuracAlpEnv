@@ -23,6 +23,9 @@ remove(list=ls())
 Sys.setenv(TZ='Etc/GMT-1') # sets the environment on italy?s time zone
 
 # ..... Libraries .....................................................................................................................................
+library(devtools)
+install_github("bridachristian/DataQualityCheckEuracAlpEnv")
+library("DataQualityCheckEuracAlpEnv")
 
 library(zoo)
 library(timeSeries)
@@ -33,15 +36,15 @@ library(timeSeries)
 # ~~~ Folders ~~~~
 
 # scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/scheduling/"                              # <-- schelduling directory: for files to be processed
-scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test/Data/Input/"                   # <-- schelduling directory: for files to be processed
+scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv//Data/Input/"                   # <-- schelduling directory: for files to be processed
 # scheduling_dir <- report_dir                                                                                # <-- schelduling directory: for files that the script found whith overlap and you fixed manually
 
 setwd(scheduling_dir)
 
-report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test/Report/"                    # <-- report directory: where to put reports and files whith overlaps
-output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test/Data/Output/"               # <-- output directory: where processed files go
-support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test/Data/Support_files/"       # <-- support directory: where to read support files
-Rfunctions_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test/R/"                     # <-- R functions directory: where functions are defined
+report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"                    # <-- report directory: where to put reports and files whith overlaps
+output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
+support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
+Rfunctions_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/R/"                     # <-- R functions directory: where functions are defined
 
 # ~~~ Use download_table ~~~~
 
@@ -51,9 +54,9 @@ Use_dwnld_tbl <- FALSE                                                          
 
 # ~~~ Functions ~~~~
 
-for(r in 1: length(dir(Rfunctions_dir))){
-  source(paste(Rfunctions_dir,dir(Rfunctions_dir)[r],sep = ""))
-}
+# for(r in 1: length(dir(Rfunctions_dir))){
+#   source(paste(Rfunctions_dir,dir(Rfunctions_dir)[r],sep = ""))
+# }
 
 # ~~~ Files ~~~~
 
@@ -72,6 +75,7 @@ RANGE_FILE = "Range.csv"
 DATA_FROM_ROW <- 5                                             # <-- Row number of first data
 
 HEADER_ROW_NUMBER <- 2                                         # <-- Row number of header
+
 DATETIME_HEADER <- "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
 DATETIME_FORMAT <- "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
 DATETIME_SAMPLING <- "15 min"
@@ -106,7 +110,7 @@ original <- data
 mydata <- data
 
 if(check_empty_files(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
-  writeLines(paste(FILE,"WARNING: NO DATA FOUND!!!",sep = " "))
+  # writeLines(paste(FILE,"WARNING: NO DATA FOUND!!!",sep = " "))
 }else{
 
   if(Use_dwnld_tbl == FALSE){

@@ -1,6 +1,6 @@
-exclude_out_of_range = function(DATA, SUPPORT_DIR, RANGE_FILE,Rfunctions_dir){
+exclude_out_of_range = function(DATA, SUPPORT_DIR, RANGE_FILE){
   
-  source(paste(Rfunctions_dir,"clean_data.R",sep = ""))
+  # source(paste(Rfunctions_dir,"clean_data.R",sep = ""))
   
   range = read.csv(paste(SUPPORT_DIR, RANGE_FILE,sep = ""),stringsAsFactors = FALSE)          # <- import table that contains for each variable the permissible range
   range[,3] = as.numeric(range[,3])
@@ -47,4 +47,7 @@ exclude_out_of_range = function(DATA, SUPPORT_DIR, RANGE_FILE,Rfunctions_dir){
   
   return(new)
 }
+
+
+
 

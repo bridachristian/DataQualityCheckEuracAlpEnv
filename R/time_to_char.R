@@ -1,3 +1,18 @@
+#' This function convert POSIXct datetime in a data.frame to character
+#' 
+#'  @param DATA data.frame having a column defined as POSIXct (datetime)
+#'  @param DATETIME_HEADER header corresponding to datetime
+#'  @param DATETIME_FORMAT format of datetime (E.g. "yyyy-mm-dd HH:MM")
+#'  
+#'  @return a data.frame which contains character datetime
+#'  
+#'  @export
+#'  
+#'  @examples
+#'  time_to_char = function(DATA = mydata, DATETIME_HEADER = "TIMESTAMP", DATETIME_FORMAT = "yyyy-mm-dd HH:MM")
+#'  time_to_char = function(DATA = your data.frame, DATETIME_HEADER = "your datetime header", DATETIME_FORMAT = "your datetime format")
+#'  
+
 time_to_char = function(DATA, DATETIME_HEADER, DATETIME_FORMAT){
 
   w = which(colnames(DATA)== DATETIME_HEADER)

@@ -13,6 +13,13 @@ exclude_out_of_range(DATA, SUPPORT_DIR, RANGE_FILE)
 
 \item{RANGE_FILE}{name of filr where min/max thresholds are defined for each variable. Thi file is in SUPPORT_DIR}
 }
+\value{
+A data.frame with all values in its physical range
+}
 \description{
 This function reject all values greater than max and smaller than min in a data.frame
+}
+\examples{
+exclude_out_of_range(DATA = mydata, SUPPORT_DIR = support_dir, RANGE_FILE = "Range.csv")
+
 }

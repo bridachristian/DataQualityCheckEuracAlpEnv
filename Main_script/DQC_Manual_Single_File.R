@@ -45,14 +45,14 @@ report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEu
 output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
 support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
 
-write_output <- TRUE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
+write_output <- FALSE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
 
 # ~~~ Files ~~~~
 
 files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
 cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
 
-FILE <- c("M4s.dat")                                            # <-- Write here the file or the list of file  that you want to analyze!
+FILE <- "M4s.dat"                                           # <-- Write here the file or the list of file  that you want to analyze!
 cat("Selected files: \n", FILE)
 
 RANGE_FILE = "Range.csv"

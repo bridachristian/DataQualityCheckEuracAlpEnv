@@ -80,7 +80,7 @@ data <- data_import [[3]]
 original <- data
 mydata <- data
 
-if(check_empty_files(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
+if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   # writeLines(paste(FILE,"WARNING: NO DATA FOUND!!!",sep = " "))
   flag_empty = 1
 }else{

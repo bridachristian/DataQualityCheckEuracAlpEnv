@@ -122,10 +122,10 @@ $(document).ready(function () {
 </div>
 
 
-<p>Report start at <strong>2017-11-30 14:31:03</strong></p>
+<p>Report start at <strong>2017-11-30 16:30:30</strong></p>
 <div id="input-info" class="section level3">
 <h3>INPUT info:</h3>
-<p>File selected: <strong>xM4s.dat</strong></p>
+<p>File selected: <strong>M4s.dat</strong></p>
 <p>You have also select these parameters:</p>
 <ul>
 <li>Data start from row: <em>5</em></li>
@@ -149,7 +149,24 @@ $(document).ready(function () {
 <h3>OUTPUT:</h3>
 <div id="info-empty-file" class="section level4">
 <h4>Info empty file:</h4>
-<p>Error: xM4s.dat without observation</p>
+<p>M4s.dat has some obseravtion.</p>
+</div>
+<div id="duplicated-rows" class="section level4">
+<h4>Duplicated rows</h4>
+<pre><code>##    DateCol             ValueCol     year              month          
+##  Length:34854       Min.   :0   Length:34854       Length:34854      
+##  Class :character   1st Qu.:0   Class :character   Class :character  
+##  Mode  :character   Median :0   Mode  :character   Mode  :character  
+##                     Mean   :0                                        
+##                     3rd Qu.:0                                        
+##                     Max.   :0                                        
+##      day                hour               min           
+##  Length:34854       Length:34854       Length:34854      
+##  Class :character   Class :character   Class :character  
+##  Mode  :character   Mode  :character   Mode  :character  
+##                                                          
+##                                                          
+## </code></pre>
 </div>
 </div>
 <div id="including-plots" class="section level2">

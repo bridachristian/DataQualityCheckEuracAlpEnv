@@ -36,7 +36,7 @@ report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEu
 output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
 support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
 
-write_output <- FALSE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
+write_output <- TRUE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
 
 # ~~~ Files ~~~~
 
@@ -111,8 +111,8 @@ if(write_output == TRUE){
   colnames(duplicated_data) = colnames(header)
   
   out_duplicated_data=rbind(header[-1,],duplicated_data)
-    write.csv(out_duplicated_data,paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F)
-
+  write.csv(out_duplicated_data,paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F)
+  
   
 }
 ```
@@ -151,7 +151,8 @@ You have decide:  *`r if(write_output == TRUE){paste("to write output file in ou
 
 #### Duplicated rows
 
-[Click here to open file of duplicated rows]`r (paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""))`
+More details on: `r paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = "")`
+
 
 
 

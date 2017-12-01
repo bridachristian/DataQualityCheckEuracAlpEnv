@@ -23,12 +23,14 @@ remove(list=ls())
 Sys.setenv(TZ='Etc/GMT-1') # sets the environment on italy?s time zone
 
 # ..... Libraries .....................................................................................................................................
+
 library(devtools)
 install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 library("DataQualityCheckEuracAlpEnv")
 
 library(zoo)
 library(timeSeries)
+
 # .....................................................................................................................................................
 
 # ..... Input section .................................................................................................................................
@@ -50,10 +52,10 @@ write_output <- FALSE                                             # if write_out
 # ~~~ Files ~~~~
 
 files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
-cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
+# cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
 
 FILE <- "M4s.dat"                                           # <-- Write here the file or the list of file  that you want to analyze!
-cat("Selected files: \n", FILE)
+# cat("Selected files: \n", FILE)
 
 RANGE_FILE = "Range.csv"
 
@@ -77,42 +79,50 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   # writeLines(paste(FILE,"WARNING: NO DATA FOUND!!!",sep = " "))
   flag_empty = 1
 }else{
+  
   flag_empty = 0
-
+  
   data_import <- read_data(FILE_PATH = scheduling_dir,FILE_NAME = FILE,DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
   header <- data_import [[1]]
   header_colnames <- data_import [[2]]
   data <- data_import [[3]]
-
+  
   original <- data
   mydata <- data
-
-  deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER)
-  mydata <- deletes_duplcated [[1]]                                                                                                        # <- Deletes identical rows if found
-  duplicated_row <- deletes_duplcated [[2]]
-
+  
+  deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER)         # <- Deletes identical rows if found
+  mydata <- deletes_duplcated [[1]]                                                                                                        
+  duplicated_data <- deletes_duplcated [[2]]
+  
   overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER)                                               # <- Detect overlap
-
+  
   if(length(overlap) != 0){
     stop(paste("Overlapping data in files:", FILE))
   }else{
-
+    
     mydata  <- missing_dates(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER,DATETIME_SAMPLING = DATETIME_SAMPLING)       # <- fill missing dates with NA
-
+    
     mydata <- exclude_out_of_range(DATA = mydata, SUPPORT_DIR = support_dir, RANGE_FILE = RANGE_FILE)                     # <- Substitute with NA data out of phisical range
-
+    
     mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
-    }
+  }
 }
 
 
 # ..... Output ..........................................................................................................................................
 
 if(write_output == TRUE){
-
+  
   colnames(header) = header[1,]
   colnames(mydata) = colnames(header)
-
+  
   out_mydata=rbind(header[-1,],mydata)
   write.csv(out_mydata,paste(output_dir,"DQCok_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F)
+  
+  colnames(duplicated_data) = colnames(header)
+  
+  out_duplicated_data=rbind(header[-1,],duplicated_data)
+  write.csv(out_duplicated_data,paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F)
+  
+  
 }

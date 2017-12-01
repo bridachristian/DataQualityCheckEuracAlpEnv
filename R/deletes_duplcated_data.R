@@ -39,6 +39,6 @@ deletes_duplcated_data = function(DATA, DATETIME_HEADER = "TIMESTAMP"){
     DATA <- DATA[!duplicated(DATA),] # deletes identical rows
 
   }
-  return(list(DATA,datetime_duplicated))
+  return(list(DATA,duplicated))
 }
 

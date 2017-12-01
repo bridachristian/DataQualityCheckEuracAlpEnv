@@ -81,7 +81,7 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   
   deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER)         # <- Deletes identical rows if found
   mydata <- deletes_duplcated [[1]]                                                                                                        
-  duplicated_row <- deletes_duplcated [[2]]
+  duplicated_data <- deletes_duplcated [[2]]
   
   overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER)                                               # <- Detect overlap
   
@@ -107,6 +107,13 @@ if(write_output == TRUE){
   
   out_mydata=rbind(header[-1,],mydata)
   write.csv(out_mydata,paste(output_dir,"DQCok_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F)
+  
+  colnames(duplicated_data) = colnames(header)
+  
+  out_duplicated_data=rbind(header[-1,],duplicated_data)
+    write.csv(out_duplicated_data,paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F)
+
+  
 }
 ```
 
@@ -144,36 +151,9 @@ You have decide:  *`r if(write_output == TRUE){paste("to write output file in ou
 
 #### Duplicated rows
 
-```{r echo=FALSE}
-
-library(ggplot2)
+[Click here to open file of duplicated rows]`r (paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""))`
 
 
-w = which(mydata[,1] %in% duplicated_row)
-
-df_dup = data.frame(mydata[,1],rep(0, times = nrow(mydata)))
-colnames(df_dup) = c("DateCol","ValueCol")
-year = substring(df_dup$DateCol,1,4)
-month = substring(df_dup$DateCol,6,7)
-day = substring(df_dup$DateCol,9,10)
-hour = substring(df_dup$DateCol,12,13)
-min = substring(df_dup$DateCol,15,16)
-
-df_dup = cbind(df_dup, year, month, day, hour, min)
-df_dup[w,2] = 1 
-
-# 
-# p = ggplot(df_dup, aes(day,hour, fill = ValueCol))+
-#   geom_tile(colour = "white") + facet_grid(~day)+
-#   facet_wrap(~year+month)
-# #  
-# # p
-
-summary(df_dup)
-
-
-
-```
 
 
 ## Including Plots

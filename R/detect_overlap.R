@@ -25,14 +25,13 @@ detect_overlap = function(DATA, DATETIME_HEADER = "TIMESTAMP", RECORD_HEADER = "
     
     date_record = data[index_overlap,which(colnames(data) == DATETIME_HEADER)]
     
-    df_overlap = data.frame(record_overlap,date_overlap)
-    colnames(df_overlap)= c(RECORD_HEADER,DATETIME_HEADER )
+    df_overlap = data.frame(index_overlap,record_overlap,date_overlap)
+    colnames(df_overlap)= c("Index",RECORD_HEADER,DATETIME_HEADER )
     
   }else{
     df_overlap = NULL
-    index_overlap = NULL
   }
-  return(list(df_overlap,index_overlap))
+  return(df_overlap)
 }
 
 

@@ -83,7 +83,9 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   mydata <- deletes_duplcated [[1]]                                                                                                        
   duplicated_data <- deletes_duplcated [[2]]
   
-  overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER)                                               # <- Detect overlap
+  overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER)          # <- Detect overlap
+  overlap_data <- overlap[[1]]
+  overlap_index <- overlap[[2]] + DATA_FROM_ROW - 1
   
   if(length(overlap) != 0){
     stop(paste("Overlapping data in files:", FILE))
@@ -140,7 +142,7 @@ The folders are:
 
 Range file in support folder is called: *`r RANGE_FILE`* 
 
-You have decide:  *`r if(write_output == TRUE){paste("to write output file in output folder")} else{paste(("to don't write output file in output folder"))} `* 
+You decide:  *`r if(write_output == TRUE){paste("to write output file in output folder")} else{paste(("to don't write output file in output folder"))} `* 
 
 
 ### OUTPUT: 

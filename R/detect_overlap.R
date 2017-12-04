@@ -30,8 +30,9 @@ detect_overlap = function(DATA, DATETIME_HEADER = "TIMESTAMP", RECORD_HEADER = "
     
   }else{
     df_overlap = NULL
+    index_overlap = NULL
   }
-  return(df_overlap)
+  return(list(df_overlap,index_overlap))
 }
 
 

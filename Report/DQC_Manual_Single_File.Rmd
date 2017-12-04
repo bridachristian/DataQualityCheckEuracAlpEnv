@@ -6,7 +6,7 @@ output: html_document
 
 Report start at **`r Sys.time()`**
 
-```{r message=FALSE,echo=FALSE, warning=FALSE}
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE}
 
 remove(list=ls())
 Sys.setenv(TZ='Etc/GMT-1') # sets the environment on italy?s time zone
@@ -19,6 +19,7 @@ library("DataQualityCheckEuracAlpEnv")
 
 library(zoo)
 library(timeSeries)
+library(knitr)
 
 # .....................................................................................................................................................
 
@@ -84,17 +85,23 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   duplicated_data <- deletes_duplcated [[2]]
   
   overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER)          # <- Detect overlap
-  overlap[,1]<- overlap[,1] + DATA_FROM_ROW - 1
-  colnames(overlap)[1]= "File Row"
   
-
   
   if(length(overlap) != 0){
-    stop(paste("Overlapping data in files:", FILE))
+    
+    flag_overlap = 1
+    # stop(paste("Overlapping data in files:", FILE))
+    overlap[,1]<- overlap[,1] + DATA_FROM_ROW - 1
+    colnames(overlap)[1]= "File Row"
+    
   }else{
     
-    mydata  <- missing_dates(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER,DATETIME_SAMPLING = DATETIME_SAMPLING)       # <- fill missing dates with NA
+    flag_overlap = 0
     
+    missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER,DATETIME_SAMPLING = DATETIME_SAMPLING)       # <- fill missing dates with NA
+    mydata <- missing[[1]]
+    missing_index_date <- missing[[2]]
+
     mydata <- exclude_out_of_range(DATA = mydata, SUPPORT_DIR = support_dir, RANGE_FILE = RANGE_FILE)                     # <- Substitute with NA data out of phisical range
     
     mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
@@ -156,6 +163,18 @@ You decide:  *`r if(write_output == TRUE){paste("to write output file in output 
 #### Duplicated rows
 
 More details on: `r paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = "")`
+
+#### Overlap
+
+`r if(flag_overlap == 1){paste("In file:", FILE, " there are the following ovelap:")}else{paste("In", FILE, "there isn't any overlap!")}`
+ 
+
+```{r echo=FALSE}
+if(flag_overlap == 1){
+  kable(overlap, format = "markdown",align = "c")
+}
+
+```
 
 
 

@@ -24,8 +24,6 @@ missing_dates = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER 
   all_dates_df =  data.frame(matrix(nrow =length(all_dates), ncol = ncol(DATA)))
   colnames(all_dates_df) = colnames(DATA)
   
-  
-
   time = DATA[,which(colnames(DATA) == DATETIME_HEADER)]
   time_new = all_dates
   time_added = time_new[which(!(time_new %in% time))]
@@ -54,5 +52,7 @@ missing_dates = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER 
     df_merge[,i] = as.numeric(df_merge[,i])
   }
   
-  return(df_merge)
+  missing = data.frame(w2,df_merge[w2,which(colnames(df_merge) == DATETIME_HEADER)])
+  colnames(missing) = c("Index", "Date")
+  return(list(df_merge,missing)
 }

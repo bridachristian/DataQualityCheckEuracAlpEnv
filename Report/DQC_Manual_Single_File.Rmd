@@ -20,6 +20,7 @@ library("DataQualityCheckEuracAlpEnv")
 library(zoo)
 library(timeSeries)
 library(knitr)
+library(ggplot2)
 
 # .....................................................................................................................................................
 
@@ -174,6 +175,21 @@ if(flag_overlap == 1){
   kable(overlap, format = "markdown",align = "c")
 }
 
+```
+
+#### Missing dates
+
+```{r echo=FALSE}
+
+time_tot <- mydata[,which(colnames(mydata) == DATETIME_HEADER)]
+time_missing <- missing_index_date[,2]
+
+df_missing <- data.frame(time_tot,rep("Present",times = length(time_tot)))
+colnames(df_missing) = c(DATETIME_HEADER,"Status")
+df_missing[which(time_tot %in% time_missing ),2] = "Missing"
+
+ggplot(df_missing, aes(x = df_missing[,which(colnames(df_missing) == DATETIME_HEADER)], y = df_missing[,which(!(colnames(df_missing) == DATETIME_HEADER))]))+
+  geom_line()
 ```
 
 

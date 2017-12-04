@@ -52,7 +52,7 @@ missing_dates = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER 
     df_merge[,i] = as.numeric(df_merge[,i])
   }
   
-  missing = data.frame(w2,df_merge[w2,which(colnames(df_merge) == DATETIME_HEADER)])
-  colnames(missing) = c("Index", "Date")
+  # missing = data.frame(w2,df_merge[w2,which(colnames(df_merge) == DATETIME_HEADER)])
+  # colnames(missing) = c("Index", "Date")
   return(list(df_merge,missing)
 }

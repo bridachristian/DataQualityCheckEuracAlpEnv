@@ -19,6 +19,7 @@
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
 remove(list=ls())
 Sys.setenv(TZ='Etc/GMT-1') # sets the environment on italy?s time zone
 
@@ -30,6 +31,12 @@ library("DataQualityCheckEuracAlpEnv")
 
 library(zoo)
 library(timeSeries)
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(plyr)
+library(imputeTS)
+
 
 # .....................................................................................................................................................
 
@@ -47,7 +54,7 @@ report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEu
 output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
 support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
 
-write_output <- FALSE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
+write_output <- TRUE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
 
 # ~~~ Files ~~~~
 
@@ -79,31 +86,41 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   # writeLines(paste(FILE,"WARNING: NO DATA FOUND!!!",sep = " "))
   flag_empty = 1
 }else{
-  
+
   flag_empty = 0
-  
+
   data_import <- read_data(FILE_PATH = scheduling_dir,FILE_NAME = FILE,DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
   header <- data_import [[1]]
   header_colnames <- data_import [[2]]
   data <- data_import [[3]]
-  
+
   original <- data
   mydata <- data
-  
+
   deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER)         # <- Deletes identical rows if found
-  mydata <- deletes_duplcated [[1]]                                                                                                        
+  mydata <- deletes_duplcated [[1]]
   duplicated_data <- deletes_duplcated [[2]]
-  
-  overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER)                                               # <- Detect overlap
-  
+
+  overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER)          # <- Detect overlap
+
+
   if(length(overlap) != 0){
-    stop(paste("Overlapping data in files:", FILE))
+
+    flag_overlap = 1
+    # stop(paste("Overlapping data in files:", FILE))
+    overlap[,1]<- overlap[,1] + DATA_FROM_ROW - 1
+    colnames(overlap)[1]= "File Row"
+
   }else{
-    
-    mydata  <- missing_dates(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER,DATETIME_SAMPLING = DATETIME_SAMPLING)       # <- fill missing dates with NA
-    
+
+    flag_overlap = 0
+
+    missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER,DATETIME_SAMPLING = DATETIME_SAMPLING)       # <- fill missing dates with NA
+    mydata <- missing[[1]]
+    missing_index_date <- missing[[2]]
+
     mydata <- exclude_out_of_range(DATA = mydata, SUPPORT_DIR = support_dir, RANGE_FILE = RANGE_FILE)                     # <- Substitute with NA data out of phisical range
-    
+
     mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
   }
 }
@@ -112,17 +129,20 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
 # ..... Output ..........................................................................................................................................
 
 if(write_output == TRUE){
-  
+
   colnames(header) = header[1,]
-  colnames(mydata) = colnames(header)
-  
-  out_mydata=rbind(header[-1,],mydata)
+
+  out_my = mydata
+  colnames(out_my) = colnames(header)
+
+  out_mydata=rbind(header[-1,],out_my)
   write.csv(out_mydata,paste(output_dir,"DQCok_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F)
-  
+
+
   colnames(duplicated_data) = colnames(header)
-  
+
   out_duplicated_data=rbind(header[-1,],duplicated_data)
   write.csv(out_duplicated_data,paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F)
-  
-  
+
+
 }

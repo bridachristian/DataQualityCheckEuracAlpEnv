@@ -21,6 +21,10 @@ library(zoo)
 library(timeSeries)
 library(knitr)
 library(ggplot2)
+library(dplyr)
+library(plyr)
+library(imputeTS)
+
 
 # .....................................................................................................................................................
 
@@ -102,7 +106,7 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
     missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER,DATETIME_SAMPLING = DATETIME_SAMPLING)       # <- fill missing dates with NA
     mydata <- missing[[1]]
     missing_index_date <- missing[[2]]
-
+    
     mydata <- exclude_out_of_range(DATA = mydata, SUPPORT_DIR = support_dir, RANGE_FILE = RANGE_FILE)                     # <- Substitute with NA data out of phisical range
     
     mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
@@ -115,10 +119,13 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
 if(write_output == TRUE){
   
   colnames(header) = header[1,]
-  colnames(mydata) = colnames(header)
   
-  out_mydata=rbind(header[-1,],mydata)
+  out_my = mydata
+  colnames(out_my) = colnames(header)
+  
+  out_mydata=rbind(header[-1,],out_my)
   write.csv(out_mydata,paste(output_dir,"DQCok_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F)
+  
   
   colnames(duplicated_data) = colnames(header)
   
@@ -168,7 +175,7 @@ More details on: `r paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-
 #### Overlap
 
 `r if(flag_overlap == 1){paste("In file:", FILE, " there are the following ovelap:")}else{paste("In", FILE, "there isn't any overlap!")}`
- 
+
 
 ```{r echo=FALSE}
 if(flag_overlap == 1){
@@ -179,29 +186,59 @@ if(flag_overlap == 1){
 
 #### Missing dates
 
-```{r echo=FALSE}
-
-time_tot <- mydata[,which(colnames(mydata) == DATETIME_HEADER)]
+```{r echo=FALSE, warning=FALSE}
+w = which(colnames(mydata) == DATETIME_HEADER)
+time_tot <- mydata[,w]
+time_tot <- as.POSIXct(time_tot, format = "%Y-%m-%d %H:%M:%S")
 time_missing <- missing_index_date[,2]
 
-df_missing <- data.frame(time_tot,rep("Present",times = length(time_tot)))
-colnames(df_missing) = c(DATETIME_HEADER,"Status")
-df_missing[which(time_tot %in% time_missing ),2] = "Missing"
+df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
+colnames(df_missing) = c("time","Status")
+df_missing[which(time_tot %in% time_missing ),2] = "Missing dates filled"
+y = rep(1, times = length(time_tot))
 
-ggplot(df_missing, aes(x = df_missing[,which(colnames(df_missing) == DATETIME_HEADER)], y = df_missing[,which(!(colnames(df_missing) == DATETIME_HEADER))]))+
-  geom_line()
+Status_num = rep(1,times = length(time_tot))
+Status_num[which(time_tot %in% time_missing )] = 0
+
+df_missing = cbind(df_missing, y,Status_num)
+
+
+theme_new = theme_bw()+theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.x = element_text(angle = 90, hjust = 1))
+  
+
+ggplot(df_missing,aes(x = time, y=y ,colour = Status)) +  
+  geom_point(aes(size = Status,shape = Status) )+
+  scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
+  scale_shape_manual(values = c(20,124))+
+  scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
+  theme_new+
+  ggtitle("Time distribution of missing dates")
+
 ```
 
 
+Statistics of missing dates:
+
+```{r echo=FALSE}
+Status_num_NA=df_missing
+Status_num_NA = Status_num_NA[,-c(2,3)]
+
+differ = c(0,diff(Status_num_NA$Status_num))
+start = which(differ == -1)
+end  = which(differ == 1) - 1
+gap_lenght = end - start + 1
+
+date_start = Status_num_NA$time[start]
+date_end = Status_num_NA$time[end]
+
+statistic_missing = data.frame(date_start,date_end,gap_lenght)
+colnames(statistic_missing) = c("From", "To", "Number of Record")
 
 
+kable(statistic_missing, format = "markdown",align = "c")
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

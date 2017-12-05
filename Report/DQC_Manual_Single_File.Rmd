@@ -103,11 +103,11 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
     
     flag_overlap = 0
     
-    missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER,DATETIME_SAMPLING = DATETIME_SAMPLING)       # <- fill missing dates with NA
+    missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER,DATETIME_SAMPLING = DATETIME_SAMPLING)  # <- fill missing dates with NA
     mydata <- missing[[1]]
     missing_index_date <- missing[[2]]
     
-    mydata <- exclude_out_of_range(DATA = mydata, SUPPORT_DIR = support_dir, RANGE_FILE = RANGE_FILE)                     # <- Substitute with NA data out of phisical range
+    mydata_2 <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER, SUPPORT_DIR = support_dir, RANGE_FILE = RANGE_FILE) # <- Substitute with NA data out of phisical range
     
     mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
   }

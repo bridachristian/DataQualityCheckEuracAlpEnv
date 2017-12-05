@@ -52,9 +52,12 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
   }
 
   out = list(new, new_status, to_add)
-  names(out) = c("data", "data_status", "variable_to_add")
+
   return(list(out))
 }
+
+
+range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER, SUPPORT_DIR = support_dir, RANGE_FILE = RANGE_FILE) # <- Substitute with NA data out of phisical range
 
 #
 # w_names = which(range$Variable %in% colnames(new))

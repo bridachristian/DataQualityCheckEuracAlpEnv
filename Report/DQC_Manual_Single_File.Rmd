@@ -79,8 +79,9 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   
   flag_empty = 0
   
-  data_import <- read_data(FILE_PATH = scheduling_dir,FILE_NAME = FILE,DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
-  header <- data_import [[1]]
+  data_import <- read_data(FILE_PATH = scheduling_dir, FILE_NAME = FILE, 
+                           DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT,
+                           DATA_FROM_ROW = DATA_FROM_ROW, HEADER_ROW_NUMBER = HEADER_ROW_NUMBER)  header <- data_import [[1]]
   header_colnames <- data_import [[2]]
   data <- data_import [[3]]
   
@@ -289,10 +290,10 @@ for(j in 1:ncol(check_out_of_range)){
       # ~~~~~~ preparation data for ggplot ~~~~~~ 
       
       theme_new2 = theme_bw()+theme(axis.title.y=element_blank(),
-                                   axis.text.y=element_blank(),
-                                   axis.ticks.y=element_blank(),
-                                   axis.text.x = element_text(angle = 90, hjust = 1),
-                                  legend.title = element_blank())
+                                    axis.text.y=element_blank(),
+                                    axis.ticks.y=element_blank(),
+                                    axis.text.x = element_text(angle = 90, hjust = 1),
+                                    legend.title = element_blank())
       
       # p2 = ggplot(melt_df_ggplot, aes(y=variable, x=time))+
       #   geom_tile(aes(fill = value))+
@@ -304,10 +305,10 @@ for(j in 1:ncol(check_out_of_range)){
       colnames(set_limits) = colnames(df_factor)
       
       df_factor = rbind(df_factor,set_limits)
-
+      
       df_factor$Variable = factor(df_factor$Variable, ordered = TRUE)
       df_factor$Variable <- factor( df_factor$Variable, levels=rev(levels( df_factor$Variable)))
-
+      
       
       p1 = ggplot(df_factor,aes(x = time, y = y,colour = Variable))+
         geom_point(aes(size = Variable,shape = Variable ))+

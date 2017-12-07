@@ -81,7 +81,8 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   
   data_import <- read_data(FILE_PATH = scheduling_dir, FILE_NAME = FILE, 
                            DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT,
-                           DATA_FROM_ROW = DATA_FROM_ROW, HEADER_ROW_NUMBER = HEADER_ROW_NUMBER)  header <- data_import [[1]]
+                           DATA_FROM_ROW = DATA_FROM_ROW, HEADER_ROW_NUMBER = HEADER_ROW_NUMBER)  
+  header <- data_import [[1]]
   header_colnames <- data_import [[2]]
   data <- data_import [[3]]
   

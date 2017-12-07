@@ -25,6 +25,7 @@ library(dplyr)
 library(plyr)
 library(imputeTS)
 library(reshape2)
+library(kableExtra)
 
 
 # .....................................................................................................................................................
@@ -246,32 +247,63 @@ kable(statistic_missing, format = "markdown",align = "c")
 
 ```
 
+#### Values out of admitted range
 
-```{r echo=FALSE}
-plot_range = NULL
+```{r echo=FALSE, warning=FALSE}
 
 for(j in 1:ncol(check_out_of_range)){
-  df_tmp = check_out_of_range[,c(which(colnames(check_out_of_range)==DATETIME_HEADER), j)]
-  df_factor = df_tmp
-  
-  df_factor[,2]=as.character(df_factor[,2])
-  
-  
-  y= rep(1,times = nrow(df_factor))
-  df_factor = cbind(df_factor,y)
-  
-  colnames(df_factor) =c("time","Variable","y")
-
-  if(length(unique(df_factor[,2])) > 1 ){
-    p1 = ggplot(df_factor,aes(x = time, y = value,colour = Variable))+
-      geom_point(aes(size = Variable,shape = Variable) )+
-      scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
-      scale_shape_manual(values = c(20,124))+
-      scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
-      theme_new+
-      ggtitle(colnames(check_out_of_range)[j])
+  if(colnames(check_out_of_range)[j] ==  DATETIME_HEADER){}else{
+    df_tmp = check_out_of_range[,c(which(colnames(check_out_of_range)==DATETIME_HEADER), j)]
+    df_factor = df_tmp
     
-    plot_range =c(plot_range, p1)
+    df_factor[,2]=as.character(df_factor[,2])
+    
+    
+    y= rep(1,times = nrow(df_factor))
+    df_factor = cbind(df_factor,y)
+    
+    colnames(df_factor) =c("time","Variable","y")
+    
+    if(length(unique(df_factor[,2])) > 1 ){
+      
+      # over_range = rep(NA, times = nrow(df_factor))
+      # over_range[which(df_factor$Variable == 1)] = "Over range"
+      # 
+      # in_range = rep(NA, times = nrow(df_factor))
+      # in_range[which(df_factor$Variable == 0)] = "In range"
+      # 
+      # under_range = rep(NA, times = nrow(df_factor))
+      # under_range[which(df_factor$Variable == -1)] = "Under range"
+      # 
+      # df_for_ggplot = data.frame(df_factor$time, under_range, in_range, over_range)
+      # colnames(df_for_ggplot)[1] = "time"
+      # 
+      # melt_df_ggplot = melt(df_for_ggplot,id.vars = "time")
+      # melt_df_ggplot = cbind(melt_df_ggplot, substring(melt_df_ggplot$time, 1,4))
+      # colnames(melt_df_ggplot)[4] = "year"
+      
+      
+      theme_new = theme_bw()+theme(axis.title.y=element_blank(),
+                                   axis.text.y=element_blank(),
+                                   axis.ticks.y=element_blank(),
+                                   axis.text.x = element_text(angle = 90, hjust = 1))
+      
+      # p2 = ggplot(melt_df_ggplot, aes(y=variable, x=time))+
+      #   geom_tile(aes(fill = value))+
+      #   scale_fill_manual(values = c("green", "red", "red"))
+      # 
+      # p2
+      
+      p1 = ggplot(df_factor,aes(x = time, y = y,colour = Variable))+
+        geom_point(aes(size = Variable,shape = Variable) )+
+        # scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
+        # scale_shape_manual(values = c(20,124))+
+        scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
+        theme_new+
+        ggtitle(colnames(check_out_of_range)[j])
+      
+      print(p1)
+    }
   }
 }
 
@@ -279,9 +311,181 @@ for(j in 1:ncol(check_out_of_range)){
 
 ```
 
-#### Values out of admitted range
+Statistics of data out of range:
 
-`r paste(plot_range, collapse = '\n')`
+```{r echo=FALSE,results='asis'}
 
+for(j in 1:ncol(check_out_of_range)){
+  if(colnames(check_out_of_range)[j] ==  DATETIME_HEADER){}else{
+    
+    c_oor = colnames(check_out_of_range)[j]
+    
+    df_oor = check_out_of_range[,c(which(colnames(check_out_of_range)==DATETIME_HEADER), j)]
+    colnames(df_oor)= c("time", "variable")
+    
+    over_range = rep(0, times = nrow(df_oor))
+    over_range[which(df_oor$variable == 1)] = 1
+    
+    under_range = rep(0, times = nrow(df_oor))
+    under_range[which(df_oor$variable == -1)] = 1
+    
+    df_oor2 = data.frame(df_oor$time, under_range, over_range)
+    # colnames(df_for_ggplot)[1] = "time"
+    
+    diff_df = cbind(df_oor$time,as.data.frame(rbind(c(0,0),apply(df_oor2[,-1],2, diff))))
+    
+    
+    if(any(unique(df_oor[,2])!= 0)){ # ????
+      
+      # under
+      
+      under_start_oor = which(diff_df$under_range == 1)
+      under_end_oor  = which(diff_df$under_range == -1) - 1
+      under_gap_lenght_oor = under_end_oor - under_start_oor + 1
+      
+      under_date_start_oor = df_oor[under_start_oor,1]
+      under_date_end_oor = df_oor[under_end_oor,1]
+      
+      under_statistic_oor = data.frame(rep("Under lower limit", times = length(under_date_start_oor)), under_date_start_oor,under_date_end_oor,under_gap_lenght_oor)
+      colnames(under_statistic_oor) = c(" ","From", "To", "Number of Record")
+      
+      # over
+      
+      over_start_oor = which(diff_df$over_range == 1)
+      over_end_oor  = which(diff_df$over_range == -1) - 1
+      over_gap_lenght_oor = over_end_oor - over_start_oor + 1
+      
+      over_date_start_oor = df_oor[over_start_oor,1]
+      over_date_end_oor = df_oor[over_end_oor,1]
+      
+      over_statistic_oor = data.frame(rep("Above upper limit", times = length(over_date_start_oor)), over_date_start_oor,over_date_end_oor,over_gap_lenght_oor)
+      colnames(over_statistic_oor) = c(" ","From", "To", "Number of Record")
+      
+      statistic_oor= rbind(under_statistic_oor,over_statistic_oor)
+      
+      # print("Data below lower limit:")
+      # print(under_statistic_oor, format = "markdown",align = "c")
+      # 
+      # print("Data above upper limit:")
+      # print(over_statistic_oor, format = "markdown",align = "c")
+      cat("Statistics of data out of range:",c_oor)
+      print(kable(statistic_oor, format = "markdown",align = "c") )     
+      
+    }
+  }
+}
+
+
+
+```
+```{r echo=FALSE, warning=FALSE,results='asis'}
+for(j in 1:ncol(check_out_of_range)){
+  if(colnames(check_out_of_range)[j] ==  DATETIME_HEADER){}else{
+    df_tmp = check_out_of_range[,c(which(colnames(check_out_of_range)==DATETIME_HEADER), j)]
+    df_factor = df_tmp
+    
+    df_factor[,2]=as.character(df_factor[,2])
+    
+    
+    y= rep(1,times = nrow(df_factor))
+    df_factor = cbind(df_factor,y)
+    
+    colnames(df_factor) =c("time","Variable","y")
+    
+    c_oor = colnames(check_out_of_range)[j]
+    
+    df_oor = check_out_of_range[,c(which(colnames(check_out_of_range)==DATETIME_HEADER), j)]
+    colnames(df_oor)= c("time", "variable")
+    
+    over_range = rep(0, times = nrow(df_oor))
+    over_range[which(df_oor$variable == 1)] = 1
+    
+    under_range = rep(0, times = nrow(df_oor))
+    under_range[which(df_oor$variable == -1)] = 1
+    
+    df_oor2 = data.frame(df_oor$time, under_range, over_range)
+    # colnames(df_for_ggplot)[1] = "time"
+    
+    diff_df = cbind(df_oor$time,as.data.frame(rbind(c(0,0),apply(df_oor2[,-1],2, diff))))
+    
+    if(length(unique(df_factor[,2])) > 1 ){
+      
+      # over_range = rep(NA, times = nrow(df_factor))
+      # over_range[which(df_factor$Variable == 1)] = "Over range"
+      # 
+      # in_range = rep(NA, times = nrow(df_factor))
+      # in_range[which(df_factor$Variable == 0)] = "In range"
+      # 
+      # under_range = rep(NA, times = nrow(df_factor))
+      # under_range[which(df_factor$Variable == -1)] = "Under range"
+      # 
+      # df_for_ggplot = data.frame(df_factor$time, under_range, in_range, over_range)
+      # colnames(df_for_ggplot)[1] = "time"
+      # 
+      # melt_df_ggplot = melt(df_for_ggplot,id.vars = "time")
+      # melt_df_ggplot = cbind(melt_df_ggplot, substring(melt_df_ggplot$time, 1,4))
+      # colnames(melt_df_ggplot)[4] = "year"
+      
+      
+      theme_new = theme_bw()+theme(axis.title.y=element_blank(),
+                                   axis.text.y=element_blank(),
+                                   axis.ticks.y=element_blank(),
+                                   axis.text.x = element_text(angle = 90, hjust = 1))
+      
+      # p2 = ggplot(melt_df_ggplot, aes(y=variable, x=time))+
+      #   geom_tile(aes(fill = value))+
+      #   scale_fill_manual(values = c("green", "red", "red"))
+      # 
+      # p2
+      
+      p1 = ggplot(df_factor,aes(x = time, y = y,colour = Variable))+
+        geom_point(aes(size = Variable,shape = Variable) )+
+        # scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
+        # scale_shape_manual(values = c(20,124))+
+        scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
+        theme_new+
+        ggtitle(colnames(check_out_of_range)[j])
+      
+      print(p1)
+      
+      under_start_oor = which(diff_df$under_range == 1)
+      under_end_oor  = which(diff_df$under_range == -1) - 1
+      under_gap_lenght_oor = under_end_oor - under_start_oor + 1
+      
+      under_date_start_oor = df_oor[under_start_oor,1]
+      under_date_end_oor = df_oor[under_end_oor,1]
+      
+      under_statistic_oor = data.frame(rep("Under lower limit", times = length(under_date_start_oor)), under_date_start_oor,under_date_end_oor,under_gap_lenght_oor)
+      colnames(under_statistic_oor) = c(" ","From", "To", "Number of Record")
+      
+      # over
+      
+      over_start_oor = which(diff_df$over_range == 1)
+      over_end_oor  = which(diff_df$over_range == -1) - 1
+      over_gap_lenght_oor = over_end_oor - over_start_oor + 1
+      
+      over_date_start_oor = df_oor[over_start_oor,1]
+      over_date_end_oor = df_oor[over_end_oor,1]
+      
+      over_statistic_oor = data.frame(rep("Above upper limit", times = length(over_date_start_oor)), over_date_start_oor,over_date_end_oor,over_gap_lenght_oor)
+      colnames(over_statistic_oor) = c(" ","From", "To", "Number of Record")
+      
+      statistic_oor= rbind(under_statistic_oor,over_statistic_oor)
+      
+      # print("Data below lower limit:")
+      # print(under_statistic_oor, format = "markdown",align = "c")
+      # 
+      # print("Data above upper limit:")
+      # print(over_statistic_oor, format = "markdown",align = "c")
+      cat("Statistics of data out of range:",c_oor)
+      print(kable(statistic_oor, format = "markdown",align = "c") )     
+    }
+  }
+}
+
+
+
+
+```
 
 

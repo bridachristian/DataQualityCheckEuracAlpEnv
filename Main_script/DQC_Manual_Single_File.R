@@ -64,7 +64,7 @@ write_output <- TRUE                                             # if write_outp
 files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
 # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
 
-FILE <- "yM4s.dat"                                           # <-- Write here the file or the list of file  that you want to analyze!
+FILE <- "S4.dat"                                           # <-- Write here the file or the list of file  that you want to analyze!
 # cat("Selected files: \n", FILE)
 
 RANGE_FILE = "Range.csv"

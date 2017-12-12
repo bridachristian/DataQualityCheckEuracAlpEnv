@@ -44,14 +44,14 @@ report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEu
 output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
 support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
 
-write_output <- TRUE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
+write_output <- FALSE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
 
 # ~~~ Files ~~~~
 
 files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
 # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
 
-FILE <- "M4s.dat"                                           # <-- Write here the file or the list of file  that you want to analyze!
+FILE <- "S4.dat"                                           # <-- Write here the file or the list of file  that you want to analyze!
 # cat("Selected files: \n", FILE)
 
 RANGE_FILE = "Range.csv"
@@ -175,11 +175,11 @@ You decide:  *`r if(write_output == TRUE){paste("to write output file in output 
 
 `r if(flag_empty == 1){paste("Error:", FILE,"without observation")}else{paste(FILE, "has some obseravtion.")}`
 
-#### Duplicated rows
+#### **Duplicated rows**
 
 More details on: `r paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = "")`
 
-#### Overlap
+#### **Overlap**
 
 `r if(flag_overlap == 1){paste("In file:", FILE, " there are the following ovelap:")}else{paste("In", FILE, "there isn't any overlap!")}`
 
@@ -191,7 +191,7 @@ if(flag_overlap == 1){
 
 ```
 
-#### Missing dates
+#### **Missing dates**
 
 ```{r echo=FALSE, warning=FALSE}
 w = which(colnames(mydata) == DATETIME_HEADER)
@@ -249,7 +249,7 @@ kable(statistic_missing, format = "markdown",align = "c")
 
 ```
 
-#### Values out of admitted range
+#### **Values out of admitted range**
 
 ```{r echo=FALSE, warning=FALSE,results='asis'}
 for(j in 1:ncol(check_out_of_range)){
@@ -277,10 +277,16 @@ for(j in 1:ncol(check_out_of_range)){
     colnames(df_oor)= c("time", "variable")
     
     over_range = rep(0, times = nrow(df_oor))
-    over_range[which(df_oor$variable == 1)] = 1
+    
+    if(length(which(df_oor$variable == 1)) != 0){
+      over_range[which(df_oor$variable == 1)] = 1
+    }
     
     under_range = rep(0, times = nrow(df_oor))
-    under_range[which(df_oor$variable == -1)] = 1
+    
+    if(length(which(df_oor$variable == -1)) != 0){
+      under_range[which(df_oor$variable == -1)] = 1
+    }
     
     df_oor2 = data.frame(df_oor$time, under_range, over_range)
     
@@ -313,9 +319,9 @@ for(j in 1:ncol(check_out_of_range)){
       
       p1 = ggplot(df_factor,aes(x = time, y = y,colour = Variable))+
         geom_point(aes(size = Variable,shape = Variable ))+
-        scale_colour_manual(values = c("#0000FF","#7CAE00","#F8766D"),labels = c("Below lower limit", "In the range", "Above upper limit"))+ 
-        scale_shape_manual(values = c(124,20,124),labels = c("Below lower limit", "In the range", "Above upper limit"))+
-        scale_size_manual(values = c(10,1,10),labels = c("Below lower limit", "In the range", "Above upper limit"))+
+        scale_colour_manual(values = c("#0000FF","#7CAE00","#F8766D"),labels = c("Above upper limit", "In the range","Below lower limit"))+ 
+        scale_shape_manual(values = c(124,20,124),labels =c("Above upper limit", "In the range","Below lower limit"))+
+        scale_size_manual(values = c(10,1,10),labels = c("Above upper limit", "In the range","Below lower limit"))+
         scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
         theme_new2 +
         ggtitle(colnames(check_out_of_range)[j])+
@@ -327,8 +333,15 @@ for(j in 1:ncol(check_out_of_range)){
       
       under_start_oor = which(diff_df$under_range == 1)
       under_end_oor  = which(diff_df$under_range == -1) - 1
-      under_gap_lenght_oor = under_end_oor - under_start_oor + 1
       
+      
+      if(length(under_start_oor) != 0 & length(under_end_oor) != 0){
+        if(under_end_oor[1] < under_start_oor[1]){
+          under_start_oor = c(1,under_start_oor)
+        }
+      }
+      
+      under_gap_lenght_oor = under_end_oor - under_start_oor + 1
       under_date_start_oor = df_oor[under_start_oor,1]
       under_date_end_oor = df_oor[under_end_oor,1]
       
@@ -339,19 +352,40 @@ for(j in 1:ncol(check_out_of_range)){
       
       over_start_oor = which(diff_df$over_range == 1)
       over_end_oor  = which(diff_df$over_range == -1) - 1
-      over_gap_lenght_oor = over_end_oor - over_start_oor + 1
       
+      
+      if(length(over_start_oor) != 0 & length(over_end_oor) != 0){
+        if(over_end_oor[1] < over_start_oor[1]){
+          over_start_oor = c(1,over_start_oor)
+        }
+      }
+      
+      over_gap_lenght_oor = over_end_oor - over_start_oor + 1
       over_date_start_oor = df_oor[over_start_oor,1]
       over_date_end_oor = df_oor[over_end_oor,1]
+      
       
       over_statistic_oor = data.frame(rep("Above upper limit", times = length(over_date_start_oor)), over_date_start_oor,over_date_end_oor,over_gap_lenght_oor)
       colnames(over_statistic_oor) = c(" ","From", "To", "Number of Record")
       
-      statistic_oor= rbind(under_statistic_oor,over_statistic_oor)
       
+      if(nrow(under_statistic_oor) == 0){
+        statistic_oor = over_statistic_oor
+      }else{ 
+        if(nrow(over_statistic_oor) == 0){
+          statistic_oor = under_statistic_oor
+        }else{
+          statistic_oor= rbind(under_statistic_oor,over_statistic_oor)
+        }
+      }
+      
+      
+      statistic_oor = statistic_oor[order(statistic_oor$From),] 
       
       # cat(paste("Statistics of data out of range:",c_oor))
-      print(kable(statistic_oor, format = "markdown",align = "c") )     
+      print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
+              kable_styling() %>%
+              scroll_box( height = "200px") )     
     }
   }
 }
@@ -361,4 +395,5 @@ for(j in 1:ncol(check_out_of_range)){
 
 ```
 
+Report end at **`r Sys.time()`**
 

@@ -51,7 +51,7 @@ library(kableExtra)
 scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                   # <-- schelduling directory: for files to be processed
 # scheduling_dir <- report_dir                                                                                # <-- schelduling directory: for files that the script found whith overlap and you fixed manually
 
-setwd(scheduling_dir)
+# setwd(scheduling_dir)
 
 report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"                    # <-- report directory: where to put reports and files whith overlaps
 output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
@@ -64,7 +64,7 @@ write_output <- TRUE                                             # if write_outp
 files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
 # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
 
-FILE <- "S4.dat"                                           # <-- Write here the file or the list of file  that you want to analyze!
+FILE <- "M3.dat"                                           # <-- Write here the file or the list of file  that you want to analyze!
 # cat("Selected files: \n", FILE)
 
 RANGE_FILE = "Range.csv"

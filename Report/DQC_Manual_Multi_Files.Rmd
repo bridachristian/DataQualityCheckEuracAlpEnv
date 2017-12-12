@@ -3,19 +3,19 @@ title: "Data Quality Check Report"
 author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
 params:
-  file: "S4.dat"
-  scheduling_dir: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/" 
-  report_dir: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"
-  output_dir: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/" 
-  support_dir: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"    
-  write_output: FALSE
-  RANGE_FILE: "Range.csv"
-  DATA_FROM_ROW: 5                                             # <-- Row number of first data
-  HEADER_ROW_NUMBER: 2                                         # <-- Row number of header
-  DATETIME_HEADER: "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-  DATETIME_FORMAT: "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-  DATETIME_SAMPLING: "15 min"
-  RECORD_HEADER: "RECORD"                                      # <-- header corresponding to RECORD
+  file: 
+  scheduling_dir: 
+  report_dir: 
+  output_dir:  
+  support_dir:     
+  write_output:
+  RANGE_FILE: 
+  DATA_FROM_ROW:                                             # <-- Row number of first data
+  HEADER_ROW_NUMBER:                                         # <-- Row number of header
+  DATETIME_HEADER:                                # <-- header corresponding to TIMESTAMP
+  DATETIME_FORMAT:                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+  DATETIME_SAMPLING: 
+  RECORD_HEADER:                                    # <-- header corresponding to RECORD
 ---
 
 Report start at **`r Sys.time()`**
@@ -41,58 +41,63 @@ library(plyr)
 library(imputeTS)
 library(reshape2)
 library(kableExtra)
+library(pander)
 
 
 # .....................................................................................................................................................
 
 # ..... Input section .................................................................................................................................
 
+scheduling_dir <- params$scheduling_dir                  # <-- schelduling directory: for files to be processed
+report_dir <-  params$report_dir                    # <-- report directory: where to put reports and files whith overlaps
+output_dir <- params$output_dir                  # <-- output directory: where processed files go
+support_dir <- params$support_dir       # <-- support directory: where to read support files
+
+write_output <- params$write_output                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
+
+FILE <- params$file                                      # <-- Write here the file or the list of file  that you want to analyze!
+
+RANGE_FILE = params$RANGE_FILE
+
+DATA_FROM_ROW <- params$DATA_FROM_ROW                                                # <-- Row number of first data
+HEADER_ROW_NUMBER <- params$HEADER_ROW_NUMBER                                          # <-- Row number of header
+DATETIME_HEADER <- params$DATETIME_HEADER                               # <-- header corresponding to TIMESTAMP
+DATETIME_FORMAT <- params$DATETIME_FORMAT                           # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+DATETIME_SAMPLING <- params$DATETIME_SAMPLING
+RECORD_HEADER <- params$RECORD_HEADER                                   # <-- header corresponding to RECORD
+
 # ~~~ Folders ~~~~
 
 # scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                   # <-- schelduling directory: for files to be processed
-scheduling_dir <- params$scheduling_dir                  # <-- schelduling directory: for files to be processed
-
-
-setwd(scheduling_dir)
-
+# 
+# # setwd(scheduling_dir)
+# 
 # report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"                    # <-- report directory: where to put reports and files whith overlaps
-report_dir <-  params$report_dir                    # <-- report directory: where to put reports and files whith overlaps
 # output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
-output_dir <- params$output_dir                  # <-- output directory: where processed files go
 # support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
-support_dir <- params$support_dir       # <-- support directory: where to read support files
-
+# 
 # write_output <- FALSE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
-write_output <- params$write_output                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
-
-# ~~~ Files ~~~~
-
-files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
-# cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
-
-# FILE <- "S2.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
-FILE <- params$file                                      # <-- Write here the file or the list of file  that you want to analyze!
-# cat("Selected files: \n", FILE)
-
+# 
+# # ~~~ Files ~~~~
+# 
+# files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
+# # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
+# 
+# FILE <- "M3.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
+# # cat("Selected files: \n", FILE)
+# 
 # RANGE_FILE = "Range.csv"
-RANGE_FILE = params$RANGE_FILE 
-
-# ~~~ Datetime ~~~~
+# 
+# # ~~~ Datetime ~~~~
 # DATA_FROM_ROW <- 5                                             # <-- Row number of first data
-DATA_FROM_ROW <- params$DATA_FROM_ROW                                                # <-- Row number of first data
-
+# 
 # HEADER_ROW_NUMBER <- 2                                         # <-- Row number of header
-HEADER_ROW_NUMBER <- params$HEADER_ROW_NUMBER                                          # <-- Row number of header
-
+# 
 # DATETIME_HEADER <- "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-DATETIME_HEADER <- params$DATETIME_HEADER                               # <-- header corresponding to TIMESTAMP
 # DATETIME_FORMAT <- "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-DATETIME_FORMAT <- params$DATETIME_FORMAT                           # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
 # DATETIME_SAMPLING <- "15 min"
-DATETIME_SAMPLING <- params$DATETIME_SAMPLING 
-
+# 
 # RECORD_HEADER <- "RECORD"                                      # <-- header corresponding to RECORD
-RECORD_HEADER <- params$RECORD_HEADER                                   # <-- header corresponding to RECORD
 
 # .....................................................................................................................................................
 
@@ -365,6 +370,9 @@ for(j in 1:ncol(check_out_of_range)){
         if(under_end_oor[1] < under_start_oor[1]){
           under_start_oor = c(1,under_start_oor)
         }
+        if(under_start_oor[length(under_start_oor)] > under_end_oor[length(under_end_oor)] ){
+          under_end_oor = c(under_end_oor,nrow(diff_df))
+        }
       }
       
       under_gap_lenght_oor = under_end_oor - under_start_oor + 1
@@ -383,6 +391,9 @@ for(j in 1:ncol(check_out_of_range)){
       if(length(over_start_oor) != 0 & length(over_end_oor) != 0){
         if(over_end_oor[1] < over_start_oor[1]){
           over_start_oor = c(1,over_start_oor)
+        }
+        if(over_start_oor[length(over_start_oor)] > over_end_oor[length(over_end_oor)] ){
+          over_end_oor = c(over_end_oor,nrow(diff_df))
         }
       }
       
@@ -408,10 +419,11 @@ for(j in 1:ncol(check_out_of_range)){
       
       statistic_oor = statistic_oor[order(statistic_oor$From),] 
       
-      # cat(paste("Statistics of data out of range:",c_oor))
+       # cat(paste("Statistics of data out of range:",c_oor))
       print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
               kable_styling() %>%
-              scroll_box( height = "200px") )     
+              scroll_box( height = "200px") ) 
+    
     }
   }
 }

@@ -25,6 +25,8 @@ library(dplyr)
 library(plyr)
 library(imputeTS)
 library(reshape2)
+library(kableExtra)
+library(pander)
 
 
 # .....................................................................................................................................................
@@ -50,7 +52,7 @@ write_output <- TRUE                                             # if write_outp
 files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
 # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
 
-FILE <- "M4s.dat"                                           # <-- Write here the file or the list of file  that you want to analyze!
+FILE <- "S3.dat"                                           # <-- Write here the file or the list of file  that you want to analyze!
 # cat("Selected files: \n", FILE)
 
 RANGE_FILE = "Range.csv"
@@ -78,7 +80,9 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   
   flag_empty = 0
   
-  data_import <- read_data(FILE_PATH = scheduling_dir,FILE_NAME = FILE,DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
+  data_import <- read_data(FILE_PATH = scheduling_dir, FILE_NAME = FILE, 
+                           DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT,
+                           DATA_FROM_ROW = DATA_FROM_ROW, HEADER_ROW_NUMBER = HEADER_ROW_NUMBER)  
   header <- data_import [[1]]
   header_colnames <- data_import [[2]]
   data <- data_import [[3]]
@@ -89,9 +93,9 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER)         # <- Deletes identical rows if found
   mydata <- deletes_duplcated [[1]]                                                                                                        
   duplicated_data <- deletes_duplcated [[2]]
+  duplicated_data <- time_to_char(DATA = duplicated_data, DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
   
   overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER)          # <- Detect overlap
-  
   
   if(length(overlap) != 0){
     
@@ -129,7 +133,25 @@ if(write_output == TRUE){
   colnames(out_my) = colnames(header)
   
   out_mydata=rbind(header[-1,],out_my)
-  write.csv(out_mydata,paste(output_dir,"DQCok_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F)
+  
+  out_filename =  paste(substring(FILE,1,nchar(FILE)-4),
+                        "_",
+                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],1,4),
+                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],6,7),
+                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],9,10),
+                        # "_",
+                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],12,13),
+                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],15,16),
+                        "-",
+                        substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],1,4),
+                        substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],6,7),
+                        substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],9,10),
+                        # "_",
+                        substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],12,13),
+                        substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],15,16),
+                        sep = "")
+  
+  write.csv(out_mydata,paste(output_dir,"DQCok_",out_filename,".csv",sep = ""),quote = F,row.names = F)
   
   #~~~~~~~~~~
   colnames(duplicated_data) = colnames(header)
@@ -172,54 +194,60 @@ You decide:  *`r if(write_output == TRUE){paste("to write output file in output 
 
 `r if(flag_empty == 1){paste("Error:", FILE,"without observation")}else{paste(FILE, "has some obseravtion.")}`
 
-#### Duplicated rows
+#### **Duplicated rows**
 
 More details on: `r paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = "")`
 
-#### Overlap
+#### **Overlap**
 
 `r if(flag_overlap == 1){paste("In file:", FILE, " there are the following ovelap:")}else{paste("In", FILE, "there isn't any overlap!")}`
 
 
 ```{r echo=FALSE}
 if(flag_overlap == 1){
-  kable(overlap, format = "markdown",align = "c")
+  # kable(overlap, format = "markdown",align = "c")
+  kable(overlap, format = "html",align = "c",row.names = F)%>%
+    kable_styling() %>%
+    scroll_box( height = "200px") 
+  
 }
 
 ```
 
-#### Missing dates
+#### **Missing dates**
 
 ```{r echo=FALSE, warning=FALSE}
-w = which(colnames(mydata) == DATETIME_HEADER)
-time_tot <- mydata[,w]
-time_tot <- as.POSIXct(time_tot, format = "%Y-%m-%d %H:%M:%S")
-time_missing <- missing_index_date[,2]
-
-df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
-colnames(df_missing) = c("time","Status")
-df_missing[which(time_tot %in% time_missing ),2] = "Missing dates filled"
-y = rep(1, times = length(time_tot))
-
-Status_num = rep(1,times = length(time_tot))
-Status_num[which(time_tot %in% time_missing )] = 0
-
-df_missing = cbind(df_missing, y,Status_num)
-
-
-theme_new = theme_bw()+theme(axis.title.y=element_blank(),
-                             axis.text.y=element_blank(),
-                             axis.ticks.y=element_blank(),
-                             axis.text.x = element_text(angle = 90, hjust = 1))
-
-
-ggplot(df_missing,aes(x = time, y=y ,colour = Status)) +  
-  geom_point(aes(size = Status,shape = Status) )+
-  scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
-  scale_shape_manual(values = c(20,124))+
-  scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
-  theme_new+
-  ggtitle("Time distribution of missing dates")
+if(flag_overlap == 0){
+  w = which(colnames(mydata) == DATETIME_HEADER)
+  time_tot <- mydata[,w]
+  time_tot <- as.POSIXct(time_tot, format = "%Y-%m-%d %H:%M:%S")
+  time_missing <- missing_index_date[,2]
+  
+  df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
+  colnames(df_missing) = c("time","Status")
+  df_missing[which(time_tot %in% time_missing ),2] = "Missing dates filled"
+  y = rep(1, times = length(time_tot))
+  
+  Status_num = rep(1,times = length(time_tot))
+  Status_num[which(time_tot %in% time_missing )] = 0
+  
+  df_missing = cbind(df_missing, y,Status_num)
+  
+  
+  theme_new = theme_bw()+theme(axis.title.y=element_blank(),
+                               axis.text.y=element_blank(),
+                               axis.ticks.y=element_blank(),
+                               axis.text.x = element_text(angle = 90, hjust = 1))
+  
+  
+  ggplot(df_missing,aes(x = time, y=y ,colour = Status)) +  
+    geom_point(aes(size = Status,shape = Status) )+
+    scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
+    scale_shape_manual(values = c(20,124))+
+    scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
+    theme_new+
+    ggtitle("Time distribution of missing dates")
+}
 
 ```
 
@@ -227,75 +255,180 @@ ggplot(df_missing,aes(x = time, y=y ,colour = Status)) +
 Statistics of missing dates:
 
 ```{r echo=FALSE}
-Status_num_NA=df_missing
-Status_num_NA = Status_num_NA[,-c(2,3)]
-
-differ = c(0,diff(Status_num_NA$Status_num))
-start = which(differ == -1)
-end  = which(differ == 1) - 1
-gap_lenght = end - start + 1
-
-date_start = Status_num_NA$time[start]
-date_end = Status_num_NA$time[end]
-
-statistic_missing = data.frame(date_start,date_end,gap_lenght)
-colnames(statistic_missing) = c("From", "To", "Number of Record")
-
-
-kable(statistic_missing, format = "markdown",align = "c")
-
+if(flag_overlap == 0){
+  Status_num_NA=df_missing
+  Status_num_NA = Status_num_NA[,-c(2,3)]
+  
+  differ = c(0,diff(Status_num_NA$Status_num))
+  start = which(differ == -1)
+  end  = which(differ == 1) - 1
+  gap_lenght = end - start + 1
+  
+  date_start = Status_num_NA$time[start]
+  date_end = Status_num_NA$time[end]
+  
+  statistic_missing = data.frame(date_start,date_end,gap_lenght)
+  colnames(statistic_missing) = c("From", "To", "Number of Record")
+  
+  # kable(statistic_missing, format = "markdown",align = "c")
+  kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+    kable_styling() %>%
+    scroll_box( height = "200px") 
+}
 ```
 
-#### Values out of admitted range
+#### **Values out of admitted range**
 
-```{r echo=FALSE, warning=FALSE}
-
-for(j in 1:ncol(check_out_of_range)){
-  if(colnames(check_out_of_range)[j] ==  DATETIME_HEADER){}else{
-    df_tmp = check_out_of_range[,c(which(colnames(check_out_of_range)==DATETIME_HEADER), j)]
-    df_factor = df_tmp
-    
-    df_factor[,2]=as.character(df_factor[,2])
-    
-    
-    y= rep(1,times = nrow(df_factor))
-    df_factor = cbind(df_factor,y)
-    
-    colnames(df_factor) =c("time","Variable","y")
-    
-    # df_factor$Variable = as.character(df_factor$Variable)
-    # df_factor$Variable = mapvalues(df_factor$Variable,from = "1",to = "Over_range")
-    # df_factor$Variable = mapvalues(df_factor$Variable,from = "0",to = "In_range")
-    # df_factor$Variable = mapvalues(df_factor$Variable,from = "-1",to = "Under_range")
-    
-    over_range = rep(NA, times = nrow(df_factor))
-    over_range[which(df_factor$Variable == 1)] = 1
-    
-    new_df = data.frame(df_factor$time,) 
-    
-    theme_new = theme_bw()+theme(axis.title.y=element_blank(),
-                                 axis.text.y=element_blank(),
-                                 axis.ticks.y=element_blank(),
-                                 axis.text.x = element_text(angle = 90, hjust = 1))
-    
-    if(length(unique(df_factor[,2])) > 1 ){
-      p1 = ggplot(df_factor,aes(x = time, y = y,colour = Variable))+
-        geom_point(aes(size = Variable,shape = Variable) )+
-        # scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
-        # scale_shape_manual(values = c(20,124))+
-        scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
-        theme_new+
-        ggtitle(colnames(check_out_of_range)[j])
+```{r echo=FALSE, warning=FALSE,results='asis'}
+if(flag_overlap == 0){
+  for(j in 1:ncol(check_out_of_range)){
+    if(colnames(check_out_of_range)[j] ==  DATETIME_HEADER){}else{
       
-      print(p1)
+      # ~~~~~~ preparation data for ggplot ~~~~~~ 
+      
+      df_tmp = check_out_of_range[,c(which(colnames(check_out_of_range)==DATETIME_HEADER), j)]
+      df_factor = df_tmp
+      
+      df_factor[,2]=as.character(df_factor[,2])
+      
+      y = rep(1,times = nrow(df_factor))
+      df_factor = cbind(df_factor,y)
+      colnames(df_factor) = c("time", "Variable", "y") 
+      df_factor$y[which(df_factor$Variable == -1)] = 0.9
+      df_factor$y[which(df_factor$Variable == 1)] = 1.1
+      # colnames(df_factor) =c("time","Variable","y")
+      
+      # ~~~~~~ preparation data for statistic table ~~~~~~ 
+      
+      c_oor = colnames(check_out_of_range)[j]
+      
+      df_oor = check_out_of_range[,c(which(colnames(check_out_of_range)==DATETIME_HEADER), j)]
+      colnames(df_oor)= c("time", "variable")
+      
+      over_range = rep(0, times = nrow(df_oor))
+      
+      if(length(which(df_oor$variable == 1)) != 0){
+        over_range[which(df_oor$variable == 1)] = 1
+      }
+      
+      under_range = rep(0, times = nrow(df_oor))
+      
+      if(length(which(df_oor$variable == -1)) != 0){
+        under_range[which(df_oor$variable == -1)] = 1
+      }
+      
+      df_oor2 = data.frame(df_oor$time, under_range, over_range)
+      
+      diff_df = cbind(df_oor$time,as.data.frame(rbind(c(0,0),apply(df_oor2[,-1],2, diff))))
+      
+      if(any(unique(df_oor[,2])!= 0)){
+        
+        # ~~~~~~ preparation data for ggplot ~~~~~~ 
+        
+        theme_new2 = theme_bw()+theme(axis.title.y=element_blank(),
+                                      axis.text.y=element_blank(),
+                                      axis.ticks.y=element_blank(),
+                                      axis.text.x = element_text(angle = 90, hjust = 1),
+                                      legend.title = element_blank())
+        
+        # p2 = ggplot(melt_df_ggplot, aes(y=variable, x=time))+
+        #   geom_tile(aes(fill = value))+
+        #   scale_fill_manual(values = c("green", "red", "red"))
+        # 
+        # p2
+        
+        set_limits = data.frame(as.POSIXct(c(df_factor$time[1], df_factor$time[nrow(df_factor)%/%2], df_factor$time[nrow(df_factor)])), c(-1,0,1), c(0,0,0))
+        colnames(set_limits) = colnames(df_factor)
+        
+        df_factor = rbind(df_factor,set_limits)
+        
+        df_factor$Variable = factor(df_factor$Variable, ordered = TRUE)
+        df_factor$Variable <- factor( df_factor$Variable, levels=rev(levels( df_factor$Variable)))
+        
+        
+        p1 = ggplot(df_factor,aes(x = time, y = y,colour = Variable))+
+          geom_point(aes(size = Variable,shape = Variable ))+
+          scale_colour_manual(values = c("#0000FF","#7CAE00","#F8766D"),labels = c("Above upper limit", "In the range","Below lower limit"))+ 
+          scale_shape_manual(values = c(124,20,124),labels =c("Above upper limit", "In the range","Below lower limit"))+
+          scale_size_manual(values = c(10,1,10),labels = c("Above upper limit", "In the range","Below lower limit"))+
+          scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
+          theme_new2 +
+          ggtitle(colnames(check_out_of_range)[j])+
+          scale_y_continuous(limits = c(0.7,1.3))
+        
+        print(p1)
+        
+        # ~~~~~~ preparation data for statistic table ~~~~~~ 
+        
+        under_start_oor = which(diff_df$under_range == 1)
+        under_end_oor  = which(diff_df$under_range == -1) - 1
+        
+        
+        if(length(under_start_oor) != 0 & length(under_end_oor) != 0){
+          if(under_end_oor[1] < under_start_oor[1]){
+            under_start_oor = c(1,under_start_oor)
+          }
+          if(under_start_oor[length(under_start_oor)] > under_end_oor[length(under_end_oor)] ){
+            under_end_oor = c(under_end_oor,nrow(diff_df))
+          }
+        }
+        
+        under_gap_lenght_oor = under_end_oor - under_start_oor + 1
+        under_date_start_oor = df_oor[under_start_oor,1]
+        under_date_end_oor = df_oor[under_end_oor,1]
+        
+        under_statistic_oor = data.frame(rep("Under lower limit", times = length(under_date_start_oor)), under_date_start_oor,under_date_end_oor,under_gap_lenght_oor)
+        colnames(under_statistic_oor) = c(" ","From", "To", "Number of Record")
+        
+        # over
+        
+        over_start_oor = which(diff_df$over_range == 1)
+        over_end_oor  = which(diff_df$over_range == -1) - 1
+        
+        
+        if(length(over_start_oor) != 0 & length(over_end_oor) != 0){
+          if(over_end_oor[1] < over_start_oor[1]){
+            over_start_oor = c(1,over_start_oor)
+          }
+          if(over_start_oor[length(over_start_oor)] > over_end_oor[length(over_end_oor)] ){
+            over_end_oor = c(over_end_oor,nrow(diff_df))
+          }
+        }
+        
+        over_gap_lenght_oor = over_end_oor - over_start_oor + 1
+        over_date_start_oor = df_oor[over_start_oor,1]
+        over_date_end_oor = df_oor[over_end_oor,1]
+        
+        
+        over_statistic_oor = data.frame(rep("Above upper limit", times = length(over_date_start_oor)), over_date_start_oor,over_date_end_oor,over_gap_lenght_oor)
+        colnames(over_statistic_oor) = c(" ","From", "To", "Number of Record")
+        
+        
+        if(nrow(under_statistic_oor) == 0){
+          statistic_oor = over_statistic_oor
+        }else{ 
+          if(nrow(over_statistic_oor) == 0){
+            statistic_oor = under_statistic_oor
+          }else{
+            statistic_oor= rbind(under_statistic_oor,over_statistic_oor)
+          }
+        }
+        
+        
+        statistic_oor = statistic_oor[order(statistic_oor$From),] 
+        
+        # cat(paste("Statistics of data out of range:",c_oor))
+        print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
+                kable_styling() %>%
+                scroll_box( height = "200px") ) 
+        
+      }
     }
   }
+  
 }
-
-
 
 ```
 
-
-
+Report end at **`r Sys.time()`**
 

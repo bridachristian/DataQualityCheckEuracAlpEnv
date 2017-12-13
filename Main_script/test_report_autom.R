@@ -31,7 +31,7 @@ RECORD_HEADER =  "RECORD"
 
 files = dir(scheduling_dir,pattern = ".dat")
 
-
+ # files=files[3]
 for(i in 1: length(files)){
   rmarkdown::render(input = paste(report_dir,"DQC_Manual_Multi_Files.Rmd",sep = ""),
                     output_file = paste("DQC_Report_",substring(files[i],1,nchar(files[1])-4),".html",sep = ""),
@@ -49,6 +49,8 @@ for(i in 1: length(files)){
                                   DATETIME_FORMAT = DATETIME_FORMAT,
                                   DATETIME_SAMPLING = DATETIME_SAMPLING,
                                   RECORD_HEADER = RECORD_HEADER )) 
+  
+  
   rm(list=setdiff(ls(),c("scheduling_dir","report_dir","output_dir", "support_dir",
                          "write_output","RANGE_FILE","DATA_FROM_ROW", "HEADER_ROW_NUMBER",
                          "DATETIME_HEADER","DATETIME_FORMAT","DATETIME_SAMPLING", "RECORD_HEADER",

@@ -1,5 +1,19 @@
 rm(list = ls())
 
+library(devtools)
+install_github("bridachristian/DataQualityCheckEuracAlpEnv")
+library("DataQualityCheckEuracAlpEnv")
+
+library(zoo)
+library(timeSeries)
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(plyr)
+library(imputeTS)
+library(reshape2)
+library(kableExtra)
+
 # scheduling_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/" 
 scheduling_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"
 report_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"
@@ -34,12 +48,16 @@ for(i in 1: length(files)){
                                   DATETIME_HEADER = DATETIME_HEADER,
                                   DATETIME_FORMAT = DATETIME_FORMAT,
                                   DATETIME_SAMPLING = DATETIME_SAMPLING,
-                                  RECORD_HEADER = RECORD_HEADER ))
+                                  RECORD_HEADER = RECORD_HEADER )) 
+  rm(list=setdiff(ls(),c("scheduling_dir","report_dir","output_dir", "support_dir",
+                         "write_output","RANGE_FILE","DATA_FROM_ROW", "HEADER_ROW_NUMBER",
+                         "DATETIME_HEADER","DATETIME_FORMAT","DATETIME_SAMPLING", "RECORD_HEADER",
+                         "files", "i")))
 }
 
-i=1
-rmarkdown::render(input = paste(report_dir,"DQC_Manual_Multi_Files.Rmd",sep = ""),
-                  output_file = paste("DQC_Report_",substring(files[i],1,nchar(files[1])-4),".html",sep = ""),
-                  output_dir = paste(report_dir,"/Output_report/",sep = ""),
-                  params = "ask")
-   
+# i=1
+# rmarkdown::render(input = paste(report_dir,"DQC_Manual_Multi_Files.Rmd",sep = ""),
+#                   output_file = paste("DQC_Report_",substring(files[i],1,nchar(files[1])-4),".html",sep = ""),
+#                   output_dir = paste(report_dir,"/Output_report/",sep = ""),
+#                   params = "ask")
+#    

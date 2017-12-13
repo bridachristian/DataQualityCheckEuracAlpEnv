@@ -3,19 +3,38 @@ title: "Data Quality Check Report"
 author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
 params:
-  file: "M3.dat"
-  scheduling_dir: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/" 
-  report_dir: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"
-  output_dir: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/" 
-  support_dir: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"    
-  write_output: FALSE
-  RANGE_FILE: "Range.csv"
-  DATA_FROM_ROW: 5                                             # <-- Row number of first data
-  HEADER_ROW_NUMBER: 2                                         # <-- Row number of header
-  DATETIME_HEADER: "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-  DATETIME_FORMAT: "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-  DATETIME_SAMPLING: "15 min"
-  RECORD_HEADER: "RECORD"                                      # <-- header corresponding to RECORD
+  file: 
+      label: "Input dataset:"
+      value: 
+      input: file
+  scheduling_dir: 
+      label: "Data directory:"
+      value: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"
+      input: file
+  report_dir:  
+      label: "Report directory:"
+      value: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"
+      input: file
+  output_dir:  
+      label: "Output directory:"
+      value: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"
+      input: file
+  support_dir: 
+      label: "Support directory:"
+      value: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"
+      input: file     
+  write_output:
+      label: "Save output file:"
+      
+      choices: [east, west, north, south]
+      input: file  
+  RANGE_FILE: 
+  DATA_FROM_ROW:                                             # <-- Row number of first data
+  HEADER_ROW_NUMBER:                                         # <-- Row number of header
+  DATETIME_HEADER:                                # <-- header corresponding to TIMESTAMP
+  DATETIME_FORMAT:                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+  DATETIME_SAMPLING: 
+  RECORD_HEADER:                                    # <-- header corresponding to RECORD
 ---
 
 Report start at **`r Sys.time()`**
@@ -41,11 +60,13 @@ library(plyr)
 library(imputeTS)
 library(reshape2)
 library(kableExtra)
-library("DT") # Interactive HTML tables
+library(pander)
+
 
 # .....................................................................................................................................................
 
 # ..... Input section .................................................................................................................................
+
 scheduling_dir <- params$scheduling_dir                  # <-- schelduling directory: for files to be processed
 report_dir <-  params$report_dir                    # <-- report directory: where to put reports and files whith overlaps
 output_dir <- params$output_dir                  # <-- output directory: where processed files go
@@ -66,16 +87,12 @@ RECORD_HEADER <- params$RECORD_HEADER                                   # <-- he
 
 # ~~~ Folders ~~~~
 
-
-# # scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                   # <-- schelduling directory: for files to be processed
-# scheduling_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"
+# scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                   # <-- schelduling directory: for files to be processed
 # 
 # # setwd(scheduling_dir)
 # 
-# # report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"                    # <-- report directory: where to put reports and files whith overlaps
-# report_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"
-# # output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
-# output_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/" 
+# report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"                    # <-- report directory: where to put reports and files whith overlaps
+# output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
 # support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
 # 
 # write_output <- FALSE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
@@ -85,7 +102,7 @@ RECORD_HEADER <- params$RECORD_HEADER                                   # <-- he
 # files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
 # # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
 # 
-# FILE <- "S3.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
+# FILE <- "M3.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
 # # cat("Selected files: \n", FILE)
 # 
 # RANGE_FILE = "Range.csv"
@@ -218,11 +235,9 @@ More details on: `r paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-
 `r if(flag_overlap == 1){paste("In file:", FILE, " there are the following ovelap:")}else{paste("In", FILE, "there isn't any overlap!")}`
 
 
-```{r echo=FALSE,results='asis'}
+```{r echo=FALSE}
 if(flag_overlap == 1){
-  print(kable(overlap, format = "html",align = "c",row.names = F)%>%
-              kable_styling() %>%
-              scroll_box( height = "200px") ) 
+  kable(overlap, format = "markdown",align = "c")
 }
 
 ```
@@ -265,7 +280,7 @@ ggplot(df_missing,aes(x = time, y=y ,colour = Status)) +
 
 Statistics of missing dates:
 
-```{r echo=FALSE,results='asis'}
+```{r echo=FALSE}
 Status_num_NA=df_missing
 Status_num_NA = Status_num_NA[,-c(2,3)]
 
@@ -280,12 +295,7 @@ date_end = Status_num_NA$time[end]
 statistic_missing = data.frame(date_start,date_end,gap_lenght)
 colnames(statistic_missing) = c("From", "To", "Number of Record")
 
-# kable(statistic_missing, format = "markdown",align = "c")
-print(kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-              kable_styling() %>%
-              scroll_box( height = "200px") ) 
-
-
+kable(statistic_missing, format = "markdown",align = "c")
 
 ```
 
@@ -429,13 +439,10 @@ for(j in 1:ncol(check_out_of_range)){
       statistic_oor = statistic_oor[order(statistic_oor$From),] 
       
        # cat(paste("Statistics of data out of range:",c_oor))
-      # kable(statistic_oor, format = "html",align = "c",row.names = F)
       print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
               kable_styling() %>%
-              scroll_box( height = "200px") )
-      
-  
-                 
+              scroll_box( height = "200px") ) 
+    
     }
   }
 }

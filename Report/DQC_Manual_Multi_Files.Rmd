@@ -28,20 +28,20 @@ Sys.setenv(TZ='Etc/GMT-1') # sets the environment on italy?s time zone
 
 # ..... Libraries .....................................................................................................................................
 
-library(devtools)
-install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-library("DataQualityCheckEuracAlpEnv")
-
-library(zoo)
-library(timeSeries)
-library(knitr)
-library(ggplot2)
-library(dplyr)
-library(plyr)
-library(imputeTS)
-library(reshape2)
-library(kableExtra)
-library(pander)
+# library(devtools)
+# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
+# library("DataQualityCheckEuracAlpEnv")
+# 
+# library(zoo)
+# library(timeSeries)
+# library(knitr)
+# library(ggplot2)
+# library(dplyr)
+# library(plyr)
+# library(imputeTS)
+# library(reshape2)
+# library(kableExtra)
+# library(pander)
 
 
 # .....................................................................................................................................................
@@ -83,7 +83,7 @@ RECORD_HEADER <- params$RECORD_HEADER                                   # <-- he
 # files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
 # # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
 # 
-# FILE <- "M3.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
+# FILE <- "S3.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
 # # cat("Selected files: \n", FILE)
 # 
 # RANGE_FILE = "Range.csv"
@@ -218,7 +218,11 @@ More details on: `r paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-
 
 ```{r echo=FALSE}
 if(flag_overlap == 1){
-  kable(overlap, format = "markdown",align = "c")
+  # kable(overlap, format = "markdown",align = "c")
+  kable(overlap, format = "html",align = "c",row.names = F)%>%
+              kable_styling() %>%
+              scroll_box( height = "200px") 
+  
 }
 
 ```
@@ -276,7 +280,10 @@ date_end = Status_num_NA$time[end]
 statistic_missing = data.frame(date_start,date_end,gap_lenght)
 colnames(statistic_missing) = c("From", "To", "Number of Record")
 
-kable(statistic_missing, format = "markdown",align = "c")
+# kable(statistic_missing, format = "markdown",align = "c")
+kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+              kable_styling() %>%
+              scroll_box( height = "200px") 
 
 ```
 

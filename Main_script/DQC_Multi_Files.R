@@ -1,25 +1,16 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
-# File Title:   DQC_LTER_BrC_test.R
-# TITLE:        Data quality check LTER
+# File Title:   DQC_Multi_Files.R
+# TITLE:        Data quality check LTER on different files in scheduling folder
 # Author:       Brida Christian, Genova Giulio, Zandonai Alessandro
 #               Institute for Alpine Environment
-# Data:         21/11/2017
-# Version:      2.0
+# Data:         13/12/2017
+# Version:      1.0
 #
-#PORPUSE: Finds overlap or missing dates
-#If overlap dates are found generates an error and tells you at which row you have the problem (fix it manually)
-#If missing dates are found it automatically generates NAs
-#Appllies thresholds to desired variables
-
-#Support files:
-#Download table = has memory of the last check done
-#Rande settings= contains thresholds to bo applied to certain variables
-
-#Required packages:zoo, timeSeries
-
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 
 rm(list = ls())
+
+# ..... Libraries .....................................................................................................................................
 
 library(devtools)
 install_github("bridachristian/DataQualityCheckEuracAlpEnv")
@@ -34,6 +25,9 @@ library(plyr)
 library(imputeTS)
 library(reshape2)
 library(kableExtra)
+# .....................................................................................................................................................
+
+# ..... Params section .....................................................................................................................................
 
 # scheduling_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"
 scheduling_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"
@@ -52,7 +46,29 @@ RECORD_HEADER =  "RECORD"
 
 files = dir(scheduling_dir,pattern = ".dat")
 
- # files=files[3]
+# ..........................................................................................................................................................
+
+# ..... download table section .....................................................................................................................................
+
+download_table_file = paste(support_dir,"Download_table/download_table.csv",sep = "")
+
+if(!file.exists(download_table_file)){
+  first_download_table = data.frame(substring(files,1, nchar(files)-4), rep(NA, times = length(files)), rep(0,times = length(files)))
+  colnames(first_download_table) = c("Station", "Last_date", "Stop_DQC")
+  write.csv(first_download_table,download_table_file,quote = F,row.names = F)
+}
+
+file.copy(from = download_table_file, to = paste(substring(download_table_file,1,nchar(download_table_file)-4),"_old.csv",sep = ""),overwrite = TRUE)
+download_table = read.csv(download_table_file,stringsAsFactors = F)
+
+
+
+# ..........................................................................................................................................................
+
+
+
+# ..... rmarkdown render section .....................................................................................................................................
+
 for(i in 1: length(files)){
   rmarkdown::render(input = paste(report_dir,"DQC_Manual_Multi_Files.Rmd",sep = ""),
                     output_file = paste("DQC_Report_",substring(files[i],1,nchar(files[1])-4),".html",sep = ""),

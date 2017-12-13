@@ -4,7 +4,7 @@
 #' @param DATETIME_HEADER header corresponding to datetime
 
 #'
-#' @return A data.frame without duplicated rows
+#' @return A data.frame without duplicated rows (to update)
 #' @export
 #' @examples
 #' deletes_duplcated_data(DATA = mydata, DATETIME_HEADER = "TIMESTAMP")
@@ -44,6 +44,8 @@ deletes_duplcated_data = function(DATA, DATETIME_HEADER = "TIMESTAMP"){
     colnames(duplicated) = colnames(DATA)
     
   }
-  return(list(DATA,duplicated))
+  
+  output = list(DATA, duplicated)
+  return(output)
 }
 

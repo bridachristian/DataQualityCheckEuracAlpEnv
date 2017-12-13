@@ -124,9 +124,9 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER)         # <- Deletes identical rows if found
   mydata <- deletes_duplcated [[1]]                                                                                                        
   duplicated_data <- deletes_duplcated [[2]]
-  
+  duplicated_data <- time_to_char(DATA = duplicated_data, DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
+
   overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER)          # <- Detect overlap
-  
   
   if(length(overlap) != 0){
     
@@ -170,7 +170,7 @@ if(write_output == TRUE){
   colnames(duplicated_data) = colnames(header)
   
   out_duplicated_data=rbind(header[-1,],duplicated_data)
-  write.csv(out_duplicated_data,paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F)
+  write.csv(out_duplicated_data,paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F, na =  "---")
 }
 
 ```

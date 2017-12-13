@@ -16,6 +16,7 @@ params:
     DATETIME_FORMAT:                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
     DATETIME_SAMPLING: 
     RECORD_HEADER:                                    # <-- header corresponding to RECORD
+    start_date:                                # <-- starting date to process file
 ---
 
 Report start at **`r Sys.time()`**
@@ -66,8 +67,10 @@ DATETIME_FORMAT <- params$DATETIME_FORMAT                           # <-- dateti
 DATETIME_SAMPLING <- params$DATETIME_SAMPLING
 RECORD_HEADER <- params$RECORD_HEADER                                   # <-- header corresponding to RECORD
 
-# ~~~ Folders ~~~~
+start_date <- params$start_date                                 # <-- starting date to process file
 
+# ~~~ Folders ~~~~
+# 
 # scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                   # <-- schelduling directory: for files to be processed
 # 
 # # setwd(scheduling_dir)
@@ -98,7 +101,7 @@ RECORD_HEADER <- params$RECORD_HEADER                                   # <-- he
 # DATETIME_SAMPLING <- "15 min"
 # 
 # RECORD_HEADER <- "RECORD"                                      # <-- header corresponding to RECORD
-
+# start_date <- "2017-12-03 09:00:00"
 # .....................................................................................................................................................
 
 # ..... Body ..........................................................................................................................................
@@ -118,8 +121,15 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   header_colnames <- data_import [[2]]
   data <- data_import [[3]]
   
-  original <- data
-  mydata <- data
+  time_data = data[,which(colnames(data)==DATETIME_HEADER)]
+
+  if(is.na(start_date)){
+    original <- data
+    mydata <- data
+  }else{
+    original <- data[which(time_data == as.POSIXct(start_date)):nrow(data),]
+    mydata <- data[which(time_data == as.POSIXct(start_date)):nrow(data),]
+  }
   
   deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER)         # <- Deletes identical rows if found
   mydata <- deletes_duplcated [[1]]                                                                                                        
@@ -165,22 +175,24 @@ if(write_output == TRUE){
   
   out_mydata=rbind(header[-1,],out_my)
   
-  out_filename =  paste(substring(FILE,1,nchar(FILE)-4),
-                        "_",
-                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],1,4),
-                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],6,7),
-                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],9,10),
-                        # "_",
-                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],12,13),
-                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],15,16),
-                        "-",
-                        substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],1,4),
+  out_filename =  paste(substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],1,4),
                         substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],6,7),
                         substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],9,10),
                         # "_",
                         substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],12,13),
                         substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],15,16),
                         sep = "")
+    
+    # substring(FILE,1,nchar(FILE)-4),
+    #                     "_",
+    #                     substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],1,4),
+    #                     substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],6,7),
+    #                     substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],9,10),
+    #                     # "_",
+    #                     substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],12,13),
+    #                     substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],15,16),
+    #                     "-",
+    #                     )
   
   write.csv(out_mydata,paste(output_dir,"DQCok_",out_filename,".csv",sep = ""),quote = F,row.names = F)
   
@@ -275,7 +287,7 @@ if(flag_overlap == 0){
     geom_point(aes(size = Status,shape = Status) )+
     scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
     scale_shape_manual(values = c(20,124))+
-    scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
+    # scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
     theme_new+
     ggtitle("Time distribution of missing dates")
 }

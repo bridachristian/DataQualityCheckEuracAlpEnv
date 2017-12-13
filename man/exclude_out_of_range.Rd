@@ -4,10 +4,13 @@
 \alias{exclude_out_of_range}
 \title{This function reject all values greater than max and smaller than min in a data.frame}
 \usage{
-exclude_out_of_range(DATA, SUPPORT_DIR, RANGE_FILE)
+exclude_out_of_range(DATA, DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
+  RANGE_FILE)
 }
 \arguments{
 \item{DATA}{data.frame of timeseries}
+
+\item{DATETIME_HEADER}{header of data corresponding to datetime}
 
 \item{SUPPORT_DIR}{directory where support files are stored}
 

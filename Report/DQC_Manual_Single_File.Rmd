@@ -2,28 +2,13 @@
 title: "Data Quality Check Report"
 author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
-params:
-  file: "M3.dat"
-  scheduling_dir: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/" 
-  report_dir: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"
-  output_dir: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/" 
-  support_dir: "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"    
-  write_output: FALSE
-  RANGE_FILE: "Range.csv"
-  DATA_FROM_ROW: 5                                             # <-- Row number of first data
-  HEADER_ROW_NUMBER: 2                                         # <-- Row number of header
-  DATETIME_HEADER: "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-  DATETIME_FORMAT: "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-  DATETIME_SAMPLING: "15 min"
-  RECORD_HEADER: "RECORD"                                      # <-- header corresponding to RECORD
 ---
 
 Report start at **`r Sys.time()`**
 
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE}
 
-```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
-
-# remove(list=ls())
+remove(list=ls())
 Sys.setenv(TZ='Etc/GMT-1') # sets the environment on italy?s time zone
 
 # ..... Libraries .....................................................................................................................................
@@ -40,66 +25,46 @@ library(dplyr)
 library(plyr)
 library(imputeTS)
 library(reshape2)
-library(kableExtra)
-library("DT") # Interactive HTML tables
+
 
 # .....................................................................................................................................................
 
 # ..... Input section .................................................................................................................................
-scheduling_dir <- params$scheduling_dir                  # <-- schelduling directory: for files to be processed
-report_dir <-  params$report_dir                    # <-- report directory: where to put reports and files whith overlaps
-output_dir <- params$output_dir                  # <-- output directory: where processed files go
-support_dir <- params$support_dir       # <-- support directory: where to read support files
-
-write_output <- params$write_output                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
-
-FILE <- params$file                                      # <-- Write here the file or the list of file  that you want to analyze!
-
-RANGE_FILE = params$RANGE_FILE
-
-DATA_FROM_ROW <- params$DATA_FROM_ROW                                                # <-- Row number of first data
-HEADER_ROW_NUMBER <- params$HEADER_ROW_NUMBER                                          # <-- Row number of header
-DATETIME_HEADER <- params$DATETIME_HEADER                               # <-- header corresponding to TIMESTAMP
-DATETIME_FORMAT <- params$DATETIME_FORMAT                           # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-DATETIME_SAMPLING <- params$DATETIME_SAMPLING
-RECORD_HEADER <- params$RECORD_HEADER                                   # <-- header corresponding to RECORD
 
 # ~~~ Folders ~~~~
 
+# scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/scheduling/"                              # <-- schelduling directory: for files to be processed
+scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv//Data/Input/"                   # <-- schelduling directory: for files to be processed
+# scheduling_dir <- report_dir                                                                                # <-- schelduling directory: for files that the script found whith overlap and you fixed manually
 
-# # scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                   # <-- schelduling directory: for files to be processed
-# scheduling_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"
-# 
-# # setwd(scheduling_dir)
-# 
-# # report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"                    # <-- report directory: where to put reports and files whith overlaps
-# report_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"
-# # output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
-# output_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/" 
-# support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
-# 
-# write_output <- FALSE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
-# 
-# # ~~~ Files ~~~~
-# 
-# files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
-# # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
-# 
-# FILE <- "S3.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
-# # cat("Selected files: \n", FILE)
-# 
-# RANGE_FILE = "Range.csv"
-# 
-# # ~~~ Datetime ~~~~
-# DATA_FROM_ROW <- 5                                             # <-- Row number of first data
-# 
-# HEADER_ROW_NUMBER <- 2                                         # <-- Row number of header
-# 
-# DATETIME_HEADER <- "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-# DATETIME_FORMAT <- "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-# DATETIME_SAMPLING <- "15 min"
-# 
-# RECORD_HEADER <- "RECORD"                                      # <-- header corresponding to RECORD
+setwd(scheduling_dir)
+
+report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"                    # <-- report directory: where to put reports and files whith overlaps
+output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
+support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
+
+write_output <- TRUE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
+
+# ~~~ Files ~~~~
+
+files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
+# cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
+
+FILE <- "M4s.dat"                                           # <-- Write here the file or the list of file  that you want to analyze!
+# cat("Selected files: \n", FILE)
+
+RANGE_FILE = "Range.csv"
+
+# ~~~ Datetime ~~~~
+DATA_FROM_ROW <- 5                                             # <-- Row number of first data
+
+HEADER_ROW_NUMBER <- 2                                         # <-- Row number of header
+
+DATETIME_HEADER <- "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
+DATETIME_FORMAT <- "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+DATETIME_SAMPLING <- "15 min"
+
+RECORD_HEADER <- "RECORD"                                      # <-- header corresponding to RECORD
 
 # .....................................................................................................................................................
 
@@ -113,9 +78,7 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   
   flag_empty = 0
   
-  data_import <- read_data(FILE_PATH = scheduling_dir, FILE_NAME = FILE, 
-                           DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT,
-                           DATA_FROM_ROW = DATA_FROM_ROW, HEADER_ROW_NUMBER = HEADER_ROW_NUMBER)  
+  data_import <- read_data(FILE_PATH = scheduling_dir,FILE_NAME = FILE,DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
   header <- data_import [[1]]
   header_colnames <- data_import [[2]]
   data <- data_import [[3]]
@@ -209,25 +172,23 @@ You decide:  *`r if(write_output == TRUE){paste("to write output file in output 
 
 `r if(flag_empty == 1){paste("Error:", FILE,"without observation")}else{paste(FILE, "has some obseravtion.")}`
 
-#### **Duplicated rows**
+#### Duplicated rows
 
 More details on: `r paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = "")`
 
-#### **Overlap**
+#### Overlap
 
 `r if(flag_overlap == 1){paste("In file:", FILE, " there are the following ovelap:")}else{paste("In", FILE, "there isn't any overlap!")}`
 
 
-```{r echo=FALSE,results='asis'}
+```{r echo=FALSE}
 if(flag_overlap == 1){
-  print(kable(overlap, format = "html",align = "c",row.names = F)%>%
-              kable_styling() %>%
-              scroll_box( height = "200px") ) 
+  kable(overlap, format = "markdown",align = "c")
 }
 
 ```
 
-#### **Missing dates**
+#### Missing dates
 
 ```{r echo=FALSE, warning=FALSE}
 w = which(colnames(mydata) == DATETIME_HEADER)
@@ -265,7 +226,7 @@ ggplot(df_missing,aes(x = time, y=y ,colour = Status)) +
 
 Statistics of missing dates:
 
-```{r echo=FALSE,results='asis'}
+```{r echo=FALSE}
 Status_num_NA=df_missing
 Status_num_NA = Status_num_NA[,-c(2,3)]
 
@@ -280,170 +241,61 @@ date_end = Status_num_NA$time[end]
 statistic_missing = data.frame(date_start,date_end,gap_lenght)
 colnames(statistic_missing) = c("From", "To", "Number of Record")
 
-# kable(statistic_missing, format = "markdown",align = "c")
-print(kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-              kable_styling() %>%
-              scroll_box( height = "200px") ) 
 
-
+kable(statistic_missing, format = "markdown",align = "c")
 
 ```
 
-#### **Values out of admitted range**
+#### Values out of admitted range
 
-```{r echo=FALSE, warning=FALSE,results='asis'}
+```{r echo=FALSE, warning=FALSE}
+
 for(j in 1:ncol(check_out_of_range)){
   if(colnames(check_out_of_range)[j] ==  DATETIME_HEADER){}else{
-    
-    # ~~~~~~ preparation data for ggplot ~~~~~~ 
-    
     df_tmp = check_out_of_range[,c(which(colnames(check_out_of_range)==DATETIME_HEADER), j)]
     df_factor = df_tmp
     
     df_factor[,2]=as.character(df_factor[,2])
     
-    y = rep(1,times = nrow(df_factor))
+    
+    y= rep(1,times = nrow(df_factor))
     df_factor = cbind(df_factor,y)
-    colnames(df_factor) = c("time", "Variable", "y") 
-    df_factor$y[which(df_factor$Variable == -1)] = 0.9
-    df_factor$y[which(df_factor$Variable == 1)] = 1.1
-    # colnames(df_factor) =c("time","Variable","y")
     
-    # ~~~~~~ preparation data for statistic table ~~~~~~ 
+    colnames(df_factor) =c("time","Variable","y")
     
-    c_oor = colnames(check_out_of_range)[j]
+    # df_factor$Variable = as.character(df_factor$Variable)
+    # df_factor$Variable = mapvalues(df_factor$Variable,from = "1",to = "Over_range")
+    # df_factor$Variable = mapvalues(df_factor$Variable,from = "0",to = "In_range")
+    # df_factor$Variable = mapvalues(df_factor$Variable,from = "-1",to = "Under_range")
     
-    df_oor = check_out_of_range[,c(which(colnames(check_out_of_range)==DATETIME_HEADER), j)]
-    colnames(df_oor)= c("time", "variable")
+    over_range = rep(NA, times = nrow(df_factor))
+    over_range[which(df_factor$Variable == 1)] = 1
     
-    over_range = rep(0, times = nrow(df_oor))
+    new_df = data.frame(df_factor$time,) 
     
-    if(length(which(df_oor$variable == 1)) != 0){
-      over_range[which(df_oor$variable == 1)] = 1
-    }
+    theme_new = theme_bw()+theme(axis.title.y=element_blank(),
+                                 axis.text.y=element_blank(),
+                                 axis.ticks.y=element_blank(),
+                                 axis.text.x = element_text(angle = 90, hjust = 1))
     
-    under_range = rep(0, times = nrow(df_oor))
-    
-    if(length(which(df_oor$variable == -1)) != 0){
-      under_range[which(df_oor$variable == -1)] = 1
-    }
-    
-    df_oor2 = data.frame(df_oor$time, under_range, over_range)
-    
-    diff_df = cbind(df_oor$time,as.data.frame(rbind(c(0,0),apply(df_oor2[,-1],2, diff))))
-    
-    if(any(unique(df_oor[,2])!= 0)){
-      
-      # ~~~~~~ preparation data for ggplot ~~~~~~ 
-      
-      theme_new2 = theme_bw()+theme(axis.title.y=element_blank(),
-                                    axis.text.y=element_blank(),
-                                    axis.ticks.y=element_blank(),
-                                    axis.text.x = element_text(angle = 90, hjust = 1),
-                                    legend.title = element_blank())
-      
-      # p2 = ggplot(melt_df_ggplot, aes(y=variable, x=time))+
-      #   geom_tile(aes(fill = value))+
-      #   scale_fill_manual(values = c("green", "red", "red"))
-      # 
-      # p2
-      
-      set_limits = data.frame(as.POSIXct(c(df_factor$time[1], df_factor$time[nrow(df_factor)%/%2], df_factor$time[nrow(df_factor)])), c(-1,0,1), c(0,0,0))
-      colnames(set_limits) = colnames(df_factor)
-      
-      df_factor = rbind(df_factor,set_limits)
-      
-      df_factor$Variable = factor(df_factor$Variable, ordered = TRUE)
-      df_factor$Variable <- factor( df_factor$Variable, levels=rev(levels( df_factor$Variable)))
-      
-      
+    if(length(unique(df_factor[,2])) > 1 ){
       p1 = ggplot(df_factor,aes(x = time, y = y,colour = Variable))+
-        geom_point(aes(size = Variable,shape = Variable ))+
-        scale_colour_manual(values = c("#0000FF","#7CAE00","#F8766D"),labels = c("Above upper limit", "In the range","Below lower limit"))+ 
-        scale_shape_manual(values = c(124,20,124),labels =c("Above upper limit", "In the range","Below lower limit"))+
-        scale_size_manual(values = c(10,1,10),labels = c("Above upper limit", "In the range","Below lower limit"))+
+        geom_point(aes(size = Variable,shape = Variable) )+
+        # scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
+        # scale_shape_manual(values = c(20,124))+
         scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
-        theme_new2 +
-        ggtitle(colnames(check_out_of_range)[j])+
-        scale_y_continuous(limits = c(0.7,1.3))
+        theme_new+
+        ggtitle(colnames(check_out_of_range)[j])
       
       print(p1)
-      
-      # ~~~~~~ preparation data for statistic table ~~~~~~ 
-      
-      under_start_oor = which(diff_df$under_range == 1)
-      under_end_oor  = which(diff_df$under_range == -1) - 1
-      
-      
-      if(length(under_start_oor) != 0 & length(under_end_oor) != 0){
-        if(under_end_oor[1] < under_start_oor[1]){
-          under_start_oor = c(1,under_start_oor)
-        }
-        if(under_start_oor[length(under_start_oor)] > under_end_oor[length(under_end_oor)] ){
-          under_end_oor = c(under_end_oor,nrow(diff_df))
-        }
-      }
-      
-      under_gap_lenght_oor = under_end_oor - under_start_oor + 1
-      under_date_start_oor = df_oor[under_start_oor,1]
-      under_date_end_oor = df_oor[under_end_oor,1]
-      
-      under_statistic_oor = data.frame(rep("Under lower limit", times = length(under_date_start_oor)), under_date_start_oor,under_date_end_oor,under_gap_lenght_oor)
-      colnames(under_statistic_oor) = c(" ","From", "To", "Number of Record")
-      
-      # over
-      
-      over_start_oor = which(diff_df$over_range == 1)
-      over_end_oor  = which(diff_df$over_range == -1) - 1
-      
-      
-      if(length(over_start_oor) != 0 & length(over_end_oor) != 0){
-        if(over_end_oor[1] < over_start_oor[1]){
-          over_start_oor = c(1,over_start_oor)
-        }
-        if(over_start_oor[length(over_start_oor)] > over_end_oor[length(over_end_oor)] ){
-          over_end_oor = c(over_end_oor,nrow(diff_df))
-        }
-      }
-      
-      over_gap_lenght_oor = over_end_oor - over_start_oor + 1
-      over_date_start_oor = df_oor[over_start_oor,1]
-      over_date_end_oor = df_oor[over_end_oor,1]
-      
-      
-      over_statistic_oor = data.frame(rep("Above upper limit", times = length(over_date_start_oor)), over_date_start_oor,over_date_end_oor,over_gap_lenght_oor)
-      colnames(over_statistic_oor) = c(" ","From", "To", "Number of Record")
-      
-      
-      if(nrow(under_statistic_oor) == 0){
-        statistic_oor = over_statistic_oor
-      }else{ 
-        if(nrow(over_statistic_oor) == 0){
-          statistic_oor = under_statistic_oor
-        }else{
-          statistic_oor= rbind(under_statistic_oor,over_statistic_oor)
-        }
-      }
-      
-      
-      statistic_oor = statistic_oor[order(statistic_oor$From),] 
-      
-       # cat(paste("Statistics of data out of range:",c_oor))
-      # kable(statistic_oor, format = "html",align = "c",row.names = F)
-      print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
-              kable_styling() %>%
-              scroll_box( height = "200px") )
-      
-  
-                 
     }
   }
 }
 
 
 
-
 ```
 
-Report end at **`r Sys.time()`**
+
+
 

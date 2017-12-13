@@ -4,19 +4,21 @@
 \alias{deletes_duplcated_data}
 \title{This function delete duplcated data in a data.frame}
 \usage{
-deletes_duplcated_data(DATA)
+deletes_duplcated_data(DATA, DATETIME_HEADER = "TIMESTAMP")
 }
 \arguments{
 \item{DATA}{data.frame}
+
+\item{DATETIME_HEADER}{header corresponding to datetime}
 }
 \value{
-A data.frame without duplicated rows
+A list containing a data.frame without duplicated rows and a dataframe with duplicated rows
 }
 \description{
 This function delete duplcated data in a data.frame
 }
 \examples{
-deletes_duplcated_data(DATA = mydata)
-deletes_duplcated_data(DATA = your data.framel)
+deletes_duplcated_data(DATA = mydata, DATETIME_HEADER = "TIMESTAMP")
+deletes_duplcated_data(DATA = your data.frame, DATETIME_HEADER = "Your datetime header")
 
 }

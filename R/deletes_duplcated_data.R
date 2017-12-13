@@ -4,7 +4,7 @@
 #' @param DATETIME_HEADER header corresponding to datetime
 
 #'
-#' @return A data.frame without duplicated rows (to update)
+#' @return A list containing a data.frame without duplicated rows and a dataframe with duplicated rows
 #' @export
 #' @examples
 #' deletes_duplcated_data(DATA = mydata, DATETIME_HEADER = "TIMESTAMP")

@@ -40,8 +40,9 @@ deletes_duplcated_data = function(DATA, DATETIME_HEADER = "TIMESTAMP"){
 
   }else{
     
-    duplicated = as.data.frame(t(rep(NA, times = ncol(DATA))))
+    duplicated = data.frame(t(rep("---", times = ncol(DATA))))
     colnames(duplicated) = colnames(DATA)
+    
     
   }
   

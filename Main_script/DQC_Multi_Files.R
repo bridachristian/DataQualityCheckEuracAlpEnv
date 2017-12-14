@@ -25,18 +25,23 @@ library(plyr)
 library(imputeTS)
 library(reshape2)
 library(kableExtra)
+
 # .....................................................................................................................................................
 
 # ..... Params section .....................................................................................................................................
 
-# scheduling_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"
-scheduling_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"
-report_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"
-# output_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"
-output_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"
-support_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"
-write_output =  "TRUE"
-RANGE_FILE =  "Range.csv"
+# ~~~ Path ~~~
+
+# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"  # where input files are
+input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
+
+# output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"  # where to put output files and reports
+output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output files and reports
+
+project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+
+# ~~~ Data file structure ~~~
+
 DATA_FROM_ROW =  5                                             # <-- Row number of first data
 HEADER_ROW_NUMBER =  2                                         # <-- Row number of header
 DATETIME_HEADER =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
@@ -44,13 +49,36 @@ DATETIME_FORMAT =  "yyyy-mm-dd HH:MM"                          # <-- datetime fo
 DATETIME_SAMPLING =  "15 min"
 RECORD_HEADER =  "RECORD"
 
-files = dir(scheduling_dir,pattern = ".dat")
+# ~~~ Support files  ~~~
+
+RANGE_FILE =  "Range.csv"
+
+# ~~~ Output results  ~~~
+
+write_output_files =  "TRUE"
+write_output_reports =  "TRUE"
+
+# ..........................................................................................................................................................
+
+
+# # scheduling_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"
+# scheduling_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"
+# report_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"
+# # output_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"
+# output_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"
+# support_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"
+# write_output =  "TRUE"
+
+
+# ..... files selection .....................................................................................................................................
+
+files_available = dir(input_dir,pattern = ".dat")                  # <-- Admitted pattern:  ".dat" or ".csv"
 
 # ..........................................................................................................................................................
 
 # ..... download table section .....................................................................................................................................
-
-download_table_file = paste(support_dir,"Download_table/download_table.csv",sep = "")
+download_table_path = paste(project_dir,"Data/Support_files/Download_table/")
+download_table_file = paste(download_table_path,"download_table.csv",sep = "")
 
 if(!file.exists(download_table_file)){
   first_download_table = data.frame(substring(files,1, nchar(files)-4), rep(NA, times = length(files)), rep(0,times = length(files)))
@@ -75,9 +103,16 @@ start_date = download_table$Last_date
 # file_to_analyze = download_table$Station[download_table$Stop_DQC == 0]
 # setdiff(station_to_process,station_already_register)
 
+
+# ..... files selection .....................................................................................................................................
+
+files = dir(scheduling_dir,pattern = ".dat")
+
 # ..........................................................................................................................................................
 
+# ..........................................................................................................................................................
 
+i=1
 
 # ..... rmarkdown render section .....................................................................................................................................
 
@@ -85,7 +120,7 @@ for(i in 1: length(files)){
   
   input = paste(report_dir,"DQC_Manual_Multi_Files.Rmd",sep = "")
   output_file = paste("DQC_Report_",substring(files[i],1,nchar(files[1])-4),".html",sep = "")
-  output_dir = paste(report_dir,"Output_report/",sep = "")
+  output_dir_new = paste(output_dir,"Output_report/",sep = "")
   
   rmarkdown::render(input = input,
                     output_file = output_file,
@@ -93,7 +128,7 @@ for(i in 1: length(files)){
                     params = list(file = files[i],
                                   scheduling_dir = scheduling_dir,
                                   report_dir = report_dir,
-                                  output_dir = output_dir ,
+                                  output_dir = output_dir_new ,
                                   support_dir = support_dir,
                                   write_output = write_output,
                                   RANGE_FILE = RANGE_FILE,
@@ -119,7 +154,7 @@ for(i in 1: length(files)){
   #   
   # }
   
-  file.rename(from = paste(output_dir,output_file,sep = "") ,to = paste(output_dir,new_output_file,sep = "") )
+  file.rename(from = paste(output_dir_new,output_file,sep = "") ,to = paste(output_dir_new,new_output_file,sep = "") )
   write.csv(download_table,download_table_file,quote = F,row.names = F)
 
 }

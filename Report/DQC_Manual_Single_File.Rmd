@@ -8,7 +8,7 @@ Report start at **`r Sys.time()`**
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE}
 
-remove(list=ls())
+# remove(list=ls())
 Sys.setenv(TZ='Etc/GMT-1') # sets the environment on italy?s time zone
 
 # ..... Libraries .....................................................................................................................................
@@ -36,7 +36,7 @@ library(pander)
 # ~~~ Folders ~~~~
 
 # scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/scheduling/"                              # <-- schelduling directory: for files to be processed
-scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv//Data/Input/"                   # <-- schelduling directory: for files to be processed
+scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                   # <-- schelduling directory: for files to be processed
 # scheduling_dir <- report_dir                                                                                # <-- schelduling directory: for files that the script found whith overlap and you fixed manually
 
 setwd(scheduling_dir)
@@ -136,13 +136,6 @@ if(write_output == TRUE){
   
   out_filename =  paste(substring(FILE,1,nchar(FILE)-4),
                         "_",
-                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],1,4),
-                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],6,7),
-                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],9,10),
-                        # "_",
-                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],12,13),
-                        substring(mydata[1,which(colnames(mydata) == DATETIME_HEADER)],15,16),
-                        "-",
                         substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],1,4),
                         substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],6,7),
                         substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],9,10),
@@ -157,7 +150,7 @@ if(write_output == TRUE){
   colnames(duplicated_data) = colnames(header)
   
   out_duplicated_data=rbind(header[-1,],duplicated_data)
-  write.csv(out_duplicated_data,paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""),quote = F,row.names = F)
+  write.csv(out_duplicated_data,paste(output_dir,"Duplicated_",out_filename,".csv",sep = ""),quote = F,row.names = F)
 }
 
 ```

@@ -2,21 +2,21 @@
 title: "Data Quality Check Report"
 author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
-params:
-    file: 
-    scheduling_dir: 
-    report_dir: 
-    output_dir:  
-    support_dir:     
-    write_output:
-    RANGE_FILE: 
-    DATA_FROM_ROW:                                             # <-- Row number of first data
-    HEADER_ROW_NUMBER:                                         # <-- Row number of header
-    DATETIME_HEADER:                                # <-- header corresponding to TIMESTAMP
-    DATETIME_FORMAT:                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-    DATETIME_SAMPLING: 
-    RECORD_HEADER:                                    # <-- header corresponding to RECORD
-    start_date:                                # <-- starting date to process file
+# params:
+#     file: 
+#     scheduling_dir: 
+#     report_dir: 
+#     output_dir:  
+#     support_dir:     
+#     write_output:
+#     RANGE_FILE: 
+#     DATA_FROM_ROW:                                             # <-- Row number of first data
+#     HEADER_ROW_NUMBER:                                         # <-- Row number of header
+#     DATETIME_HEADER:                                # <-- header corresponding to TIMESTAMP
+#     DATETIME_FORMAT:                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+#     DATETIME_SAMPLING: 
+#     RECORD_HEADER:                                    # <-- header corresponding to RECORD
+#     start_date:                                # <-- starting date to process file
 ---
 
 Report start at **`r Sys.time()`**
@@ -24,84 +24,84 @@ Report start at **`r Sys.time()`**
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
 
-# remove(list=ls())
+remove(list=ls())
 Sys.setenv(TZ='Etc/GMT-1') # sets the environment on italy?s time zone
 
 # ..... Libraries .....................................................................................................................................
 
-# library(devtools)
-# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-# library("DataQualityCheckEuracAlpEnv")
-# 
-# library(zoo)
-# library(timeSeries)
-# library(knitr)
-# library(ggplot2)
-# library(dplyr)
-# library(plyr)
-# library(imputeTS)
-# library(reshape2)
-# library(kableExtra)
-# library(pander)
+library(devtools)
+install_github("bridachristian/DataQualityCheckEuracAlpEnv")
+library("DataQualityCheckEuracAlpEnv")
+
+library(zoo)
+library(timeSeries)
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(plyr)
+library(imputeTS)
+library(reshape2)
+library(kableExtra)
+library(pander)
 
 
 # .....................................................................................................................................................
 
 # ..... Input section .................................................................................................................................
 
-scheduling_dir <- params$scheduling_dir                  # <-- schelduling directory: for files to be processed
-report_dir <-  params$report_dir                    # <-- report directory: where to put reports and files whith overlaps
-output_dir <- params$output_dir                  # <-- output directory: where processed files go
-support_dir <- params$support_dir       # <-- support directory: where to read support files
-
-write_output <- params$write_output                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
-
-FILE <- params$file                                      # <-- Write here the file or the list of file  that you want to analyze!
-
-RANGE_FILE = params$RANGE_FILE
-
-DATA_FROM_ROW <- params$DATA_FROM_ROW                                                # <-- Row number of first data
-HEADER_ROW_NUMBER <- params$HEADER_ROW_NUMBER                                          # <-- Row number of header
-DATETIME_HEADER <- params$DATETIME_HEADER                               # <-- header corresponding to TIMESTAMP
-DATETIME_FORMAT <- params$DATETIME_FORMAT                           # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-DATETIME_SAMPLING <- params$DATETIME_SAMPLING
-RECORD_HEADER <- params$RECORD_HEADER                                   # <-- header corresponding to RECORD
-
-start_date <- params$start_date                                 # <-- starting date to process file
+# scheduling_dir <- params$scheduling_dir                  # <-- schelduling directory: for files to be processed
+# report_dir <-  params$report_dir                    # <-- report directory: where to put reports and files whith overlaps
+# output_dir <- params$output_dir                  # <-- output directory: where processed files go
+# support_dir <- params$support_dir       # <-- support directory: where to read support files
+# 
+# write_output <- params$write_output                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
+# 
+# FILE <- params$file                                      # <-- Write here the file or the list of file  that you want to analyze!
+# 
+# RANGE_FILE = params$RANGE_FILE
+# 
+# DATA_FROM_ROW <- params$DATA_FROM_ROW                                                # <-- Row number of first data
+# HEADER_ROW_NUMBER <- params$HEADER_ROW_NUMBER                                          # <-- Row number of header
+# DATETIME_HEADER <- params$DATETIME_HEADER                               # <-- header corresponding to TIMESTAMP
+# DATETIME_FORMAT <- params$DATETIME_FORMAT                           # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+# DATETIME_SAMPLING <- params$DATETIME_SAMPLING
+# RECORD_HEADER <- params$RECORD_HEADER                                   # <-- header corresponding to RECORD
+# 
+# start_date <- params$start_date                                 # <-- starting date to process file
 
 # ~~~ Folders ~~~~
-# 
-# scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                   # <-- schelduling directory: for files to be processed
-# 
-# # setwd(scheduling_dir)
-# 
-# report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"                    # <-- report directory: where to put reports and files whith overlaps
-# output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
-# support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
-# 
-# write_output <- FALSE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
-# 
-# # ~~~ Files ~~~~
-# 
-# files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
-# # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
-# 
-# FILE <- "S3.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
-# # cat("Selected files: \n", FILE)
-# 
-# RANGE_FILE = "Range.csv"
-# 
-# # ~~~ Datetime ~~~~
-# DATA_FROM_ROW <- 5                                             # <-- Row number of first data
-# 
-# HEADER_ROW_NUMBER <- 2                                         # <-- Row number of header
-# 
-# DATETIME_HEADER <- "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-# DATETIME_FORMAT <- "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-# DATETIME_SAMPLING <- "15 min"
-# 
-# RECORD_HEADER <- "RECORD"                                      # <-- header corresponding to RECORD
-# start_date <- "2017-12-03 09:00:00"
+
+scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                   # <-- schelduling directory: for files to be processed
+
+# setwd(scheduling_dir)
+
+report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Rmd/"                    # <-- report directory: where to put reports and files whith overlaps
+output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
+support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
+
+write_output <- FALSE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
+
+# ~~~ Files ~~~~
+
+files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
+# cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
+
+FILE <- "M1.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
+# cat("Selected files: \n", FILE)
+
+RANGE_FILE = "Range.csv"
+
+# ~~~ Datetime ~~~~
+DATA_FROM_ROW <- 5                                             # <-- Row number of first data
+
+HEADER_ROW_NUMBER <- 2                                         # <-- Row number of header
+
+DATETIME_HEADER <- "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
+DATETIME_FORMAT <- "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+DATETIME_SAMPLING <- "15 min"
+
+RECORD_HEADER <- "RECORD"                                      # <-- header corresponding to RECORD
+start_date <- "2017-12-03 09:00:00"
 # .....................................................................................................................................................
 
 # ..... Body ..........................................................................................................................................
@@ -122,7 +122,7 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
   data <- data_import [[3]]
   
   time_data = data[,which(colnames(data)==DATETIME_HEADER)]
-
+  
   if(is.na(start_date)){
     original <- data
     mydata <- data
@@ -183,8 +183,8 @@ if(write_output == TRUE){
                         substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],12,13),
                         substring(mydata[nrow(mydata),which(colnames(mydata) == DATETIME_HEADER)],15,16),
                         sep = "")
-    
-    
+  
+  
   
   write.csv(out_mydata,paste(output_dir,"DQCok_",out_filename,".csv",sep = ""),quote = F,row.names = F)
   
@@ -225,17 +225,31 @@ You decide:  *`r if(write_output == TRUE){paste("to write output file in output 
 
 ### OUTPUT: 
 
-#### Info empty file:
+#### **The file is empty?**  `r if(flag_empty == 1){paste("YES: check it!")}` `r if(flag_empty == 0){paste("NO: all right!")}`
 
-`r if(flag_empty == 1){paste("Error:", FILE,"without observation")}else{paste(FILE, "has some obseravtion.")}`
+`r if(flag_empty == 1){paste("Error:",FILE,"is empty")}`
+`r if(flag_empty == 0){paste("Ok:",FILE,"is not empty")}`
 
-#### **Duplicated rows**
 
-More details on: `r paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = "")`
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
+x = as.character(duplicated_data[1,])
+if(unique(x) == "---"){
+  flag_duplicates_rows = 0
+} else{
+  flag_duplicates_rows = 1
+  
+}
+```
+#### **There are duplicated rows?**  `r if(flag_duplicates_rows == 0){paste("NO: all right!")}` `r if(flag_empty == 1){paste("YES: there are duplicated rows!")}`
 
-#### **Overlap**
+`r if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}`
+`r if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""))}`
 
-`r if(flag_overlap == 1){paste("In file:", FILE, " there are the following ovelap:")}else{paste("In", FILE, "there isn't any overlap!")}`
+
+#### **There are overlaps? ** `r if(flag_overlap == 0){paste("NO: all right!")}` `r if(flag_overlap == 1){paste("YES: there are overlaps!")}`
+
+
+`r if(flag_overlap == 1){paste("There are the following ovelap:")}else{paste("There isn't any overlap!")}`
 
 
 ```{r echo=FALSE}
@@ -249,7 +263,7 @@ if(flag_overlap == 1){
 
 ```
 
-#### **Missing dates**
+<!-- #### **Missing dates** -->
 
 ```{r echo=FALSE, warning=FALSE}
 if(flag_overlap == 0){
@@ -268,7 +282,19 @@ if(flag_overlap == 0){
   
   df_missing = cbind(df_missing, y,Status_num)
   
-  
+  if(length(which(time_tot %in% time_missing )) == 0){
+    flag_missing_dates = 0
+  }else{
+    flag_missing_dates = 1
+    
+  }
+}
+```
+
+#### **There are some missing dates?** `r if(flag_overlap == 0){paste("NO: all right!")}` `r if(flag_overlap == 1){paste("YES: there are missing dates!")}`
+
+```{r echo=FALSE, warning=FALSE}
+if(flag_missing_dates == 1){
   theme_new = theme_bw()+theme(axis.title.y=element_blank(),
                                axis.text.y=element_blank(),
                                axis.ticks.y=element_blank(),
@@ -284,31 +310,35 @@ if(flag_overlap == 0){
     ggtitle("Time distribution of missing dates")
 }
 
+
 ```
 
 
-Statistics of missing dates:
+`r if(flag_overlap == 0){paste("There isn't any missing dates!")}``r if(flag_overlap == 1){paste("Statistics of missing dates:!")}`
+<!-- Statistics of missing dates: -->
 
 ```{r echo=FALSE}
-if(flag_overlap == 0){
-  Status_num_NA=df_missing
-  Status_num_NA = Status_num_NA[,-c(2,3)]
-  
-  differ = c(0,diff(Status_num_NA$Status_num))
-  start = which(differ == -1)
-  end  = which(differ == 1) - 1
-  gap_lenght = end - start + 1
-  
-  date_start = Status_num_NA$time[start]
-  date_end = Status_num_NA$time[end]
-  
-  statistic_missing = data.frame(date_start,date_end,gap_lenght)
-  colnames(statistic_missing) = c("From", "To", "Number of Record")
-  
-  # kable(statistic_missing, format = "markdown",align = "c")
-  kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-    kable_styling() %>%
-    scroll_box( height = "200px") 
+if(flag_missing_dates == 1){
+  if(flag_overlap == 0){
+    Status_num_NA=df_missing
+    Status_num_NA = Status_num_NA[,-c(2,3)]
+    
+    differ = c(0,diff(Status_num_NA$Status_num))
+    start = which(differ == -1)
+    end  = which(differ == 1) - 1
+    gap_lenght = end - start + 1
+    
+    date_start = Status_num_NA$time[start]
+    date_end = Status_num_NA$time[end]
+    
+    statistic_missing = data.frame(date_start,date_end,gap_lenght)
+    colnames(statistic_missing) = c("From", "To", "Number of Record")
+    
+    # kable(statistic_missing, format = "markdown",align = "c")
+    kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+      kable_styling() %>%
+      scroll_box( height = "200px") 
+  }
 }
 ```
 

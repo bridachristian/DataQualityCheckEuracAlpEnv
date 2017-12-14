@@ -77,38 +77,74 @@ files_available = dir(input_dir,pattern = ".dat")                  # <-- Admitte
 # ..........................................................................................................................................................
 
 # ..... download table section .....................................................................................................................................
-download_table_path = paste(project_dir,"Data/Support_files/Download_table/")
+
+download_table_path = paste(project_dir,"Data/Support_files/Download_table/",sep = "")
 download_table_file = paste(download_table_path,"download_table.csv",sep = "")
 
 if(!file.exists(download_table_file)){
-  first_download_table = data.frame(substring(files,1, nchar(files)-4), rep(NA, times = length(files)), rep(0,times = length(files)))
-  colnames(first_download_table) = c("Station", "Last_date", "Stop_DQC")
+  
+  first_download_table = data.frame(substring(files_available,1, nchar(files_available)-4), 
+                                    rep(NA, times = length(files_available)),
+                                    rep(0,times = length(files_available)),
+                                    as.character(file.mtime(paste(input_dir,files_available,sep = ""))))
+  colnames(first_download_table) = c("Station", "Last_date", "Stop_DQC", "Last_Modification")
+  
+  download_table = first_download_table
+  
   write.csv(first_download_table,download_table_file,quote = F,row.names = F)
   file.copy(from = download_table_file, to = paste(substring(download_table_file,1,nchar(download_table_file)-4),"_old.csv",sep = ""),overwrite = TRUE)
-
+  
 } else{
+  
   file.copy(from = download_table_file, to = paste(substring(download_table_file,1,nchar(download_table_file)-4),"_old.csv",sep = ""),overwrite = TRUE)
+  
   download_table = read.csv(download_table_file,stringsAsFactors = F)
-  station_to_process = substring(files,1, nchar(files)-4)
+  
+  station_to_process = substring(files_available,1, nchar(files_available)-4)
   station_already_register = download_table$Station
   station_to_add = setdiff(station_to_process,station_already_register)
-
-  df_to_add = data.frame(station_to_add, rep(NA, times = length(station_to_add)), rep(0,times = length(station_to_add)))
-  colnames(df_to_add) = c("Station", "Last_date", "Stop_DQC")
-
-  download_table = rbind(download_table, df_to_add )
+  
+  w = which(substring(files_available,1, nchar(files_available)-4) %in% station_to_add)
+  
+  # file.mtime(paste(input_dir,files_available[w],sep = ""))
+  
+  if(length(w) != 0){
+    
+    df_to_add = data.frame(station_to_add,
+                           rep(NA, times = length(station_to_add)),
+                           rep(0,times = length(station_to_add)),
+                           as.character(file.mtime(paste(input_dir,files_available[w],sep = ""))))
+    colnames(df_to_add) = c("Station", "Last_date", "Stop_DQC", "Last_Modification")
+    
+    download_table = rbind(download_table, df_to_add )
+    
+  }
 }
 
 start_date = download_table$Last_date
-# file_to_analyze = download_table$Station[download_table$Stop_DQC == 0]
-# setdiff(station_to_process,station_already_register)
+last_modification = download_table$Last_Modification
+# [,c(1,4)]
 
 
 # ..... files selection .....................................................................................................................................
 
-files = dir(scheduling_dir,pattern = ".dat")
+files_to_avoid = download_table$Station[download_table$Stop_DQC == 1]
 
+if(length(files_to_avoid) == 0){
+  files = files_available
+}else{
+  files = files_available[-which(substring(files_available,1, nchar(files_available)-4) %in% files_to_avoid)]
+  last_modification = last_modification [-which(substring(files_available,1, nchar(files_available)-4) %in% files_to_avoid)]
+}
+
+new_modification = as.character(file.mtime(paste(input_dir,files,sep = "")))
+
+last_modification == new_modification
+
+names(last_modification_new) = files
+last_modification_new = file.mtime(paste(input_dir,files_available,sep = ""))
 # ..........................................................................................................................................................
+write.csv(download_table,download_table_file,quote = F,row.names = F)
 
 # ..........................................................................................................................................................
 
@@ -156,7 +192,7 @@ for(i in 1: length(files)){
   
   file.rename(from = paste(output_dir_new,output_file,sep = "") ,to = paste(output_dir_new,new_output_file,sep = "") )
   write.csv(download_table,download_table_file,quote = F,row.names = F)
-
+  
 }
 
 #   rm(list=setdiff(ls(),c("scheduling_dir","report_dir","output_dir", "support_dir",

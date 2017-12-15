@@ -42,7 +42,6 @@ library(plyr)
 library(imputeTS)
 library(reshape2)
 library(kableExtra)
-library(pander)
 
 
 # .....................................................................................................................................................
@@ -86,7 +85,7 @@ write_output <- FALSE                                             # if write_out
 files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
 # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
 
-FILE <- "M1.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
+FILE <- "M3.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
 # cat("Selected files: \n", FILE)
 
 RANGE_FILE = "Range.csv"
@@ -101,7 +100,7 @@ DATETIME_FORMAT <- "yyyy-mm-dd HH:MM"                          # <-- datetime fo
 DATETIME_SAMPLING <- "15 min"
 
 RECORD_HEADER <- "RECORD"                                      # <-- header corresponding to RECORD
-start_date <- "2017-12-03 09:00:00"
+start_date <- NA
 # .....................................................................................................................................................
 
 # ..... Body ..........................................................................................................................................
@@ -283,43 +282,50 @@ if(flag_overlap == 0){
   df_missing = cbind(df_missing, y,Status_num)
   
   if(length(which(time_tot %in% time_missing )) == 0){
-    flag_missing_dates = 0
+    flag_missing_dates = 0      # No missing dates
   }else{
-    flag_missing_dates = 1
+    flag_missing_dates = 1      # YES missing dates
     
   }
 }
+
 ```
 
-#### **There are some missing dates?** `r if(flag_overlap == 0){paste("NO: all right!")}` `r if(flag_overlap == 1){paste("YES: there are missing dates!")}`
+#### **There are some missing dates?** `r if(flag_overlap == 0){if(flag_missing_dates == 0){paste("NO: all right!")}}` `r if(flag_overlap == 0){ if(flag_missing_dates == 1){paste("YES: there are missing dates!")}}`
+
+`r if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}`
 
 ```{r echo=FALSE, warning=FALSE}
-if(flag_missing_dates == 1){
-  theme_new = theme_bw()+theme(axis.title.y=element_blank(),
-                               axis.text.y=element_blank(),
-                               axis.ticks.y=element_blank(),
-                               axis.text.x = element_text(angle = 90, hjust = 1))
-  
-  
-  ggplot(df_missing,aes(x = time, y=y ,colour = Status)) +  
-    geom_point(aes(size = Status,shape = Status) )+
-    scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
-    scale_shape_manual(values = c(20,124))+
-    # scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
-    theme_new+
-    ggtitle("Time distribution of missing dates")
+if(flag_overlap == 0){
+  if(flag_missing_dates == 1){
+    theme_new = theme_bw()+theme(axis.title.y=element_blank(),
+                                 axis.text.y=element_blank(),
+                                 axis.ticks.y=element_blank(),
+                                 axis.text.x = element_text(angle = 90, hjust = 1))
+    
+    tot_missing =length(which(df_missing$Status_num == 0))
+    
+    ggplot(df_missing,aes(x = time, y=y ,colour = Status)) +  
+      geom_point(aes(size = Status,shape = Status) )+
+      scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
+      scale_shape_manual(values = c(20,124))+
+      # scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
+      theme_new+
+      # ggtitle("Time distribution of missing dates")+
+      labs(title="Time distribution of missing dates",
+           subtitle=paste("Total missing dates: ", tot_missing))
+  }
 }
-
 
 ```
 
 
-`r if(flag_overlap == 0){paste("There isn't any missing dates!")}``r if(flag_overlap == 1){paste("Statistics of missing dates:!")}`
-<!-- Statistics of missing dates: -->
+`r if(flag_overlap == 0){if(flag_missing_dates == 0){paste("There isn't any missing dates!")}}` `r if(flag_overlap == 0){if(flag_missing_dates == 1){paste("Statistics of missing dates:!")}}`
+
 
 ```{r echo=FALSE}
-if(flag_missing_dates == 1){
-  if(flag_overlap == 0){
+if(flag_overlap == 0){
+  if(flag_missing_dates == 1){
     Status_num_NA=df_missing
     Status_num_NA = Status_num_NA[,-c(2,3)]
     
@@ -331,8 +337,20 @@ if(flag_missing_dates == 1){
     date_start = Status_num_NA$time[start]
     date_end = Status_num_NA$time[end]
     
-    statistic_missing = data.frame(date_start,date_end,gap_lenght)
-    colnames(statistic_missing) = c("From", "To", "Number of Record")
+    if(length(date_end) != 0){
+      date_end_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
+      for(k in 1:length(date_end)){
+        
+        date_end_tmp[k] =  seq.POSIXt(date_end[k], by = DATETIME_SAMPLING, length. =  2)[2]
+      }
+      gap_hour = difftime(time1 = date_end_tmp,time2 = date_start,units = "hours")
+    }else{
+      gap_hour = numeric(0)
+    }
+    
+    
+    statistic_missing = data.frame(date_start,date_end,gap_lenght,gap_hour)
+    colnames(statistic_missing) = c("From", "To", "Number of Record", "Hours")
     
     # kable(statistic_missing, format = "markdown",align = "c")
     kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
@@ -340,11 +358,16 @@ if(flag_missing_dates == 1){
       scroll_box( height = "200px") 
   }
 }
+
 ```
 
-#### **Values out of admitted range**
+#### **Values out of admitted range** 
+
+`r if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}`
+
 
 ```{r echo=FALSE, warning=FALSE,results='asis'}
+
 if(flag_overlap == 0){
   for(j in 1:ncol(check_out_of_range)){
     if(colnames(check_out_of_range)[j] ==  DATETIME_HEADER){}else{
@@ -372,12 +395,15 @@ if(flag_overlap == 0){
       
       over_range = rep(0, times = nrow(df_oor))
       
+      how_many_over_range = length(which(df_oor$variable == 1))
+      
       if(length(which(df_oor$variable == 1)) != 0){
         over_range[which(df_oor$variable == 1)] = 1
       }
       
       under_range = rep(0, times = nrow(df_oor))
       
+      how_many_under_range = length(which(df_oor$variable == -1))
       if(length(which(df_oor$variable == -1)) != 0){
         under_range[which(df_oor$variable == -1)] = 1
       }
@@ -385,6 +411,7 @@ if(flag_overlap == 0){
       df_oor2 = data.frame(df_oor$time, under_range, over_range)
       
       diff_df = cbind(df_oor$time,as.data.frame(rbind(c(0,0),apply(df_oor2[,-1],2, diff))))
+      
       
       if(any(unique(df_oor[,2])!= 0)){
         
@@ -396,11 +423,6 @@ if(flag_overlap == 0){
                                       axis.text.x = element_text(angle = 90, hjust = 1),
                                       legend.title = element_blank())
         
-        # p2 = ggplot(melt_df_ggplot, aes(y=variable, x=time))+
-        #   geom_tile(aes(fill = value))+
-        #   scale_fill_manual(values = c("green", "red", "red"))
-        # 
-        # p2
         
         set_limits = data.frame(as.POSIXct(c(df_factor$time[1], df_factor$time[nrow(df_factor)%/%2], df_factor$time[nrow(df_factor)])), c(-1,0,1), c(0,0,0))
         colnames(set_limits) = colnames(df_factor)
@@ -416,10 +438,15 @@ if(flag_overlap == 0){
           scale_colour_manual(values = c("#0000FF","#7CAE00","#F8766D"),labels = c("Above upper limit", "In the range","Below lower limit"))+ 
           scale_shape_manual(values = c(124,20,124),labels =c("Above upper limit", "In the range","Below lower limit"))+
           scale_size_manual(values = c(10,1,10),labels = c("Above upper limit", "In the range","Below lower limit"))+
-          scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
+          # scale_x_datetime(name = DATETIME_HEADER,date_breaks = "2 weeks" )+
           theme_new2 +
-          ggtitle(colnames(check_out_of_range)[j])+
-          scale_y_continuous(limits = c(0.7,1.3))
+          # ggtitle(paste(colnames(check_out_of_range)[j],"\n",
+          #               "Total Above upper limit: ", how_many_over_range,"\n",
+          #               "Total Below lower limit: ", how_many_under_range, sep = "")) +
+          scale_y_continuous(limits = c(0.7,1.3))+
+          labs(title=paste(colnames(check_out_of_range)[j]),
+               subtitle=paste("Total Above upper limit: ", how_many_over_range,"\n",
+                              "Total Below lower limit: ", how_many_under_range, sep = ""))
         
         print(p1)
         
@@ -442,8 +469,24 @@ if(flag_overlap == 0){
         under_date_start_oor = df_oor[under_start_oor,1]
         under_date_end_oor = df_oor[under_end_oor,1]
         
-        under_statistic_oor = data.frame(rep("Under lower limit", times = length(under_date_start_oor)), under_date_start_oor,under_date_end_oor,under_gap_lenght_oor)
-        colnames(under_statistic_oor) = c(" ","From", "To", "Number of Record")
+        if(length(under_date_end_oor) != 0){
+          under_date_end_oor_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
+          for(k in 1:length(under_date_end_oor)){
+            
+            under_date_end_oor_tmp[k] =  seq.POSIXt(under_date_end_oor[k], by = DATETIME_SAMPLING, length. =  2)[2]
+          }
+          
+          under_gap_hour_oor = difftime(time1 = under_date_end_oor_tmp,time2 = under_date_start_oor,units = "hours")
+        }else{
+          under_gap_hour_oor = numeric(0)
+        }
+        
+        under_statistic_oor = data.frame(rep("Under lower limit", times = length(under_date_start_oor)),
+                                         under_date_start_oor,
+                                         under_date_end_oor,
+                                         under_gap_lenght_oor,
+                                         under_gap_hour_oor)
+        colnames(under_statistic_oor) = c(" ","From", "To", "Number of Record", "Hours")
         
         # over
         
@@ -464,9 +507,19 @@ if(flag_overlap == 0){
         over_date_start_oor = df_oor[over_start_oor,1]
         over_date_end_oor = df_oor[over_end_oor,1]
         
+        if(length(over_date_end_oor) != 0){
+          over_date_end_oor_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
+          for(k in 1:length(over_date_end_oor)){
+            
+            over_date_end_oor_tmp[k] =  seq.POSIXt(over_date_end_oor[k], by = DATETIME_SAMPLING, length. =  2)[2]
+          }
+          over_gap_hour_oor = difftime(time1 = over_date_end_oor_tmp,time2 = over_date_start_oor,units = "hours")
+        }else{
+          over_gap_hour_oor =  numeric(0)
+        }
         
-        over_statistic_oor = data.frame(rep("Above upper limit", times = length(over_date_start_oor)), over_date_start_oor,over_date_end_oor,over_gap_lenght_oor)
-        colnames(over_statistic_oor) = c(" ","From", "To", "Number of Record")
+        over_statistic_oor = data.frame(rep("Above upper limit", times = length(over_date_start_oor)), over_date_start_oor,over_date_end_oor,over_gap_lenght_oor, over_gap_hour_oor)
+        colnames(over_statistic_oor) = c(" ","From", "To", "Number of Record", "Hours")
         
         
         if(nrow(under_statistic_oor) == 0){
@@ -487,6 +540,8 @@ if(flag_overlap == 0){
                 kable_styling() %>%
                 scroll_box( height = "200px") ) 
         
+        
+        
       }
     }
   }
@@ -495,5 +550,6 @@ if(flag_overlap == 0){
 
 ```
 
-Report end at **`r Sys.time()`**
+
+*End Report - **`r Sys.time()`** *
 

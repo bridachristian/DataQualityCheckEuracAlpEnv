@@ -23,7 +23,7 @@ read_data = function(FILE_PATH, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , DATET
   data <- read.csv(paste(FILE_PATH, FILE_NAME,sep = ""), skip = DATA_FROM_ROW - 1,header = F,stringsAsFactors = F) 
   
   if(ncol(data) == ncol(header_colnames)){
-  
+    
     colnames(data) = header_colnames
     # data <- read.csv(paste(FILE_PATH, FILE_NAME,sep = ""), skip = 1,header = T,stringsAsFactors = F) 
     # data <- data[-c(1,2),]

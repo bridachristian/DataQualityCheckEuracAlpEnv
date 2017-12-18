@@ -243,10 +243,10 @@ if(flag_empty == 0){
   }
 }
 ```
-#### **There are duplicated rows?**  `r if(flag_empty == 0){if(flag_duplicates_rows == 0){paste("NO: all right!")}}` `r if(flag_empty == 0){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}` `r if(flag_empty == 1){paste("- - -")}` 
+#### **There are duplicated rows?**  `r if(flag_empty == 0){if(flag_overlap == 1){if(flag_duplicates_rows == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_overlap == 1){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}}` `r if(flag_empty == 1){paste("- - -")}` 
 
-`r if(flag_empty == 0){if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}}`
-`r if(flag_empty == 0){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""))}}`
+`r if(flag_empty == 0){if(flag_overlap == 1){if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}}}`
+`r if(flag_empty == 0){if(flag_overlap == 1){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""))}}}`
 
 
 #### **There are overlaps? ** `r if(flag_empty == 0){if(flag_overlap == 0){paste("NO: all right!")}}` `r if(flag_empty == 0){if(flag_overlap == 1){paste("YES: there are overlaps!")}}` `r if(flag_empty == 1){paste("- - -")}`
@@ -299,7 +299,7 @@ if(flag_empty == 0){
 
 ```
 
-#### **There are some missing dates?** `r if(flag_empty == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_overlap == 0){ if(flag_missing_dates == 1){paste("YES: there are missing dates!")}}}` `r if(flag_empty == 1){paste("- - -")}`
+#### **There are missing dates?** `r if(flag_empty == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_overlap == 0){ if(flag_missing_dates == 1){paste("YES: there are missing dates!")}}}` `r if(flag_empty == 1){paste("- - -")}`
 
 `r if(flag_empty == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}`
 
@@ -375,7 +375,7 @@ if(flag_empty == 0){
 
 #### **Which values are out of physical range?** 
 
- `r if(flag_empty == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}` `r if(flag_empty == 0){paste("Warning: File empty!")}` `r if(flag_empty == 1){paste("- - -")}`
+`r if(flag_empty == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}` `r if(flag_empty == 1){paste("- - -")}`
 
 
 ```{r echo=FALSE, warning=FALSE,results='asis'}

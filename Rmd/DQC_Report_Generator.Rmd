@@ -85,7 +85,7 @@ write_output <- FALSE                                             # if write_out
 files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
 # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
 
-FILE <- "M3.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
+FILE <- "M0.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
 # cat("Selected files: \n", FILE)
 
 RANGE_FILE = "Range.csv"
@@ -227,39 +227,35 @@ You decide:  *`r if(write_output == TRUE){paste("to write output file in output 
 
 ### OUTPUT: 
 
-#### **The file is empty?**  `r if(flag_empty == 1){paste("YES: check it!")}` `r if(flag_empty == 0){paste("NO: all right!")}`
+#### **The file is empty?** `r if(flag_empty == 0){paste("NO: all right!")}` `r if(flag_empty == 1){paste("YES: check it!")}` 
 
-`r if(flag_empty == 1){paste("Error:",FILE,"is empty")}`
 `r if(flag_empty == 0){paste("Ok:",FILE,"is not empty")}`
+`r if(flag_empty == 1){paste("Error:",FILE,"is empty")}`
 
 #### **There are data without header in data file?**  `r if(flag_empty == 0){if(flag_error_df == 0){paste("NO: all right!")}}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("YES: there are some data without header!")}}` `r if(flag_empty == 1){paste("- - -")}` 
 
 
 `r if(flag_empty == 0){if(flag_error_df == 0){paste("There isn't any problems")}}` 
-`r if(flag_empty == 0){if(flag_error_df == 1){paste("Possible problems:")}}`
-`r if(flag_empty == 0){if(flag_error_df == 1){paste("1. row shifted above. 2. new data with old headers. 3. other file manipulation errors.")}}` 
-
-
+`r if(flag_empty == 0){if(flag_error_df == 1){paste("Possible problems: 1. row shifted above. 2. new data with old headers. 3. other file manipulation errors")}}`
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
+
 if(flag_empty == 0){
   if(flag_error_df == 0){
-    if(flag_overlap == 1){
-      x = as.character(duplicated_data[1,])
-      if(unique(x) == "---"){
-        flag_duplicates_rows = 0
-      } else{
-        flag_duplicates_rows = 1
-        
-      }
+    x = as.character(duplicated_data[1,])
+    if(unique(x) == "---"){
+      flag_duplicates_rows = 0
+    } else{
+      flag_duplicates_rows = 1
     }
   }
 }
-```
-#### **There are duplicated rows?**  `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){if(flag_duplicates_rows == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("- - -")}}` 
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}}}}`
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""))}}}}`
+```
+#### **There are duplicated rows?** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("- - -")}}` `r if(flag_empty == 1){paste("- - -")}` 
+
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}}}`
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""))}}}`
 
 
 #### **There are overlaps? ** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){paste("YES: there are overlaps!")}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("- - -")}}` 
@@ -422,7 +418,7 @@ if(flag_empty == 0){
           
           c_oor = colnames(check_out_of_range)[j]
           
-          df_oor = check_out_of_range[,c(which(colnames(check_out_of_range)==DATETIME_HEADER), j)]
+          df_oor = df_tmp
           colnames(df_oor)= c("time", "variable")
           
           over_range = rep(0, times = nrow(df_oor))
@@ -442,8 +438,15 @@ if(flag_empty == 0){
           
           df_oor2 = data.frame(df_oor$time, under_range, over_range)
           
-          diff_df = cbind(df_oor$time,as.data.frame(rbind(c(0,0),apply(df_oor2[,-1],2, diff))))
+          df_oor3 = rbind(df_oor2[1,],df_oor2,df_oor2[nrow(df_oor2),])
           
+          
+          df_oor3[1,2] = 0 ; df_oor3[1,3] = 0
+          df_oor3[nrow(df_oor3),2] = 0 ; df_oor3[nrow(df_oor3),3] = 0
+          
+          a=as.data.frame(rbind(c(0,0),apply(df_oor3[,-1],2, diff)))
+          time_a =c(df_oor$time[1],df_oor$time,df_oor$time[nrow(df_oor)])
+          diff_df = cbind(time_a,a)
           
           if(any(unique(df_oor[,2])!= 0)){
             
@@ -484,8 +487,8 @@ if(flag_empty == 0){
             
             # ~~~~~~ preparation data for statistic table ~~~~~~ 
             
-            under_start_oor = which(diff_df$under_range == 1)
-            under_end_oor  = which(diff_df$under_range == -1) - 1
+            under_start_oor = which(diff_df$under_range == 1) - 1
+            under_end_oor  = which(diff_df$under_range == -1) - 2
             
             
             if(length(under_start_oor) != 0 & length(under_end_oor) != 0){
@@ -522,8 +525,8 @@ if(flag_empty == 0){
             
             # over
             
-            over_start_oor = which(diff_df$over_range == 1)
-            over_end_oor  = which(diff_df$over_range == -1) - 1
+            over_start_oor = which(diff_df$over_range == 1) - 1
+            over_end_oor  = which(diff_df$over_range == -1) - 2
             
             
             if(length(over_start_oor) != 0 & length(over_end_oor) != 0){

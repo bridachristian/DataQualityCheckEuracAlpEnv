@@ -5,7 +5,7 @@ Air_T_Avg,-50,100
 Air_T_Std,,
 AirTemp_Avg,-50,100
 AirTemp_Std,,
-Albedo_Avg,-1,2
+Albedo_Avg,0,1
 Albedo_Std,,
 ATT_C_Avg,-50,100
 ATT_C_Std,,
@@ -747,4 +747,3 @@ WPrecip_T_HeatRim_Avg,-50,100
 WPrecip_T_HeatRim_Std,,
 WSpeed_Avg,-5,100
 WSpeed_Std,,
-pippo,to set,to set

@@ -111,7 +111,7 @@ read_data = function(FILE_PATH, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , DATET
       for(i in not_w){
         data[,i] <- as.numeric(data[,i])
       }
-      flag_error_df = 0
+      flag_error_df = -1
       
     } else {
       if(ncol(data) > ncol(header_colnames)){

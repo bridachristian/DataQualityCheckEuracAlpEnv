@@ -55,7 +55,7 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
   }
   
   if(length(to_add) != 0){
-    df_to_add = data.frame(to_add, rep("to set", times=length(to_add)),rep("to set", times=length(to_add)))
+    df_to_add = data.frame(to_add, rep(-1000000, times=length(to_add)),rep(1000000, times=length(to_add)))
     colnames(df_to_add) = colnames(range)
     
     range = rbind(range,df_to_add)

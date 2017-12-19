@@ -14,18 +14,18 @@
 #'
 
 exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR, RANGE_FILE){
-
+  
   range = read.csv(paste(SUPPORT_DIR, RANGE_FILE,sep = ""),stringsAsFactors = FALSE)          # <- import table that contains for each variable the permissible range
   range[,which(colnames(range) == "min")] = as.numeric(range[,which(colnames(range) == "min")])
   range[,which(colnames(range) == "max")] = as.numeric(range[,which(colnames(range) == "max")])
-
+  
   range = range[order(range$Variable),] # reorder range file based on variable
   
   new = DATA # define new dataframe called new that is a copy of DATA
-
+  
   new_status = new # create a dataframe with the same structure that DATA. Inside there is only 0. When data are out of range 0 is subsitute wiht -1 or 1
   new_status[,-which(colnames(new_status) == DATETIME_HEADER )] = 0
-
+  
   # This loop checks if variables in result are in the range list.
   # It could be a good index to see if there are issues in headers
   to_add = c()
@@ -33,22 +33,22 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
   for(k in 1:ncol(new)){
     if(colnames(new)[k] %in% range$Variable){
       w = which(range$Variable == colnames(new)[k])
-
+      
       range$Variable[w]
       lower_limit = range$min[w]
       upper_limit = range$max[w]
-
+      
       if(!is.na(lower_limit) & !is.na(upper_limit)){          # Exclude data without a range set
-
+        
         new_status[,k] = ifelse(new[,k] < lower_limit, -1, new_status[,k])
         new_status[,k] = ifelse(new[,k] > upper_limit, 1, new_status[,k])
-
+        
         new_status[is.na(new_status[,k]),k] = 0
-
+        
         new[,k] = ifelse(new[,k] < lower_limit, NA, new[,k])
         new[,k] = ifelse(new[,k] > upper_limit, NA, new[,k])
       }
-
+      
     }else{
       to_add = c(to_add, colnames(new)[k])
     }
@@ -59,14 +59,14 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
     colnames(df_to_add) = colnames(range)
     
     range = rbind(range,df_to_add)
-    
-    range[,2] = as.character(range[,2])
-    range[,3] = as.character(range[,3])
   }
+  
+  range[,2] = as.character(range[,2])
+  range[,3] = as.character(range[,3])
   write.csv(range,paste(SUPPORT_DIR, RANGE_FILE,sep = ""),quote = F,row.names = F, na = "")
   
   out = list(new, new_status, to_add)
-
+  
   return(out)
 }
 

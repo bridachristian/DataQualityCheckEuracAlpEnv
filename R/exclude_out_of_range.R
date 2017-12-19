@@ -16,6 +16,13 @@
 exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR, RANGE_FILE){
   options(scipen = 999)
   range = read.csv(paste(SUPPORT_DIR, RANGE_FILE,sep = ""),stringsAsFactors = FALSE)          # <- import table that contains for each variable the permissible range
+  
+  to_set = range[which(range$min == "to set" | range$max == "to set"),]
+  
+  if(nrow(to_set) != 0){
+  range = range[-which(range$Variable == to_set$Variable),]
+  }
+  
   range[,which(colnames(range) == "min")] = as.numeric(range[,which(colnames(range) == "min")])
   range[,which(colnames(range) == "max")] = as.numeric(range[,which(colnames(range) == "max")])
   
@@ -55,7 +62,7 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
   }
   
   if(length(to_add) != 0){
-    df_to_add = data.frame(to_add, rep(-1000000, times=length(to_add)),rep(1000000, times=length(to_add)))
+    df_to_add = data.frame(to_add, rep("to set", times=length(to_add)),rep("to set", times=length(to_add)))
     colnames(df_to_add) = colnames(range)
     
     range = rbind(range,df_to_add)

@@ -390,15 +390,44 @@ if(flag_empty == 0){
 
 ```
 
-#### **Which values are out of physical range?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 
+
+
+#### **Do you need updates to the range file?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(length(variable_not_in_range_file) == 0){paste("No, the range file is up to date!")}else{paste("YES, update limits of the following variables")}}}}`
+
+```{r echo=FALSE, warning=FALSE,results='asis'}
+if(flag_empty == 0){
+  if(flag_error_df == 0){
+    if(flag_overlap == 0){
+      if(length(variable_not_in_range_file) != 0){
+        for(i in 1:length(variable_not_in_range_file)){
+          t1 = paste("Header: ","*",variable_not_in_range_file,"*","is now in range file.","Set limits in",RANGE_FILE)
+        }
+        flag_range_to_update = 1
+      }else{
+        t1 = paste("Any new variable in range file:",RANGE_FILE)
+        flag_range_to_update = 0
+      }
+    }
+  }
+  
+}
+```
+
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){paste(t1)}}}`
+
+#### **Which values are out of physical range?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("- - -")}}}}`
+
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("Before continuing, set range limits for previous variables!")}}}}`
 
 `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}` 
+
 
 
 ```{r echo=FALSE, warning=FALSE,results='asis'}
 if(flag_empty == 0){
   if(flag_error_df == 0){
     if(flag_overlap == 0){
+      if(flag_range_to_update == 0){
       for(j in 1:ncol(check_out_of_range)){
         if(colnames(check_out_of_range)[j] ==  DATETIME_HEADER){}else{
           
@@ -584,6 +613,7 @@ if(flag_empty == 0){
       }
       
     }
+  }
   }
 }
 

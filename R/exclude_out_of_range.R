@@ -14,7 +14,7 @@
 #'
 
 exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR, RANGE_FILE){
-  
+  options(scipen = 999)
   range = read.csv(paste(SUPPORT_DIR, RANGE_FILE,sep = ""),stringsAsFactors = FALSE)          # <- import table that contains for each variable the permissible range
   range[,which(colnames(range) == "min")] = as.numeric(range[,which(colnames(range) == "min")])
   range[,which(colnames(range) == "max")] = as.numeric(range[,which(colnames(range) == "max")])
@@ -61,12 +61,16 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
     range = rbind(range,df_to_add)
   }
   
-  # range[,2] = as.character(range[,2])
-  # range[,3] = as.character(range[,3])
+
+  # range[,2] = format(range[,2],scientific = FALSE)
+  # range[,3] = format(range[,3],scientific = FALSE)
   
-  range[,2] = format(range[,2],scientific = FALSE)
-  range[,3] = format(range[,3],scientific = FALSE)
-  write.csv(range,paste(SUPPORT_DIR, RANGE_FILE,sep = ""),quote = F,row.names = F, na = " ")
+  range$min = as.character(range$min)
+  range$max = as.character(range$max)
+  # range$min = format(range$min,scientific = FALSE)
+  
+  
+  write.csv(range,paste(SUPPORT_DIR, RANGE_FILE,sep = ""),quote = F,row.names = F, na = "")
   
   out = list(new, new_status, to_add)
   

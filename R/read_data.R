@@ -112,14 +112,14 @@ read_data = function(FILE_PATH, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , DATET
         data[,i] <- as.numeric(data[,i])
       }
       flag_error_df = 0
-    } 
-  }else{
-    if(ncol(data) > ncol(header_colnames)){
-      flag_error_df = 1
+      
+    } else {
+      if(ncol(data) > ncol(header_colnames)){
+        flag_error_df = 1
+      }
     }
   }
-}
-
-return(list(header,header_colnames,data,flag_error_df))
-
+  
+  return(list(header,header_colnames,data,flag_error_df))
+  
 }

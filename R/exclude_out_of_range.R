@@ -54,12 +54,17 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
     }
   }
   
-  df_to_add = data.frame(to_add, rep(-Inf, times=length(to_add)),rep(Inf, times=length(to_add)))
-  colnames(df_to_add) = colnames(range)
+  if(length(to_add) != 0){
+    df_to_add = data.frame(to_add, rep("to set", times=length(to_add)),rep("to set", times=length(to_add)))
+    colnames(df_to_add) = colnames(range)
+    
+    range = rbind(range,df_to_add)
+    
+    range[,2] = as.character(range[,2])
+    range[,3] = as.character(range[,3])
+    write.csv(range,paste(SUPPORT_DIR, RANGE_FILE,sep = ""),quote = F,row.names = F, na = "")
+  }
   
-  range = rbind(range,df_to_add)
-  write.csv(range,paste(SUPPORT_DIR, RANGE_FILE,sep = ""),quote = F,row.names = F)
-
   out = list(new, new_status, to_add)
 
   return(out)

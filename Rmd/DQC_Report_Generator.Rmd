@@ -128,7 +128,7 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
       original <- data
       mydata <- data
     }else{
-      original <- data[which(time_data == as.POSIXct(start_date)):nrow(data),]
+      original <- data[which(time_data == as.POSIXct(start_date)):nrow(data),]      # possible issues in data subset!!! to check 
       mydata <- data[which(time_data == as.POSIXct(start_date)):nrow(data),]
     }
     
@@ -253,13 +253,13 @@ if(flag_empty == 0){
 }
 
 ```
-#### **There are duplicated rows?** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("- - -")}}` `r if(flag_empty == 1){paste("- - -")}` 
+#### **There are duplicated rows?** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 1){paste("- - -")}` 
 
 `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}}}`
 `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir,"Duplicated_",substring(FILE,1,nchar(FILE)-4),".csv",sep = ""))}}}`
 
 
-#### **There are overlaps? ** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){paste("YES: there are overlaps!")}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("- - -")}}` 
+#### **There are overlaps? ** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){paste("YES: there are overlaps!")}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 
 
 
 `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){paste("There are the following ovelap:")}else{paste("There isn't any overlap!")}}}`
@@ -311,7 +311,7 @@ if(flag_empty == 0){
 }
 ```
 
-#### **There are missing dates?** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){ if(flag_missing_dates == 1){paste("YES: there are missing dates!")}}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("- - -")}}` 
+#### **There are missing dates?** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){ if(flag_missing_dates == 1){paste("YES: there are missing dates!")}}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 
 
 `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}`
 
@@ -389,7 +389,7 @@ if(flag_empty == 0){
 
 ```
 
-#### **Which values are out of physical range?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("- - -")}}` 
+#### **Which values are out of physical range?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 
 
 `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}` 
 

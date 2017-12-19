@@ -19,6 +19,8 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
   range[,which(colnames(range) == "min")] = as.numeric(range[,which(colnames(range) == "min")])
   range[,which(colnames(range) == "max")] = as.numeric(range[,which(colnames(range) == "max")])
 
+  range = range[order(range$Variable),] # reorder range file based on variable
+  
   new = DATA # define new dataframe called new that is a copy of DATA
 
   new_status = new # create a dataframe with the same structure that DATA. Inside there is only 0. When data are out of range 0 is subsitute wiht -1 or 1
@@ -27,6 +29,7 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
   # This loop checks if variables in result are in the range list.
   # It could be a good index to see if there are issues in headers
   to_add = c()
+  
   for(k in 1:ncol(new)){
     if(colnames(new)[k] %in% range$Variable){
       w = which(range$Variable == colnames(new)[k])
@@ -50,6 +53,12 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
       to_add = c(to_add, colnames(new)[k])
     }
   }
+  
+  df_to_add = data.frame(to_add, rep(-Inf, times=length(to_add)),rep(Inf, times=length(to_add)))
+  colnames(df_to_add) = colnames(range)
+  
+  range = rbind(range,df_to_add)
+  write.csv(range,paste(SUPPORT_DIR, RANGE_FILE,sep = ""),quote = F,row.names = F)
 
   out = list(new, new_status, to_add)
 

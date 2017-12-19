@@ -232,11 +232,12 @@ You decide:  *`r if(write_output == TRUE){paste("to write output file in output 
 `r if(flag_empty == 0){paste("Ok:",FILE,"is not empty")}`
 `r if(flag_empty == 1){paste("Error:",FILE,"is empty")}`
 
-#### **There are data without header in data file?**  `r if(flag_empty == 0){if(flag_error_df == 0){paste("NO: all right!")}}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("YES: there are some data without header!")}}` `r if(flag_empty == 1){paste("- - -")}` 
+#### **There are problems in data file structure?**  `r if(flag_empty == 0){if(flag_error_df == 0){paste("NO: all right!")}}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("YES: there are some data without header!")}}` `r if(flag_empty == 0){if(flag_error_df == -1){paste("YES, there are more header than data!")}}` `r if(flag_empty == 1){paste("- - -")}` 
 
 
 `r if(flag_empty == 0){if(flag_error_df == 0){paste("There isn't any problems")}}` 
 `r if(flag_empty == 0){if(flag_error_df == 1){paste("Possible problems: 1. row shifted above. 2. new data with old headers. 3. other file manipulation errors")}}`
+`r if(flag_empty == 0){if(flag_error_df == -1){paste("Check input file! Why there is more headers than data?")}}`
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
 

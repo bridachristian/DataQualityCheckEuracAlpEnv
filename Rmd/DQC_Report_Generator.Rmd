@@ -228,7 +228,7 @@ You decide:  *`r if(write_output == TRUE){paste("to write output file in output 
 
 ### OUTPUT: 
 
-#### **The file is empty?** `r if(flag_empty == 0){paste("NO: all right!")}` `r if(flag_empty == 1){paste("YES: check it!")}` 
+#### **Is the file empty?** `r if(flag_empty == 0){paste("NO: all right!")}` `r if(flag_empty == 1){paste("YES: check it!")}` 
 
 `r if(flag_empty == 0){paste("Ok:",FILE,"is not empty")}`
 `r if(flag_empty == 1){paste("Error:",FILE,"is empty")}`

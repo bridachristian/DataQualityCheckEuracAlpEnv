@@ -157,7 +157,7 @@ if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
       range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = DATETIME_HEADER, SUPPORT_DIR = support_dir, RANGE_FILE = RANGE_FILE) # <- Substitute with NA data out of phisical range
       mydata <- range[[1]]
       check_out_of_range <- range[[2]]
-      variable_not_in_range <-range[[3]]
+      variable_not_in_range_file <-range[[3]]
       
       mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT)
       

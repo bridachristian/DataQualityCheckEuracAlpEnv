@@ -62,8 +62,8 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
     
     range[,2] = as.character(range[,2])
     range[,3] = as.character(range[,3])
-    write.csv(range,paste(SUPPORT_DIR, RANGE_FILE,sep = ""),quote = F,row.names = F, na = "")
   }
+  write.csv(range,paste(SUPPORT_DIR, RANGE_FILE,sep = ""),quote = F,row.names = F, na = "")
   
   out = list(new, new_status, to_add)
 

@@ -161,7 +161,8 @@ if(nrow(d) > 0){
 
 i=1
 input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
-output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output files and reports
+output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output files and reports
+output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output files and reports
 project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 DATA_FROM_ROW =  5                                             # <-- Row number of first data
 HEADER_ROW_NUMBER =  2                                         # <-- Row number of header
@@ -177,8 +178,8 @@ write_output_reports =  "TRUE"
 # substitute files with files_updated 
 
 report_Rmd_file = paste(project_dir,"Rmd/DQC_Report_Generator.Rmd",sep = "")
-report_Output_folder = output_dir
-data_Output_folder =  output_dir
+output_dir_report = output_dir
+output_dir_data =  output_dir_data
 
 support_dir = paste(project_dir, "Data/Support_files/")
 

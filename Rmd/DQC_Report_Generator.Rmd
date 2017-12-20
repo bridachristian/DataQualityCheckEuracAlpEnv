@@ -3,20 +3,21 @@ title: "Data Quality Check Report"
 author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
 params:
-    file:
-    scheduling_dir:
-    report_dir:
-    output_dir:
-    support_dir:
-    write_output:
-    RANGE_FILE:
-    data_from_row:                                             # <-- Row number of first data
-    header_row_number:                                         # <-- Row number of header
-    datetime_header:                                # <-- header corresponding to TIMESTAMP
-    datetime_format:                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-    datetime_sampling:
-    record_header:                                    # <-- header corresponding to RECORD
-    start_date:                                # <-- starting date to process file
+    input_dir:             # dir:  Directory where to put input files.
+    output_dir_data:       # dir:  Directory where to save output files 
+    output_dir_report:     # dir:  Directory where to save output report
+    project_dir:           # dir:  Directory of DataQualityCheckEuracAlpEnv package. Inside there are R script, Rmarkdown document and support files. 
+    data_from_row:         # num:  The row number of the first data row. (How many rows are dedicated to headers? + 1)
+    header_row_number:     # num:  The row number of the header names
+    datetime_header:       # chr:  The string to use to recognize datetime
+    datetime_format:       # chr:  The string to use to recognize datetime. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+    datetime_sampling:     # chr:  The string that define the time sampling (in POSIXct format)                     
+    record_header:         # chr:  The string to use to recognize record header                     
+    range_file:            # chr:  The string that indicate the name of range file saved in folder "project_dir/Data/Support_files/Range"
+    write_output_files:    # log:  Logical status (TRUE/FALSE) to decide if save output data or not                          
+    write_output_report:   # log:  Logical status (TRUE/FALSE) to decide if save output report or not                          
+    file:                  # chr:  The string that indicate the name of file to process        
+    start_date:            # date: First date to consider for the analysis. Date before are not considered
 ---
 
 Report start at **`r Sys.time()`**
@@ -48,81 +49,45 @@ library(kableExtra)
 
 # ..... Input section .................................................................................................................................
 
-scheduling_dir <- params$scheduling_dir                  # <-- schelduling directory: for files to be processed
-report_dir <-  params$report_dir                    # <-- report directory: where to put reports and files whith overlaps
-output_dir <- params$output_dir                  # <-- output directory: where processed files go
-support_dir <- params$support_dir       # <-- support directory: where to read support files
+# ~~~ Params ~~~~
 
-write_output <- params$write_output                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
-
-file <- params$file                                      # <-- Write here the file or the list of file  that you want to analyze!
-
-range_file = params$range_file
-
-data_from_row <- params$data_from_row                                                # <-- Row number of first data
-header_row_number <- params$header_row_number                                          # <-- Row number of header
-datetime_header <- params$datetime_header                               # <-- header corresponding to TIMESTAMP
-datetime_format <- params$datetime_format                           # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+input_dir <- params$input_dir
+output_dir_data <- params$output_dir_data
+output_dir_report <- params$output_dir_report
+project_dir <- params$project_dir
+data_from_row <- params$data_from_row
+header_row_number <- params$header_row_number
+datetime_header <- params$datetime_header
+datetime_format <- params$datetime_format
 datetime_sampling <- params$datetime_sampling
-record_header <- params$record_header                                   # <-- header corresponding to RECORD
-
-start_date <- params$start_date                                 # <-- starting date to process file
-
-
-input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
-output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output files and reports
-project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-data_from_row =  5                                             # <-- Row number of first data
-header_row_number =  2                                         # <-- Row number of header
-datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-datetime_format =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-datetime_sampling =  "15 min"
-record_header =  "RECORD"
-RANGE_FILE =  "Range.csv"
-write_output_files =  "TRUE"
-write_output_reports =  "TRUE"
-
-file <- "M3.dat"  
-start_date <- NA
+record_header <- params$record_header
+range_file <- params$range_file
+write_output_files <- params$write_output_files
+write_output_report <- params$write_output_report
+file <- params$file
+start_date <- params$start_date
+  
+# # ~~~ Debug inputs ~~~~
+# 
+# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
+# output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output files 
+# output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output reports
+# project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+# data_from_row =  5                                             # <-- Row number of first data
+# header_row_number =  2                                         # <-- Row number of header
+# datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
+# datetime_format =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+# datetime_sampling =  "15 min"
+# record_header =  "RECORD"
+# range_file =  "Range.csv"
+# write_output_files =  "TRUE"
+# write_output_reports =  "TRUE"
+# file <- "M3.dat"  
+# start_date <- NA
 
 # ~~~ Default directory ~~~~
 
 range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
-
-
-# # ~~~ Folders ~~~~
-# 
-# scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                   # <-- schelduling directory: for files to be processed
-# 
-# # setwd(scheduling_dir)
-# 
-# report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Rmd/"                    # <-- report directory: where to put reports and files whith overlaps
-# output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
-# support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
-# 
-# write_output <- FALSE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
-# 
-# # ~~~ Files ~~~~
-# 
-# files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
-# # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
-# 
-# FILE <- "M3.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
-# # cat("Selected files: \n", FILE)
-# 
-# RANGE_FILE = "Range.csv"
-# 
-# # ~~~ Datetime ~~~~
-# data_from_row <- 5                                             # <-- Row number of first data
-# 
-# header_row_number <- 2                                         # <-- Row number of header
-# 
-# datetime_header <- "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-# datetime_format <- "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-# datetime_sampling <- "15 min"
-# 
-# record_header <- "RECORD"                                      # <-- header corresponding to RECORD
-# start_date <- NA
 
 # .....................................................................................................................................................
 
@@ -177,7 +142,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       mydata <- missing[[1]]
       missing_index_date <- missing[[2]]
       
-      range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = RANGE_FILE) # <- Substitute with NA data out of phisical range
+      range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
       mydata <- range[[1]]
       check_out_of_range <- range[[2]]
       variable_not_in_range_file <-range[[3]]
@@ -238,12 +203,12 @@ You have also select these parameters:
 
 The folders are: 
 
-+ Data folder: *`r scheduling_dir`*
++ Data folder: *`r input_dir`*
 + Report folder: *`r report_dir`*
 + Output folder: *`r output_dir`*
 + Support folder: *`r support_dir`*
 
-Range file in support folder is called: *`r RANGE_FILE`* 
+Range file in support folder is called: *`r range_file`* 
 
 You decide:  *`r if(write_output == TRUE){paste("to write output file in output folder")} else{paste(("to don't write output file in output folder"))} `* 
 
@@ -422,11 +387,11 @@ if(flag_empty == 0){
     if(flag_overlap == 0){
       if(length(variable_not_in_range_file) != 0){
         for(i in 1:length(variable_not_in_range_file)){
-          t1 = paste("Header: ","*",variable_not_in_range_file,"*","is now in range file.","Set limits in",RANGE_FILE)
+          t1 = paste("Header: ","*",variable_not_in_range_file,"*","is now in range file.","Set limits in",range_file)
         }
         flag_range_to_update = 1
       }else{
-        t1 = paste("Any new variable in range file:",RANGE_FILE)
+        t1 = paste("Any new variable in range file:",range_file)
         flag_range_to_update = 0
       }
     }

@@ -235,7 +235,7 @@ start_date = start_date_to_process[1]
                                   file = file,
                                   start_date = start_date))
   
-  
+  if(flag_date == 0){
   out_filename = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                        substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
                        substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
@@ -252,6 +252,9 @@ start_date = start_date_to_process[1]
   
   download_table$Last_date[i] = as.character(last_date)
   write.csv(download_table,download_table_file,quote = F,row.names = F)
+  } else {
+    warning("File already process!")
+  }
   
 # }
 

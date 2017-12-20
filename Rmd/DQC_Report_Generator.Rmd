@@ -171,33 +171,40 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
 
 # ..... Output ..........................................................................................................................................
 
-if(write_output_files == TRUE){
-  
-  #~~~~~~~~~~
-  colnames(header) = header[1,]
-  
-  out_my = mydata
-  colnames(out_my) = colnames(header)
-  
-  out_mydata=rbind(header[-1,],out_my)
-  
-  out_filename = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
-                       substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
-                       substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
-                       # "_",
-                       substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
-                       substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
-                       sep = "")
-  
-  
-  
-  write.csv(out_mydata,paste(output_dir_data,"DQCok_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F)
-  
-  #~~~~~~~~~~
-  colnames(duplicated_data) = colnames(header)
-  
-  out_duplicated_data=rbind(header[-1,],duplicated_data)
-  write.csv(out_duplicated_data,paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F)
+if(flag_empty == 0){
+  if(flag_error_df == 0){
+    if(flag_date == 0){
+      if(flag_overlap == 0){
+        if(write_output_files == TRUE){
+          #~~~~~~~~~~
+          colnames(header) = header[1,]
+          
+          out_my = mydata
+          colnames(out_my) = colnames(header)
+          
+          out_mydata=rbind(header[-1,],out_my)
+          
+          out_filename = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
+                               substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
+                               substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
+                               # "_",
+                               substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+                               substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+                               sep = "")
+          
+          
+          
+          write.csv(out_mydata,paste(output_dir_data,"DQCok_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F)
+          
+          #~~~~~~~~~~
+          colnames(duplicated_data) = colnames(header)
+          
+          out_duplicated_data=rbind(header[-1,],duplicated_data)
+          write.csv(out_duplicated_data,paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F)
+        }
+      }
+    }
+  }
 }
 
 ```
@@ -232,7 +239,7 @@ And: *`r if(write_output_report == TRUE){paste("to write output report here:", o
 
 ### OUTPUT: 
 
-#### **Is the file empty?** `r if(flag_empty == 0){paste("NO: all right!")}` `r if(flag_empty == 1){paste("YES: check it!")}` 
+#### **Is the file empty?** `r if(flag_empty == 0){paste("NO: all right!")}` `r if(flag_empty == 1){paste("YES: check it!")}`
 
 `r if(flag_empty == 0){paste("Ok:",file,"is not empty")}`
 `r if(flag_empty == 1){paste("Error:",file,"is empty")}`
@@ -250,37 +257,42 @@ And: *`r if(write_output_report == TRUE){paste("to write output report here:", o
 
 if(flag_empty == 0){
   if(flag_error_df == 0){
-    x = as.character(duplicated_data[1,])
-    if(unique(x) == "---"){
-      flag_duplicates_rows = 0
-    } else{
-      flag_duplicates_rows = 1
+    if(flag_date == 0){
+      x = as.character(duplicated_data[1,])
+      if(unique(x) == "---"){
+        flag_duplicates_rows = 0
+      } else{
+        flag_duplicates_rows = 1
+      }
     }
   }
 }
 
 ```
-#### **There are duplicated rows?** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 1){paste("- - -")}` 
+#### **There are duplicated rows?** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}}}` 
+`r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 1){paste("- - -")}` 
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}}}`
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}}`
-
-
-#### **There are overlaps? ** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){paste("YES: there are overlaps!")}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}}}}`
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}}}`
 
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){paste("There are the following ovelap:")}else{paste("There isn't any overlap!")}}}`
+#### **There are overlaps? ** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("YES: there are overlaps!")}}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 
+
+
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("There are the following ovelap:")}else{paste("There isn't any overlap!")}}}}`
 
 
 ```{r echo=FALSE}
 if(flag_empty == 0){
   if(flag_error_df == 0){
-    if(flag_overlap == 1){
-      # kable(overlap, format = "markdown",align = "c")
-      kable(overlap, format = "html",align = "c",row.names = F)%>%
-        kable_styling() %>%
-        scroll_box( height = "200px") 
-      
+    if(flag_date == 0){
+      if(flag_overlap == 1){
+        # kable(overlap, format = "markdown",align = "c")
+        kable(overlap, format = "html",align = "c",row.names = F)%>%
+          kable_styling() %>%
+          scroll_box( height = "200px") 
+        
+      }
     }
   }
 }
@@ -291,6 +303,7 @@ if(flag_empty == 0){
 ```{r echo=FALSE, warning=FALSE}
 if(flag_empty == 0){
   if(flag_error_df == 0){
+    if(flag_date == 0){
     if(flag_overlap == 0){
       w = which(colnames(mydata) == datetime_header)
       time_tot <- mydata[,w]
@@ -315,16 +328,18 @@ if(flag_empty == 0){
       }
     }
   }
+  }
 }
 ```
 
-#### **There are missing dates?** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){ if(flag_missing_dates == 1){paste("YES: there are missing dates!")}}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 
+#### **There are missing dates?** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("NO: all right!")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){ if(flag_missing_dates == 1){paste("YES: there are missing dates!")}}}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}`
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}}`
 
 ```{r echo=FALSE, warning=FALSE}
 if(flag_empty == 0){
   if(flag_error_df == 0){
+    if(flag_date == 0){
     if(flag_overlap == 0){
       if(flag_missing_dates == 1){
         theme_new = theme_bw()+theme(axis.title.y=element_blank(),
@@ -347,16 +362,17 @@ if(flag_empty == 0){
     }
   }
 }
-
+}
 ```
 
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("There isn't any missing dates!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(flag_missing_dates == 1){paste("Statistics of missing dates:!")}}}}`
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("There isn't any missing dates!")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 1){paste("Statistics of missing dates:!")}}}}}`
 
 
 ```{r echo=FALSE}
 if(flag_empty == 0){
   if(flag_error_df == 0){
+    if(flag_date == 0){
     if(flag_overlap == 0){
       if(flag_missing_dates == 1){
         Status_num_NA=df_missing
@@ -393,16 +409,17 @@ if(flag_empty == 0){
     }
   }
 }
-
+}
 ```
 
 
 
-#### **Do you need to update the range file?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(length(variable_not_in_range_file) == 0){paste("No, the range file is up to date!")}else{paste("YES, update limits of the following variables")}}}}`
+#### **Do you need to update the range file?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(length(variable_not_in_range_file) == 0){paste("No, the range file is up to date!")}else{paste("YES, update limits of the following variables")}}}}}`
 
 ```{r echo=FALSE, warning=FALSE,results='asis'}
 if(flag_empty == 0){
   if(flag_error_df == 0){
+    if(flag_date == 0){
     if(flag_overlap == 0){
       if(length(variable_not_in_range_file) != 0){
         for(i in 1:length(variable_not_in_range_file)){
@@ -415,23 +432,24 @@ if(flag_empty == 0){
       }
     }
   }
-  
+  } 
 }
 ```
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){paste(t1)}}}`
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){paste(t1)}}}}`
 
-#### **Which values are out of physical range?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("- - -")}}}}`
+#### **Which values are out of physical range?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){paste("- - -")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("- - -")}}}}}`
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("Before continuing, set range limits for previous variables!")}}}}`
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("Before continuing, set range limits for previous variables!")}}}}}`
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}` 
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}}` 
 
 
 
 ```{r echo=FALSE, warning=FALSE,results='asis'}
 if(flag_empty == 0){
   if(flag_error_df == 0){
+    if(flag_date == 0){
     if(flag_overlap == 0){
       if(flag_range_to_update == 0){
         for(j in 1:ncol(check_out_of_range)){
@@ -620,6 +638,7 @@ if(flag_empty == 0){
         
       }
     }
+  }
   }
 }
 

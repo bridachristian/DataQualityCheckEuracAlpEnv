@@ -2,22 +2,22 @@
 title: "Data Quality Check Report"
 author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
-params:
-    input_dir:             # dir:  Directory where to put input files.
-    output_dir_data:       # dir:  Directory where to save output files 
-    output_dir_report:     # dir:  Directory where to save output report
-    project_dir:           # dir:  Directory of DataQualityCheckEuracAlpEnv package. Inside there are R script, Rmarkdown document and support files. 
-    data_from_row:         # num:  The row number of the first data row. (How many rows are dedicated to headers? + 1)
-    header_row_number:     # num:  The row number of the header names
-    datetime_header:       # chr:  The string to use to recognize datetime
-    datetime_format:       # chr:  The string to use to recognize datetime. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-    datetime_sampling:     # chr:  The string that define the time sampling (in POSIXct format)                     
-    record_header:         # chr:  The string to use to recognize record header                     
-    range_file:            # chr:  The string that indicate the name of range file saved in folder "project_dir/Data/Support_files/Range"
-    write_output_files:    # log:  Logical status (TRUE/FALSE) to decide if save output data or not                          
-    write_output_report:   # log:  Logical status (TRUE/FALSE) to decide if save output report or not                          
-    file:                  # chr:  The string that indicate the name of file to process        
-    start_date:            # date: First date to consider for the analysis. Date before are not considered
+# params:
+#     input_dir:             # dir:  Directory where to put input files.
+#     output_dir_data:       # dir:  Directory where to save output files 
+#     output_dir_report:     # dir:  Directory where to save output report
+#     project_dir:           # dir:  Directory of DataQualityCheckEuracAlpEnv package. Inside there are R script, Rmarkdown document and support files. 
+#     data_from_row:         # num:  The row number of the first data row. (How many rows are dedicated to headers? + 1)
+#     header_row_number:     # num:  The row number of the header names
+#     datetime_header:       # chr:  The string to use to recognize datetime
+#     datetime_format:       # chr:  The string to use to recognize datetime. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+#     datetime_sampling:     # chr:  The string that define the time sampling (in POSIXct format)                     
+#     record_header:         # chr:  The string to use to recognize record header                     
+#     range_file:            # chr:  The string that indicate the name of range file saved in folder "project_dir/Data/Support_files/Range"
+#     write_output_files:    # log:  Logical status (TRUE/FALSE) to decide if save output data or not                          
+#     write_output_report:   # log:  Logical status (TRUE/FALSE) to decide if save output report or not                          
+#     file:                  # chr:  The string that indicate the name of file to process        
+#     start_date:            # date: First date to consider for the analysis. Date before are not considered
 ---
 
 Report start at **`r Sys.time()`**
@@ -49,41 +49,41 @@ library(kableExtra)
 
 # ..... Input section .................................................................................................................................
 
-# ~~~ Params ~~~~
-
-input_dir <- params$input_dir
-output_dir_data <- params$output_dir_data
-output_dir_report <- params$output_dir_report
-project_dir <- params$project_dir
-data_from_row <- params$data_from_row
-header_row_number <- params$header_row_number
-datetime_header <- params$datetime_header
-datetime_format <- params$datetime_format
-datetime_sampling <- params$datetime_sampling
-record_header <- params$record_header
-range_file <- params$range_file
-write_output_files <- params$write_output_files
-write_output_report <- params$write_output_report
-file <- params$file
-start_date <- params$start_date
-  
-# # ~~~ Debug inputs ~~~~
+# # ~~~ Params ~~~~
 # 
-# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
-# output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output files 
-# output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output reports
-# project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-# data_from_row =  5                                             # <-- Row number of first data
-# header_row_number =  2                                         # <-- Row number of header
-# datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-# datetime_format =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-# datetime_sampling =  "15 min"
-# record_header =  "RECORD"
-# range_file =  "Range.csv"
-# write_output_files =  "TRUE"
-# write_output_reports =  "TRUE"
-# file <- "M3.dat"  
-# start_date <- NA
+# input_dir <- params$input_dir
+# output_dir_data <- params$output_dir_data
+# output_dir_report <- params$output_dir_report
+# project_dir <- params$project_dir
+# data_from_row <- params$data_from_row
+# header_row_number <- params$header_row_number
+# datetime_header <- params$datetime_header
+# datetime_format <- params$datetime_format
+# datetime_sampling <- params$datetime_sampling
+# record_header <- params$record_header
+# range_file <- params$range_file
+# write_output_files <- params$write_output_files
+# write_output_report <- params$write_output_report
+# file <- params$file
+# start_date <- params$start_date
+  
+# ~~~ Debug inputs ~~~~
+
+input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
+output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Data/"   # where to put output files
+output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Report/"   # where to put output reports
+project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+data_from_row =  5                                             # <-- Row number of first data
+header_row_number =  2                                         # <-- Row number of header
+datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
+datetime_format =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+datetime_sampling =  "15 min"
+record_header =  "RECORD"
+range_file =  "Range.csv"
+write_output_files =  "TRUE"
+write_output_reports =  "TRUE"
+file <- "M3.dat"
+start_date <- NA
 
 # ~~~ Default directory ~~~~
 
@@ -176,13 +176,13 @@ if(write_output_files == TRUE){
   
   
   
-  write.csv(out_mydata,paste(output_dir,"DQCok_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F)
+  write.csv(out_mydata,paste(output_dir_data,"DQCok_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F)
   
   #~~~~~~~~~~
   colnames(duplicated_data) = colnames(header)
   
   out_duplicated_data=rbind(header[-1,],duplicated_data)
-  write.csv(out_duplicated_data,paste(output_dir,"Duplicated_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F)
+  write.csv(out_duplicated_data,paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F)
 }
 
 ```
@@ -203,15 +203,16 @@ You have also select these parameters:
 
 The folders are: 
 
-+ Data folder: *`r input_dir`*
-+ Report folder: *`r report_dir`*
-+ Output folder: *`r output_dir`*
-+ Support folder: *`r support_dir`*
++ Input data folder: *`r input_dir`*
++ Output data folder: *`r output_dir_data`*
++ Output report folder: *`r output_dir_report`*
++ Project folder: *`r project_dir`*
 
-Range file in support folder is called: *`r range_file`* 
 
-You decide:  *`r if(write_output == TRUE){paste("to write output file in output folder")} else{paste(("to don't write output file in output folder"))} `* 
+Range file in *`r range_dir`* is called: *`r range_file`* 
 
+You decide:  *`r if(write_output_files == TRUE){paste("to write output file here:", output_dir_data)} else{paste(("to don't write output file"))}`* 
+And: *`r if(write_output_reports == TRUE){paste("to write output report here:", output_dir_report)} else{paste(("to don't write output report"))}`* 
 
 ### OUTPUT: 
 
@@ -244,7 +245,7 @@ if(flag_empty == 0){
 #### **There are duplicated rows?** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 1){paste("- - -")}` 
 
 `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}}}`
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}}`
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}}`
 
 
 #### **There are overlaps? ** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){paste("NO: all right!")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 1){paste("YES: there are overlaps!")}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 

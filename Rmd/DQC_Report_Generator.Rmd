@@ -49,8 +49,8 @@ Report start at **`r Sys.time()`**
 
 # ..... Input section .................................................................................................................................
 
-# # ~~~ Params ~~~~
-# 
+# ~~~ Params ~~~~
+
 input_dir <- params$input_dir
 output_dir_data <- params$output_dir_data
 output_dir_report <- params$output_dir_report
@@ -68,7 +68,7 @@ file <- params$file
 start_date <- params$start_date
   
 # ~~~ Debug inputs ~~~~
-
+# 
 # input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
 # output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Data/"   # where to put output files
 # output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Report/"   # where to put output reports
@@ -80,10 +80,10 @@ start_date <- params$start_date
 # datetime_sampling =  "15 min"
 # record_header =  "RECORD"
 # range_file =  "Range.csv"
-# write_output_files =  "TRUE"
-# write_output_reports =  "TRUE"
+# write_output_files =  "FALSE"
+# write_output_report =  "FALSE"
 # file <- "M3.dat"
-# start_date <- NA
+# start_date <- "2017-11-23 05:45:00"
 
 # ~~~ Default directory ~~~~
 
@@ -113,42 +113,57 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
     time_data = data[,which(colnames(data)==datetime_header)]
     
     if(is.na(start_date)){
+      
       original <- data
-      mydata <- data
+      mydata <- data    
+      flag_date = 0
+      
     }else{
-      original <- data[which(time_data == as.POSIXct(start_date)):nrow(data),]      # possible issues in data subset!!! to check 
-      mydata <- data[which(time_data == as.POSIXct(start_date)):nrow(data),]
+      
+      if(as.POSIXct(start_date) < time_data[length(time_data)]){
+        original <- data[(which(time_data == as.POSIXct(start_date))+1):nrow(data),]      # possible issues in data subset!!! to check 
+        mydata <- data[(which(time_data == as.POSIXct(start_date))+1):nrow(data),]
+        
+        flag_date = 0
+        
+      } else {
+        
+      flag_date = 1
+      }
     }
     
-    deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = datetime_header)         # <- Deletes identical rows if found
-    mydata <- deletes_duplcated [[1]]                                                                                                        
-    duplicated_data <- deletes_duplcated [[2]]
-    duplicated_data <- time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
     
-    overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
-    
-    if(length(overlap) != 0){
+    if(flag_date == 0){
+      deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = datetime_header)         # <- Deletes identical rows if found
+      mydata <- deletes_duplcated [[1]]                                                                                                        
+      duplicated_data <- deletes_duplcated [[2]]
+      duplicated_data <- time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
       
-      flag_overlap = 1
-      # stop(paste("Overlapping data in files:", FILE))
-      overlap[,1]<- overlap[,1] + data_from_row - 1
-      colnames(overlap)[1]= "File Row"
+      overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
       
-    }else{
-      
-      flag_overlap = 0
-      
-      missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header,DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
-      mydata <- missing[[1]]
-      missing_index_date <- missing[[2]]
-      
-      range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
-      mydata <- range[[1]]
-      check_out_of_range <- range[[2]]
-      variable_not_in_range_file <-range[[3]]
-      
-      mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
-      
+      if(length(overlap) != 0){
+        
+        flag_overlap = 1
+        # stop(paste("Overlapping data in files:", FILE))
+        overlap[,1]<- overlap[,1] + data_from_row - 1
+        colnames(overlap)[1]= "File Row"
+        
+      }else{
+        
+        flag_overlap = 0
+        
+        missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header,DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
+        mydata <- missing[[1]]
+        missing_index_date <- missing[[2]]
+        
+        range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
+        mydata <- range[[1]]
+        check_out_of_range <- range[[2]]
+        variable_not_in_range_file <-range[[3]]
+        
+        mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+        
+      }
     }
   }
 }
@@ -212,7 +227,8 @@ The folders are:
 Range file in *`r range_dir`* is called: *`r range_file`* 
 
 You decide:  *`r if(write_output_files == TRUE){paste("to write output file here:", output_dir_data)} else{paste(("to don't write output file"))}`* 
-And: *`r if(write_output_reports == TRUE){paste("to write output report here:", output_dir_report)} else{paste(("to don't write output report"))}`* 
+
+And: *`r if(write_output_report == TRUE){paste("to write output report here:", output_dir_report)} else{paste(("to don't write output report"))}`* 
 
 ### OUTPUT: 
 
@@ -227,6 +243,8 @@ And: *`r if(write_output_reports == TRUE){paste("to write output report here:", 
 `r if(flag_empty == 0){if(flag_error_df == 0){paste("There isn't any problems")}}` 
 `r if(flag_empty == 0){if(flag_error_df == 1){paste("Possible problems: 1. row shifted above. 2. new data with old headers. 3. other file manipulation errors")}}`
 `r if(flag_empty == 0){if(flag_error_df == -1){paste("Check input file! Why there is more headers than data?")}}`
+
+#### **The file is already process?**  `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){paste("NO: all right!")}}}``r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 1){paste("YES: File already process!")}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
 

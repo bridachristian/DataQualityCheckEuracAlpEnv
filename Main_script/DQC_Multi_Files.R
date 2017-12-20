@@ -47,22 +47,19 @@ record_header =  "RECORD"
 range_file =  "Range.csv"
 
 write_output_files =  "TRUE"
-write_output_reports =  "TRUE"
+write_output_report =  "TRUE"
 
 
-file <- "M3.dat"
-start_date <- NA
+# file <- "M3.dat"
+# start_date <- NA
+
+# ~~~ Default directory ~~~~
+
+range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
+download_table_dir <- paste(project_dir, "Data/Support_files/Download_table/",sep = "")
+Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
+
 # ..........................................................................................................................................................
-
-
-# # scheduling_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"
-# scheduling_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"
-# report_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Report/"
-# # output_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"
-# output_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"
-# support_dir =  "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"
-# write_output =  "TRUE"
-
 
 # ..... files selection .....................................................................................................................................
 
@@ -72,10 +69,9 @@ files_available = dir(input_dir,pattern = ".dat")                  # <-- Admitte
 
 # ..... download table section .....................................................................................................................................
 
-download_table_path = paste(project_dir,"Data/Support_files/Download_table/",sep = "")
-download_table_file = paste(download_table_path,"download_table.csv",sep = "")
+download_table_file = paste(download_table_dir,"download_table.csv",sep = "") 
 
-if(!file.exists(download_table_file)){
+if(!file.exists(download_table_file)){              # <- define or extact info from download table
   
   first_download_table = data.frame(substring(files_available,1, nchar(files_available)-4), 
                                     rep(NA, times = length(files_available)),
@@ -117,27 +113,30 @@ if(!file.exists(download_table_file)){
 
 start_date = download_table$Last_date
 last_modification = download_table$Last_Modification
-# [,c(1,4)]
 
+start_date_available = start_date[which(download_table$Station %in% substring(files_available, 1, nchar(files_available)-4))]
 
-# ..... files selection .....................................................................................................................................
+# ..... files selection on flag Stop_DQC .....................................................................................................................................
 
-files_to_avoid = download_table$Station[download_table$Stop_DQC == 1]
+files_to_avoid = download_table$Station[download_table$Stop_DQC == 1]  # exclude the file with flag Stop_DQC == 1 (flag to set manually)
 
 if(length(files_to_avoid) == 0){
   files = files_available
+  start = start_date_available
 }else{
   files = files_available[-which(substring(files_available,1, nchar(files_available)-4) %in% files_to_avoid)]
-  
+  start = start_date_available[-which(substring(files_available,1, nchar(files_available)-4) %in% files_to_avoid)]
   # which(download_table$Station %in% substring(files, 1, nchar(files)-4))
 }
 
 last_modification = last_modification[which(download_table$Station %in% substring(files, 1, nchar(files)-4))]
 new_modification = as.character(file.mtime(paste(input_dir,files,sep = ""))) 
 
-
+# ..... files selection on file update .....................................................................................................................................
 
 files_updated = files[last_modification != new_modification]
+start_updated = start[last_modification != new_modification]
+
 d = data.frame(files_updated,new_modification[last_modification != new_modification])
 colnames(d) = c("file", "new_modification")
 if(nrow(d) > 0){
@@ -153,81 +152,150 @@ if(nrow(d) > 0){
 
 # ..........................................................................................................................................................
 
-i=1
-input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
-output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output files and reports
-output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output files and reports
-project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-DATA_FROM_ROW =  5                                             # <-- Row number of first data
-HEADER_ROW_NUMBER =  2                                         # <-- Row number of header
-DATETIME_HEADER =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-DATETIME_FORMAT =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-DATETIME_SAMPLING =  "15 min"
-RECORD_HEADER =  "RECORD"
-RANGE_FILE =  "Range.csv"
-write_output_files =  "TRUE"
-write_output_reports =  "TRUE"
 
 # ..... rmarkdown render section .....................................................................................................................................
 # substitute files with files_updated 
 
-report_Rmd_file = paste(project_dir,"Rmd/DQC_Report_Generator.Rmd",sep = "")
-output_dir_report = output_dir
-output_dir_data =  output_dir_data
 
-support_dir = paste(project_dir, "Data/Support_files/")
+# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
+# output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Data/"   # where to put output files
+# output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Report/"   # where to put output reports
+# project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+# data_from_row =  5                                             # <-- Row number of first data
+# header_row_number =  2                                         # <-- Row number of header
+# datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
+# datetime_format =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+# datetime_sampling =  "15 min"
+# record_header =  "RECORD"
+# range_file =  "Range.csv"
+# write_output_files =  "TRUE"
+# write_output_reports =  "TRUE"
+# file <- "M3.dat"
+# start_date <- NA
 
-for(i in 1: length(files)){
+file_to_process = files
+start_date_to_process  = start
+
+i=1
+
+# test dqc function !!!!!!
+input_dir = input_dir 
+output_dir_data = output_dir_data
+output_dir_report = output_dir_report
+project_dir = project_dir
+data_from_row = data_from_row
+header_row_number = header_row_number
+datetime_header = datetime_header
+datetime_format = datetime_format
+datetime_sampling = datetime_sampling
+record_header = record_header
+range_file = range_file
+write_output_files = write_output_files
+write_output_report = write_output_report
+
+file = file_to_process[1]
+start_date = start_date_to_process[1]
+
+
+# dqc_funct = function(input_dir, 
+#                      output_dir_data, 
+#                      output_dir_report, 
+#                      project_dir,
+#                      data_from_row,
+#                      header_row_number,
+#                      datetime_header,
+#                      datetime_format,
+#                      datetime_sampling, 
+#                      record_header,
+#                      range_file,
+#                      write_output_files,
+#                      write_output_report ,
+#                      file,
+#                      start_date){
   
-  output_file = paste("DQC_Report_",substring(files[i],1,nchar(files[1])-4),".html",sep = "")
-  output_dir_new = paste(output_dir,"Output_report/",sep = "")
+  output_file_report = paste("DQC_Report_",substring(files[i],1,nchar(files[1])-4),"_tmp.html",sep = "")
   
-  rmarkdown::render(input = report_Rmd_file ,
-                    output_file = output_file,
-                    output_dir = report_Output_folder,
-                    params = list(file = files[i],
-                                  scheduling_dir = input_dir,
-                                  report_dir = report_Output_folder,
-                                  output_dir = data_Output_folder ,
-                                  support_dir = support_dir,
-                                  write_output = write_output_files,
-                                  RANGE_FILE = RANGE_FILE,
-                                  DATA_FROM_ROW = DATA_FROM_ROW,
-                                  HEADER_ROW_NUMBER = HEADER_ROW_NUMBER,
-                                  DATETIME_HEADER = DATETIME_HEADER,
-                                  DATETIME_FORMAT = DATETIME_FORMAT,
-                                  DATETIME_SAMPLING = DATETIME_SAMPLING,
-                                  RECORD_HEADER = RECORD_HEADER,
-                                  start_date = start_date[i]))
   
-  last_date = mydata[nrow(mydata),which(colnames(mydata)== DATETIME_HEADER)]
-  download_table$Last_date[i] = last_date
+  rmarkdown::render(input = Rmd_report_generator ,
+                    output_file = output_file_report,
+                    output_dir = output_dir_report,
+                    params = list(input_dir = input_dir , 
+                                  output_dir_data = output_dir_data, 
+                                  output_dir_report = output_dir_report, 
+                                  project_dir = project_dir,
+                                  data_from_row = data_from_row,
+                                  header_row_number = header_row_number,
+                                  datetime_header = datetime_header,
+                                  datetime_format = datetime_format,
+                                  datetime_sampling = datetime_sampling , 
+                                  record_header = record_header,
+                                  range_file = range_file,
+                                  write_output_files = write_output_files,
+                                  write_output_report = file,
+                                  file = file,
+                                  start_date = start_date))
   
-  new_output_file = paste("DQC_Report_",substring(files[i],1,nchar(files[1])-4),"_",
-                          substring(last_date,1,4),
-                          substring(last_date,6,7),
-                          substring(last_date,9,10),
-                          substring(last_date,12,13),
-                          substring(last_date,15,16),".html",sep = "")
-  # if(!dir.exists(paste(output_dir,substring(files[i],1,nchar(files[1])-4),sep = ""))){
-  #   dir.create(paste(output_dir,substring(files[i],1,nchar(files[1])-4),sep = ""))
-  #   
-  # }
   
-  file.rename(from = paste(output_dir_new,output_file,sep = "") ,to = paste(output_dir_new,new_output_file,sep = "") )
+  out_filename = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
+                       substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
+                       substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
+                       # "_",
+                       substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+                       substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+                       sep = "")
+  
+  output_file_report = file.rename(from = paste(output_dir_report,output_file_report,sep = ""),
+                                   to = paste(output_dir_report,"DQC_Report_",substring(files[i],1,nchar(files[1])-4),"_",out_filename,".html",sep = ""))
+  
+  
+  last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
+  
+  download_table$Last_date[i] = as.character(last_date)
   write.csv(download_table,download_table_file,quote = F,row.names = F)
   
-}
-
-#   rm(list=setdiff(ls(),c("scheduling_dir","report_dir","output_dir", "support_dir",
-#                          "write_output","RANGE_FILE","DATA_FROM_ROW", "HEADER_ROW_NUMBER",
-#                          "DATETIME_HEADER","DATETIME_FORMAT","DATETIME_SAMPLING", "RECORD_HEADER",
-#                          "files", "i")))
+# }
 
 
-# i=1
-# rmarkdown::render(input = paste(report_dir,"DQC_Manual_Multi_Files.Rmd",sep = ""),
-#                   output_file = paste("DQC_Report_",substring(files[i],1,nchar(files[1])-4),".html",sep = ""),
-#                   output_dir = paste(report_dir,"/Output_report/",sep = ""),
-#                   params = "ask")
-#
+# for(i in 1: length(file_to_process)){
+# 
+# output_file_report = paste("DQC_Report_",substring(files[i],1,nchar(files[1])-4),"_tmp.html",sep = "")
+# 
+# 
+# rmarkdown::render(input = Rmd_report_generator ,
+#                   output_file = output_file_report,
+#                   output_dir = output_dir_report,
+#                   params = list(input_dir = input_dir ,
+#                                 output_dir_data = output_dir_data,
+#                                 output_dir_report = output_dir_report,
+#                                 project_dir = project_dir,
+#                                 data_from_row = data_from_row,
+#                                 header_row_number = header_row_number,
+#                                 datetime_header = datetime_header,
+#                                 datetime_format = datetime_format,
+#                                 datetime_sampling = datetime_sampling,
+#                                 record_header = record_header,
+#                                 range_file = range_file,
+#                                 write_output_files = write_output_files,
+#                                 write_output_report = write_output_report,
+#                                 file = file_to_process[i],
+#                                 start_date = start_date_to_process[i] ))
+# 
+# 
+# out_filename = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
+#                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
+#                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
+#                      # "_",
+#                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+#                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+#                      sep = "")
+# 
+# output_file_report = file.rename(from = paste(output_dir_report,output_file_report,sep = ""),
+#                                  to = paste(output_dir_report,"DQC_Report_",substring(files[i],1,nchar(files[1])-4),"_",out_filename,".html",sep = ""))
+# 
+# 
+# last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
+# 
+# download_table$Last_date[i] = as.character(last_date)
+# write.csv(download_table,download_table_file,quote = F,row.names = F)
+# 
+# }

@@ -30,34 +30,28 @@ library(kableExtra)
 
 # ..... Params section .....................................................................................................................................
 
-# ~~~ Path ~~~
-
-# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"  # where input files are
 input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
-
-# output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"  # where to put output files and reports
-output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output files and reports
-
+# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
+output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Data/"   # where to put output files
+# output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
+output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Report/"   # where to put output reports
+# output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
 project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
-# ~~~ Data file structure ~~~
-
-DATA_FROM_ROW =  5                                             # <-- Row number of first data
-HEADER_ROW_NUMBER =  2                                         # <-- Row number of header
-DATETIME_HEADER =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-DATETIME_FORMAT =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-DATETIME_SAMPLING =  "15 min"
-RECORD_HEADER =  "RECORD"
-
-# ~~~ Support files  ~~~
-
-RANGE_FILE =  "Range.csv"
-
-# ~~~ Output results  ~~~
+data_from_row =  5                                             # <-- Row number of first data
+header_row_number =  2                                         # <-- Row number of header
+datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
+datetime_format =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+datetime_sampling =  "15 min"
+record_header =  "RECORD"
+range_file =  "Range.csv"
 
 write_output_files =  "TRUE"
 write_output_reports =  "TRUE"
 
+
+file <- "M3.dat"
+start_date <- NA
 # ..........................................................................................................................................................
 
 

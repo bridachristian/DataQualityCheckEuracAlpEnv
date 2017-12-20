@@ -2,21 +2,21 @@
 title: "Data Quality Check Report"
 author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
-# params:
-#     file: 
-#     scheduling_dir: 
-#     report_dir: 
-#     output_dir:  
-#     support_dir:     
-#     write_output:
-#     RANGE_FILE: 
-#     DATA_FROM_ROW:                                             # <-- Row number of first data
-#     HEADER_ROW_NUMBER:                                         # <-- Row number of header
-#     DATETIME_HEADER:                                # <-- header corresponding to TIMESTAMP
-#     DATETIME_FORMAT:                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-#     DATETIME_SAMPLING: 
-#     RECORD_HEADER:                                    # <-- header corresponding to RECORD
-#     start_date:                                # <-- starting date to process file
+params:
+    file:
+    scheduling_dir:
+    report_dir:
+    output_dir:
+    support_dir:
+    write_output:
+    RANGE_FILE:
+    DATA_FROM_ROW:                                             # <-- Row number of first data
+    HEADER_ROW_NUMBER:                                         # <-- Row number of header
+    DATETIME_HEADER:                                # <-- header corresponding to TIMESTAMP
+    DATETIME_FORMAT:                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+    DATETIME_SAMPLING:
+    RECORD_HEADER:                                    # <-- header corresponding to RECORD
+    start_date:                                # <-- starting date to process file
 ---
 
 Report start at **`r Sys.time()`**
@@ -48,73 +48,88 @@ library(kableExtra)
 
 # ..... Input section .................................................................................................................................
 
-# scheduling_dir <- params$scheduling_dir                  # <-- schelduling directory: for files to be processed
-# report_dir <-  params$report_dir                    # <-- report directory: where to put reports and files whith overlaps
-# output_dir <- params$output_dir                  # <-- output directory: where processed files go
-# support_dir <- params$support_dir       # <-- support directory: where to read support files
+scheduling_dir <- params$scheduling_dir                  # <-- schelduling directory: for files to be processed
+report_dir <-  params$report_dir                    # <-- report directory: where to put reports and files whith overlaps
+output_dir <- params$output_dir                  # <-- output directory: where processed files go
+support_dir <- params$support_dir       # <-- support directory: where to read support files
+
+write_output <- params$write_output                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
+
+FILE <- params$file                                      # <-- Write here the file or the list of file  that you want to analyze!
+
+RANGE_FILE = params$RANGE_FILE
+
+DATA_FROM_ROW <- params$DATA_FROM_ROW                                                # <-- Row number of first data
+HEADER_ROW_NUMBER <- params$HEADER_ROW_NUMBER                                          # <-- Row number of header
+DATETIME_HEADER <- params$DATETIME_HEADER                               # <-- header corresponding to TIMESTAMP
+DATETIME_FORMAT <- params$DATETIME_FORMAT                           # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+DATETIME_SAMPLING <- params$DATETIME_SAMPLING
+RECORD_HEADER <- params$RECORD_HEADER                                   # <-- header corresponding to RECORD
+
+start_date <- params$start_date                                 # <-- starting date to process file
+
+
+input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
+output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output files and reports
+project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+DATA_FROM_ROW =  5                                             # <-- Row number of first data
+HEADER_ROW_NUMBER =  2                                         # <-- Row number of header
+DATETIME_HEADER =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
+DATETIME_FORMAT =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+DATETIME_SAMPLING =  "15 min"
+RECORD_HEADER =  "RECORD"
+RANGE_FILE =  "Range.csv"
+write_output_files =  "TRUE"
+write_output_reports =  "TRUE"
+
+
+# # ~~~ Folders ~~~~
 # 
-# write_output <- params$write_output                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
+# scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                   # <-- schelduling directory: for files to be processed
 # 
-# FILE <- params$file                                      # <-- Write here the file or the list of file  that you want to analyze!
+# # setwd(scheduling_dir)
 # 
-# RANGE_FILE = params$RANGE_FILE
+# report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Rmd/"                    # <-- report directory: where to put reports and files whith overlaps
+# output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
+# support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
 # 
-# DATA_FROM_ROW <- params$DATA_FROM_ROW                                                # <-- Row number of first data
-# HEADER_ROW_NUMBER <- params$HEADER_ROW_NUMBER                                          # <-- Row number of header
-# DATETIME_HEADER <- params$DATETIME_HEADER                               # <-- header corresponding to TIMESTAMP
-# DATETIME_FORMAT <- params$DATETIME_FORMAT                           # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-# DATETIME_SAMPLING <- params$DATETIME_SAMPLING
-# RECORD_HEADER <- params$RECORD_HEADER                                   # <-- header corresponding to RECORD
+# write_output <- FALSE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
 # 
-# start_date <- params$start_date                                 # <-- starting date to process file
-
-# ~~~ Folders ~~~~
-
-scheduling_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                   # <-- schelduling directory: for files to be processed
-
-# setwd(scheduling_dir)
-
-report_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Rmd/"                    # <-- report directory: where to put reports and files whith overlaps
-output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/"               # <-- output directory: where processed files go
-support_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Support_files/"       # <-- support directory: where to read support files
-
-write_output <- FALSE                                             # if write_output == TRUE => write csv is admitted, if == FALSE not!
-
-# ~~~ Files ~~~~
-
-files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
-# cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
-
-FILE <- "M3.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
-# cat("Selected files: \n", FILE)
-
-RANGE_FILE = "Range.csv"
-
-# ~~~ Datetime ~~~~
-DATA_FROM_ROW <- 5                                             # <-- Row number of first data
-
-HEADER_ROW_NUMBER <- 2                                         # <-- Row number of header
-
-DATETIME_HEADER <- "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-DATETIME_FORMAT <- "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
-DATETIME_SAMPLING <- "15 min"
-
-RECORD_HEADER <- "RECORD"                                      # <-- header corresponding to RECORD
-start_date <- NA
+# # ~~~ Files ~~~~
+# 
+# files <- files_in_scheduling_dir(SCHEDULING_DIR = scheduling_dir)
+# # cat("Which of this files you want analyze? \n ",files)         # <-- Here we show files available for data quality check
+# 
+# FILE <- "M3.dat"                                      # <-- Write here the file or the list of file  that you want to analyze!
+# # cat("Selected files: \n", FILE)
+# 
+# RANGE_FILE = "Range.csv"
+# 
+# # ~~~ Datetime ~~~~
+# DATA_FROM_ROW <- 5                                             # <-- Row number of first data
+# 
+# HEADER_ROW_NUMBER <- 2                                         # <-- Row number of header
+# 
+# DATETIME_HEADER <- "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
+# DATETIME_FORMAT <- "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+# DATETIME_SAMPLING <- "15 min"
+# 
+# RECORD_HEADER <- "RECORD"                                      # <-- header corresponding to RECORD
+# start_date <- NA
 
 # .....................................................................................................................................................
 
 # ..... Body ..........................................................................................................................................
 
 
-if(check_empty_file(SCHEDULING_DIR = scheduling_dir, FILE = FILE) == TRUE){
+if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE = FILE) == TRUE){
   # writeLines(paste(FILE,"WARNING: NO DATA FOUND!!!",sep = " "))
   flag_empty = 1
 }else{
   
   flag_empty = 0
   
-  data_import <- read_data(FILE_PATH = scheduling_dir, FILE_NAME = FILE, 
+  data_import <- read_data(INPUT_DATA_DIR = input_dir, FILE_NAME = FILE, 
                            DATETIME_HEADER = DATETIME_HEADER, DATETIME_FORMAT = DATETIME_FORMAT,
                            DATA_FROM_ROW = DATA_FROM_ROW, HEADER_ROW_NUMBER = HEADER_ROW_NUMBER)  
   header <- data_import [[1]]
@@ -392,7 +407,7 @@ if(flag_empty == 0){
 
 
 
-#### **Do you need updates to the range file?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(length(variable_not_in_range_file) == 0){paste("No, the range file is up to date!")}else{paste("YES, update limits of the following variables")}}}}`
+#### **Do you need to update the range file?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_overlap == 0){if(length(variable_not_in_range_file) == 0){paste("No, the range file is up to date!")}else{paste("YES, update limits of the following variables")}}}}`
 
 ```{r echo=FALSE, warning=FALSE,results='asis'}
 if(flag_empty == 0){

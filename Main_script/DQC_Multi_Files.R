@@ -134,39 +134,68 @@ if(length(files_to_avoid) == 0){
   files = files_available
 }else{
   files = files_available[-which(substring(files_available,1, nchar(files_available)-4) %in% files_to_avoid)]
-  last_modification = last_modification [-which(substring(files_available,1, nchar(files_available)-4) %in% files_to_avoid)]
+  
+  # which(download_table$Station %in% substring(files, 1, nchar(files)-4))
 }
 
-new_modification = as.character(file.mtime(paste(input_dir,files,sep = "")))
+last_modification = last_modification[which(download_table$Station %in% substring(files, 1, nchar(files)-4))]
+new_modification = as.character(file.mtime(paste(input_dir,files,sep = ""))) 
 
-last_modification == new_modification
 
-names(last_modification_new) = files
-last_modification_new = file.mtime(paste(input_dir,files_available,sep = ""))
+
+files_updated = files[last_modification != new_modification]
+d = data.frame(files_updated,new_modification[last_modification != new_modification])
+colnames(d) = c("file", "new_modification")
+if(nrow(d) > 0){
+  w_update_last_modification = which(download_table$Station %in% substring(d[,1],1, nchar(d[,1])-4))
+  
+  download_table$Last_Modification[w_update_last_modification] = d$new_modification
+  
+  write.csv(download_table,download_table_file,quote = F,row.names = F)
+}
+# names(last_modification_new) = files
+# last_modification_new = file.mtime(paste(input_dir,files_available,sep = ""))
 # ..........................................................................................................................................................
-write.csv(download_table,download_table_file,quote = F,row.names = F)
 
 # ..........................................................................................................................................................
 
 i=1
+input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
+output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/"   # where to put output files and reports
+project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+DATA_FROM_ROW =  5                                             # <-- Row number of first data
+HEADER_ROW_NUMBER =  2                                         # <-- Row number of header
+DATETIME_HEADER =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
+DATETIME_FORMAT =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+DATETIME_SAMPLING =  "15 min"
+RECORD_HEADER =  "RECORD"
+RANGE_FILE =  "Range.csv"
+write_output_files =  "TRUE"
+write_output_reports =  "TRUE"
 
 # ..... rmarkdown render section .....................................................................................................................................
+# substitute files with files_updated 
+
+report_Rmd_file = paste(project_dir,"Rmd/DQC_Report_Generator.Rmd",sep = "")
+report_Output_folder = output_dir
+data_Output_folder =  output_dir
+
+support_dir = paste(project_dir, "Data/Support_files/")
 
 for(i in 1: length(files)){
   
-  input = paste(report_dir,"DQC_Manual_Multi_Files.Rmd",sep = "")
   output_file = paste("DQC_Report_",substring(files[i],1,nchar(files[1])-4),".html",sep = "")
   output_dir_new = paste(output_dir,"Output_report/",sep = "")
   
-  rmarkdown::render(input = input,
+  rmarkdown::render(input = report_Rmd_file ,
                     output_file = output_file,
-                    output_dir = output_dir,
+                    output_dir = report_Output_folder,
                     params = list(file = files[i],
-                                  scheduling_dir = scheduling_dir,
-                                  report_dir = report_dir,
-                                  output_dir = output_dir_new ,
+                                  scheduling_dir = input_dir,
+                                  report_dir = report_Output_folder,
+                                  output_dir = data_Output_folder ,
                                   support_dir = support_dir,
-                                  write_output = write_output,
+                                  write_output = write_output_files,
                                   RANGE_FILE = RANGE_FILE,
                                   DATA_FROM_ROW = DATA_FROM_ROW,
                                   HEADER_ROW_NUMBER = HEADER_ROW_NUMBER,

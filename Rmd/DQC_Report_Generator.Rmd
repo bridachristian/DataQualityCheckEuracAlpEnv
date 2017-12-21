@@ -194,13 +194,13 @@ if(flag_empty == 0){
           
           
           
-          write.csv(out_mydata,paste(output_dir_data,"DQCok_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F)
+          write.csv(out_mydata,paste(output_dir_data,"DQCok_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F, na = "NaN")
           
           #~~~~~~~~~~
           colnames(duplicated_data) = colnames(header)
           
           out_duplicated_data=rbind(header[-1,],duplicated_data)
-          write.csv(out_duplicated_data,paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F)
+          write.csv(out_duplicated_data,paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F, na = "NaN")
         }
       }
     }

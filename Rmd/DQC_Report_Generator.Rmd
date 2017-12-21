@@ -69,14 +69,14 @@ start_date <- params$start_date
   
 # ~~~ Debug inputs ~~~~
 # 
-# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"    
-# output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Data/" 
-# output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Report/" 
-# project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/" 
-# data_from_row =  5                                            
-# header_row_number =  2                                        
-# datetime_header =  "TIMESTAMP"                                
-# datetime_format =  "yyyy-mm-dd HH:MM"                         
+# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"
+# output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Data/"
+# output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Report/"
+# project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"
+# data_from_row =  5
+# header_row_number =  2
+# datetime_header =  "TIMESTAMP"
+# datetime_format =  "yyyy-mm-dd HH:MM"
 # datetime_sampling =  "15 min"
 # record_header =  "RECORD"
 # range_file =  "Range.csv"
@@ -438,7 +438,7 @@ if(flag_empty == 0){
 
 `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){paste(t1)}}}}`
 
-#### **Which values are out of physical range?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){paste("- - -")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("- - -")}}}}}`
+#### **Which values are out of physical range?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date != 0){paste("- - -")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("- - -")}}}}}`
 
 `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("Before continuing, set range limits for previous variables!")}}}}}`
 

@@ -30,12 +30,12 @@ library(kableExtra)
 
 # ..... Params section .....................................................................................................................................
 
-input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
-# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
-output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Data/"   # where to put output files
-# output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
-output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Report/"   # where to put output reports
-# output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
+# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"                # where input files are
+input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
+# output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Data/"   # where to put output files
+output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
+# output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Report/"   # where to put output reports
+output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
 project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
 data_from_row =  5                                             # <-- Row number of first data
@@ -50,8 +50,8 @@ write_output_files =  "TRUE"
 write_output_report =  "TRUE"
 
 
-# file <- "M3.dat"
-# start_date <- NA
+ file <- "M4s.dat"
+ start_date <- NA
 
 # ~~~ Default directory ~~~~
 
@@ -173,8 +173,8 @@ if(nrow(d) > 0){
 # file <- "M3.dat"
 # start_date <- NA
 
-file_to_process = files
-start_date_to_process  = start
+file_to_process = file                # WARNING:  the selection of files to process is to define better!!!!!
+start_date_to_process  = NA         # WARNING: 
 
 i=1
 
@@ -213,7 +213,7 @@ start_date = start_date_to_process[1]
 #                      file,
 #                      start_date){
   
-  output_file_report = paste("DQC_Report_",substring(files[i],1,nchar(files[1])-4),"_tmp.html",sep = "")
+  output_file_report = paste("DQC_Report_",substring(file[i],1,nchar(file[1])-4),"_tmp.html",sep = "")
   
   
   rmarkdown::render(input = Rmd_report_generator ,

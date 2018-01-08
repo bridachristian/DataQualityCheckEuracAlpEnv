@@ -366,7 +366,7 @@ if(flag_empty == 0){
 ```
 
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("There isn't any missing dates!")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 1){paste("Statistics of missing dates:!")}}}}}`
+`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("There isn't any missing dates!")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 1){paste("Statistics of missing dates:")}}}}}`
 
 
 ```{r echo=FALSE}

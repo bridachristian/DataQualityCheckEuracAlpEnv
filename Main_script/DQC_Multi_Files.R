@@ -111,6 +111,63 @@ if(!file.exists(download_table_file)){              # <- define or extact info f
   }
 }
 
+############################################
+FILE = files_available[1]
+
+w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
+dwnl_info = download_table[w_dwnl,] 
+
+if(dwnl_info$Stop_DQC == 0){
+  date_last_modif_file = as.character(file.mtime(paste(input_dir,FILE,sep = ""))) 
+  
+  if(date_last_modif_file != dwnl_info$Last_Modification){
+    
+    input_dir = input_dir 
+    output_dir_data = output_dir_data
+    output_dir_report = output_dir_report
+    project_dir = project_dir
+    data_from_row = data_from_row
+    header_row_number = header_row_number
+    datetime_header = datetime_header
+    datetime_format = datetime_format
+    datetime_sampling = datetime_sampling
+    record_header = record_header
+    range_file = range_file
+    write_output_files = write_output_files
+    write_output_report = write_output_report
+    
+    file = FILE
+    start_date = dwnl_info$Last_date
+    
+    output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
+    
+    rmarkdown::render(input = Rmd_report_generator ,
+                      output_file = output_file_report,
+                      output_dir = output_dir_report,
+                      params = list(input_dir = input_dir , 
+                                    output_dir_data = output_dir_data, 
+                                    output_dir_report = output_dir_report, 
+                                    project_dir = project_dir,
+                                    data_from_row = data_from_row,
+                                    header_row_number = header_row_number,
+                                    datetime_header = datetime_header,
+                                    datetime_format = datetime_format,
+                                    datetime_sampling = datetime_sampling , 
+                                    record_header = record_header,
+                                    range_file = range_file,
+                                    write_output_files = write_output_files,
+                                    write_output_report = write_output_report,
+                                    file = file,
+                                    start_date = start_date))
+    
+  }
+}
+
+
+
+############################################
+
+
 start_date = download_table$Last_date
 last_modification = download_table$Last_Modification
 

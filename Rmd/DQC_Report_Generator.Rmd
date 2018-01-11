@@ -163,6 +163,20 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         
         # ..... Flags .....................................................................................................................................
         
+        x = as.character(duplicated_data[1,])
+        if(unique(x) == "---"){
+          flag_duplicates_rows = 0
+        } else{
+          flag_duplicates_rows = 1
+        }
+        
+        if(length(variable_not_in_range_file) != 0){
+          flag_range_to_update = 1
+        }else{
+          flag_range_to_update = 0
+        }
+        
+        if(flag_range_to_update == 0){
         if(1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
           flag_out_of_range = 1
         }else{
@@ -172,19 +186,12 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
             flag_out_of_range = 0
           }
         }
-        
-        if(length(variable_not_in_range_file) != 0){
-          flag_range_to_update = 1
         }else{
-          flag_range_to_update = 0
+          flag_out_of_range = NA
         }
         
-        x = as.character(duplicated_data[1,])
-        if(unique(x) == "---"){
-          flag_duplicates_rows = 0
-        } else{
-          flag_duplicates_rows = 1
-        }
+        
+        
               
         
         w = which(colnames(mydata) == datetime_header)
@@ -212,38 +219,40 @@ if(flag_empty == 0){
   if(flag_error_df == 0){
     if(flag_date == 0){
       if(flag_overlap == 0){
-        if(write_output_files == TRUE){
-          #~~~~~~~~~~
-          colnames(header) = header[1,]
-          
-          out_my = mydata
-          colnames(out_my) = colnames(header)
-          
-          out_mydata=rbind(header[-1,],out_my)
-          
-          out_filename = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
-                               substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
-                               substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
-                               # "_",
-                               substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
-                               substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
-                               sep = "")
-          
-          
-          
-          write.csv(out_mydata,paste(output_dir_data,"DQCok_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F, na = "NaN")
-          
-          #~~~~~~~~~~
-          colnames(duplicated_data) = colnames(header)
-          
-          out_duplicated_data=rbind(header[-1,],duplicated_data)
-          write.csv(out_duplicated_data,paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),"_",out_filename,".csv",sep = ""),quote = F,row.names = F, na = "NaN")
+        if(flag_range_to_update == 0){
+          if(write_output_files == TRUE){
+            #~~~~~~~~~~
+            colnames(header) = header[1,]
+            
+            out_my = mydata
+            colnames(out_my) = colnames(header)
+            
+            out_mydata=rbind(header[-1,],out_my)
+            
+            out_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
+                                 substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
+                                 substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
+                                 # "_",
+                                 substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+                                 substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+                                 sep = "")
+            out_filename_data = paste("DQCok_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
+            out_filename_dupli = paste("Duplicated_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
+            
+            
+            write.csv(out_mydata,paste(output_dir_data,out_filename_data,sep = ""),quote = F,row.names = F, na = "NaN")
+            
+            #~~~~~~~~~~
+            colnames(duplicated_data) = colnames(header)
+            
+            out_duplicated_data=rbind(header[-1,],duplicated_data)
+            write.csv(out_duplicated_data,paste(output_dir_data,out_filename_dupli,sep = ""),quote = F,row.names = F, na = "NaN")
+          }
         }
       }
     }
   }
 }
-
 
 flags_names = c("flag_empty","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_dates","flag_range_to_update","flag_out_of_range")
 flags_df = data.frame(flags_names, rep(NA,times = length(flags_names)))

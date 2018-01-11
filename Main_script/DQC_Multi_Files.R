@@ -112,7 +112,7 @@ if(!file.exists(download_table_file)){              # <- define or extact info f
 }
 
 ############################################
-FILE = files_available[3]
+FILE = files_available[8]
 
 w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
 dwnl_info = download_table[w_dwnl,] 
@@ -160,6 +160,51 @@ if(dwnl_info$Stop_DQC == 0){
                                     file = file,
                                     start_date = start_date))
     
+    
+    
+      out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
+                           substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
+                           substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
+                           # "_",
+                           substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+                           substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+                           sep = "")
+      
+      out_filename_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_",out_filename_date,".html",sep = "")
+      
+      if(file.exists(paste(output_dir_report,out_filename_report,sep = ""))){
+        
+        j=0
+        repeat{
+          j=j+1
+          out_filename_report_new = paste(substring(out_filename_report,1, nchar(out_filename_report)-5),"_vers",j,".html",sep = "")
+          if(!file.exists(paste(output_dir_report,out_filename_report_new,sep = ""))){
+            break
+          }
+        }
+      }
+      
+      out_filename_report = out_filename_report_new
+      output_file_report = file.rename(from = paste(output_dir_report,output_file_report,sep = ""),
+                                       to = paste(output_dir_report,out_filename_report,sep = ""))
+      
+      
+      last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
+      
+      if(!is.na(flags_df$value[8])){
+        download_table$Last_date[w_dwnl,] = last_date
+        download_table$Last_Modification[w_dwnl,] = date_last_modif_file
+        write.csv(download_table,download_table_file,quote = F,row.names = F)
+      }
+         
+      download_table$Last_date[i] = as.character(last_date)
+    } else {
+      warning("File already process!")
+    }
+    
+    
+    
+    data_written = c(out_filename_data,out_filename_dupli)
     
     
     

@@ -66,7 +66,7 @@ write_output_files <- params$write_output_files
 write_output_report <- params$write_output_report
 file <- params$file
 start_date <- params$start_date
-  
+
 # ~~~ Debug inputs ~~~~
 # 
 # input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"
@@ -128,7 +128,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         
       } else {
         
-      flag_date = 1
+        flag_date = 1
       }
     }
     
@@ -159,12 +159,43 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
         mydata <- range[[1]]
         check_out_of_range <- range[[2]]
+        variable_not_in_range_file <-range[[3]]
+        
+        # ..... Flags .....................................................................................................................................
+        
         if(1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
           flag_out_of_range = 1
         }else{
-          flag_out_of_range = 0
+          if(-1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
+            flag_out_of_range = 1
+          }else{
+            flag_out_of_range = 0
+          }
         }
-        variable_not_in_range_file <-range[[3]]
+        
+        if(length(variable_not_in_range_file) != 0){
+          flag_range_to_update = 1
+        }else{
+          flag_range_to_update = 0
+        }
+        
+        x = as.character(duplicated_data[1,])
+        if(unique(x) == "---"){
+          flag_duplicates_rows = 0
+        } else{
+          flag_duplicates_rows = 1
+        }
+              
+        
+        w = which(colnames(mydata) == datetime_header)
+        time_tot <- mydata[,w]
+        time_tot <- as.POSIXct(time_tot, format = "%Y-%m-%d %H:%M:%S")
+        time_missing <- missing_index_date[,2]
+        if(length(which(time_tot %in% time_missing )) == 0){
+          flag_missing_dates = 0      # No missing dates
+        }else{
+          flag_missing_dates = 1      # YES missing dates
+        }
         
         mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
         
@@ -172,6 +203,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
     }
   }
 }
+
 
 
 # ..... Output ..........................................................................................................................................
@@ -212,6 +244,18 @@ if(flag_empty == 0){
   }
 }
 
+
+flags_names = c("flag_empty","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_dates","flag_range_to_update","flag_out_of_range")
+flags_df = data.frame(flags_names, rep(NA,times = length(flags_names)))
+colnames(flags_df) = c("flag_names", "value")
+
+for(i in 1: nrow(flags_df)){
+  if(exists(flags_names[i])){
+    flags_df$value[i] = eval(parse(text = flags_names[i]))
+    
+  }
+}
+
 ```
 
 
@@ -244,19 +288,32 @@ And: *`r if(write_output_report == TRUE){paste("to write output report here:", o
 
 ### OUTPUT: 
 
-#### **Is the file empty?** `r if(flag_empty == 0){paste("NO: all right!")}` `r if(flag_empty == 1){paste("YES: check it!")}`
-
-`r if(flag_empty == 0){paste("Ok:",file,"is not empty")}`
-`r if(flag_empty == 1){paste("Error:",file,"is empty")}`
-
-#### **There are problems in data file structure?**  `r if(flag_empty == 0){if(flag_error_df == 0){paste("NO: all right!")}}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("YES: there are some data without header!")}}` `r if(flag_empty == 0){if(flag_error_df == -1){paste("YES, there are more header than data!")}}` `r if(flag_empty == 1){paste("- - -")}` 
+#### **Is the file empty?** `r if(flags_df$value[1] == 0){paste("NO: all right!")}else{paste("YES: check it!")}`
 
 
-`r if(flag_empty == 0){if(flag_error_df == 0){paste("There isn't any problems")}}` 
-`r if(flag_empty == 0){if(flag_error_df == 1){paste("Possible problems: 1. row shifted above. 2. new data with old headers. 3. other file manipulation errors")}}`
-`r if(flag_empty == 0){if(flag_error_df == -1){paste("Check input file! Why there is more headers than data?")}}`
+`r if(flags_df$value[1] == 0){paste("Ok:",file,"is not empty")}else{paste("Error:",file,"is empty")}`
 
-#### **The file is already process?**  `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){paste("NO: all right!")}}}``r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 1){paste("YES: File already process!")}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 
+<!-- `r if(flag_empty == 0){paste("NO: all right!")}` `r if(flag_empty == 1){paste("YES: check it!")}` -->
+<!-- `r if(flag_empty == 0){paste("Ok:",file,"is not empty")}` -->
+<!-- `r if(flag_empty == 1){paste("Error:",file,"is empty")}` -->
+
+#### **There are problems in data file structure?**  `r if(is.na(flags_df$value[2])){paste("- - -")}else{if(flags_df$value[2] == -1){paste("YES, there are more header than data!")}else{if(flags_df$value[2] == 0){paste("NO: all right!")}else{if(flags_df$value[2] == 1){paste("YES: there are some data without header!")}}}}`
+
+`r if(is.na(flags_df$value[2])){paste("Before continuing, solve previous problems!")}else{if(flags_df$value[2] == -1){paste("Check input file! Why there is more headers than data?")}else{if(flags_df$value[2] == 0){paste("There isn't any problems")}else{if(flags_df$value[2] == 1){paste("Possible problems: 1. row shifted above. 2. new data with old headers. 3. other file manipulation errors")}}}} `
+
+
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){paste("NO: all right!")}}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("YES: there are some data without header!")}}` `r if(flag_empty == 0){if(flag_error_df == -1){paste("YES, there are more header than data!")}}` `r if(flag_empty == 1){paste("- - -")}` -->
+
+
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){paste("There isn't any problems")}}` -->
+<!-- `r if(flag_empty == 0){if(flag_error_df == 1){paste("Possible problems: 1. row shifted above. 2. new data with old headers. 3. other file manipulation errors")}}` -->
+<!-- `r if(flag_empty == 0){if(flag_error_df == -1){paste("Check input file! Why there is more headers than data?")}}` -->
+
+#### **The file is already process?**  `r if(is.na(flags_df$value[3])){paste("- - -")}else{if(flags_df$value[3] == 0){paste("NO: all right!")}else{if(flags_df$value[3] == 1){paste("YES: File already process!")}}} `
+
+`r if(is.na(flags_df$value[3])){paste("Before continuing, solve previous problems!")}`
+
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){paste("NO: all right!")}}}``r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 1){paste("YES: File already process!")}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}`  -->
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
 
@@ -274,17 +331,24 @@ if(flag_empty == 0){
 }
 
 ```
-#### **There are duplicated rows?** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}}}` 
-`r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 1){paste("- - -")}` 
+#### **There are duplicated rows?**  `r if(is.na(flags_df$value[4])){paste("- - -")}else{if(flags_df$value[4] == 0){paste("NO: all right!")}else{if(flags_df$value[4] == 1){paste("YES: there are duplicated rows!")}}} `
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}}}}`
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}}}`
+`r if(is.na(flags_df$value[4])){paste("Before continuing, solve previous problems!")}else{if(flags_df$value[4] == 0){paste("There isn't any duplicated row")}else{if(flags_df$value[4] == 1){paste("Attention: there are duplicated row in input file. See:",paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}} `
+
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}}}`  -->
+<!-- `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 1){paste("- - -")}`  -->
+
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}}}}` -->
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}}}` -->
 
 
-#### **There are overlaps? ** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("YES: there are overlaps!")}}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 
+#### **There are overlaps? ** `r if(is.na(flags_df$value[5])){paste("- - -")}else{if(flags_df$value[5] == 0){paste("NO: all right!")}else{if(flags_df$value[5] == 1){paste("YES: there are overlaps!")}}} `
 
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("YES: there are overlaps!")}}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}`  -->
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("There are the following ovelap:")}else{paste("There isn't any overlap!")}}}}`
+`r if(is.na(flags_df$value[5])){paste("Before continuing, solve previous problems!")}else{if(flags_df$value[5] == 0){paste("There isn't any overlap!")}else{if(flags_df$value[5] == 1){paste("There are the following ovelap:")}}} `
+
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("There are the following ovelap:")}else{paste("There isn't any overlap!")}}}}` -->
 
 
 ```{r echo=FALSE}
@@ -309,340 +373,356 @@ if(flag_empty == 0){
 if(flag_empty == 0){
   if(flag_error_df == 0){
     if(flag_date == 0){
-    if(flag_overlap == 0){
-      w = which(colnames(mydata) == datetime_header)
-      time_tot <- mydata[,w]
-      time_tot <- as.POSIXct(time_tot, format = "%Y-%m-%d %H:%M:%S")
-      time_missing <- missing_index_date[,2]
-      
-      df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
-      colnames(df_missing) = c("time","Status")
-      df_missing[which(time_tot %in% time_missing ),2] = "Missing dates filled"
-      y = rep(1, times = length(time_tot))
-      
-      Status_num = rep(1,times = length(time_tot))
-      Status_num[which(time_tot %in% time_missing )] = 0
-      
-      df_missing = cbind(df_missing, y,Status_num)
-      
-      if(length(which(time_tot %in% time_missing )) == 0){
-        flag_missing_dates = 0      # No missing dates
-      }else{
-        flag_missing_dates = 1      # YES missing dates
+      if(flag_overlap == 0){
+        w = which(colnames(mydata) == datetime_header)
+        time_tot <- mydata[,w]
+        time_tot <- as.POSIXct(time_tot, format = "%Y-%m-%d %H:%M:%S")
+        time_missing <- missing_index_date[,2]
         
+        df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
+        colnames(df_missing) = c("time","Status")
+        df_missing[which(time_tot %in% time_missing ),2] = "Missing dates filled"
+        y = rep(1, times = length(time_tot))
+        
+        Status_num = rep(1,times = length(time_tot))
+        Status_num[which(time_tot %in% time_missing )] = 0
+        
+        df_missing = cbind(df_missing, y,Status_num)
+        
+        if(length(which(time_tot %in% time_missing )) == 0){
+          flag_missing_dates = 0      # No missing dates
+        }else{
+          flag_missing_dates = 1      # YES missing dates
+          
+        }
       }
     }
-  }
   }
 }
 ```
 
-#### **There are missing dates?** `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("NO: all right!")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){ if(flag_missing_dates == 1){paste("YES: there are missing dates!")}}}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` 
+#### **There are missing dates?** `r if(is.na(flags_df$value[6])){paste("- - -")}else{if(flags_df$value[6] == 0){paste("NO: all right!")}else{if(flags_df$value[6] == 1){paste("YES: there are missing dates!")}}} `
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}}`
+
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("NO: all right!")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){ if(flag_missing_dates == 1){paste("YES: there are missing dates!")}}}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}`  -->
+
+`r if(is.na(flags_df$value[6])){paste("Before continuing, solve previous problems!")}`
+
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}}` -->
 
 ```{r echo=FALSE, warning=FALSE}
 if(flag_empty == 0){
   if(flag_error_df == 0){
     if(flag_date == 0){
-    if(flag_overlap == 0){
-      if(flag_missing_dates == 1){
-        theme_new = theme_bw()+theme(axis.title.y=element_blank(),
-                                     axis.text.y=element_blank(),
-                                     axis.ticks.y=element_blank(),
-                                     axis.text.x = element_text(angle = 90, hjust = 1))
-        
-        tot_missing =length(which(df_missing$Status_num == 0))
-        
-        ggplot(df_missing,aes(x = time, y=y ,colour = Status)) +  
-          geom_point(aes(size = Status,shape = Status) )+
-          scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
-          scale_shape_manual(values = c(20,124))+
-          # scale_x_datetime(name = datetime_header,date_breaks = "2 weeks" )+
-          theme_new+
-          # ggtitle("Time distribution of missing dates")+
-          labs(title="Time distribution of missing dates",
-               subtitle=paste("Total missing dates: ", tot_missing))
+      if(flag_overlap == 0){
+        if(flag_missing_dates == 1){
+          theme_new = theme_bw()+theme(axis.title.y=element_blank(),
+                                       axis.text.y=element_blank(),
+                                       axis.ticks.y=element_blank(),
+                                       axis.text.x = element_text(angle = 90, hjust = 1))
+          
+          tot_missing =length(which(df_missing$Status_num == 0))
+          
+          ggplot(df_missing,aes(x = time, y=y ,colour = Status)) +  
+            geom_point(aes(size = Status,shape = Status) )+
+            scale_colour_manual(values = c("#7CAE00","#F8766D"))+ 
+            scale_shape_manual(values = c(20,124))+
+            # scale_x_datetime(name = datetime_header,date_breaks = "2 weeks" )+
+            theme_new+
+            # ggtitle("Time distribution of missing dates")+
+            labs(title="Time distribution of missing dates",
+                 subtitle=paste("Total missing dates: ", tot_missing))
+        }
       }
     }
   }
 }
-}
 ```
 
+`r if(!is.na(flags_df$value[6])){if(flags_df$value[6] == 0){paste("There isn't any missing dates!")}else{if(flags_df$value[6] == 1){paste("Statistics of missing dates:")}}} `
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("There isn't any missing dates!")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 1){paste("Statistics of missing dates:")}}}}}`
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("There isn't any missing dates!")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 1){paste("Statistics of missing dates:")}}}}}` -->
 
 
 ```{r echo=FALSE}
 if(flag_empty == 0){
   if(flag_error_df == 0){
     if(flag_date == 0){
-    if(flag_overlap == 0){
-      if(flag_missing_dates == 1){
-        Status_num_NA=df_missing
-        Status_num_NA = Status_num_NA[,-c(2,3)]
-        
-        differ = c(0,diff(Status_num_NA$Status_num))
-        start = which(differ == -1)
-        end  = which(differ == 1) - 1
-        gap_lenght = end - start + 1
-        
-        date_start = Status_num_NA$time[start]
-        date_end = Status_num_NA$time[end]
-        
-        if(length(date_end) != 0){
-          date_end_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
-          for(k in 1:length(date_end)){
-            
-            date_end_tmp[k] =  seq.POSIXt(date_end[k], by = datetime_sampling, length. =  2)[2]
+      if(flag_overlap == 0){
+        if(flag_missing_dates == 1){
+          Status_num_NA=df_missing
+          Status_num_NA = Status_num_NA[,-c(2,3)]
+          
+          differ = c(0,diff(Status_num_NA$Status_num))
+          start = which(differ == -1)
+          end  = which(differ == 1) - 1
+          gap_lenght = end - start + 1
+          
+          date_start = Status_num_NA$time[start]
+          date_end = Status_num_NA$time[end]
+          
+          if(length(date_end) != 0){
+            date_end_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
+            for(k in 1:length(date_end)){
+              
+              date_end_tmp[k] =  seq.POSIXt(date_end[k], by = datetime_sampling, length. =  2)[2]
+            }
+            gap_hour = difftime(time1 = date_end_tmp,time2 = date_start,units = "hours")
+          }else{
+            gap_hour = numeric(0)
           }
-          gap_hour = difftime(time1 = date_end_tmp,time2 = date_start,units = "hours")
-        }else{
-          gap_hour = numeric(0)
+          
+          
+          statistic_missing = data.frame(date_start,date_end,gap_lenght,gap_hour)
+          colnames(statistic_missing) = c("From", "To", "Number of Record", "Hours")
+          
+          # kable(statistic_missing, format = "markdown",align = "c")
+          kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+            kable_styling() %>%
+            scroll_box( height = "200px") 
         }
-        
-        
-        statistic_missing = data.frame(date_start,date_end,gap_lenght,gap_hour)
-        colnames(statistic_missing) = c("From", "To", "Number of Record", "Hours")
-        
-        # kable(statistic_missing, format = "markdown",align = "c")
-        kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-          kable_styling() %>%
-          scroll_box( height = "200px") 
       }
     }
   }
-}
 }
 ```
 
 
 
-#### **Do you need to update the range file?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(length(variable_not_in_range_file) == 0){paste("No, the range file is up to date!")}else{paste("YES, update limits of the following variables")}}}}}`
+#### **Do you need to update the range file?** `r if(is.na(flags_df$value[7])){paste("- - -")}else{if(flags_df$value[7] == 0){paste("NO, the range file is up to date!")}else{if(flags_df$value[7] == 1){paste("YES, update limits of the following variables")}}} `
+
+<!-- `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(length(variable_not_in_range_file) == 0){paste("No, the range file is up to date!")}else{paste("YES, update limits of the following variables")}}}}}` -->
 
 ```{r echo=FALSE, warning=FALSE,results='asis'}
 if(flag_empty == 0){
   if(flag_error_df == 0){
     if(flag_date == 0){
-    if(flag_overlap == 0){
-      if(length(variable_not_in_range_file) != 0){
-        for(i in 1:length(variable_not_in_range_file)){
-          t1 = paste("Header: ","*",variable_not_in_range_file,"*","is now in range file.","Set limits in",range_file)
+      if(flag_overlap == 0){
+        if(length(variable_not_in_range_file) != 0){
+          for(i in 1:length(variable_not_in_range_file)){
+            t1 = paste("Header: ","*",variable_not_in_range_file,"*","is now in range file.","Set limits in",range_file)
+          }
+          flag_range_to_update = 1
+        }else{
+          t1 = paste("Any new variable in range file:",range_file)
+          flag_range_to_update = 0
         }
-        flag_range_to_update = 1
-      }else{
-        t1 = paste("Any new variable in range file:",range_file)
-        flag_range_to_update = 0
       }
     }
-  }
   } 
 }
 ```
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){paste(t1)}}}}`
+`r if(!is.na(flags_df$value[7])){paste(t1)}else{paste("Before continuing, solve previous problems!")} `
 
-#### **Which values are out of physical range?** `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date != 0){paste("- - -")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("- - -")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 0){if(flag_out_of_range == 0){paste("No data out of range")}}}}}}`
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){paste(t1)}}}}` -->
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("Before continuing, set range limits for previous variables!")}}}}}`
+#### **There are values are out of physical range?** `r if(is.na(flags_df$value[8])){paste("- - -")}else{if(flags_df$value[8] == 0){paste("NO: all right!")}else{if(flags_df$value[8] == 1){paste("YES, the following variables contain data out of range!")}}} `
 
-`r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}}` 
+
+<!-- `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date != 0){paste("- - -")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("- - -")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 0){if(flag_out_of_range == 0){paste("No data out of range")}}}}}}` -->
+
+
+`r if(is.na(flags_df$value[8])){paste("Before continuing, solve previous problems!")}`
+
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("Before continuing, set range limits for previous variables!")}}}}}` -->
+
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}}`  -->
 
 
 ```{r echo=FALSE, warning=FALSE,results='asis'}
 if(flag_empty == 0){
   if(flag_error_df == 0){
     if(flag_date == 0){
-    if(flag_overlap == 0){
-      if(flag_range_to_update == 0){
-        for(j in 1:ncol(check_out_of_range)){
-          if(colnames(check_out_of_range)[j] ==  datetime_header){}else{
-            
-            # ~~~~~~ preparation data for ggplot ~~~~~~ 
-            
-            df_tmp = check_out_of_range[,c(which(colnames(check_out_of_range)==datetime_header), j)]
-            df_factor = df_tmp
-            
-            df_factor[,2]=as.character(df_factor[,2])
-            
-            y = rep(1,times = nrow(df_factor))
-            df_factor = cbind(df_factor,y)
-            colnames(df_factor) = c("time", "Variable", "y") 
-            df_factor$y[which(df_factor$Variable == -1)] = 0.9
-            df_factor$y[which(df_factor$Variable == 1)] = 1.1
-            # colnames(df_factor) =c("time","Variable","y")
-            
-            # ~~~~~~ preparation data for statistic table ~~~~~~ 
-            
-            c_oor = colnames(check_out_of_range)[j]
-            
-            df_oor = df_tmp
-            colnames(df_oor)= c("time", "variable")
-            
-            over_range = rep(0, times = nrow(df_oor))
-            
-            how_many_over_range = length(which(df_oor$variable == 1))
-            
-            if(length(which(df_oor$variable == 1)) != 0){
-              over_range[which(df_oor$variable == 1)] = 1
-            }
-            
-            under_range = rep(0, times = nrow(df_oor))
-            
-            how_many_under_range = length(which(df_oor$variable == -1))
-            if(length(which(df_oor$variable == -1)) != 0){
-              under_range[which(df_oor$variable == -1)] = 1
-            }
-            
-            df_oor2 = data.frame(df_oor$time, under_range, over_range)
-            
-            df_oor3 = rbind(df_oor2[1,],df_oor2,df_oor2[nrow(df_oor2),])
-            
-            
-            df_oor3[1,2] = 0 ; df_oor3[1,3] = 0
-            df_oor3[nrow(df_oor3),2] = 0 ; df_oor3[nrow(df_oor3),3] = 0
-            
-            a=as.data.frame(rbind(c(0,0),apply(df_oor3[,-1],2, diff)))
-            time_a =c(df_oor$time[1],df_oor$time,df_oor$time[nrow(df_oor)])
-            diff_df = cbind(time_a,a)
-            
-            if(any(unique(df_oor[,2])!= 0)){
+      if(flag_overlap == 0){
+        if(flag_range_to_update == 0){
+          for(j in 1:ncol(check_out_of_range)){
+            if(colnames(check_out_of_range)[j] ==  datetime_header){}else{
               
               # ~~~~~~ preparation data for ggplot ~~~~~~ 
               
-              theme_new2 = theme_bw()+theme(axis.title.y=element_blank(),
-                                            axis.text.y=element_blank(),
-                                            axis.ticks.y=element_blank(),
-                                            axis.text.x = element_text(angle = 90, hjust = 1),
-                                            legend.title = element_blank())
+              df_tmp = check_out_of_range[,c(which(colnames(check_out_of_range)==datetime_header), j)]
+              df_factor = df_tmp
               
+              df_factor[,2]=as.character(df_factor[,2])
               
-              set_limits = data.frame(as.POSIXct(c(df_factor$time[1], df_factor$time[nrow(df_factor)%/%2], df_factor$time[nrow(df_factor)])), c(-1,0,1), c(0,0,0))
-              colnames(set_limits) = colnames(df_factor)
-              
-              df_factor = rbind(df_factor,set_limits)
-              
-              df_factor$Variable = factor(df_factor$Variable, ordered = TRUE)
-              df_factor$Variable <- factor( df_factor$Variable, levels=rev(levels( df_factor$Variable)))
-              
-              
-              p1 = ggplot(df_factor,aes(x = time, y = y,colour = Variable))+
-                geom_point(aes(size = Variable,shape = Variable ))+
-                scale_colour_manual(values = c("#0000FF","#7CAE00","#F8766D"),labels = c("Above upper limit", "In the range","Below lower limit"))+ 
-                scale_shape_manual(values = c(124,20,124),labels =c("Above upper limit", "In the range","Below lower limit"))+
-                scale_size_manual(values = c(10,1,10),labels = c("Above upper limit", "In the range","Below lower limit"))+
-                # scale_x_datetime(name = datetime_header,date_breaks = "2 weeks" )+
-                theme_new2 +
-                # ggtitle(paste(colnames(check_out_of_range)[j],"\n",
-                #               "Total Above upper limit: ", how_many_over_range,"\n",
-                #               "Total Below lower limit: ", how_many_under_range, sep = "")) +
-                scale_y_continuous(limits = c(0.7,1.3))+
-                labs(title=paste(colnames(check_out_of_range)[j]),
-                     subtitle=paste("Total Above upper limit: ", how_many_over_range,"\n",
-                                    "Total Below lower limit: ", how_many_under_range, sep = ""))
-              
-              print(p1)
+              y = rep(1,times = nrow(df_factor))
+              df_factor = cbind(df_factor,y)
+              colnames(df_factor) = c("time", "Variable", "y") 
+              df_factor$y[which(df_factor$Variable == -1)] = 0.9
+              df_factor$y[which(df_factor$Variable == 1)] = 1.1
+              # colnames(df_factor) =c("time","Variable","y")
               
               # ~~~~~~ preparation data for statistic table ~~~~~~ 
               
-              under_start_oor = which(diff_df$under_range == 1) - 1
-              under_end_oor  = which(diff_df$under_range == -1) - 2
+              c_oor = colnames(check_out_of_range)[j]
               
+              df_oor = df_tmp
+              colnames(df_oor)= c("time", "variable")
               
-              if(length(under_start_oor) != 0 & length(under_end_oor) != 0){
-                if(under_end_oor[1] < under_start_oor[1]){
-                  under_start_oor = c(1,under_start_oor)
-                }
-                if(under_start_oor[length(under_start_oor)] > under_end_oor[length(under_end_oor)] ){
-                  under_end_oor = c(under_end_oor,nrow(diff_df))
-                }
+              over_range = rep(0, times = nrow(df_oor))
+              
+              how_many_over_range = length(which(df_oor$variable == 1))
+              
+              if(length(which(df_oor$variable == 1)) != 0){
+                over_range[which(df_oor$variable == 1)] = 1
               }
               
-              under_gap_lenght_oor = under_end_oor - under_start_oor + 1
-              under_date_start_oor = df_oor[under_start_oor,1]
-              under_date_end_oor = df_oor[under_end_oor,1]
+              under_range = rep(0, times = nrow(df_oor))
               
-              if(length(under_date_end_oor) != 0){
-                under_date_end_oor_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
-                for(k in 1:length(under_date_end_oor)){
-                  
-                  under_date_end_oor_tmp[k] =  seq.POSIXt(under_date_end_oor[k], by = datetime_sampling, length. =  2)[2]
+              how_many_under_range = length(which(df_oor$variable == -1))
+              if(length(which(df_oor$variable == -1)) != 0){
+                under_range[which(df_oor$variable == -1)] = 1
+              }
+              
+              df_oor2 = data.frame(df_oor$time, under_range, over_range)
+              
+              df_oor3 = rbind(df_oor2[1,],df_oor2,df_oor2[nrow(df_oor2),])
+              
+              
+              df_oor3[1,2] = 0 ; df_oor3[1,3] = 0
+              df_oor3[nrow(df_oor3),2] = 0 ; df_oor3[nrow(df_oor3),3] = 0
+              
+              a=as.data.frame(rbind(c(0,0),apply(df_oor3[,-1],2, diff)))
+              time_a =c(df_oor$time[1],df_oor$time,df_oor$time[nrow(df_oor)])
+              diff_df = cbind(time_a,a)
+              
+              if(any(unique(df_oor[,2])!= 0)){
+                
+                # ~~~~~~ preparation data for ggplot ~~~~~~ 
+                
+                theme_new2 = theme_bw()+theme(axis.title.y=element_blank(),
+                                              axis.text.y=element_blank(),
+                                              axis.ticks.y=element_blank(),
+                                              axis.text.x = element_text(angle = 90, hjust = 1),
+                                              legend.title = element_blank())
+                
+                
+                set_limits = data.frame(as.POSIXct(c(df_factor$time[1], df_factor$time[nrow(df_factor)%/%2], df_factor$time[nrow(df_factor)])), c(-1,0,1), c(0,0,0))
+                colnames(set_limits) = colnames(df_factor)
+                
+                df_factor = rbind(df_factor,set_limits)
+                
+                df_factor$Variable = factor(df_factor$Variable, ordered = TRUE)
+                df_factor$Variable <- factor( df_factor$Variable, levels=rev(levels( df_factor$Variable)))
+                
+                
+                p1 = ggplot(df_factor,aes(x = time, y = y,colour = Variable))+
+                  geom_point(aes(size = Variable,shape = Variable ))+
+                  scale_colour_manual(values = c("#0000FF","#7CAE00","#F8766D"),labels = c("Above upper limit", "In the range","Below lower limit"))+ 
+                  scale_shape_manual(values = c(124,20,124),labels =c("Above upper limit", "In the range","Below lower limit"))+
+                  scale_size_manual(values = c(10,1,10),labels = c("Above upper limit", "In the range","Below lower limit"))+
+                  # scale_x_datetime(name = datetime_header,date_breaks = "2 weeks" )+
+                  theme_new2 +
+                  # ggtitle(paste(colnames(check_out_of_range)[j],"\n",
+                  #               "Total Above upper limit: ", how_many_over_range,"\n",
+                  #               "Total Below lower limit: ", how_many_under_range, sep = "")) +
+                  scale_y_continuous(limits = c(0.7,1.3))+
+                  labs(title=paste(colnames(check_out_of_range)[j]),
+                       subtitle=paste("Total Above upper limit: ", how_many_over_range,"\n",
+                                      "Total Below lower limit: ", how_many_under_range, sep = ""))
+                
+                print(p1)
+                
+                # ~~~~~~ preparation data for statistic table ~~~~~~ 
+                
+                under_start_oor = which(diff_df$under_range == 1) - 1
+                under_end_oor  = which(diff_df$under_range == -1) - 2
+                
+                
+                if(length(under_start_oor) != 0 & length(under_end_oor) != 0){
+                  if(under_end_oor[1] < under_start_oor[1]){
+                    under_start_oor = c(1,under_start_oor)
+                  }
+                  if(under_start_oor[length(under_start_oor)] > under_end_oor[length(under_end_oor)] ){
+                    under_end_oor = c(under_end_oor,nrow(diff_df))
+                  }
                 }
                 
-                under_gap_hour_oor = difftime(time1 = under_date_end_oor_tmp,time2 = under_date_start_oor,units = "hours")
-              }else{
-                under_gap_hour_oor = numeric(0)
-              }
-              
-              under_statistic_oor = data.frame(rep("Under lower limit", times = length(under_date_start_oor)),
-                                               under_date_start_oor,
-                                               under_date_end_oor,
-                                               under_gap_lenght_oor,
-                                               under_gap_hour_oor)
-              colnames(under_statistic_oor) = c(" ","From", "To", "Number of Record", "Hours")
-              
-              # over
-              
-              over_start_oor = which(diff_df$over_range == 1) - 1
-              over_end_oor  = which(diff_df$over_range == -1) - 2
-              
-              
-              if(length(over_start_oor) != 0 & length(over_end_oor) != 0){
-                if(over_end_oor[1] < over_start_oor[1]){
-                  over_start_oor = c(1,over_start_oor)
-                }
-                if(over_start_oor[length(over_start_oor)] > over_end_oor[length(over_end_oor)] ){
-                  over_end_oor = c(over_end_oor,nrow(diff_df))
-                }
-              }
-              
-              over_gap_lenght_oor = over_end_oor - over_start_oor + 1
-              over_date_start_oor = df_oor[over_start_oor,1]
-              over_date_end_oor = df_oor[over_end_oor,1]
-              
-              if(length(over_date_end_oor) != 0){
-                over_date_end_oor_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
-                for(k in 1:length(over_date_end_oor)){
+                under_gap_lenght_oor = under_end_oor - under_start_oor + 1
+                under_date_start_oor = df_oor[under_start_oor,1]
+                under_date_end_oor = df_oor[under_end_oor,1]
+                
+                if(length(under_date_end_oor) != 0){
+                  under_date_end_oor_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
+                  for(k in 1:length(under_date_end_oor)){
+                    
+                    under_date_end_oor_tmp[k] =  seq.POSIXt(under_date_end_oor[k], by = datetime_sampling, length. =  2)[2]
+                  }
                   
-                  over_date_end_oor_tmp[k] =  seq.POSIXt(over_date_end_oor[k], by = datetime_sampling, length. =  2)[2]
-                }
-                over_gap_hour_oor = difftime(time1 = over_date_end_oor_tmp,time2 = over_date_start_oor,units = "hours")
-              }else{
-                over_gap_hour_oor =  numeric(0)
-              }
-              
-              over_statistic_oor = data.frame(rep("Above upper limit", times = length(over_date_start_oor)), over_date_start_oor,over_date_end_oor,over_gap_lenght_oor, over_gap_hour_oor)
-              colnames(over_statistic_oor) = c(" ","From", "To", "Number of Record", "Hours")
-              
-              
-              if(nrow(under_statistic_oor) == 0){
-                statistic_oor = over_statistic_oor
-              }else{ 
-                if(nrow(over_statistic_oor) == 0){
-                  statistic_oor = under_statistic_oor
+                  under_gap_hour_oor = difftime(time1 = under_date_end_oor_tmp,time2 = under_date_start_oor,units = "hours")
                 }else{
-                  statistic_oor= rbind(under_statistic_oor,over_statistic_oor)
+                  under_gap_hour_oor = numeric(0)
                 }
+                
+                under_statistic_oor = data.frame(rep("Under lower limit", times = length(under_date_start_oor)),
+                                                 under_date_start_oor,
+                                                 under_date_end_oor,
+                                                 under_gap_lenght_oor,
+                                                 under_gap_hour_oor)
+                colnames(under_statistic_oor) = c(" ","From", "To", "Number of Record", "Hours")
+                
+                # over
+                
+                over_start_oor = which(diff_df$over_range == 1) - 1
+                over_end_oor  = which(diff_df$over_range == -1) - 2
+                
+                
+                if(length(over_start_oor) != 0 & length(over_end_oor) != 0){
+                  if(over_end_oor[1] < over_start_oor[1]){
+                    over_start_oor = c(1,over_start_oor)
+                  }
+                  if(over_start_oor[length(over_start_oor)] > over_end_oor[length(over_end_oor)] ){
+                    over_end_oor = c(over_end_oor,nrow(diff_df))
+                  }
+                }
+                
+                over_gap_lenght_oor = over_end_oor - over_start_oor + 1
+                over_date_start_oor = df_oor[over_start_oor,1]
+                over_date_end_oor = df_oor[over_end_oor,1]
+                
+                if(length(over_date_end_oor) != 0){
+                  over_date_end_oor_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
+                  for(k in 1:length(over_date_end_oor)){
+                    
+                    over_date_end_oor_tmp[k] =  seq.POSIXt(over_date_end_oor[k], by = datetime_sampling, length. =  2)[2]
+                  }
+                  over_gap_hour_oor = difftime(time1 = over_date_end_oor_tmp,time2 = over_date_start_oor,units = "hours")
+                }else{
+                  over_gap_hour_oor =  numeric(0)
+                }
+                
+                over_statistic_oor = data.frame(rep("Above upper limit", times = length(over_date_start_oor)), over_date_start_oor,over_date_end_oor,over_gap_lenght_oor, over_gap_hour_oor)
+                colnames(over_statistic_oor) = c(" ","From", "To", "Number of Record", "Hours")
+                
+                
+                if(nrow(under_statistic_oor) == 0){
+                  statistic_oor = over_statistic_oor
+                }else{ 
+                  if(nrow(over_statistic_oor) == 0){
+                    statistic_oor = under_statistic_oor
+                  }else{
+                    statistic_oor= rbind(under_statistic_oor,over_statistic_oor)
+                  }
+                }
+                
+                
+                statistic_oor = statistic_oor[order(statistic_oor$From),] 
+                
+                # cat(paste("Statistics of data out of range:",c_oor))
+                print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
+                        kable_styling() %>%
+                        scroll_box( height = "200px") ) 
+                
+                
+                
               }
-              
-              
-              statistic_oor = statistic_oor[order(statistic_oor$From),] 
-              
-              # cat(paste("Statistics of data out of range:",c_oor))
-              print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
-                      kable_styling() %>%
-                      scroll_box( height = "200px") ) 
-              
-              
-              
             }
           }
+          
         }
-        
       }
     }
-  }
   }
 }
 

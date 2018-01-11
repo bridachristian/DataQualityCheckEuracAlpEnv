@@ -112,7 +112,7 @@ if(!file.exists(download_table_file)){              # <- define or extact info f
 }
 
 ############################################
-FILE = files_available[1]
+FILE = files_available[3]
 
 w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
 dwnl_info = download_table[w_dwnl,] 
@@ -159,6 +159,9 @@ if(dwnl_info$Stop_DQC == 0){
                                     write_output_report = write_output_report,
                                     file = file,
                                     start_date = start_date))
+    
+    
+    
     
   }
 }
@@ -269,30 +272,30 @@ start_date = start_date_to_process[1]
 #                      write_output_report ,
 #                      file,
 #                      start_date){
-  
-  output_file_report = paste("DQC_Report_",substring(file[i],1,nchar(file[i])-4),"_tmp.html",sep = "")
-  
-  
-  rmarkdown::render(input = Rmd_report_generator ,
-                    output_file = output_file_report,
-                    output_dir = output_dir_report,
-                    params = list(input_dir = input_dir , 
-                                  output_dir_data = output_dir_data, 
-                                  output_dir_report = output_dir_report, 
-                                  project_dir = project_dir,
-                                  data_from_row = data_from_row,
-                                  header_row_number = header_row_number,
-                                  datetime_header = datetime_header,
-                                  datetime_format = datetime_format,
-                                  datetime_sampling = datetime_sampling , 
-                                  record_header = record_header,
-                                  range_file = range_file,
-                                  write_output_files = write_output_files,
-                                  write_output_report = write_output_report,
-                                  file = file,
-                                  start_date = start_date))
-  
-  if(flag_date == 0){
+
+output_file_report = paste("DQC_Report_",substring(file[i],1,nchar(file[i])-4),"_tmp.html",sep = "")
+
+
+rmarkdown::render(input = Rmd_report_generator ,
+                  output_file = output_file_report,
+                  output_dir = output_dir_report,
+                  params = list(input_dir = input_dir , 
+                                output_dir_data = output_dir_data, 
+                                output_dir_report = output_dir_report, 
+                                project_dir = project_dir,
+                                data_from_row = data_from_row,
+                                header_row_number = header_row_number,
+                                datetime_header = datetime_header,
+                                datetime_format = datetime_format,
+                                datetime_sampling = datetime_sampling , 
+                                record_header = record_header,
+                                range_file = range_file,
+                                write_output_files = write_output_files,
+                                write_output_report = write_output_report,
+                                file = file,
+                                start_date = start_date))
+
+if(flag_date == 0){
   out_filename = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                        substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
                        substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
@@ -309,10 +312,10 @@ start_date = start_date_to_process[1]
   
   download_table$Last_date[i] = as.character(last_date)
   write.csv(download_table,download_table_file,quote = F,row.names = F)
-  } else {
-    warning("File already process!")
-  }
-  
+} else {
+  warning("File already process!")
+}
+
 # }
 
 

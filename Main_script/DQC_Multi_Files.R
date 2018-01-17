@@ -74,7 +74,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-j = 2
+j = 1
 
 for(j in  1: length(files_available)){
   

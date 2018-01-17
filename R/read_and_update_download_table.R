@@ -48,7 +48,9 @@ read_and_update_download_table = function(DOWNLOAD_TABLE_DIR,FILES_AVAILABLE){
       df_to_add = data.frame(station_to_add,
                              rep(NA, times = length(station_to_add)),
                              rep(0,times = length(station_to_add)),
-                             as.character(file.mtime(paste(input_dir,FILES_AVAILABLE[w],sep = ""))))
+                             rep(NA, times = length(station_to_add)))
+                             
+                             # as.character(file.mtime(paste(input_dir,FILES_AVAILABLE[w],sep = ""))))
       colnames(df_to_add) = c("Station", "Last_date", "Stop_DQC", "Last_Modification")
       
       download_table = rbind(download_table, df_to_add)

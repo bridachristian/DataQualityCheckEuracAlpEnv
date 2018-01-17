@@ -69,6 +69,12 @@ files_available = dir(input_dir,pattern = ".dat")                  # <-- Admitte
 
 # ..... download table section .....................................................................................................................................
 
+# input:
+# 1. download_table_dir
+# 2. files_available
+# output:
+# 1. download_table
+
 download_table_file = paste(download_table_dir,"download_table.csv",sep = "") 
 
 if(!file.exists(download_table_file)){              # <- define or extact info from download table
@@ -106,13 +112,13 @@ if(!file.exists(download_table_file)){              # <- define or extact info f
                            as.character(file.mtime(paste(input_dir,files_available[w],sep = ""))))
     colnames(df_to_add) = c("Station", "Last_date", "Stop_DQC", "Last_Modification")
     
-    download_table = rbind(download_table, df_to_add )
+    download_table = rbind(download_table, df_to_add)
     
   }
 }
 
 ############################################
-FILE = files_available[8]
+FILE = files_available[3]
 
 w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
 dwnl_info = download_table[w_dwnl,] 
@@ -182,6 +188,8 @@ if(dwnl_info$Stop_DQC == 0){
             break
           }
         }
+      } else {
+        out_filename_report_new = out_filename_report
       }
       
       out_filename_report = out_filename_report_new
@@ -192,8 +200,8 @@ if(dwnl_info$Stop_DQC == 0){
       last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
       
       if(!is.na(flags_df$value[8])){
-        download_table$Last_date[w_dwnl,] = last_date
-        download_table$Last_Modification[w_dwnl,] = date_last_modif_file
+        download_table$Last_date[w_dwnl] = last_date
+        download_table$Last_Modification[w_dwnl] = date_last_modif_file
         write.csv(download_table,download_table_file,quote = F,row.names = F)
       }
          

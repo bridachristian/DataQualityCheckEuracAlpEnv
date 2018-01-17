@@ -4,7 +4,7 @@
 \alias{exclude_out_of_range}
 \title{This function reject all values greater than max and smaller than min in a data.frame}
 \usage{
-exclude_out_of_range(DATA, DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
+exclude_out_of_range(DATA, DATETIME_HEADER = "TIMESTAMP", RANGE_DIR,
   RANGE_FILE)
 }
 \arguments{
@@ -12,9 +12,9 @@ exclude_out_of_range(DATA, DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
 
 \item{DATETIME_HEADER}{header of data corresponding to datetime}
 
-\item{SUPPORT_DIR}{directory where support files are stored}
+\item{RANGE_DIR}{directory where support files are stored}
 
-\item{RANGE_FILE}{name of filr where min/max thresholds are defined for each variable. Thi file is in SUPPORT_DIR}
+\item{RANGE_FILE}{name of filr where min/max thresholds are defined for each variable. Thi file is in RANGE_DIR}
 }
 \value{
 A data.frame with all values in its physical range
@@ -23,6 +23,6 @@ A data.frame with all values in its physical range
 This function reject all values greater than max and smaller than min in a data.frame
 }
 \examples{
-exclude_out_of_range(DATA = mydata, SUPPORT_DIR = support_dir, RANGE_FILE = "Range.csv")
+exclude_out_of_range(DATA = mydata, RANGE_DIR = RANGE_DIR, RANGE_FILE = "Range.csv")
 
 }

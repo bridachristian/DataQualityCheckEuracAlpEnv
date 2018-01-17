@@ -4,12 +4,12 @@
 \alias{check_empty_file}
 \title{This function check the file size of input file}
 \usage{
-check_empty_file(SCHEDULING_DIR, FILE)
+check_empty_file(INPUT_DATA_DIR, FILE_NAME)
 }
 \arguments{
-\item{SCHEDULING_DIR}{Directory where input file is stored}
+\item{INPUT_DATA_DIR}{Directory where input file is stored}
 
-\item{FILE}{File name (.dat)}
+\item{FILE_NAME}{File name (.dat)}
 }
 \value{
 A logig value that indicates if the file is empty or not
@@ -18,6 +18,6 @@ A logig value that indicates if the file is empty or not
 This function check the file size of input file
 }
 \examples{
-check_empty_file(SCHEDULING_DIR = "~/Data/Input/",FILE = "M4s.dat")
-check_empty_file(SCHEDULING_DIR = "Your input folder",FILE = "Your file to check")
+check_empty_file(INPUT_DATA_DIR = "~/Data/Input/",FILE = "M4s.dat")
+check_empty_file(INPUT_DATA_DIR = "Your input folder",FILE = "Your file to check")
 }

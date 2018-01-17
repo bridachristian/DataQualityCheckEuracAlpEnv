@@ -196,7 +196,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         
         w = which(colnames(mydata) == datetime_header)
         time_tot <- mydata[,w]
-        time_tot <- as.POSIXct(time_tot, format = "%Y-%m-%d %H:%M:%S")
+        time_tot <- as.POSIXct(time_tot, format = "%Y-%m-%d %H:%M")
         time_missing <- missing_index_date[,2]
         if(length(which(time_tot %in% time_missing )) == 0){
           flag_missing_dates = 0      # No missing dates
@@ -385,8 +385,9 @@ if(flag_empty == 0){
       if(flag_overlap == 0){
         w = which(colnames(mydata) == datetime_header)
         time_tot <- mydata[,w]
-        time_tot <- as.POSIXct(time_tot, format = "%Y-%m-%d %H:%M:%S")
+        # time_tot <- as.POSIXct(time_tot, format = "%Y-%m-%d %H:%M")
         time_missing <- missing_index_date[,2]
+        time_missing <-as.character(time_missing)
         
         df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
         colnames(df_missing) = c("time","Status")

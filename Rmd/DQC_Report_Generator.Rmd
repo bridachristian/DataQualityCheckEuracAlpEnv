@@ -386,9 +386,9 @@ if(flag_empty == 0){
       if(flag_overlap == 0){
         w = which(colnames(mydata) == datetime_header)
         time_tot <- mydata[,w]
-        # time_tot <- as.POSIXct(time_tot, format = "%Y-%m-%d %H:%M")
+        time_tot <- as.POSIXct(time_tot, format = datetime_format, tz = 'Etc/GMT-1' )
         time_missing <- missing_index_date[,2]
-        time_missing <-as.character(time_missing)
+        # time_missing <-as.character(time_missing)
         
         df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
         colnames(df_missing) = c("time","Status")

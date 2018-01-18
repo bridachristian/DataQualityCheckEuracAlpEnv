@@ -27,8 +27,8 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
     
     colnames(data) = header_colnames
     
-     w <- which(colnames(data) == DATETIME_HEADER)
-    # 
+    w <- which(colnames(data) == DATETIME_HEADER)
+     
     # y <- c(min(gregexpr("y",DATETIME_FORMAT)[[1]]),max(gregexpr("y",DATETIME_FORMAT)[[1]]))
     # m <- c(min(gregexpr("m",DATETIME_FORMAT)[[1]]),max(gregexpr("m",DATETIME_FORMAT)[[1]]))
     # d <- c(min(gregexpr("d",DATETIME_FORMAT)[[1]]),max(gregexpr("d",DATETIME_FORMAT)[[1]]))
@@ -56,7 +56,7 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
     
     date_chr = data[,w]
     time <- as.POSIXct( strptime(x = date_chr, format = DATETIME_FORMAT), tz = 'Etc/GMT-1')
-    time <- format(time,format = DATETIME_FORMAT)
+    # time <- format(time,format = DATETIME_FORMAT)
     
     # time <- as.POSIXct( strptime(x = date_chr, format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
     

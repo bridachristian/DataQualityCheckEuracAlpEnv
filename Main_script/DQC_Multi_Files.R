@@ -41,7 +41,8 @@ project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckE
 data_from_row =  5                                             # <-- Row number of first data
 header_row_number =  2                                         # <-- Row number of header
 datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-datetime_format =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+# datetime_format =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+datetime_format =  "%Y-%m-%d %H:%M"                          # <-- datetime format. Use only: Y -> year, m -> month, d -> day, H -> hour, M -> minute
 datetime_sampling =  "15 min"
 record_header =  "RECORD"
 range_file =  "Range.csv"

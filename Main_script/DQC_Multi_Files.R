@@ -79,6 +79,7 @@ j = 1
 
 for(j in  1: length(files_available)){
   
+  for(j in  1:1){
   rm(list = setdiff(ls(),c("j","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                            "files_available","header_row_number","input_dir","output_dir_data","output_dir_report","project_dir",
                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report" )))

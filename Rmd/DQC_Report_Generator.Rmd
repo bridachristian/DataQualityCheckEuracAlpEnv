@@ -196,7 +196,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         
         w = which(colnames(mydata) == datetime_header)
         time_tot <- mydata[,w]
-        time_tot <- as.POSIXct(time_tot, format = "%Y-%m-%d %H:%M")
+        time_tot <- as.POSIXct(time_tot, format = datetime_format)
         time_missing <- missing_index_date[,2]
         if(length(which(time_tot %in% time_missing )) == 0){
           flag_missing_dates = 0      # No missing dates
@@ -240,7 +240,7 @@ if(flag_empty == 0){
             out_filename_dupli = paste("Duplicated_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
             
             
-            write.csv(out_mydata,paste(output_dir_data,"ppp_",out_filename_data,sep = ""),quote = F,row.names = F, na = "NaN")
+            write.csv(out_mydata,paste(output_dir_data,out_filename_data,sep = ""),quote = F,row.names = F, na = "NaN")
             
             #~~~~~~~~~~
             colnames(duplicated_data) = colnames(header)

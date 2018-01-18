@@ -32,7 +32,7 @@ time_to_char = function(DATA, DATETIME_HEADER, DATETIME_FORMAT){
 
 
   
-  DATA[,w] = format(DATA[,w],format = "%Y-%m-%d %H:%M")
+  DATA[,w] = format(DATA[,w],format = DATETIME_FORMAT)
   
   
   

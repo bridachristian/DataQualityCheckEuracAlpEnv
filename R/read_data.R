@@ -55,7 +55,8 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
     # }
     
     date_chr = data[,w]
-    time <- as.POSIXct( strptime(x = date_chr, format = "%Y-%m-%d %H:%M:%S"), tz = 'Etc/GMT-1')
+    time <- as.POSIXct( strptime(x = date_chr, format = DATETIME_FORMAT), tz = 'Etc/GMT-1')
+    # time <- as.POSIXct( strptime(x = date_chr, format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
     
     data[,w] <- time
     
@@ -66,6 +67,9 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
     }
     flag_error_df = 0
   } else{
+    
+    
+    # to modify!!!!!!
     if(ncol(data) < ncol(header_colnames)){
       
       df_NA = as.data.frame(matrix(data = NA, ncol = ncol(header_colnames)-ncol(data),nrow = nrow(data)))

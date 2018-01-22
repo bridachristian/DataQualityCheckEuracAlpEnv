@@ -173,9 +173,15 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         }
         
         if(length(variable_to_set) != 0){
-          flag_range_to_set = 1
+          flag_range_variable_to_set = 1
         }else{
-          flag_range_to_set = 0
+          flag_range_variable_to_set = 0
+        }
+        
+        if(length(variable_new) != 0){
+          flag_range_variable_new = 1
+        }else{
+          flag_range_variable_new = 0
         }
         
         
@@ -253,7 +259,7 @@ if(flag_empty == 0){
   }
 
 
-flags_names = c("flag_empty","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_dates","flag_range_to_set","flag_out_of_range")
+flags_names = c("flag_empty","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_dates","flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range")
 flags_df = data.frame(flags_names, rep(NA,times = length(flags_names)))
 colnames(flags_df) = c("flag_names", "value")
 
@@ -296,18 +302,18 @@ And: *`r if(write_output_report == TRUE){paste("to write output report here:", o
 
 ### OUTPUT: 
 
-#### **Is the file empty?** `r if(flags_df$value[1] == 0){paste("NO: all right!")}else{paste("YES: check it!")}`
+#### **Is the file empty?** `r if(flag_empty == 0){paste("NO: all right!")}else{paste("YES: check it!")}`
 
 
-`r if(flags_df$value[1] == 0){paste("Ok:",file,"is not empty")}else{paste("Error:",file,"is empty")}`
+`r if(flag_empty == 0){paste("Ok:",file,"is not empty")}else{paste("Error:",file,"is empty")}`
 
 <!-- `r if(flag_empty == 0){paste("NO: all right!")}` `r if(flag_empty == 1){paste("YES: check it!")}` -->
 <!-- `r if(flag_empty == 0){paste("Ok:",file,"is not empty")}` -->
 <!-- `r if(flag_empty == 1){paste("Error:",file,"is empty")}` -->
 
-#### **There are problems in data file structure?**  `r if(is.na(flags_df$value[2])){paste("- - -")}else{if(flags_df$value[2] == -1){paste("YES, there are more header than data!")}else{if(flags_df$value[2] == 0){paste("NO: all right!")}else{if(flags_df$value[2] == 1){paste("YES: there are some data without header!")}}}}`
+#### **There are problems in data file structure?**  `r if(is.na(flag_error_df)){paste("- - -")}else{if(flag_error_df == -1){paste("YES, there are more header than data!")}else{if(flag_error_df == 0){paste("NO: all right!")}else{if(flag_error_df == 1){paste("YES: there are some data without header!")}}}}`
 
-`r if(is.na(flags_df$value[2])){paste("Before continuing, solve previous problems!")}else{if(flags_df$value[2] == -1){paste("Check input file! Why there is more headers than data?")}else{if(flags_df$value[2] == 0){paste("There isn't any problems")}else{if(flags_df$value[2] == 1){paste("Possible problems: 1. row shifted above. 2. new data with old headers. 3. other file manipulation errors")}}}} `
+`r if(is.na(flag_error_df)){paste("Before continuing, solve previous problems!")}else{if(flag_error_df == -1){paste("Check input file! Why there is more headers than data?")}else{if(flag_error_df == 0){paste("There isn't any problems")}else{if(flag_error_df == 1){paste("Possible problems: 1. row shifted above. 2. new data with old headers. 3. other file manipulation errors")}}}} `
 
 
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){paste("NO: all right!")}}` `r if(flag_empty == 0){if(flag_error_df == 1){paste("YES: there are some data without header!")}}` `r if(flag_empty == 0){if(flag_error_df == -1){paste("YES, there are more header than data!")}}` `r if(flag_empty == 1){paste("- - -")}` -->
@@ -317,9 +323,9 @@ And: *`r if(write_output_report == TRUE){paste("to write output report here:", o
 <!-- `r if(flag_empty == 0){if(flag_error_df == 1){paste("Possible problems: 1. row shifted above. 2. new data with old headers. 3. other file manipulation errors")}}` -->
 <!-- `r if(flag_empty == 0){if(flag_error_df == -1){paste("Check input file! Why there is more headers than data?")}}` -->
 
-#### **The file is already process?**  `r if(is.na(flags_df$value[3])){paste("- - -")}else{if(flags_df$value[3] == 0){paste("NO: all right!")}else{if(flags_df$value[3] == 1){paste("YES: File already process!")}}} `
+#### **The file is already process?**  `r if(is.na(flag_date)){paste("- - -")}else{if(flag_date == 0){paste("NO: all right!")}else{if(flag_date == 1){paste("YES: File already process!")}}} `
 
-`r if(is.na(flags_df$value[3])){paste("Before continuing, solve previous problems!")}`
+`r if(is.na(flag_date)){paste("Before continuing, solve previous problems!")}`
 
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){paste("NO: all right!")}}}``r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 1){paste("YES: File already process!")}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}`  -->
 
@@ -339,9 +345,9 @@ if(flag_empty == 0){
 }
 
 ```
-#### **There are duplicated rows?**  `r if(is.na(flags_df$value[4])){paste("- - -")}else{if(flags_df$value[4] == 0){paste("NO: all right!")}else{if(flags_df$value[4] == 1){paste("YES: there are duplicated rows!")}}} `
+#### **There are duplicated rows?**  `r if(is.na(flag_duplicates_rows)){paste("- - -")}else{if(flag_duplicates_rows == 0){paste("NO: all right!")}else{if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}} `
 
-`r if(is.na(flags_df$value[4])){paste("Before continuing, solve previous problems!")}else{if(flags_df$value[4] == 0){paste("There isn't any duplicated row")}else{if(flags_df$value[4] == 1){paste("Attention: there are duplicated row in input file. See:",paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}} `
+`r if(is.na(flag_duplicates_rows)){paste("Before continuing, solve previous problems!")}else{if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}else{if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:",paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}} `
 
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}}}`  -->
 <!-- `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 1){paste("- - -")}`  -->
@@ -350,11 +356,11 @@ if(flag_empty == 0){
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}}}` -->
 
 
-#### **There are overlaps? ** `r if(is.na(flags_df$value[5])){paste("- - -")}else{if(flags_df$value[5] == 0){paste("NO: all right!")}else{if(flags_df$value[5] == 1){paste("YES: there are overlaps!")}}} `
+#### **There are overlaps? ** `r if(is.na(flag_overlap)){paste("- - -")}else{if(flag_overlap == 0){paste("NO: all right!")}else{if(flag_overlap == 1){paste("YES: there are overlaps!")}}} `
 
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("YES: there are overlaps!")}}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}`  -->
 
-`r if(is.na(flags_df$value[5])){paste("Before continuing, solve previous problems!")}else{if(flags_df$value[5] == 0){paste("There isn't any overlap!")}else{if(flags_df$value[5] == 1){paste("There are the following ovelap:")}}} `
+`r if(is.na(flag_overlap)){paste("Before continuing, solve previous problems!")}else{if(flag_overlap == 0){paste("There isn't any overlap!")}else{if(flag_overlap == 1){paste("There are the following ovelap:")}}} `
 
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("There are the following ovelap:")}else{paste("There isn't any overlap!")}}}}` -->
 
@@ -410,12 +416,12 @@ if(flag_empty == 0){
 }
 ```
 
-#### **There are missing dates?** `r if(is.na(flags_df$value[6])){paste("- - -")}else{if(flags_df$value[6] == 0){paste("NO: all right!")}else{if(flags_df$value[6] == 1){paste("YES: there are missing dates!")}}} `
+#### **There are missing dates?** `r if(is.na(flag_missing_dates)){paste("- - -")}else{if(flag_missing_dates == 0){paste("NO: all right!")}else{if(flag_missing_dates == 1){paste("YES: there are missing dates!")}}} `
 
 
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("NO: all right!")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){ if(flag_missing_dates == 1){paste("YES: there are missing dates!")}}}}}` `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}`  -->
 
-`r if(is.na(flags_df$value[6])){paste("Before continuing, solve previous problems!")}`
+`r if(is.na(flag_missing_dates)){paste("Before continuing, solve previous problems!")}`
 
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}}` -->
 
@@ -448,7 +454,7 @@ if(flag_empty == 0){
 }
 ```
 
-`r if(!is.na(flags_df$value[6])){if(flags_df$value[6] == 0){paste("There isn't any missing dates!")}else{if(flags_df$value[6] == 1){paste("Statistics of missing dates:")}}} `
+`r if(!is.na(flag_missing_dates)){if(flag_missing_dates == 0){paste("There isn't any missing dates!")}else{if(flag_missing_dates == 1){paste("Statistics of missing dates:")}}} `
 
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 0){paste("There isn't any missing dates!")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_missing_dates == 1){paste("Statistics of missing dates:")}}}}}` -->
 
@@ -498,7 +504,7 @@ if(flag_empty == 0){
 
 
 
-#### **Do you need to update the range file?** `r if(is.na(flags_df$value[7])){paste("- - -")}else{if(flags_df$value[7] == 0){paste("NO, the range file is up to date!")}else{if(flags_df$value[7] == 1){paste("YES, update limits of the following variables")}}} `
+#### **Do you need to update the range file?** `r if(is.na(flag_range_variable_to_set)){paste("- - -")}else{if(flag_range_variable_to_set == 0){paste("NO, the range file is up to date!")}else{if(flag_range_variable_to_set == 1){paste("YES, update limits of the following variables")}}} `
 
 <!-- `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(length(variable_not_in_range_file) == 0){paste("No, the range file is up to date!")}else{paste("YES, update limits of the following variables")}}}}}` -->
 
@@ -508,35 +514,56 @@ if(flag_empty == 0){
     if(flag_date == 0){
       if(flag_overlap == 0){
         
-        
-        if(length(variable_not_in_range_file) != 0){
-          for(i in 1:length(variable_not_in_range_file)){
-            t1 = paste("Header: ","*",variable_not_in_range_file,"*","is now in range file.","Set limits in",range_file)
-          }
-          flag_range_to_set = 1
-        }else{
-          t1 = paste("Any new variable in range file:",range_file)
-          flag_range_to_set = 0
+        if(flag_range_variable_new == 1){
+          df_variable_new = data.frame(variable_new)
+          colnames(df_variable_new) = "Variable"
+          kable(df_variable_new, format = "html",align = "c",row.names = F)%>%
+            kable_styling() %>%
+            scroll_box( height = "200px") 
         }
+        
+        if(flag_range_variable_to_set == 1){
+          df_variable_to_set = data.frame(variable_to_set)
+          colnames(df_variable_to_set) = "Variable"
+          kable(df_variable_to_set, format = "html",align = "c",row.names = F)%>%
+            kable_styling() %>%
+            scroll_box( height = "200px") 
+          
+        }else{
+          
+        }
+        
+        # if(length(variable_not_in_range_file) != 0){
+        #   
+        #   
+        #   
+        #   for(i in 1:length(variable_not_in_range_file)){
+        #     t1 = paste("Header: ","*",variable_not_in_range_file,"*","is now in range file.","Set limits in",range_file)
+        #   }
+        #   flag_range_variable_to_set = 1
+        # }else{
+        #   t1 = paste("Any new variable in range file:",range_file)
+        #   flag_range_variable_to_set = 0
+        # }
       }
     }
   } 
 }
 ```
 
-`r if(!is.na(flags_df$value[7])){paste(t1)}else{paste("Before continuing, solve previous problems!")} `
+`r if(!is.na(flag_range_variable_to_set)){paste(t1)}else{paste("Before continuing, solve previous problems!")} `
 
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){paste(t1)}}}}` -->
 
-#### **There are values are out of physical range?** `r if(is.na(flags_df$value[8])){paste("- - -")}else{if(flags_df$value[8] == 0){paste("NO: all right!")}else{if(flags_df$value[8] == 1){paste("YES, the following variables contain data out of range!")}}} `
+#### **There are values are out of physical range?** `r if(is.na(flag_out_of_range)){paste("- - -")}else{if(flag_out_of_range == 0){paste("NO: all right!")}else{if(flag_out_of_range == 1){paste("YES, the following variables contain data out of range!")}}} `
 
 
-<!-- `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date != 0){paste("- - -")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_set == 1){paste("- - -")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_set == 0){if(flag_out_of_range == 0){paste("No data out of range")}}}}}}` -->
+<!-- `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date != 0){paste("- - -")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_variable_to_set == 1){paste("- - -")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_variable_to_set == 0){if(flag_out_of_range == 0){paste("No data out of range")}}}}}}` -->
 
 
-`r if(is.na(flags_df$value[8])){paste("Before continuing, solve previous problems!")}`
+`r if(is.na(flag_out_of_range)){paste("Before continuing, solve previous problems!")}`
 
-<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_set == 1){paste("Before continuing, set range limits for previous variables!")}}}}}` -->
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_variable_to_set == 1){paste("Before continuing, set range limits for previous variables!")}}}}}` -->
 
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}}`  -->
 
@@ -546,7 +573,7 @@ if(flag_empty == 0){
   if(flag_error_df == 0){
     if(flag_date == 0){
       if(flag_overlap == 0){
-        if(flag_range_to_set == 0){
+        if(flag_range_variable_to_set == 0){
           for(j in 1:ncol(check_out_of_range)){
             if(colnames(check_out_of_range)[j] ==  datetime_header){}else{
               

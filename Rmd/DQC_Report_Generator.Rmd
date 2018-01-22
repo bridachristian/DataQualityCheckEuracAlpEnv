@@ -508,7 +508,7 @@ if(flag_empty == 0){
 
 <!-- `r if(is.na(flag_range_variable_to_set)){paste("- - -")}else{if(flag_range_variable_to_set == 0){paste("NO, the range file is up to date!")}else{if(flag_range_variable_to_set == 1){paste("YES, update limits of the following variables")}}} ` -->
 
-<!-- `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(length(variable_not_in_range_file) == 0){paste("No, the range file is up to date!")}else{paste("YES, update limits of the following variables")}}}}}` -->
+
 
 ```{r echo=FALSE, warning=FALSE,results='asis'}
 if(flag_empty == 0){
@@ -520,10 +520,10 @@ if(flag_empty == 0){
           df_variable_new = data.frame(variable_new)
           colnames(df_variable_new) = "Variable"
           print("New variables add in range file. Set thresholds!")
-          print(df_variable_new)
-          # kable(df_variable_new, format = "html",align = "c",row.names = F)%>%
-          #   kable_styling() %>%
-          #   scroll_box( height = "200px")
+          # print(df_variable_new)
+          kable(df_variable_new, format = "html",align = "c",row.names = F)%>%
+            kable_styling() %>%
+            scroll_box( height = "200px")
         }else{
           print("Any new variables in range file.")
         }
@@ -532,36 +532,21 @@ if(flag_empty == 0){
           df_variable_to_set = data.frame(variable_to_set)
           colnames(df_variable_to_set) = "Variable"
           print("Remember to update thresholds for these variables in range file")
-          print(df_variable_to_set)
-          # kable(df_variable_to_set, format = "html",align = "c",row.names = F)%>%
-          #   kable_styling() %>%
-          #   scroll_box( height = "200px")
+          # print(df_variable_to_set)
+          kable(df_variable_to_set, format = "html",align = "c",row.names = F)%>%
+            kable_styling() %>%
+            scroll_box( height = "200px")
           
         }else{
            print("Any variables to set in range file.")
         }
-        
-        # if(length(variable_not_in_range_file) != 0){
-        #   
-        #   
-        #   
-        #   for(i in 1:length(variable_not_in_range_file)){
-        #     t1 = paste("Header: ","*",variable_not_in_range_file,"*","is now in range file.","Set limits in",range_file)
-        #   }
-        #   flag_range_variable_to_set = 1
-        # }else{
-        #   t1 = paste("Any new variable in range file:",range_file)
-        #   flag_range_variable_to_set = 0
-        # }
       }
     }
   } 
 }
 ```
 
-`r if(!is.na(flag_range_variable_to_set)){paste(t1)}else{paste("Before continuing, solve previous problems!")} `
 
-<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){paste(t1)}}}}` -->
 
 #### **There are values are out of physical range?** `r if(is.na(flag_out_of_range)){paste("- - -")}else{if(flag_out_of_range == 0){paste("NO: all right!")}else{if(flag_out_of_range == 1){paste("YES, the following variables contain data out of range!")}}} `
 
@@ -569,7 +554,7 @@ if(flag_empty == 0){
 <!-- `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date != 0){paste("- - -")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_variable_to_set == 1){paste("- - -")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_variable_to_set == 0){if(flag_out_of_range == 0){paste("No data out of range")}}}}}}` -->
 
 
-`r if(is.na(flag_out_of_range)){paste("Before continuing, solve previous problems!")}`
+<!-- `r if(is.na(flag_out_of_range)){paste("Before continuing, solve previous problems!")}` -->
 
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_variable_to_set == 1){paste("Before continuing, set range limits for previous variables!")}}}}}` -->
 
@@ -581,7 +566,7 @@ if(flag_empty == 0){
   if(flag_error_df == 0){
     if(flag_date == 0){
       if(flag_overlap == 0){
-        if(flag_range_variable_to_set == 0){
+        
           for(j in 1:ncol(check_out_of_range)){
             if(colnames(check_out_of_range)[j] ==  datetime_header){}else{
               
@@ -770,7 +755,7 @@ if(flag_empty == 0){
       }
     }
   }
-}
+
 
 ```
 

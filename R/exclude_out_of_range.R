@@ -17,14 +17,14 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", RANGE_DIR, R
   options(scipen = 999)
   range = read.csv(paste(RANGE_DIR, RANGE_FILE,sep = ""),stringsAsFactors = FALSE)          # <- import table that contains for each variable the permissible range
   
-  to_set = range[which(range$min == "to set" | range$max == "to set"),]
+  # to_set = range[which(range$min == "to set" | range$max == "to set"),]
+  # 
+  # if(nrow(to_set) != 0){
+  # range = range[-which(range$Variable == to_set$Variable),]
+  # }
   
-  if(nrow(to_set) != 0){
-  range = range[-which(range$Variable == to_set$Variable),]
-  }
-  
-  range[,which(colnames(range) == "min")] = as.numeric(range[,which(colnames(range) == "min")])
-  range[,which(colnames(range) == "max")] = as.numeric(range[,which(colnames(range) == "max")])
+  range$min = as.numeric(range$min)
+  range$max = as.numeric(range$max)
   
   range = range[order(range$Variable),] # reorder range file based on variable
   
@@ -62,7 +62,7 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", RANGE_DIR, R
   }
   
   if(length(to_add) != 0){
-    df_to_add = data.frame(to_add, rep("to set", times=length(to_add)),rep("to set", times=length(to_add)))
+    df_to_add = data.frame(to_add, rep(NA, times=length(to_add)),rep(NA, times=length(to_add)),rep(1, times=length(to_add)))
     colnames(df_to_add) = colnames(range)
     
     range = rbind(range,df_to_add)

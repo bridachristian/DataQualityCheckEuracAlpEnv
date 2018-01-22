@@ -159,7 +159,9 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
         mydata <- range[[1]]
         check_out_of_range <- range[[2]]
-        variable_not_in_range_file <-range[[3]]
+        variable_new <-range[[3]]
+        variable_to_set <-range[[4]]
+
         
         # ..... Flags .....................................................................................................................................
         

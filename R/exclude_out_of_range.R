@@ -68,11 +68,14 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", RANGE_DIR, R
     range = rbind(range,df_to_add)
   }
 
+  variable_to_set =range$Variable[which(range$to_set == 1)]
+  variable_new = to_add
+  
   range$min = as.character(range$min)
   range$max = as.character(range$max)
   write.csv(range,paste(RANGE_DIR, RANGE_FILE,sep = ""),quote = F,row.names = F, na = "")
   
-  out = list(new, new_status, to_add)
+  out = list(new, new_status, variable_new, variable_to_set)
   
   return(out)
 }

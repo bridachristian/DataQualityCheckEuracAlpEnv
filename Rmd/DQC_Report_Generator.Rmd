@@ -504,7 +504,9 @@ if(flag_empty == 0){
 
 
 
-#### **Do you need to update the range file?** `r if(is.na(flag_range_variable_to_set)){paste("- - -")}else{if(flag_range_variable_to_set == 0){paste("NO, the range file is up to date!")}else{if(flag_range_variable_to_set == 1){paste("YES, update limits of the following variables")}}} `
+#### **Do you need to update the range file?** `r if(is.na(flag_range_variable_to_set) | is.na(flag_range_variable_new) ){paste("- - -")}else{if(flag_range_variable_to_set == 0 & flag_range_variable_new == 0){paste("NO, the range file is up to date!")}else{if(flag_range_variable_to_set == 1 | flag_range_variable_new == 1){paste("YES, update limits of the following variables")}}} `
+
+<!-- `r if(is.na(flag_range_variable_to_set)){paste("- - -")}else{if(flag_range_variable_to_set == 0){paste("NO, the range file is up to date!")}else{if(flag_range_variable_to_set == 1){paste("YES, update limits of the following variables")}}} ` -->
 
 <!-- `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(length(variable_not_in_range_file) == 0){paste("No, the range file is up to date!")}else{paste("YES, update limits of the following variables")}}}}}` -->
 
@@ -517,20 +519,24 @@ if(flag_empty == 0){
         if(flag_range_variable_new == 1){
           df_variable_new = data.frame(variable_new)
           colnames(df_variable_new) = "Variable"
-          kable(df_variable_new, format = "html",align = "c",row.names = F)%>%
+          print("New variables add in range file. Set thresholds!")
+          print(kable(df_variable_new, format = "html",align = "c",row.names = F)%>%
             kable_styling() %>%
-            scroll_box( height = "200px") 
+            scroll_box( height = "200px"))
+        }else{
+          print("Any new variables in range file.")
         }
         
         if(flag_range_variable_to_set == 1){
           df_variable_to_set = data.frame(variable_to_set)
           colnames(df_variable_to_set) = "Variable"
-          kable(df_variable_to_set, format = "html",align = "c",row.names = F)%>%
+          print("Remember to update thresholds for these variables in range file")
+          print(kable(df_variable_to_set, format = "html",align = "c",row.names = F)%>%
             kable_styling() %>%
-            scroll_box( height = "200px") 
+            scroll_box( height = "200px")) 
           
         }else{
-          
+           print("Any variables to set in range file.")
         }
         
         # if(length(variable_not_in_range_file) != 0){

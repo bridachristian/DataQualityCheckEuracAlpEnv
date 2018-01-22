@@ -709,7 +709,6 @@ TargmV_Avg,,,
 TargmV_Std,,,
 TargTempC_Avg,-50,100,
 TargTempC_Std,,,
-TIMESTAMP,,,1
 Tsoil_CI_z0_Avg,-50,100,
 Tsoil_CI_z0_Std,,,
 Tsoil_CI_z10_Avg,-50,100,
@@ -793,4 +792,5 @@ WPrecip_T_HeatRim_Avg,-100,100,
 WPrecip_T_HeatRim_Std,,,
 WSpeed_Avg,-5,100,
 WSpeed_Std,,,
+TIMESTAMP,,,1
 RECORD,,,1

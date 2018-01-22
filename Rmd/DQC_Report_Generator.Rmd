@@ -172,13 +172,13 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
           flag_duplicates_rows = 1
         }
         
-        if(length(variable_not_in_range_file) != 0){
-          flag_range_to_update = 1
+        if(length(variable_to_set) != 0){
+          flag_range_to_set = 1
         }else{
-          flag_range_to_update = 0
+          flag_range_to_set = 0
         }
         
-        if(flag_range_to_update == 0){
+        
         if(1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
           flag_out_of_range = 1
         }else{
@@ -187,9 +187,6 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
           }else{
             flag_out_of_range = 0
           }
-        }
-        }else{
-          flag_out_of_range = NA
         }
         
         
@@ -222,7 +219,6 @@ if(flag_empty == 0){
   if(flag_error_df == 0){
     if(flag_date == 0){
       if(flag_overlap == 0){
-        if(flag_range_to_update == 0){
           if(write_output_files == TRUE){
             #~~~~~~~~~~
             colnames(header) = header[1,]
@@ -255,9 +251,9 @@ if(flag_empty == 0){
       }
     }
   }
-}
 
-flags_names = c("flag_empty","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_dates","flag_range_to_update","flag_out_of_range")
+
+flags_names = c("flag_empty","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_dates","flag_range_to_set","flag_out_of_range")
 flags_df = data.frame(flags_names, rep(NA,times = length(flags_names)))
 colnames(flags_df) = c("flag_names", "value")
 
@@ -511,14 +507,16 @@ if(flag_empty == 0){
   if(flag_error_df == 0){
     if(flag_date == 0){
       if(flag_overlap == 0){
+        
+        
         if(length(variable_not_in_range_file) != 0){
           for(i in 1:length(variable_not_in_range_file)){
             t1 = paste("Header: ","*",variable_not_in_range_file,"*","is now in range file.","Set limits in",range_file)
           }
-          flag_range_to_update = 1
+          flag_range_to_set = 1
         }else{
           t1 = paste("Any new variable in range file:",range_file)
-          flag_range_to_update = 0
+          flag_range_to_set = 0
         }
       }
     }
@@ -533,12 +531,12 @@ if(flag_empty == 0){
 #### **There are values are out of physical range?** `r if(is.na(flags_df$value[8])){paste("- - -")}else{if(flags_df$value[8] == 0){paste("NO: all right!")}else{if(flags_df$value[8] == 1){paste("YES, the following variables contain data out of range!")}}} `
 
 
-<!-- `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date != 0){paste("- - -")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("- - -")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 0){if(flag_out_of_range == 0){paste("No data out of range")}}}}}}` -->
+<!-- `r if(flag_empty == 1){paste("- - -")}` `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date != 0){paste("- - -")}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_set == 1){paste("- - -")}}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_set == 0){if(flag_out_of_range == 0){paste("No data out of range")}}}}}}` -->
 
 
 `r if(is.na(flags_df$value[8])){paste("Before continuing, solve previous problems!")}`
 
-<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_update == 1){paste("Before continuing, set range limits for previous variables!")}}}}}` -->
+<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 0){if(flag_range_to_set == 1){paste("Before continuing, set range limits for previous variables!")}}}}}` -->
 
 <!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_overlap == 1){paste("Before continuing, solve previous problems!")}}}}`  -->
 
@@ -548,7 +546,7 @@ if(flag_empty == 0){
   if(flag_error_df == 0){
     if(flag_date == 0){
       if(flag_overlap == 0){
-        if(flag_range_to_update == 0){
+        if(flag_range_to_set == 0){
           for(j in 1:ncol(check_out_of_range)){
             if(colnames(check_out_of_range)[j] ==  datetime_header){}else{
               

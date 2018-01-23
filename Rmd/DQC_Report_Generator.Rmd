@@ -451,7 +451,7 @@ if(flag_empty == 0){
             theme_new+
             # ggtitle("Time distribution of missing dates")+
             labs(title="Time distribution of missing dates",
-                 subtitle=paste("Total missing dates: ", tot_missing," (/",nrow(mydata),")"))
+                 subtitle=paste("Total missing dates: ", tot_missing," (/",nrow(mydata),")",sep = ""))
         }
       }
     }

@@ -277,6 +277,8 @@ for(i in 1: nrow(flags_df)){
 
 File selected: **`r  file`** 
 
+Timeseries start at **`r mydata[1,which(colnames( mydata) == datetime_header)]`** and end at **`r mydata[nrow(mydata),which(colnames( mydata) == datetime_header)]`** 
+
 You have also select these parameters:
 
 + Data start from row: *`r data_from_row`*
@@ -493,16 +495,40 @@ if(flag_empty == 0){
           statistic_missing = data.frame(date_start,date_end,gap_lenght,gap_hour)
           colnames(statistic_missing) = c("From", "To", "Number of Record", "Hours")
           
-          # kable(statistic_missing, format = "markdown",align = "c")
-          kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-            kable_styling() %>%
-            scroll_box( height = "200px") 
+
+          if(nrow(statistic_missing) == 1){
+                  kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+                          kable_styling() %>%
+                          scroll_box( height = "120px")
+                }else{
+                  if(nrow(statistic_missing) == 2){
+                    kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+                            kable_styling() %>%
+                            scroll_box( height = "150px")
+                  }else{
+                    if(nrow(statistic_missing) == 3){
+                      kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+                              kable_styling() %>%
+                              scroll_box( height = "180px")
+                    }else{
+                      if(nrow(statistic_missing) >  3){
+                        kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+                                kable_styling() %>%
+                                scroll_box( height = "210px")
+                      }
+                    }
+                  }
+                }
+          # kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+          #   kable_styling() %>%
+          #   scroll_box( height = "200px") 
         }
       }
     }
   }
 }
 ```
+
 
 
 
@@ -548,9 +574,33 @@ if(flag_empty == 0){
         }
         
        df_to_print = rbind(df_variable_new,df_variable_to_set) 
-       kable(df_to_print, format = "html",align = "l",row.names = F)%>%
-          kable_styling() %>%
-          scroll_box( height = "200px")
+       
+       if(nrow(df_to_print) == 1){
+                  kable(df_to_print, format = "html",align = "l",row.names = F)%>%
+                          kable_styling() %>%
+                          scroll_box( height = "120px")
+                }else{
+                  if(nrow(df_to_print) == 2){
+                    kable(df_to_print, format = "html",align = "l",row.names = F)%>%
+                            kable_styling() %>%
+                            scroll_box( height = "150px")
+                  }else{
+                    if(nrow(df_to_print) == 3){
+                      kable(df_to_print, format = "html",align = "l",row.names = F)%>%
+                              kable_styling() %>%
+                              scroll_box( height = "180px")
+                    }else{
+                      if(nrow(df_to_print) >  3){
+                        kable(df_to_print, format = "html",align = "l",row.names = F)%>%
+                                kable_styling() %>%
+                                scroll_box( height = "210px")
+                      }
+                    }
+                  }
+                }
+       # kable(df_to_print, format = "html",align = "l",row.names = F)%>%
+       #    kable_styling() %>%
+       #    scroll_box( height = "200px")
       }
     }
   } 
@@ -752,9 +802,29 @@ if(flag_empty == 0){
                 statistic_oor = statistic_oor[order(statistic_oor$From),] 
                 
                 # cat(paste("Statistics of data out of range:",c_oor))
-                print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
-                        kable_styling() %>%
-                        scroll_box( height = "200px") ) 
+                if(nrow(statistic_oor) == 1){
+                  print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
+                          kable_styling() %>%
+                          scroll_box( height = "120px") )
+                }else{
+                  if(nrow(statistic_oor) == 2){
+                    print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
+                            kable_styling() %>%
+                            scroll_box( height = "150px") )
+                  }else{
+                    if(nrow(statistic_oor) == 3){
+                      print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
+                              kable_styling() %>%
+                              scroll_box( height = "200px") )
+                    }else{
+                      if(nrow(statistic_oor) >  3){
+                        print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
+                                kable_styling() %>%
+                                scroll_box( height = "220px") )
+                      }
+                    }
+                  }
+                }
                 
                 
                 

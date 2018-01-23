@@ -95,8 +95,9 @@ range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
 
 
 if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
-  # writeLines(paste(FILE,"WARNING: NO DATA FOUND!!!",sep = " "))
+  
   flag_empty = 1
+  
 }else{
   
   flag_empty = 0

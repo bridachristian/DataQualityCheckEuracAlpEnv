@@ -67,9 +67,10 @@ exclude_out_of_range = function(DATA,DATETIME_HEADER = "TIMESTAMP", RANGE_DIR, R
     
     range = rbind(range,df_to_add)
   }
-
-  variable_to_set =range$Variable[which(range$to_set == 1)]
+  
   variable_new = to_add
+  variable_to_set = range$Variable[which(range$to_set == 1)]
+  variable_to_set = setdiff( variable_to_set, variable_new)
   
   range$min = as.character(range$min)
   range$max = as.character(range$max)

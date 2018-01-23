@@ -712,8 +712,8 @@ if(flag_empty == 0){
                   #               "Total Below lower limit: ", how_many_under_range, sep = "")) +
                   scale_y_continuous(limits = c(0.7,1.3))+
                   labs(title=paste(colnames(check_out_of_range)[j]),
-                       subtitle=paste("Total Above upper limit: ", how_many_over_range,"\n",
-                                      "Total Below lower limit: ", how_many_under_range, sep = ""))
+                       subtitle=paste("Total Above upper limit: ", how_many_over_range, "(/",nrow(mydata),")", "\n",
+                                      "Total Below lower limit: ", how_many_under_range,"(/",nrow(mydata),")", sep = ""))
                 
                 print(p1)
                 

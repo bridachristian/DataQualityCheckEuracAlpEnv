@@ -249,9 +249,10 @@ if(flag_empty == 0){
             write.csv(out_mydata,paste(output_dir_data,out_filename_data,sep = ""),quote = F,row.names = F, na = "NaN")
             
             #~~~~~~~~~~
-            colnames(duplicated_data) = colnames(header)
+            out_duplicated = duplicated_data
+            colnames(out_duplicated) = colnames(header)
             
-            out_duplicated_data=rbind(header[-1,],duplicated_data)
+            out_duplicated_data=rbind(header[-1,],out_duplicated)
             write.csv(out_duplicated_data,paste(output_dir_data,out_filename_dupli,sep = ""),quote = F,row.names = F, na = "NaN")
           }
         }
@@ -336,29 +337,28 @@ Timeseries start at *`r mydata[1,which(colnames( mydata) == datetime_header)]`* 
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
 
-if(flag_empty == 0){
-  if(flag_error_df == 0){
-    if(flag_date == 0){
-      x = as.character(duplicated_data[1,])
-      if(unique(x) == "---"){
-        flag_duplicates_rows = 0
-      } else{
-        flag_duplicates_rows = 1
-      }
-    }
-  }
-}
+# if(flag_empty == 0){
+#   if(flag_error_df == 0){
+#     if(flag_date == 0){
+#       x = as.character(duplicated_data[1,])
+#       if(unique(x) == "---"){
+#         flag_duplicates_rows = 0
+#       } else{
+#         flag_duplicates_rows = 1
+#       }
+#     }
+#   }
+# }
 
 ```
 #### **There are duplicated rows?**  `r if(is.na(flag_duplicates_rows)){paste("- - -")}else{if(flag_duplicates_rows == 0){paste("NO: all right!")}else{if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}} `
 
 `r if(is.na(flag_duplicates_rows)){paste("Before continuing, solve previous problems!")}else{if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}else{if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:",paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}} `
 
-<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 0){paste("NO: all right!")}}}}` `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}}}`  -->
-<!-- `r if(flag_empty == 0){if(flag_error_df != 0){paste("- - -")}}` `r if(flag_empty == 1){paste("- - -")}`  -->
+```{r}
 
-<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}}}}` -->
-<!-- `r if(flag_empty == 0){if(flag_error_df == 0){if(flag_date == 0){if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:", paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}}}` -->
+```
+
 
 
 #### **There are overlaps? ** `r if(is.na(flag_overlap)){paste("- - -")}else{if(flag_overlap == 0){paste("NO: all right!")}else{if(flag_overlap == 1){paste("YES: there are overlaps!")}}} `

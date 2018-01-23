@@ -281,6 +281,8 @@ File selected: **`r  file`**
 
 Timeseries start at **`r mydata[1,which(colnames( mydata) == datetime_header)]`** and end at **`r mydata[nrow(mydata),which(colnames( mydata) == datetime_header)]`** 
 
+Timeseries has **`r nrow(mydata)`** samples 
+
 You have also select these parameters:
 
 + Data start from row: *`r data_from_row`*
@@ -354,11 +356,6 @@ Timeseries start at *`r mydata[1,which(colnames( mydata) == datetime_header)]`* 
 #### **There are duplicated rows?**  `r if(is.na(flag_duplicates_rows)){paste("- - -")}else{if(flag_duplicates_rows == 0){paste("NO: all right!")}else{if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}} `
 
 `r if(is.na(flag_duplicates_rows)){paste("Before continuing, solve previous problems!")}else{if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}else{if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:",paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}} `
-
-```{r}
-
-```
-
 
 
 #### **There are overlaps? ** `r if(is.na(flag_overlap)){paste("- - -")}else{if(flag_overlap == 0){paste("NO: all right!")}else{if(flag_overlap == 1){paste("YES: there are overlaps!")}}} `
@@ -451,7 +448,7 @@ if(flag_empty == 0){
             theme_new+
             # ggtitle("Time distribution of missing dates")+
             labs(title="Time distribution of missing dates",
-                 subtitle=paste("Total missing dates: ", tot_missing," (/",nrow(mydata),")",sep = ""))
+                 subtitle=paste("Total missing dates: ", tot_missing,sep = ""))
         }
       }
     }
@@ -712,8 +709,8 @@ if(flag_empty == 0){
                   #               "Total Below lower limit: ", how_many_under_range, sep = "")) +
                   scale_y_continuous(limits = c(0.7,1.3))+
                   labs(title=paste(colnames(check_out_of_range)[j]),
-                       subtitle=paste("Total Above upper limit: ", how_many_over_range, " (/",nrow(mydata),")", "\n",
-                                      "Total Below lower limit: ", how_many_under_range," (/",nrow(mydata),")", sep = ""))
+                       subtitle=paste("Total Above upper limit: ", how_many_over_range, "\n",
+                                      "Total Below lower limit: ", how_many_under_range, sep = ""))
                 
                 print(p1)
                 

@@ -300,6 +300,8 @@ You decide:  *`r if(write_output_files == TRUE){paste("to write output file here
 
 And: *`r if(write_output_report == TRUE){paste("to write output report here:", output_dir_report)} else{paste(("to don't write output report"))}`* 
 
+Timeseries start at *`r mydata[1,which(colnames( mydata) == datetime_header)]`* and end at *`r mydata[nrow(mydata),which(colnames( mydata) == datetime_header)]`*
+
 ### OUTPUT: 
 
 #### **Is the file empty?** `r if(flag_empty == 0){paste("NO: all right!")}else{paste("YES: check it!")}`

@@ -271,15 +271,15 @@ for(i in 1: nrow(flags_df)){
   }
 }
 
-flag_empty = flags_df$value[1,]
-flag_error_df = flags_df$value[2,]
-flag_date = flags_df$value[3,]
-flag_duplicates_rows = flags_df$value[4,]
-flag_overlap = flags_df$value[5,]
-flag_missing_dates = flags_df$value[6,]
-flag_range_variable_to_set = flags_df$value[7,]
-flag_range_variable_new = flags_df$value[8,]
-flag_out_of_range = flags_df$value[9,]
+flag_empty = flags_df$value[1]
+flag_error_df = flags_df$value[2]
+flag_date = flags_df$value[3]
+flag_duplicates_rows = flags_df$value[4]
+flag_overlap = flags_df$value[5]
+flag_missing_dates = flags_df$value[6]
+flag_range_variable_to_set = flags_df$value[7]
+flag_range_variable_new = flags_df$value[8]
+flag_out_of_range = flags_df$value[9]
 
 ```
 

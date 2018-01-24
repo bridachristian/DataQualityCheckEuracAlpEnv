@@ -268,7 +268,6 @@ colnames(flags_df) = c("flag_names", "value")
 for(i in 1: nrow(flags_df)){
   if(exists(flags_names[i])){
     flags_df$value[i] = eval(parse(text = flags_names[i]))
-    
   }
 }
 

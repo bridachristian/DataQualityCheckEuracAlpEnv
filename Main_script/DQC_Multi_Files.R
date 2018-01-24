@@ -75,13 +75,18 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-j = 4
+j = 6
+
+file_already_processed = c()
+file_stopped = c()
+file_ok = c()
 
 for(j in  1: length(files_available)){
   
   rm(list = setdiff(ls(),c("j","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                            "files_available","header_row_number","input_dir","output_dir_data","output_dir_report","project_dir",
-                           "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report" )))
+                           "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
+                           "file_already_processed","file_stopped","file_ok")))
   FILE = files_available[j]
   
   w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
@@ -167,17 +172,20 @@ for(j in  1: length(files_available)){
         download_table$Last_date[w_dwnl] = last_date
         download_table$Last_Modification[w_dwnl] = date_last_modif_file
         write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
+        file_ok = c(file_ok,FILE)
+        
       }
       
       # download_table$Last_date[w_dwnl] = as.character(last_date)
       # download_table$Last_Modification[w_dwnl] = as.character(last_date)
     } else {
       warning("File already process!")
+      file_already_processed = c(file_already_processed,FILE)
     }
     
+    file_stopped = c()
+
     
-    
-    # data_written = c(out_filename_data,out_filename_dupli)
     
     
     

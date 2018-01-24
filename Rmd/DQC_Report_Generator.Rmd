@@ -339,18 +339,18 @@ Timeseries start at *`r mydata[1,which(colnames( mydata) == datetime_header)]`* 
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
 
-# if(flag_empty == 0){
-#   if(flag_error_df == 0){
-#     if(flag_date == 0){
-#       x = as.character(duplicated_data[1,])
-#       if(unique(x) == "---"){
-#         flag_duplicates_rows = 0
-#       } else{
-#         flag_duplicates_rows = 1
-#       }
-#     }
-#   }
-# }
+if(flag_empty == 0){
+  if(flag_error_df == 0){
+    if(flag_date == 0){
+      x = as.character(duplicated_data[1,])
+      if(unique(x) == "---"){
+        flag_duplicates_rows = 0
+      } else{
+        flag_duplicates_rows = 1
+      }
+    }
+  }
+}
 
 ```
 #### **There are duplicated rows?**  `r if(is.na(flag_duplicates_rows)){paste("- - -")}else{if(flag_duplicates_rows == 0){paste("NO: all right!")}else{if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}} `

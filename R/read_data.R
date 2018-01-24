@@ -28,37 +28,9 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
     colnames(data) = header_colnames
     
     w <- which(colnames(data) == DATETIME_HEADER)
-     
-    # y <- c(min(gregexpr("y",DATETIME_FORMAT)[[1]]),max(gregexpr("y",DATETIME_FORMAT)[[1]]))
-    # m <- c(min(gregexpr("m",DATETIME_FORMAT)[[1]]),max(gregexpr("m",DATETIME_FORMAT)[[1]]))
-    # d <- c(min(gregexpr("d",DATETIME_FORMAT)[[1]]),max(gregexpr("d",DATETIME_FORMAT)[[1]]))
-    # H <- c(min(gregexpr("H",DATETIME_FORMAT)[[1]]),max(gregexpr("H",DATETIME_FORMAT)[[1]]))
-    # M <- c(min(gregexpr("M",DATETIME_FORMAT)[[1]]),max(gregexpr("M",DATETIME_FORMAT)[[1]]))
-    # 
-    # year <- substring(data[,w],y[1],y[2])
-    # month <- substring(data[,w],m[1],m[2])
-    # day <- substring(data[,w],d[1],d[2])
-    # hour <- substring(data[,w],H[1],H[2])
-    # min <- substring(data[,w],M[1],M[2])
-    # 
-    # 
-    # if(length(gregexpr("y",DATETIME_FORMAT)[[1]])==4){
-    #   
-    #   date_chr <- paste(year, "-", month, "-", day, " ", hour, ":", min, ":00", sep="")
-    # 
-    # } else{
-    #   if(length(gregexpr("y",DATETIME_FORMAT)[[1]])==2){
-    #     
-    #    date_chr <- paste("20",year, "-", month, "-", day, " ", hour, ":", min, ":00", sep="")
-    #   }
-    #   
-    # }
     
     date_chr = data[,w]
     time <- as.POSIXct( strptime(x = date_chr, format = DATETIME_FORMAT), tz = 'Etc/GMT-1')
-    # time <- format(time,format = DATETIME_FORMAT)
-    
-    # time <- as.POSIXct( strptime(x = date_chr, format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
     
     data[,w] <- time
     
@@ -68,6 +40,14 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
       data[,i] <- as.numeric(data[,i])
     }
     flag_error_df = 0
+    
+    matr_data = as.matrix(data)
+    ind_NA = which(apply(matr_data,1, function(x) all(is.na(x))))
+    
+    if(length(ind_NA) != 0){
+      data = data[-ind_NA,]
+    }
+    
   } else{
     
     
@@ -80,31 +60,6 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
       colnames(data) = header_colnames
       
       w <- which(colnames(data) == DATETIME_HEADER)
-      
-      # y <- c(min(gregexpr("y",DATETIME_FORMAT)[[1]]),max(gregexpr("y",DATETIME_FORMAT)[[1]]))
-      # m <- c(min(gregexpr("m",DATETIME_FORMAT)[[1]]),max(gregexpr("m",DATETIME_FORMAT)[[1]]))
-      # d <- c(min(gregexpr("d",DATETIME_FORMAT)[[1]]),max(gregexpr("d",DATETIME_FORMAT)[[1]]))
-      # H <- c(min(gregexpr("H",DATETIME_FORMAT)[[1]]),max(gregexpr("H",DATETIME_FORMAT)[[1]]))
-      # M <- c(min(gregexpr("M",DATETIME_FORMAT)[[1]]),max(gregexpr("M",DATETIME_FORMAT)[[1]]))
-      # 
-      # year <- substring(data[,w],y[1],y[2])
-      # month <- substring(data[,w],m[1],m[2])
-      # day <- substring(data[,w],d[1],d[2])
-      # hour <- substring(data[,w],H[1],H[2])
-      # min <- substring(data[,w],M[1],M[2])
-      # 
-      # if(length(gregexpr("y",DATETIME_FORMAT)[[1]])==4){
-      #   
-      #   date_chr <- paste(year, "-", month, "-", day, " ", hour, ":", min,":00", sep="")
-      # } else{
-      #   if(length(gregexpr("y",DATETIME_FORMAT)[[1]])==2){
-      #     
-      #     date_chr <- paste("20",year, "-", month, "-", day, " ", hour, ":", min,":00", sep="")
-      #   }
-      #   
-      # }
-      # time <- as.POSIXct( strptime(x = date_chr, format = "%Y-%m-%d %H:%M:%S"), tz = 'Etc/GMT-1')
-      
       
       date_chr = data[,w]
       time <- as.POSIXct( strptime(x = date_chr, format = DATETIME_FORMAT), tz = 'Etc/GMT-1')

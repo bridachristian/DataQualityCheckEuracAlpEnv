@@ -33,6 +33,7 @@ missing_dates = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER 
   zoo_NEW = zoo(all_dates_df,order.by = time_new)
   
   merge = merge(zoo_DATA,zoo_NEW)
+  merge = merge[!is.na(merge[,which(colnames(DATA)== DATETIME_HEADER)]),]
   options(stringsAsFactors = F)
   
   merge = merge[,1:ncol(DATA)]

@@ -153,7 +153,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         
         flag_overlap = 0
         
-        missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header,DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
+        missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
         mydata <- missing[[1]]
         missing_index_date <- missing[[2]]
         

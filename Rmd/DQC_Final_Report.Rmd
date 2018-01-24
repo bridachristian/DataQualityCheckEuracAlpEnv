@@ -1,0 +1,17 @@
+---
+title: "Final Report Data Quality Check"
+author: "Insitute for Alpine Environment, Eurac Research"
+output: html_document
+params:
+    report_start:             # dir:  Directory where to put input files.
+    file_already_processed:
+    file_stopped:
+    file_ok: 
+
+---
+
+
+Report start at **`r report_start`**
+
+
+<!-- aggiungere parte tabella che per ogni file ho la flag_df -->

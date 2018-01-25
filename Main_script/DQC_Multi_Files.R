@@ -71,11 +71,11 @@ files_available = dir(input_dir,pattern = ".dat")                  # <-- Admitte
 # ..... download table section .....................................................................................................................................
 
 
-download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_table_dir, FILES_AVAILABLE = files_available)
+download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_table_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format)
 
 
 ############################################
-j = 6
+j = 2
 
 final_dataframe = data.frame(t(rep(NA, times = 11)))
 colnames(final_dataframe) = c("Station", "Status",
@@ -104,7 +104,9 @@ for(j in  1: length(files_available)){
   # final_info = c(FILE)
   
   if(dwnl_info$Stop_DQC == 0){
-    date_last_modif_file = as.character(file.mtime(paste(input_dir,FILE,sep = ""))) 
+    # date_last_modif_file = as.character(file.mtime(paste(input_dir,FILE,sep = ""))) 
+    date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE,sep = "")),format = datetime_format))
+    
     
     if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
       

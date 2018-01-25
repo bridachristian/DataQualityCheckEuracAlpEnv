@@ -2,18 +2,19 @@
 #'
 #' @param DOWNLOAD_TABLE_DIR Directory where download table is.
 #' @param FILES_AVAILABLE File name (.dat) in a specific folder.
+#' @param DATETIME_FORMAT Datetime format
 #'
 #' @return A dataframe called download_table which contain the name of station, the last download data, the last data file modification and a flag used to avoid Data Quality Check
 #' @export
 #' @examples
-#' check_empty_file(INPUT_DATA_DIR = "~/Data/Input/",FILE = "M4s.dat")
+#' check_empty_file(INPUT_DATA_DIR = "~/Data/Input/",FILE = "M4s.dat", DATETIME_FORMAT = "%Y-%m-%d %H:%M")
 #' check_empty_file(INPUT_DATA_DIR = "Your input folder",FILE = "Your file to check")
 #' 
 
 
 # output:
 # 1. download_table
-read_and_update_download_table = function(DOWNLOAD_TABLE_DIR,FILES_AVAILABLE){
+read_and_update_download_table = function(DOWNLOAD_TABLE_DIR,FILES_AVAILABLE,DATETIME_FORMAT){
   download_table_file = paste(DOWNLOAD_TABLE_DIR,"download_table.csv",sep = "") 
   
   if(!file.exists(download_table_file)){              # <- define or extact info from download table
@@ -21,7 +22,7 @@ read_and_update_download_table = function(DOWNLOAD_TABLE_DIR,FILES_AVAILABLE){
     first_download_table = data.frame(substring(FILES_AVAILABLE,1, nchar(FILES_AVAILABLE)-4), 
                                       rep(NA, times = length(FILES_AVAILABLE)),
                                       rep(0,times = length(FILES_AVAILABLE)),
-                                      as.character(file.mtime(paste(input_dir,FILES_AVAILABLE,sep = ""))))
+                                      as.character(format(file.mtime(paste(input_dir,FILES_AVAILABLE,sep = "")),format = DATETIME_FORMAT))
     colnames(first_download_table) = c("Station", "Last_date", "Stop_DQC", "Last_Modification")
     
     download_table = first_download_table

@@ -75,7 +75,13 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-j = 1
+j = 6
+
+final_dataframe = data.frame(t(rep(NA, times = 11)))
+colnames(final_dataframe) = c("Station", "Status",
+                               "flag_empty","flag_error_df","flag_date",
+                               "flag_duplicates_rows","flag_overlap","flag_missing_dates",
+                               "flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range")
 
 file_already_processed = c()
 file_stopped = c()
@@ -84,14 +90,17 @@ file_ok = c()
 report_start = Sys.time()
 for(j in  1: length(files_available)){
   
+  
   rm(list = setdiff(ls(),c("j","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                            "files_available","header_row_number","input_dir","output_dir_data","output_dir_report","project_dir",
                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
-                           "file_already_processed","file_stopped","file_ok")))
+                           "file_already_processed","file_stopped","file_ok", "final_dataframe")))
   FILE = files_available[j]
   
   w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
   dwnl_info = download_table[w_dwnl,] 
+  
+  # final_info = c(FILE)
   
   if(dwnl_info$Stop_DQC == 0){
     date_last_modif_file = as.character(file.mtime(paste(input_dir,FILE,sep = ""))) 
@@ -174,16 +183,26 @@ for(j in  1: length(files_available)){
         download_table$Last_Modification[w_dwnl] = date_last_modif_file
         write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
         file_ok = c(file_ok,FILE)
+        final_info = c(FILE, "Analyzed and write output",t(flag_df))
+        
       }else{
         file_stopped = c(file_stopped, FILE)
+        final_info = c(FILE, "Analyzed with errors",t(flag_df))
+        
       }
       
     } else {
-      warning("File already process!")
+      warning(paste("File",FILE, "already analyzed!"))
       file_already_processed = c(file_already_processed,FILE)
+      final_info = c(FILE, "Already analyzed",NA, NA, NA, NA, NA, NA, NA, NA, NA)
     }
     
+  }else{
+    final_info = c(FILE, "Not analyzed",NA, NA, NA, NA, NA, NA, NA, NA, NA)
   }
+  
+  final_dataframe = rbind(final_dataframe,final_info)
+  
 }
 
 

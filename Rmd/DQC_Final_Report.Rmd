@@ -59,19 +59,39 @@ final_2$flag_out_of_range[ff$flag_out_of_range == 1] = "Y"
 final_2$flag_out_of_range[ff$flag_out_of_range == 0] = "G"
 
 
-missing_color = data.frame( rep("R", times= nrow(final_2)), rep("Y", times= nrow(final_2)),rep("G", times= nrow(final_2)),rep(NA, times= nrow(final_2)))
-colnames(missing_color) = c("Red", "Yellow", "Green", "NaN")
 
-final_2 = cbind(final_2,missing_color)
+# missing_color = data.frame( rep("R", times= nrow(final_2)), rep("Y", times= nrow(final_2)),rep("G", times= nrow(final_2)),rep(NA, times= nrow(final_2)))
+# colnames(missing_color) = c("Red", "Yellow", "Green", "NaN")
+
+# final_2 = cbind(final_2[,1:2],message,final_2[,3:11] )
 
 
 melt_final = melt(final_2,id.vars = "Station")
 
-ggplot(melt_final, aes(x = variable, y = Station,fill = value))+
-  geom_tile(colour = "black")+
-  scale_fill_manual(values = c("green", "red", "yellow", "grey"))+
-  theme_bw()
-+
-  scale_x_continuous(limits = c(1,10))
+message = data.frame(final_dataframe[,1], rep("Status", times = nrow(final_dataframe)), final_dataframe [,2])
+colnames(message) = colnames(melt_final)
+
+mycolors = c("red", "yellow","green","grey")
+names(mycolors) = c("R", "Y", "G", "NA")
+# colScale <- scale_fill_manual(name = "mycolors",values =  mycolors, drop = FALSE)
+colScale <- scale_fill_manual(name = "",values = mycolors,
+                              limits = c("R", "Y", "G", "NA"),
+                              labels = c("Fatal Error!", "Warning!", "OK!", "Not Evaluated!"),
+                              drop = FALSE)
+
+
+
+ggplot(melt_final, aes(x = variable, y = Station))+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust =0),
+        panel.background = element_rect(fill = "white", colour = "grey50"),
+        panel.border = element_rect(fill = "NA", colour = "white"))+
+  geom_tile(aes(fill = value),colour = "black")+
+  colScale
+
+
+
+#   geom_text(data = message, aes(label = value), hjust=0, size = 2)
+
+
 ```
 

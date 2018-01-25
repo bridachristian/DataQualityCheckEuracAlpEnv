@@ -95,7 +95,7 @@ for(j in  1: length(files_available)){
   rm(list = setdiff(ls(),c("j","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                            "files_available","header_row_number","input_dir","output_dir_data","output_dir_report","project_dir",
                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
-                           "file_already_processed","file_stopped","file_ok", "final_dataframe")))
+                           "report_start", "final_dataframe")))
   FILE = files_available[j]
   
   w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
@@ -210,7 +210,15 @@ for(j in  1: length(files_available)){
 
 final_dataframe = final_dataframe[-1,]
 
-
+rmarkdown::render(input = "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Rmd/DQC_Final_Report.Rmd",
+                  output_file = paste("DQC_Report_",substring(report_start,1,4),
+                                      substring(report_start,6,7),
+                                      substring(report_start,9,10),
+                                      substring(report_start,12,13),
+                                      substring(report_start,15,16),".html", sep = ""),
+                  output_dir = output_dir_report,
+                  params = list(report_start,
+                                final_dataframe))
 # file_already_processed 
 # file_stopped
 # file_ok 

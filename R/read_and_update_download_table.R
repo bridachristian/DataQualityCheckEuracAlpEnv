@@ -22,7 +22,7 @@ read_and_update_download_table = function(DOWNLOAD_TABLE_DIR,FILES_AVAILABLE,DAT
     first_download_table = data.frame(substring(FILES_AVAILABLE,1, nchar(FILES_AVAILABLE)-4), 
                                       rep(NA, times = length(FILES_AVAILABLE)),
                                       rep(0,times = length(FILES_AVAILABLE)),
-                                      as.character(format(file.mtime(paste(input_dir,FILES_AVAILABLE,sep = "")),format = DATETIME_FORMAT))
+                                      as.character(format(file.mtime(paste(input_dir,FILES_AVAILABLE,sep = "")),format = DATETIME_FORMAT)))
     colnames(first_download_table) = c("Station", "Last_date", "Stop_DQC", "Last_Modification")
     
     download_table = first_download_table

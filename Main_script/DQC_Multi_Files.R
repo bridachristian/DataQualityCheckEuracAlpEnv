@@ -185,18 +185,18 @@ for(j in  1: length(files_available)){
         download_table$Last_date[w_dwnl] = last_date
         download_table$Last_Modification[w_dwnl] = date_last_modif_file
         write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
-        file_ok = c(file_ok,FILE)
+        # file_ok = c(file_ok,FILE)
         final_info = c(FILE, "Analyzed and write output",flags_df$value)
         
       }else{
-        file_stopped = c(file_stopped, FILE)
+        # file_stopped = c(file_stopped, FILE)
         final_info = c(FILE, "Analyzed with errors",flags_df$value)
         
       }
       
     } else {
       warning(paste("File",FILE, "already analyzed!"))
-      file_already_processed = c(file_already_processed,FILE)
+      # file_already_processed = c(file_already_processed,FILE)
       final_info = c(FILE, "Already analyzed",NA, NA, NA, NA, NA, NA, NA, NA, NA)
     }
     
@@ -217,8 +217,8 @@ rmarkdown::render(input = "H:/Projekte/Klimawandel/Experiment/data/2order/DataQu
                                       substring(report_start,12,13),
                                       substring(report_start,15,16),".html", sep = ""),
                   output_dir = output_dir_report,
-                  params = list(report_start,
-                                final_dataframe))
+                  params = list(report_start = report_start ,
+                                final_dataframe = final_dataframe))
 # file_already_processed 
 # file_stopped
 # file_ok 

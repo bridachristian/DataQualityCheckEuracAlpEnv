@@ -3,17 +3,26 @@ title: "Final Report Data Quality Check"
 author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
 params:
-    report_start:             
-    final_dataframe:
+    report_start:    # adsasd    
+    final_dataframe: #dasdasd
 ---
 
 
 Report start at **`r report_start`**
 
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
+
+report_start <- params$report_start
+final_dataframe <- params$final_dataframe
+
+```
+
+
+
 
 <!-- aggiungere parte tabella che per ogni file ho la flag_df -->
 
-```{r}
+```{r echo=FALSE, warning=FALSE}
 
 ff = final_dataframe
 

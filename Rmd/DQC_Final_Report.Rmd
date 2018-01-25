@@ -3,11 +3,8 @@ title: "Final Report Data Quality Check"
 author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
 params:
-    report_start:             # dir:  Directory where to put input files.
-    file_already_processed:
-    file_stopped:
-    file_ok: 
-
+    report_start:             
+    final_dataframe:
 ---
 
 
@@ -15,3 +12,66 @@ Report start at **`r report_start`**
 
 
 <!-- aggiungere parte tabella che per ogni file ho la flag_df -->
+
+```{r}
+
+ff = final_dataframe
+
+for(i in 3:11){
+  ff[,i] = as.numeric(ff[,i])
+}
+
+
+final_2 = final_dataframe
+
+final_2$Status[ff$Status == "Already analyzed"] = "R" 
+final_2$Status[ff$Status == "Analyzed with errors"] = "R" 
+final_2$Status[ff$Status == "Analyzed and write output" & !all(ff[3,11] == 0)] = "Y" 
+final_2$Status[ff$Status == "Analyzed and write output" & all(ff[3,11] == 0)] = "G" 
+final_2$Status[ff$Status == "Not analyzed"] = NA
+
+final_2$flag_empty[ff$flag_empty == 1] = "R" 
+final_2$flag_empty[ff$flag_empty == 0] = "G"
+
+final_2$flag_error_df[ff$flag_error_df == 1] = "R"
+final_2$flag_error_df[ff$flag_error_df == -1] = "R" 
+final_2$flag_error_df[ff$flag_error_df == 0] = "G"
+
+final_2$flag_date[ff$flag_date == 1] = "R" 
+final_2$flag_date[ff$flag_date == 0] = "G"
+
+final_2$flag_duplicates_rows[ff$flag_duplicates_rows == 1] = "Y" 
+final_2$flag_duplicates_rows[ff$flag_duplicates_rows == 0] = "G"
+
+final_2$flag_overlap[ff$flag_overlap == 1] = "R" 
+final_2$flag_overlap[ff$flag_overlap == 0] = "G"
+
+final_2$flag_missing_dates[ff$flag_missing_dates == 1] = "Y" 
+final_2$flag_missing_dates[ff$flag_missing_dates == 0] = "G"
+
+final_2$flag_range_variable_to_set[ff$flag_range_variable_to_set == 1] = "Y" 
+final_2$flag_range_variable_to_set[ff$flag_range_variable_to_set == 0] = "G"
+
+final_2$flag_range_variable_new[ff$flag_range_variable_new == 1] = "Y" 
+final_2$flag_range_variable_new[ff$flag_range_variable_new == 0] = "G"
+
+final_2$flag_out_of_range[ff$flag_out_of_range == 1] = "Y" 
+final_2$flag_out_of_range[ff$flag_out_of_range == 0] = "G"
+
+
+missing_color = data.frame( rep("R", times= nrow(final_2)), rep("Y", times= nrow(final_2)),rep("G", times= nrow(final_2)),rep(NA, times= nrow(final_2)))
+colnames(missing_color) = c("Red", "Yellow", "Green", "NaN")
+
+final_2 = cbind(final_2,missing_color)
+
+
+melt_final = melt(final_2,id.vars = "Station")
+
+ggplot(melt_final, aes(x = variable, y = Station,fill = value))+
+  geom_tile(colour = "black")+
+  scale_fill_manual(values = c("green", "red", "yellow", "grey"))+
+  theme_bw()
++
+  scale_x_continuous(limits = c(1,10))
+```
+

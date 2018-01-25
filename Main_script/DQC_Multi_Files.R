@@ -211,6 +211,6 @@ for(j in  1: length(files_available)){
 final_dataframe = final_dataframe[-1,]
 
 
-file_already_processed 
-file_stopped
-file_ok 
+# file_already_processed 
+# file_stopped
+# file_ok 

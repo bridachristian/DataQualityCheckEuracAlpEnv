@@ -80,7 +80,7 @@ melt_final = melt(final_2,id.vars = "Station")
 message = data.frame(final_dataframe[,1], rep("Status", times = nrow(final_dataframe)), final_dataframe [,2])
 colnames(message) = colnames(melt_final)
 
-mycolors = c("red", "yellow","green","grey")
+mycolors = c("red", "yellow","green","white")
 names(mycolors) = c("R", "Y", "G", "NA")
 # colScale <- scale_fill_manual(name = "mycolors",values =  mycolors, drop = FALSE)
 colScale <- scale_fill_manual(name = "",values = mycolors,

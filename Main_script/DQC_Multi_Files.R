@@ -219,6 +219,4 @@ rmarkdown::render(input = "H:/Projekte/Klimawandel/Experiment/data/2order/DataQu
                   output_dir = output_dir_report,
                   params = list(report_start = report_start ,
                                 final_dataframe = final_dataframe))
-# file_already_processed 
-# file_stopped
-# file_ok 
+

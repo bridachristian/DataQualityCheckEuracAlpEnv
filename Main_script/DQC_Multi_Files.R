@@ -75,7 +75,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-j = 2
+j = 1
 
 final_dataframe = data.frame(t(rep(NA, times = 11)))
 colnames(final_dataframe) = c("Station", "Status",

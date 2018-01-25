@@ -288,10 +288,6 @@ flag_out_of_range = flags_df$value[9]
 
 File selected: **`r  file`** 
 
-<!-- Timeseries start at **`r mydata[1,which(colnames( mydata) == datetime_header)]`** and end at **`r mydata[nrow(mydata),which(colnames( mydata) == datetime_header)]`**  -->
-
-<!-- Timeseries has **`r nrow(mydata)`** samples  -->
-
 You have also select these parameters:
 
 + Data start from row: *`r data_from_row`*

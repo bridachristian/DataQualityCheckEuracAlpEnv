@@ -183,11 +183,11 @@ for(j in  1: length(files_available)){
         download_table$Last_Modification[w_dwnl] = date_last_modif_file
         write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
         file_ok = c(file_ok,FILE)
-        final_info = c(FILE, "Analyzed and write output",t(flag_df))
+        final_info = c(FILE, "Analyzed and write output",flags_df)
         
       }else{
         file_stopped = c(file_stopped, FILE)
-        final_info = c(FILE, "Analyzed with errors",t(flag_df))
+        final_info = c(FILE, "Analyzed with errors",t(flags_df))
         
       }
       

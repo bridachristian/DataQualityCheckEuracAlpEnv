@@ -140,6 +140,14 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       duplicated_data <- deletes_duplcated [[2]]
       duplicated_data <- time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
       
+      x = as.character(duplicated_data[1,])
+        if(unique(x) == "---"){
+          flag_duplicates_rows = 0
+        } else{
+          flag_duplicates_rows = 1
+        }
+        
+      
       overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
       
       if(length(overlap) != 0){
@@ -166,12 +174,6 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         
         # ..... Flags .....................................................................................................................................
         
-        x = as.character(duplicated_data[1,])
-        if(unique(x) == "---"){
-          flag_duplicates_rows = 0
-        } else{
-          flag_duplicates_rows = 1
-        }
         
         if(length(variable_to_set) != 0){
           flag_range_variable_to_set = 1

@@ -75,7 +75,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-j = 1
+j = 3
 
 final_dataframe = data.frame(t(rep(NA, times = 11)))
 colnames(final_dataframe) = c("Station", "Status",
@@ -83,9 +83,9 @@ colnames(final_dataframe) = c("Station", "Status",
                                "flag_duplicates_rows","flag_overlap","flag_missing_dates",
                                "flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range")
 
-file_already_processed = c()
-file_stopped = c()
-file_ok = c()
+# file_already_processed = c()
+# file_stopped = c()
+# file_ok = c()
 
 report_start = Sys.time()
 

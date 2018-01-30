@@ -89,14 +89,14 @@ colnames(final_dataframe) = c("Station", "Status",
 
 report_start = Sys.time()
 
-for(j in  1: length(files_available)){
+for(t in  1: length(files_available)){
   
   
-  rm(list = setdiff(ls(),c("j","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
+  rm(list = setdiff(ls(),c("t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                            "files_available","header_row_number","input_dir","output_dir_data","output_dir_report","project_dir",
                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
                            "report_start", "final_dataframe")))
-  FILE = files_available[j]
+  FILE = files_available[t]
   
   w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
   dwnl_info = download_table[w_dwnl,] 

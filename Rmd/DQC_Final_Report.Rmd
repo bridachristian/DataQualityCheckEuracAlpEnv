@@ -93,12 +93,13 @@ level_station = levels(factor(melt_final$Station))
 
 
 ggplot(melt_final, aes(x = variable, y = Station))+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust =0),
+  theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust =0),
         panel.background = element_rect(fill = "white", colour = "grey"),
         panel.border = element_rect(fill = "NA", colour = "white"))+
   geom_tile(aes(fill = value),colour = "black")+
   colScale+
-  scale_y_discrete(limits = rev(level_station))
+  scale_y_discrete(limits = rev(level_station))+
+  scale_x_discrete(position = "top")
 
 
 

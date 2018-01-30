@@ -75,7 +75,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-j = 1
+t = 1
 
 final_dataframe = data.frame(t(rep(NA, times = 11)))
 colnames(final_dataframe) = c("Station", "Status",
@@ -194,22 +194,24 @@ for(t in  1: length(files_available)){
         download_table$Last_Modification[w_dwnl] = date_last_modif_file
         write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
         # file_ok = c(file_ok,FILE)
-        final_info = c(FILE, "Analyzed and write output",flags_df$value)
+        
+        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",flags_df$value)
         
       }else{
         # file_stopped = c(file_stopped, FILE)
-        final_info = c(FILE, "Analyzed with errors",flags_df$value)
+        
+        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",flags_df$value)
         
       }
       
     } else {
       warning(paste("File",FILE, "already analyzed!"))
       # file_already_processed = c(file_already_processed,FILE)
-      final_info = c(FILE, "Already analyzed",NA, NA, NA, NA, NA, NA, NA, NA, NA)
+      final_info = c(substring(FILE,1,nchar(FILE)-4), "Already analyzed",NA, NA, NA, NA, NA, NA, NA, NA, NA)
     }
     
   }else{
-    final_info = c(FILE, "Not analyzed",NA, NA, NA, NA, NA, NA, NA, NA, NA)
+    final_info = c(substring(FILE,1,nchar(FILE)-4), "Not analyzed",NA, NA, NA, NA, NA, NA, NA, NA, NA)
   }
   
   final_dataframe = rbind(final_dataframe,final_info)

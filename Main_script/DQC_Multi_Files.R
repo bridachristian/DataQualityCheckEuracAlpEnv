@@ -220,13 +220,33 @@ for(t in  1: length(files_available)){
 
 final_dataframe = final_dataframe[-1,]
 
-rmarkdown::render(input = "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Rmd/DQC_Final_Report.Rmd",
-                  output_file = paste("DQC_Report_",substring(report_start,1,4),
+
+input_final = "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Rmd/DQC_Final_Report.Rmd"
+output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
                                       substring(report_start,6,7),
                                       substring(report_start,9,10),
                                       substring(report_start,12,13),
-                                      substring(report_start,15,16),".html", sep = ""),
-                  output_dir = output_dir_report,
+                                      substring(report_start,15,16),".html", sep = "")
+output_dir_final = output_dir_report
+
+rmarkdown::render(input = input_final,
+                  output_file = output_file_final ,
+                  output_dir = output_dir_final,
                   params = list(report_start = report_start ,
                                 final_dataframe = final_dataframe))
 
+
+# library(mailR)
+# 
+# 
+# bb = cat(paste("Data quality check reports are:",output_dir_report),
+#                        paste("Data quality check data are:",output_dir_data),
+#                        paste("Final report: ",output_dir_final,output_file_final,sep = ""),sep = "\n")
+# 
+# send.mail(from = "data.quality.check@gmail.com",
+#           to = c("Christian.Brida@eurac.edu"),
+#           subject = paste("Data Quality Check -", report_start),
+#           body = ,
+#           smtp = list(host.name = "smtp.gmail.com", port = 465, user.name = "data.quality.check", passwd = "alpenv78", ssl = TRUE),
+#           authenticate = TRUE,
+#           send = TRUE)

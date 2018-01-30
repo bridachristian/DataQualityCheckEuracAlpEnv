@@ -75,7 +75,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-j = 3
+j = 1
 
 final_dataframe = data.frame(t(rep(NA, times = 11)))
 colnames(final_dataframe) = c("Station", "Status",
@@ -149,14 +149,21 @@ for(j in  1: length(files_available)){
                                       start_date = start_date))
       
       
+      if(flag_empty == 0 & flag_error_df == 0){
+        out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
+                                  substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
+                                  substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
+                                  # "_",
+                                  substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+                                  substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+                                  sep = "")
+        
+        last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
+        
+      } else {
+        out_filename_date = "no_datetime"
+      }
       
-      out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
-                                substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
-                                substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
-                                # "_",
-                                substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
-                                substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
-                                sep = "")
       
       out_filename_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_",out_filename_date,".html",sep = "")
       
@@ -179,7 +186,8 @@ for(j in  1: length(files_available)){
                                        to = paste(output_dir_report,out_filename_report,sep = ""))
       
       
-      last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
+      
+      
       
       if(!is.na(flag_missing_dates)){
         download_table$Last_date[w_dwnl] = last_date

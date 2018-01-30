@@ -33,7 +33,7 @@ for(i in 3:11){
 
 final_2 = final_dataframe
 
-final_2$Status[ff$Status == "Already analyzed"] = "R" 
+final_2$Status[ff$Status == "Already analyzed"] = "B" 
 final_2$Status[ff$Status == "Analyzed with errors"] = "R" 
 final_2$Status[ff$Status == "Analyzed and write output" & !all(ff[3,11] == 0)] = "Y" 
 final_2$Status[ff$Status == "Analyzed and write output" & all(ff[3,11] == 0)] = "G" 
@@ -80,19 +80,19 @@ melt_final = melt(final_2,id.vars = "Station")
 message = data.frame(final_dataframe[,1], rep("Status", times = nrow(final_dataframe)), final_dataframe [,2])
 colnames(message) = colnames(melt_final)
 
-mycolors = c("red", "yellow","green","white")
-names(mycolors) = c("R", "Y", "G", "NA")
+mycolors = c("lightblue","red", "yellow","green","white")
+names(mycolors) = c("B", "R", "Y", "G", "NA")
 # colScale <- scale_fill_manual(name = "mycolors",values =  mycolors, drop = FALSE)
 colScale <- scale_fill_manual(name = "",values = mycolors,
-                              limits = c("R", "Y", "G", "NA"),
-                              labels = c("Fatal Error!", "Warning!", "OK!", "Not Evaluated!"),
+                              limits = c("B","R", "Y", "G", "NA"),
+                              labels = c("Already processed!","Fatal Error!", "Warning!", "OK!", "Not Evaluated!"),
                               drop = FALSE)
 
 
 
 ggplot(melt_final, aes(x = variable, y = Station))+
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust =0),
-        panel.background = element_rect(fill = "white", colour = "grey50"),
+        panel.background = element_rect(fill = "NA", colour = "NA"),
         panel.border = element_rect(fill = "NA", colour = "white"))+
   geom_tile(aes(fill = value),colour = "black")+
   colScale

@@ -162,13 +162,13 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         overlap[,1]<- overlap[,1] + data_from_row - 1
         colnames(overlap)[1]= "File Row"
         
-        rm(overlap)
+       
         
       }else{
         
         flag_overlap = 0
         
-        rm(overlap)
+        
         
         missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
         mydata <- missing[[1]]
@@ -258,15 +258,20 @@ if(flag_empty == 0){
             out_filename_data = paste("DQCok_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
             out_filename_dupli = paste("Duplicated_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
             
+            output_dir_data_DQC_OK = paste(output_dir_data, "DQC_OK/",sep = "")
+            ifelse(test = !dir.exists(output_dir_data_DQC_OK),yes = dir.create(output_dir_data_DQC_OK),no = FALSE)
             
-            write.csv(out_mydata,paste(output_dir_data,out_filename_data,sep = ""),quote = F,row.names = F, na = "NaN")
+            output_dir_data_duplicated = paste(output_dir_data, "Duplicated/",sep = "")
+            ifelse(test = !dir.exists(output_dir_data_duplicated),yes = dir.create(output_dir_data_duplicated),no = FALSE)
+            
+            write.csv(out_mydata,paste(output_dir_data_DQC_OK,out_filename_data,sep = ""),quote = F,row.names = F, na = "NaN")
             
             #~~~~~~~~~~
             out_duplicated = duplicated_data
             colnames(out_duplicated) = colnames(header)
             
             out_duplicated_data=rbind(header[-1,],out_duplicated)
-            write.csv(out_duplicated_data,paste(output_dir_data,out_filename_dupli,sep = ""),quote = F,row.names = F, na = "NaN")
+            write.csv(out_duplicated_data,paste(output_dir_data_duplicated,out_filename_dupli,sep = ""),quote = F,row.names = F, na = "NaN")
           }
         }
       }

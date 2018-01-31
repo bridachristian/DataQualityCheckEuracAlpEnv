@@ -215,6 +215,7 @@ for(t in  1: length(files_available)){
   }
   
   final_dataframe = rbind(final_dataframe,final_info)
+
   
 }
 
@@ -235,7 +236,9 @@ rmarkdown::render(input = input_final,
                   params = list(report_start = report_start ,
                                 final_dataframe = final_dataframe))
 
+object.size(ls())
 
+mem_used()
 # library(mailR)
 # 
 # 
@@ -246,7 +249,7 @@ rmarkdown::render(input = input_final,
 # send.mail(from = "data.quality.check@gmail.com",
 #           to = c("Christian.Brida@eurac.edu"),
 #           subject = paste("Data Quality Check -", report_start),
-#           body = ,
+#           body = "",
 #           smtp = list(host.name = "smtp.gmail.com", port = 465, user.name = "data.quality.check", passwd = "alpenv78", ssl = TRUE),
 #           authenticate = TRUE,
 #           send = TRUE)

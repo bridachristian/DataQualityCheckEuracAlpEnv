@@ -32,6 +32,17 @@ for(i in 3:11){
 
 
 final_2 = final_dataframe[,1:11]
+colnames(final_2) = c("Station",
+                      "Status",
+                      "File is empty",
+                      "Structure isssues",
+                      "Date issues",
+                      "Duplicated rows",
+                      "Overlap",
+                      "Missing dates",
+                      "Range to update: old variables ",
+                      "Range to update: new variable",
+                      "Out of range")
 
 final_2$Status[ff$Status == "Already analyzed"] = "B" 
 final_2$Status[ff$Status == "Analyzed with errors"] = "R" 
@@ -108,7 +119,7 @@ ggplot(melt_final, aes(x = variable, y = Station))+
 
 ```
 
-```{r}
+```{r echo=FALSE, warning=FALSE}
 r_link = ff$Report_link
 r_link_text =  r_link
 

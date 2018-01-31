@@ -32,17 +32,7 @@ for(i in 3:11){
 
 
 final_2 = final_dataframe[,1:11]
-colnames(final_2) = c("Station",
-                      "Status",
-                      "File is empty",
-                      "Structure isssues",
-                      "Date issues",
-                      "Duplicated rows",
-                      "Overlap",
-                      "Missing dates",
-                      "Range to update: old variables ",
-                      "Range to update: new variable",
-                      "Out of range")
+
 
 final_2$Status[ff$Status == "Already analyzed"] = "B" 
 final_2$Status[ff$Status == "Analyzed with errors"] = "R" 
@@ -79,6 +69,17 @@ final_2$flag_out_of_range[ff$flag_out_of_range == 1] = "Y"
 final_2$flag_out_of_range[ff$flag_out_of_range == 0] = "G"
 
 
+colnames(final_2) = c("Station",
+                      "Status",
+                      "File is empty",
+                      "Structure isssues",
+                      "Date issues",
+                      "Duplicated rows",
+                      "Overlap",
+                      "Missing dates",
+                      "Range to update: old variables ",
+                      "Range to update: new variable",
+                      "Out of range")
 
 # missing_color = data.frame( rep("R", times= nrow(final_2)), rep("Y", times= nrow(final_2)),rep("G", times= nrow(final_2)),rep(NA, times= nrow(final_2)))
 # colnames(missing_color) = c("Red", "Yellow", "Green", "NaN")
@@ -134,7 +135,7 @@ w2 = which(!is.na(r_link_text))
 w3 = which(is.na(d_folder))
 w4 = which(!is.na(d_folder))
 
-r_link_text[w1] = "Already processed"
+r_link_text[w1] = "---"
 r_link_text[w2] ="Report available"
 
 # d_folder_text[w3] = "No data file"
@@ -143,7 +144,7 @@ r_link_text[w2] ="Report available"
 ff$Report_link[w1]<- paste0(r_link_text[w1])
 ff$Report_link[w2]<- paste0("[", r_link_text[w2], "](", r_link[w2], ")")
 
-ff$Data_folder [w3] <- paste0("No data file")
+ff$Data_folder [w3] <- paste0("---")
 ff$Data_folder[w4]<- paste0("[", "Data available", "](",d_folder_text[w4], ")")
 
 ff$File_name[is.na(ff$File_name)] = paste0("---")

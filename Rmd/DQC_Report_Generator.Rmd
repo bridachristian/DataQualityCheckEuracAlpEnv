@@ -110,6 +110,8 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
   data <- data_import [[3]]
   flag_error_df <- data_import [[4]]
   
+  rm(data_import)
+  
   if(flag_error_df == 0){
     time_data = data[,which(colnames(data)==datetime_header)]
     
@@ -140,6 +142,8 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       duplicated_data <- deletes_duplcated [[2]]
       duplicated_data <- time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
       
+      rm(deletes_duplcated)
+      
       x = as.character(duplicated_data[1,])
         if(unique(x) == "---"){
           flag_duplicates_rows = 0
@@ -150,6 +154,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       
       overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
       
+      
       if(length(overlap) != 0){
         
         flag_overlap = 1
@@ -157,13 +162,19 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         overlap[,1]<- overlap[,1] + data_from_row - 1
         colnames(overlap)[1]= "File Row"
         
+        rm(overlap)
+        
       }else{
         
         flag_overlap = 0
         
+        rm(overlap)
+        
         missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
         mydata <- missing[[1]]
         missing_index_date <- missing[[2]]
+        
+        rm(missing)
         
         range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
         mydata <- range[[1]]
@@ -171,7 +182,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         variable_new <-range[[3]]
         variable_to_set <-range[[4]]
 
-        
+        rm(range)
         # ..... Flags .....................................................................................................................................
         
         

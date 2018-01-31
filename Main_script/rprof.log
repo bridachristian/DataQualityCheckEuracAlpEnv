@@ -1,0 +1,94 @@
+memory profiling: sample.interval=20000
+:1456323:5925101:144284672:0:"doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "withCallingHandlers" ".rs.callAs" "Rprof" 
+:1457163:5925227:144507496:106:".Call" "git2r::init" "standardGeneric" "git2r::init" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457163:5925227:144507496:0:".Call" "git2r::init" "standardGeneric" "git2r::init" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:12:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457293:5925261:144550168:0:".Call" "git2r::remote_ls" "standardGeneric" "git2r::remote_ls" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "remote_sha.github_remote" "remote_sha" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1457350:5925261:144563328:8:"paste" "remote_package_name.github_remote" "remote_package_name" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1459799:5926762:145252632:518:".Call" "curl::curl_fetch_disk" "request_fetch.write_disk" "request_fetch" "request_perform" "httr::GET" "remote_package_name.github_remote" "remote_package_name" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1459799:5926762:145252632:0:".Call" "curl::curl_fetch_disk" "request_fetch.write_disk" "request_fetch" "request_perform" "httr::GET" "remote_package_name.github_remote" "remote_package_name" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1459799:5926762:145252632:0:".Call" "curl::curl_fetch_disk" "request_fetch.write_disk" "request_fetch" "request_perform" "httr::GET" "remote_package_name.github_remote" "remote_package_name" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1459799:5926762:145252632:0:".Call" "curl::curl_fetch_disk" "request_fetch.write_disk" "request_fetch" "request_perform" "httr::GET" "remote_package_name.github_remote" "remote_package_name" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1459799:5926762:145252632:0:".Call" "curl::curl_fetch_disk" "request_fetch.write_disk" "request_fetch" "request_perform" "httr::GET" "remote_package_name.github_remote" "remote_package_name" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1459799:5926762:145252632:0:".Call" "curl::curl_fetch_disk" "request_fetch.write_disk" "request_fetch" "request_perform" "httr::GET" "remote_package_name.github_remote" "remote_package_name" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1459799:5926762:145252632:0:".Call" "curl::curl_fetch_disk" "request_fetch.write_disk" "request_fetch" "request_perform" "httr::GET" "remote_package_name.github_remote" "remote_package_name" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1459799:5926762:145252632:0:".Call" "curl::curl_fetch_disk" "request_fetch.write_disk" "request_fetch" "request_perform" "httr::GET" "remote_package_name.github_remote" "remote_package_name" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1459799:5926762:145252632:0:".Call" "curl::curl_fetch_disk" "request_fetch.write_disk" "request_fetch" "request_perform" "httr::GET" "remote_package_name.github_remote" "remote_package_name" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1459799:5926762:145252632:0:".Call" "curl::curl_fetch_disk" "request_fetch.write_disk" "request_fetch" "request_perform" "httr::GET" "remote_package_name.github_remote" "remote_package_name" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1461518:5927291:145480384:143:"FUN" "lapply" "parse_headers" "request_perform" "httr::GET" "remote_package_name.github_remote" "remote_package_name" "install_remote" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "FUN" "vapply" "install_remotes" "install_github" 
+:1464271:5930691:146026552:317:
+:1464558:5930943:146095320:27:
+:1464804:5931195:146150928:23:"dir.exists" "library" 
+:1465231:5931699:146237000:38:
+:1465548:5931951:146320552:32:
+:1465851:5931951:146420120:30:
+:1466043:5931951:146471080:15:
+:1466268:5931951:146538392:20:
+:1466433:5931951:146589240:15:
+:1466616:5931951:146640872:15:
+:1466916:5931951:146741784:30:
+:1467146:5931951:146824104:25:
+:1467394:5931951:146897968:20:
+:1467608:5932098:146971272:22:"isBaseNamespace" "getExportedValue" "::" 
+:1467916:5932098:147081984:33:
+:1468182:5932115:147120400:42:"Sys.chmod" "file.copy" "read_and_update_download_table" 
+:1469938:5941914:147452760:219:
+:1470365:5941914:147565488:34:
+:1470783:5941914:147703304:49:
+:1471167:5941914:147808136:30:
+:1471643:5941914:147932008:35:
+:1472195:5941914:148074024:40:
+:1472402:5941914:148127280:15:
+:1472678:5941914:148198288:20:
+:1473161:5941914:148322552:35:
+:1473525:5941914:148412264:25:
+:1473741:5941914:148466024:15:
+:1474101:5941914:148555624:25:
+:1474461:5941914:148645224:25:
+:1474893:5941914:148752744:30:
+:1475181:5941914:148824424:20:
+:1475618:5941914:148932224:30:
+:1476263:5941914:149079392:40:
+:1476633:5941914:149169552:25:
+:1477048:5941914:149262232:25:
+:1477891:5941914:149448320:50:
+:1478407:5941914:149560544:30:
+:1478953:5941914:149674392:30:
+:1479422:5941914:149770096:25:
+:1480095:5941914:149904832:35:
+:1480613:5941914:150003280:25:
+:1481078:5941914:150098760:25:
+:1481672:5941914:150215352:30:
+:1524873:5949163:159814256:3746:"parent.env" "findCenvVar" "findLocVar" "cmpCall" "cmp" "genCode" "cb$putconst" "cmpCallArgs" "cmpCallSymFun" "cmpCall" "cmp" "genCode" "cb$putconst" "cmpCallArgs" "cmpCallSymFun" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "cmpForBody" "h" "tryInline" "cmpCall" "cmp" "genCode" "compile" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "compiler:::tryCompile" 
+:1552814:5971966:168928088:3095:"$" "findCenvVar" "findLocVar" "cmpCall" "cmp" "cmpSubsetDispatch" "h" "tryInline" "cmpCall" "cmp" "genCode" "cb$putconst" "cmpCallArgs" "cmpCallSymFun" "cmpCall" "cmp" "genCode" "cb$putconst" "cmpCallArgs" "cmpCallSymFun" "cmpCall" "cmp" "cmpSymbolAssign" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "cmpForBody" "h" "tryInline" "cmpCall" "cmp" "genCode" "compile" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "compiler:::tryCompile" 
+:1583871:5989439:179505312:3202:"findCenvVar" "findLocVar" "cmpCall" "cmp" "cmpPrim1" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "cmpRepeatBody" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "cmpForBody" "h" "tryInline" "cmpCall" "cmp" "genCode" "compile" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "compiler:::tryCompile" 
+:1256972:4666513:103873280:2740:"list" "cb$savecurloc" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "h" "tryInline" "cmpCall" "cmp" "cmpForBody" "h" "tryInline" "cmpCall" "cmp" "genCode" "compile" "doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "compiler:::tryCompile" 
+:1263629:4673161:105576968:706:"file" "readLines" "read_lines_utf8" "rmarkdown::render" 
+:1277471:4687564:107267496:1029:"file" "readLines" "knitr::knit" "rmarkdown::render" 
+:1290846:4717178:110717768:1445:"doTryCatch" "tryCatchOne" "tryCatchList" "tryCatch" "base::try" "cat" "str.default" "str" "<Anonymous>" "do.call" "strSub" "str.default" "str" "print.block" "print" "call_block" "process_group.block" "process_group" "withCallingHandlers" "process_file" "knitr::knit" "rmarkdown::render" 
+:1300510:4741831:112881608:966:"names" "%in%" "[.data.frame" "[" "FUN" "lapply" "split.data.frame" "split" "lapply" "parse_all.character" "parse_all" "evaluate::evaluate" "evaluate" "in_dir" "block_exec" "call_block" "process_group.block" "process_group" "withCallingHandlers" "process_file" "knitr::knit" "rmarkdown::render" 
+:1350889:4794845:121887976:6938:"structure" "new_source" "evaluate_call" "evaluate::evaluate" "evaluate" "in_dir" "block_exec" "call_block" "process_group.block" "process_group" "withCallingHandlers" "process_file" "knitr::knit" "rmarkdown::render" 
+:1366169:4893823:126091224:2531:"file.info" "check_empty_file" "eval" "eval" "withVisible" "withCallingHandlers" "handle" "timing_fn" "evaluate_call" "evaluate::evaluate" "evaluate" "in_dir" "block_exec" "call_block" "process_group.block" "process_group" "withCallingHandlers" "process_file" "knitr::knit" "rmarkdown::render" 
+:1374853:4997826:127636040:1083:"scan" "read.table" "read.csv" "read_data" "eval" "eval" "withVisible" "withCallingHandlers" "handle" "timing_fn" "evaluate_call" "evaluate::evaluate" "evaluate" "in_dir" "block_exec" "call_block" "process_group.block" "process_group" "withCallingHandlers" "process_file" "knitr::knit" "rmarkdown::render" 
+:1379103:4997826:127816696:0:"scan" "read.table" "read.csv" "read_data" "eval" "eval" "withVisible" "withCallingHandlers" "handle" "timing_fn" "evaluate_call" "evaluate::evaluate" "evaluate" "in_dir" "block_exec" "call_block" "process_group.block" "process_group" "withCallingHandlers" "process_file" "knitr::knit" "rmarkdown::render" 
+:1387148:5171826:128133936:0:"scan" "read.table" "read.csv" "read_data" "eval" "eval" "withVisible" "withCallingHandlers" "handle" "timing_fn" "evaluate_call" "evaluate::evaluate" "evaluate" "in_dir" "block_exec" "call_block" "process_group.block" "process_group" "withCallingHandlers" "process_file" "knitr::knit" "rmarkdown::render" 
+:1398383:5175826:128548840:0:"scan" "read.table" "read.csv" "read_data" "eval" "eval" "withVisible" "withCallingHandlers" "handle" "timing_fn" "evaluate_call" "evaluate::evaluate" "evaluate" "in_dir" "block_exec" "call_block" "process_group.block" "process_group" "withCallingHandlers" "process_file" "knitr::knit" "rmarkdown::render" 
+:1404273:5519826:128769648:0:"scan" "read.table" "read.csv" "read_data" "eval" "eval" "withVisible" "withCallingHandlers" "handle" "timing_fn" "evaluate_call" "evaluate::evaluate" "evaluate" "in_dir" "block_exec" "call_block" "process_group.block" "process_group" "withCallingHandlers" "process_file" "knitr::knit" "rmarkdown::render" 
+:1411275:5519826:129014256:0:"scan" "read.table" "read.csv" "read_data" "eval" "eval" "withVisible" "withCallingHandlers" "handle" "timing_fn" "evaluate_call" "evaluate::evaluate" "evaluate" "in_dir" "block_exec" "call_block" "process_group.block" "process_group" "withCallingHandlers" "process_file" "knitr::knit" "rmarkdown::render" 
+:1415353:5519826:129151120:0:"scan" "read.table" "read.csv" "read_data" "eval" "eval" "withVisible" "withCallingHandlers" "handle" "timing_fn" "evaluate_call" "evaluate::evaluate" "evaluate" "in_dir" "block_exec" "call_block" "process_group.block" "process_group" "withCallingHandlers" "process_file" "knitr::knit" "rmarkdown::render" 
+:1417688:5519826:129225152:0:"scan" "read.table" "read.csv" "read_data" "eval" "eval" "withVisible" "withCallingHandlers" "handle" "timing_fn" "evaluate_call" "evaluate::evaluate" "evaluate" "in_dir" "block_exec" "call_block" "process_group.block" "process_group" "withCallingHandlers" "process_file" "knitr::knit" "rmarkdown::render" 

@@ -9,7 +9,7 @@
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 
 rm(list = ls())
-
+# Rprof(tf <- "rprof.log", memory.profiling=TRUE)
 # ..... Libraries .....................................................................................................................................
 
 library(devtools)
@@ -77,11 +77,11 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 ############################################
 t = 1
 
-final_dataframe = data.frame(t(rep(NA, times = 11)))
+final_dataframe = data.frame(t(rep(NA, times = 14)))
 colnames(final_dataframe) = c("Station", "Status",
                                "flag_empty","flag_error_df","flag_date",
                                "flag_duplicates_rows","flag_overlap","flag_missing_dates",
-                               "flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range")
+                               "flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range", "Report_link", "Data_folder", "File_name")
 
 # file_already_processed = c()
 # file_stopped = c()
@@ -90,27 +90,27 @@ colnames(final_dataframe) = c("Station", "Status",
 report_start = Sys.time()
 
 for(t in  1: length(files_available)){
-  
-  
-  rm(list = setdiff(ls(),c("t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
+
+
+  rm(list = setdiff(ls(),c("tf","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                            "files_available","header_row_number","input_dir","output_dir_data","output_dir_report","project_dir",
                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
                            "report_start", "final_dataframe")))
   FILE = files_available[t]
-  
+
   w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
-  dwnl_info = download_table[w_dwnl,] 
-  
+  dwnl_info = download_table[w_dwnl,]
+
   # final_info = c(FILE)
-  
+
   if(dwnl_info$Stop_DQC == 0){
-    # date_last_modif_file = as.character(file.mtime(paste(input_dir,FILE,sep = ""))) 
+    # date_last_modif_file = as.character(file.mtime(paste(input_dir,FILE,sep = "")))
     date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE,sep = "")),format = datetime_format))
-    
-    
+
+
     if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
-      
-      input_dir = input_dir 
+
+      input_dir = input_dir
       output_dir_data = output_dir_data
       output_dir_report = output_dir_report
       project_dir = project_dir
@@ -123,32 +123,32 @@ for(t in  1: length(files_available)){
       range_file = range_file
       write_output_files = write_output_files
       write_output_report = write_output_report
-      
+
       file = FILE
       start_date = dwnl_info$Last_date
-      
+
       output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
-      
+
       rmarkdown::render(input = Rmd_report_generator ,
                         output_file = output_file_report,
                         output_dir = output_dir_report,
-                        params = list(input_dir = input_dir , 
-                                      output_dir_data = output_dir_data, 
-                                      output_dir_report = output_dir_report, 
+                        params = list(input_dir = input_dir ,
+                                      output_dir_data = output_dir_data,
+                                      output_dir_report = output_dir_report,
                                       project_dir = project_dir,
                                       data_from_row = data_from_row,
                                       header_row_number = header_row_number,
                                       datetime_header = datetime_header,
                                       datetime_format = datetime_format,
-                                      datetime_sampling = datetime_sampling , 
+                                      datetime_sampling = datetime_sampling ,
                                       record_header = record_header,
                                       range_file = range_file,
                                       write_output_files = write_output_files,
                                       write_output_report = write_output_report,
                                       file = file,
                                       start_date = start_date))
-      
-      
+
+
       if(flag_empty == 0 & flag_error_df == 0){
         out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                                   substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
@@ -157,18 +157,18 @@ for(t in  1: length(files_available)){
                                   substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
                                   substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
                                   sep = "")
-        
+
         last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
-        
+
       } else {
         out_filename_date = "no_datetime"
       }
-      
-      
+
+
       out_filename_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_",out_filename_date,".html",sep = "")
-      
+
       if(file.exists(paste(output_dir_report,out_filename_report,sep = ""))){
-        
+
         j=0
         repeat{
           j=j+1
@@ -180,43 +180,56 @@ for(t in  1: length(files_available)){
       } else {
         out_filename_report_new = out_filename_report
       }
-      
+
       out_filename_report = out_filename_report_new
       output_file_report = file.rename(from = paste(output_dir_report,output_file_report,sep = ""),
                                        to = paste(output_dir_report,out_filename_report,sep = ""))
-      
-      
-      
-      
-      
+
+
+
+
+
       if(!is.na(flag_missing_dates)){
         download_table$Last_date[w_dwnl] = last_date
         download_table$Last_Modification[w_dwnl] = date_last_modif_file
         write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
         # file_ok = c(file_ok,FILE)
-        
-        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",flags_df$value)
-        
+
+        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
+                       flags_df$value,
+                       paste(output_dir_report,out_filename_report,sep = ""),
+                       paste(output_dir_data,"DQC_OK/",sep = ""),
+                       paste("DQCok_",substring(FILE,1,nchar(FILE)-4),"_",out_filename_date, ".csv",sep = ""))
+
       }else{
         # file_stopped = c(file_stopped, FILE)
-        
-        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",flags_df$value)
-        
+
+        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",
+                       flags_df$value,
+                       paste(output_dir_report,out_filename_report,sep = ""),
+                       NA, NA )
+
       }
-      
+
     } else {
       warning(paste("File",FILE, "already analyzed!"))
       # file_already_processed = c(file_already_processed,FILE)
-      final_info = c(substring(FILE,1,nchar(FILE)-4), "Already analyzed",NA, NA, NA, NA, NA, NA, NA, NA, NA)
+      final_info = c(substring(FILE,1,nchar(FILE)-4), "Already analyzed",
+                     NA, NA, NA, NA, NA, NA, NA, NA, NA,
+                     NA,
+                     NA, NA)
     }
-    
+
   }else{
-    final_info = c(substring(FILE,1,nchar(FILE)-4), "Not analyzed",NA, NA, NA, NA, NA, NA, NA, NA, NA)
+    final_info = c(substring(FILE,1,nchar(FILE)-4), "Not analyzed",
+                   NA, NA, NA, NA, NA, NA, NA, NA, NA,
+                   NA,
+                   NA, NA)
   }
-  
+
   final_dataframe = rbind(final_dataframe,final_info)
 
-  
+
 }
 
 final_dataframe = final_dataframe[-1,]
@@ -236,16 +249,16 @@ rmarkdown::render(input = input_final,
                   params = list(report_start = report_start ,
                                 final_dataframe = final_dataframe))
 
-object.size(ls())
+# Rprof(NULL)
+# summaryRprof(tf,memory = "stats")
 
-mem_used()
 # library(mailR)
-# 
-# 
+#
+#
 # bb = cat(paste("Data quality check reports are:",output_dir_report),
 #                        paste("Data quality check data are:",output_dir_data),
 #                        paste("Final report: ",output_dir_final,output_file_final,sep = ""),sep = "\n")
-# 
+#
 # send.mail(from = "data.quality.check@gmail.com",
 #           to = c("Christian.Brida@eurac.edu"),
 #           subject = paste("Data Quality Check -", report_start),

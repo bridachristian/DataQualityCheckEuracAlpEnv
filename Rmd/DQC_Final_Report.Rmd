@@ -31,7 +31,7 @@ for(i in 3:11){
 }
 
 
-final_2 = final_dataframe
+final_2 = final_dataframe[,1:11]
 
 final_2$Status[ff$Status == "Already analyzed"] = "B" 
 final_2$Status[ff$Status == "Analyzed with errors"] = "R" 
@@ -107,5 +107,43 @@ ggplot(melt_final, aes(x = variable, y = Station))+
 
 
 ```
+
+```{r}
+r_link = ff$Report_link
+r_link_text =  r_link
+
+d_file <- ff$File_name
+d_folder <- ff$Data_folder
+d_folder_text =  d_folder
+
+
+w1 = which(is.na(r_link_text))
+w2 = which(!is.na(r_link_text))
+
+w3 = which(is.na(d_folder))
+w4 = which(!is.na(d_folder))
+
+r_link_text[w1] = "Already processed"
+r_link_text[w2] ="Report available"
+
+# d_folder_text[w3] = "No data file"
+# d_folder_text[w4] ="Data available"
+
+ff$Report_link[w1]<- paste0(r_link_text[w1])
+ff$Report_link[w2]<- paste0("[", r_link_text[w2], "](", r_link[w2], ")")
+
+ff$Data_folder [w3] <- paste0("No data file")
+ff$Data_folder[w4]<- paste0("[", "Data available", "](",d_folder_text[w4], ")")
+
+ff$File_name[is.na(ff$File_name)] = paste0("---")
+
+new_ff = ff[,c(1,12,13,14)]
+colnames(new_ff) = c("Station", "Report", "Data folder", "File name")
+
+
+knitr::kable(new_ff,row.names = FALSE)
+```
+
+
 
 Report end at **`r Sys.time()`**

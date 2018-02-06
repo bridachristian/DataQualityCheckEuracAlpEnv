@@ -90,8 +90,9 @@ colnames(final_dataframe) = c("Station", "Status",
 
 report_start = Sys.time()
 
+# load(file = paste(output_dir_data,"final_dataframe.RData",sep = "") )
 
-
+# for(t in  16:19){
 for(t in  1: length(files_available)){
   gc(reset = T)
 
@@ -238,10 +239,11 @@ for(t in  1: length(files_available)){
   final_dataframe[t,] = final_info
 
   gc(reset = T)
-
 }
 
-final_dataframe = final_dataframe[-1,]
+save(final_dataframe,file = paste(output_dir_data,"final_dataframe.RData",sep = "") )
+
+# final_dataframe = final_dataframe[-1,]
 
 
 input_final = "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Rmd/DQC_Final_Report.Rmd"

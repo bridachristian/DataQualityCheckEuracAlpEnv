@@ -39,13 +39,13 @@ deletes_duplcated_data = function(DATA, DATETIME_HEADER = "TIMESTAMP"){
     DATA <- DATA[!duplicated(DATA),] # deletes identical rows
 
   }else{
-    
+
     duplicated = data.frame(t(rep("---", times = ncol(DATA))))
     colnames(duplicated) = colnames(DATA)
-    
-    
+
+
   }
-  
+
   output = list(DATA, duplicated)
   return(output)
 }

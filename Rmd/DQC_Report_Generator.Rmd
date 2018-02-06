@@ -143,8 +143,9 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       duplicated_data <- deletes_duplcated [[2]]
       duplicated_data <- time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
       
-      # rm(deletes_duplcated)
-      
+      data_in_old_files <- deletes_old_datetime(DATA = mydata,DATETIME_HEADER = datetime_header)  
+      mydata <- data_in_old_files [[1]]
+      old_data <- data_in_old_files[[2]]
       
         if(unique(as.character(duplicated_data[1,])) == "---"){
           flag_duplicates_rows = 0

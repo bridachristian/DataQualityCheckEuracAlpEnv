@@ -21,7 +21,7 @@ deletes_old_datetime = function(DATA, DATETIME_HEADER = "TIMESTAMP"){
   
   df_already_analyzed  = DATA[which(DATA[,which(colnames(DATA) == DATETIME_HEADER)]< start_date),]
   
-  return(DATA,df_already_analyzed)
+  return(list(DATA,df_already_analyzed))
   
 }
   

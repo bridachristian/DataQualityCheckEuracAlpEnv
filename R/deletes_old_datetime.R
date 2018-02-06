@@ -14,14 +14,22 @@
 
 deletes_old_datetime = function(DATA, DATETIME_HEADER = "TIMESTAMP"){
   start_date = DATA[1, which(colnames(DATA) == DATETIME_HEADER)]
-  
-  # w = which(DATA[,which(colnames(DATA) == DATETIME_HEADER)]< start_date)
-  
-  DATA <- DATA[-which(DATA[,which(colnames(DATA) == DATETIME_HEADER)]< start_date),]
-  
-  df_already_analyzed  = DATA[which(DATA[,which(colnames(DATA) == DATETIME_HEADER)]< start_date),]
-  
-  return(list(DATA,df_already_analyzed))
-  
+
+  w = which(DATA[,which(colnames(DATA) == DATETIME_HEADER)]< start_date)
+  if(length(w) != 0 ){
+    DATA <- DATA[-w,]
+    df_already_analyzed  = DATA[which(DATA[,which(colnames(DATA) == DATETIME_HEADER)]< start_date),]
+
+  } else{
+    data = DATA
+    df_already_analyzed =  as.data.frame(t(rep(NA,times = ncol(DATA) )))
+    colnames(df_already_analyzed) = colnames(DATA)
+  }
+
+  out = list(data,df_already_analyzed)
+
+
+  return(out)
+
 }
-  
+

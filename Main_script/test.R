@@ -92,9 +92,10 @@ report_start = Sys.time()
 
 
 
-for(t in  1: length(files_available)){
-  gc(reset = T)
+# for(t in  1: length(files_available))
+report_fun = function(t){
 
+  gc(reset = T)
   rm(list = setdiff(ls(all.names = TRUE),c("tf","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                                            "files_available","header_row_number","input_dir","output_dir_data","output_dir_report","project_dir",
                                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
@@ -109,7 +110,7 @@ for(t in  1: length(files_available)){
 
   if(dwnl_info$Stop_DQC == 0){
 
-      date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE,sep = "")),format = datetime_format))
+    date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE,sep = "")),format = datetime_format))
 
 
     if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
@@ -235,11 +236,67 @@ for(t in  1: length(files_available)){
   }
 
   # final_dataframe = rbind(final_dataframe,final_info)
-  final_dataframe[t,] = final_info
+  # final_dataframe[t,] = final_info
 
   gc(reset = T)
-
+ return(final_info)
 }
+
+
+f = lapply(X = seq(from = 1, to = length(files_available), by = 1),function(x)  report_fun(t = x))
+
+f= list()
+f[[1]] = report_fun(1)
+f[[2]] = report_fun(2)
+f[[3]] = report_fun(3)
+f[[4]] = report_fun(4)
+f[[5]] = report_fun(5)
+f[[6]] = report_fun(6)
+f[[7]] = report_fun(7)
+f[[8]] = report_fun(8)
+f[[9]] = report_fun(9)
+f[[10]] = report_fun(10)
+f[[11]] = report_fun(11)
+f[[12]] = report_fun(12)
+f[[13]] = report_fun(13)
+f[[14]] = report_fun(14)
+f[[15]] = report_fun(15)
+f[[16]] = report_fun(16)
+f[[17]] = report_fun(17)
+f[[18]] = report_fun(18)
+f[[19]] = report_fun(19)
+
+
+final_dataframe[1,] = f[[1]]
+final_dataframe[2,] = f[[2]]
+final_dataframe[3,] = f[[3]]
+final_dataframe[4,] = f[[4]]
+final_dataframe[5,] = f[[5]]
+final_dataframe[6,] = f[[6]]
+final_dataframe[7,] = f[[7]]
+final_dataframe[8,] = f[[8]]
+final_dataframe[9,] = f[[9]]
+final_dataframe[10,] = f[[10]]
+final_dataframe[11,] = f[[11]]
+final_dataframe[12,] = f[[12]]
+final_dataframe[13,] = f[[13]]
+final_dataframe[14,] = f[[14]]
+final_dataframe[15,] = f[[15]]
+final_dataframe[16,] = f[[16]]
+final_dataframe[17,] = f[[17]]
+final_dataframe[18,] = f[[18]]
+final_dataframe[19,] = f[[19]]
+
+final_dataframe[1,] = f[[1]]
+final_dataframe[1,] = f[[1]]
+final_dataframe[1,] = f[[1]]
+final_dataframe[1,] = f[[1]]
+final_dataframe[1,] = f[[1]]
+final_dataframe[1,] = f[[1]]
+final_dataframe[1,] = f[[1]]
+final_dataframe[1,] = f[[1]]
+
+
 
 final_dataframe = final_dataframe[-1,]
 

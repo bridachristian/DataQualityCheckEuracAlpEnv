@@ -89,6 +89,7 @@ start_date <- params$start_date
 
 range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
 
+
 # .....................................................................................................................................................
 
 # ..... Body ..........................................................................................................................................
@@ -110,7 +111,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
   data <- data_import [[3]]
   flag_error_df <- data_import [[4]]
   
-  rm(data_import)
+  # rm(data_import)
   
   if(flag_error_df == 0){
     time_data = data[,which(colnames(data)==datetime_header)]
@@ -142,10 +143,10 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       duplicated_data <- deletes_duplcated [[2]]
       duplicated_data <- time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
       
-      rm(deletes_duplcated)
+      # rm(deletes_duplcated)
       
-      x = as.character(duplicated_data[1,])
-        if(unique(x) == "---"){
+      
+        if(unique(as.character(duplicated_data[1,])) == "---"){
           flag_duplicates_rows = 0
         } else{
           flag_duplicates_rows = 1
@@ -174,7 +175,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         mydata <- missing[[1]]
         missing_index_date <- missing[[2]]
         
-        rm(missing)
+        # rm(missing)
         
         range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
         mydata <- range[[1]]
@@ -182,9 +183,8 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         variable_new <-range[[3]]
         variable_to_set <-range[[4]]
 
-        rm(range)
+        # rm(range)
         # ..... Flags .....................................................................................................................................
-        
         
         if(length(variable_to_set) != 0){
           flag_range_variable_to_set = 1
@@ -347,22 +347,6 @@ And: *`r if(write_output_report == TRUE){paste("to write output report here:", o
 `r if(is.na(flag_date)){paste("Before continuing, solve previous problems!")}`
 
 
-```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
-
-if(flag_empty == 0){
-  if(flag_error_df == 0){
-    if(flag_date == 0){
-      x = as.character(duplicated_data[1,])
-      if(unique(x) == "---"){
-        flag_duplicates_rows = 0
-      } else{
-        flag_duplicates_rows = 1
-      }
-    }
-  }
-}
-
-```
 #### **There are duplicated rows?**  `r if(is.na(flag_duplicates_rows)){paste("- - -")}else{if(flag_duplicates_rows == 0){paste("NO: all right!")}else{if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}} `
 
 `r if(is.na(flag_duplicates_rows)){paste("Before continuing, solve previous problems!")}else{if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}else{if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:",paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}} `
@@ -413,12 +397,12 @@ if(flag_empty == 0){
         
         df_missing = cbind(df_missing, y,Status_num)
         
-        if(length(which(time_tot %in% time_missing )) == 0){
-          flag_missing_dates = 0      # No missing dates
-        }else{
-          flag_missing_dates = 1      # YES missing dates
-          
-        }
+        # if(length(which(time_tot %in% time_missing )) == 0){
+        #   flag_missing_dates = 0      # No missing dates
+        # }else{
+        #   flag_missing_dates = 1      # YES missing dates
+        #   
+        # }
       }
     }
   }

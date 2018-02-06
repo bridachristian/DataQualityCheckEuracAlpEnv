@@ -24,14 +24,14 @@ final_dataframe <- params$final_dataframe
 
 ```{r echo=FALSE, warning=FALSE}
 
-ff = final_dataframe
+ff = as.data.frame(final_dataframe)
 
 for(i in 3:11){
   ff[,i] = as.numeric(ff[,i])
 }
 
 
-final_2 = final_dataframe[,1:11]
+final_2 = as.data.frame(final_dataframe[,1:11])
 
 
 final_2$Status[ff$Status == "Already analyzed"] = "B" 
@@ -86,8 +86,11 @@ colnames(final_2) = c("Station",
 
 # final_2 = cbind(final_2[,1:2],message,final_2[,3:11] )
 
-
+ff2 = ff[,c(1:11)]
+colnames(ff2)  = colnames(final_2)
 melt_final = melt(final_2,id.vars = "Station")
+melt_ff2 = melt(ff2[,-2],id.vars = "Station")
+
 
 message = data.frame(final_dataframe[,1], rep("Status", times = nrow(final_dataframe)), final_dataframe [,2])
 colnames(message) = colnames(melt_final)
@@ -109,6 +112,7 @@ ggplot(melt_final, aes(x = variable, y = Station))+
         panel.background = element_rect(fill = "white", colour = "grey"),
         panel.border = element_rect(fill = "NA", colour = "white"))+
   geom_tile(aes(fill = value),colour = "black")+
+  geom_text(data = melt_ff2,aes(label = value ))+
   colScale+
   scale_y_discrete(limits = rev(level_station))+
   scale_x_discrete(position = "top")

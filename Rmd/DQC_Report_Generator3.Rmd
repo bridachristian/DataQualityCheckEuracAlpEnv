@@ -343,4 +343,271 @@ You decide:  *`r if(write_output_files == TRUE){paste("to write output file here
 
 And: *`r if(write_output_report == TRUE){paste("to write output report here:", output_dir_report)} else{paste(("to don't write output report"))}`*
 
+### OUTPUT:
+
+#### **Is the file empty?** `r if(flag_empty == 0){paste("NO: all right!")}else{paste("YES: check it!")}`
+
+
+`r if(flag_empty == 0){paste("Ok:",file,"is not empty")}else{paste("Error:",file,"is empty")}`
+
+
+#### **There are problems in data file structure?**  `r if(is.na(flag_error_df)){paste("- - -")}else{if(flag_error_df == -1){paste("YES, there are more header than data!")}else{if(flag_error_df == 0){paste("NO: all right!")}else{if(flag_error_df == 1){paste("YES: there are some data without header!")}}}}`
+
+`r if(is.na(flag_error_df)){paste("Before continuing, solve previous problems!")}else{if(flag_error_df == -1){paste("Check input file! Why there is more headers than data?")}else{if(flag_error_df == 0){paste("There isn't any problems")}else{if(flag_error_df == 1){paste("Possible problems: 1. row shifted above. 2. new data with old headers. 3. other file manipulation errors")}}}} `
+
+
+#### **The file is already process?**  `r if(is.na(flag_date)){paste("- - -")}else{if(flag_date == 0){paste("NO: all right!")}else{if(flag_date == 1){paste("YES: File already process!")}}} `
+
+`r if(is.na(flag_date)){paste("Before continuing, solve previous problems!")}`
+
+
+#### **There are duplicated rows?**  `r if(is.na(flag_duplicates_rows)){paste("- - -")}else{if(flag_duplicates_rows == 0){paste("NO: all right!")}else{if(flag_duplicates_rows == 1){paste("YES: there are duplicated rows!")}}} `
+
+`r if(is.na(flag_duplicates_rows)){paste("Before continuing, solve previous problems!")}else{if(flag_duplicates_rows == 0){paste("There isn't any duplicated row")}else{if(flag_duplicates_rows == 1){paste("Attention: there are duplicated row in input file. See:",paste(output_dir_data,"Duplicated_",substring(file,1,nchar(file)-4),".csv",sep = ""))}}} `
+
+
+#### **There are overlaps? ** `r if(is.na(flag_overlap)){paste("- - -")}else{if(flag_overlap == 0){paste("NO: all right!")}else{if(flag_overlap == 1){paste("YES: there are overlaps!")}}} `
+
+`r if(is.na(flag_overlap)){paste("Before continuing, solve previous problems!")}else{if(flag_overlap == 0){paste("There isn't any overlap!")}else{if(flag_overlap == 1){paste("There are the following ovelap:")}}} `
+
+
+
+```{r echo=FALSE}
+if(flag_empty == 0){
+  if(flag_error_df == 0){
+    if(flag_date == 0){
+      if(flag_overlap == 1){
+        kable(overlap, format = "html",align = "c",row.names = F)%>%
+          kable_styling() %>%
+          scroll_box( height = "200px")
+        
+      }
+    }
+  }
+}
+```
+
+<!-- #### **Missing dates** -->
+
+```{r echo=FALSE, warning=FALSE}
+if(flag_empty == 0){
+  if(flag_error_df == 0){
+    if(flag_date == 0){
+      if(flag_overlap == 0){
+        
+        time_tot <- as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1' )
+        time_missing <- missing_index_date[,2]
+        # time_missing <-as.character(time_missing)
+
+        df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
+        colnames(df_missing) = c("time","Status")
+        df_missing[which(time_tot %in% time_missing ),2] = "Missing dates filled"
+        y = rep(1, times = length(time_tot))
+
+        Status_num = rep(1,times = length(time_tot))
+        Status_num[which(time_tot %in% time_missing )] = 0
+
+        df_missing = cbind(df_missing, y,Status_num)
+        
+        rm(time_tot)
+        rm(time_missing)
+        rm(y)
+        rm(Status_num)
+
+        
+      }
+    }
+  }
+}
+```
+
+#### **There are missing dates?** `r if(is.na(flag_missing_dates)){paste("- - -")}else{if(flag_missing_dates == 0){paste("NO: all right!")}else{if(flag_missing_dates == 1){paste("YES: there are missing dates!")}}} `
+
+
+`r if(is.na(flag_missing_dates)){paste("Before continuing, solve previous problems!")}`
+
+```{r echo=FALSE, warning=FALSE}
+if(flag_empty == 0){
+  if(flag_error_df == 0){
+    if(flag_date == 0){
+      if(flag_overlap == 0){
+        if(flag_missing_dates == 1){
+          theme_new = theme_bw()+theme(axis.title.y=element_blank(),
+                                       axis.text.y=element_blank(),
+                                       axis.ticks.y=element_blank(),
+                                       axis.text.x = element_text(angle = 90, hjust = 1))
+
+          tot_missing =length(which(df_missing$Status_num == 0))
+
+          ggplot(df_missing,aes(x = time, y=y ,colour = Status)) +
+            geom_point(aes(size = Status,shape = Status) )+
+            scale_colour_manual(values = c("#7CAE00","#F8766D"))+
+            scale_shape_manual(values = c(20,124))+
+            # scale_x_datetime(name = datetime_header,date_breaks = "2 weeks" )+
+            theme_new+
+            # ggtitle("Time distribution of missing dates")+
+            labs(title="Time distribution of missing dates",
+                 subtitle=paste("Total missing dates: ", tot_missing,sep = ""))
+        }
+      }
+    }
+  }
+}
+```
+
+`r if(!is.na(flag_missing_dates)){if(flag_missing_dates == 0){paste("There isn't any missing dates!")}else{if(flag_missing_dates == 1){paste("Statistics of missing dates:")}}} `
+
+
+```{r echo=FALSE}
+if(flag_empty == 0){
+  if(flag_error_df == 0){
+    if(flag_date == 0){
+      if(flag_overlap == 0){
+        if(flag_missing_dates == 1){
+          Status_num_NA=df_missing
+          Status_num_NA = Status_num_NA[,-c(2,3)]
+
+          differ = c(0,diff(Status_num_NA$Status_num))
+          start = which(differ == -1)
+          end  = which(differ == 1) - 1
+          gap_lenght = end - start + 1
+
+          date_start = Status_num_NA$time[start]
+          date_end = Status_num_NA$time[end]
+
+          if(length(date_end) != 0){
+            date_end_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
+            for(k in 1:length(date_end)){
+
+              date_end_tmp[k] =  seq.POSIXt(date_end[k], by = datetime_sampling, length. =  2)[2]
+            }
+            gap_hour = difftime(time1 = date_end_tmp,time2 = date_start,units = "hours")
+          }else{
+            gap_hour = numeric(0)
+          }
+
+
+          statistic_missing = data.frame(date_start,date_end,gap_lenght,gap_hour)
+          colnames(statistic_missing) = c("From", "To", "Number of Record", "Hours")
+
+          # print(statistic_missing)
+
+            if(nrow(statistic_missing) == 1){
+                    kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+                            kable_styling() %>%
+                            scroll_box( height = "120px")
+                  }else{
+                    if(nrow(statistic_missing) == 2){
+                      kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+                              kable_styling() %>%
+                              scroll_box( height = "150px")
+                    }else{
+                      if(nrow(statistic_missing) == 3){
+                        kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+                                kable_styling() %>%
+                                scroll_box( height = "180px")
+                      }else{
+                        if(nrow(statistic_missing) >  3){
+                          kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+                                  kable_styling() %>%
+                                  scroll_box( height = "210px")
+                        }
+                      }
+                    }
+                  }
+          
+          rm(Status_num_NA)
+          rm(differ)
+          rm(start)
+          rm(end)
+          rm(gap_lenght)
+          rm(date_start)
+          rm(date_end)
+          rm(date_end_tmp)
+          rm(gap_hour)
+          rm(statistic_missing)
+          rm(df_missing)
+
+        }
+      }
+    }
+  }
+}
+```
+
+
+
+
+
+#### **Do you need to update the range file?** `r if(is.na(flag_range_variable_to_set) | is.na(flag_range_variable_new) ){paste("- - -")}else{if(flag_range_variable_to_set == 0 & flag_range_variable_new == 0){paste("NO, the range file is up to date!")}else{if(flag_range_variable_to_set == 1 | flag_range_variable_new == 1){paste("YES, you need to update the range of the following variables.")}}} `
+
+
+
+```{r echo=FALSE, warning=FALSE,results='asis'}
+
+if(flag_empty == 0){
+  if(flag_error_df == 0){
+    if(flag_date == 0){
+      if(flag_overlap == 0){
+        
+        if(flag_range_variable_new == 1){
+          df_variable_new = data.frame(variable_new, rep("New variable. Set threshold in range file",times = length(variable_new)))
+          colnames(df_variable_new) = c("Variable", "Warning")
+          
+        }else{
+          df_variable_new = data.frame("---", rep("Any new variables added in range file",times = 1))
+          colnames(df_variable_new) = c("Variable", "Warning")
+        }
+        
+        if(flag_range_variable_to_set == 1){
+          df_variable_to_set = data.frame(variable_to_set, rep("Remember: update threshold in range file and disables flag *to_set* ", times = length(variable_to_set)))
+          colnames(df_variable_to_set) = c("Variable", "Warning")
+          
+          
+        }else{
+          df_variable_to_set = data.frame("---", rep("All variables in range file are up to date",times = 1))
+          colnames(df_variable_to_set) = c("Variable", "Warning")
+          # print("Any variables to set in range file.")
+        }
+        
+        df_to_print = rbind(df_variable_new,df_variable_to_set)
+        
+        # print(df_to_print)
+        
+        if(nrow(df_to_print) == 1){
+          kable(df_to_print, format = "html",align = "l",row.names = F)%>%
+            kable_styling() %>%
+            scroll_box( height = "120px")
+        }else{
+          if(nrow(df_to_print) == 2){
+            kable(df_to_print, format = "html",align = "l",row.names = F)%>%
+              kable_styling() %>%
+              scroll_box( height = "150px")
+          }else{
+            if(nrow(df_to_print) == 3){
+              kable(df_to_print, format = "html",align = "l",row.names = F)%>%
+                kable_styling() %>%
+                scroll_box( height = "180px")
+            }else{
+              if(nrow(df_to_print) >  3){
+                kable(df_to_print, format = "html",align = "l",row.names = F)%>%
+                  kable_styling() %>%
+                  scroll_box( height = "210px")
+              }
+            }
+          }
+        }
+        
+        rm(df_variable_new)
+        rm(df_variable_to_set)
+        rm(df_to_print)
+        
+      }
+    }
+  }
+}
+```
+
+
+
 *End Report - **`r Sys.time()`** *

@@ -466,74 +466,74 @@ if(flag_empty == 0){
         if(flag_missing_dates == 1){
           Status_num_NA=df_missing
           Status_num_NA = Status_num_NA[,-c(2,3)]
-
+          
           differ = c(0,diff(Status_num_NA$Status_num))
           start = which(differ == -1)
           end  = which(differ == 1) - 1
           gap_lenght = end - start + 1
-
+          
           date_start = Status_num_NA$time[start]
           date_end = Status_num_NA$time[end]
-
+          
           if(length(date_end) != 0){
             date_end_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
             for(k in 1:length(date_end)){
-
+              
               date_end_tmp[k] =  seq.POSIXt(date_end[k], by = datetime_sampling, length. =  2)[2]
             }
             gap_hour = difftime(time1 = date_end_tmp,time2 = date_start,units = "hours")
           }else{
             gap_hour = numeric(0)
           }
-
-
+          
+          
           statistic_missing = data.frame(date_start,date_end,gap_lenght,gap_hour)
           colnames(statistic_missing) = c("From", "To", "Number of Record", "Hours")
-
-          # print(statistic_missing)
-
-            if(nrow(statistic_missing) == 1){
-                    kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-                            kable_styling() %>%
-                            scroll_box( height = "120px")
-                  }else{
-                    if(nrow(statistic_missing) == 2){
-                      kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-                              kable_styling() %>%
-                              scroll_box( height = "150px")
-                    }else{
-                      if(nrow(statistic_missing) == 3){
-                        kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-                                kable_styling() %>%
-                                scroll_box( height = "180px")
-                      }else{
-                        if(nrow(statistic_missing) >  3){
-                          kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-                                  kable_styling() %>%
-                                  scroll_box( height = "210px")
-                        }
-                      }
-                    }
-                  }
           
-          rm(Status_num_NA)
-          rm(differ)
-          rm(start)
-          rm(end)
-          rm(gap_lenght)
-          rm(date_start)
-          rm(date_end)
-          rm(date_end_tmp)
-          rm(gap_hour)
-          rm(statistic_missing)
-          rm(df_missing)
-
+          # print(statistic_missing)
+          
+          if(nrow(statistic_missing) == 1){
+            kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+              kable_styling() %>%
+              scroll_box( height = "120px")
+          }else{
+            if(nrow(statistic_missing) == 2){
+              kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+                kable_styling() %>%
+                scroll_box( height = "150px")
+            }else{
+              if(nrow(statistic_missing) == 3){
+                kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+                  kable_styling() %>%
+                  scroll_box( height = "180px")
+              }else{
+                if(nrow(statistic_missing) >  3){
+                  kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
+                    kable_styling() %>%
+                    scroll_box( height = "210px")
+                }
+              }
+            }
+          }
+          
+           # rm(Status_num_NA)
+           # rm(differ)
+           # rm(start)
+           # rm(end)
+           # rm(gap_lenght)
+           # rm(date_start)
+           # rm(date_end)
+           # rm(date_end_tmp)
+           # rm(gap_hour)
+          # rm(statistic_missing)
+          
         }
       }
     }
   }
 }
 ```
+
 
 
 
@@ -597,9 +597,9 @@ if(flag_empty == 0){
           }
         }
         
-        rm(df_variable_new)
-        rm(df_variable_to_set)
-        rm(df_to_print)
+        # rm(df_variable_new)
+        # rm(df_variable_to_set)
+        # rm(df_to_print)
         
       }
     }
@@ -843,4 +843,3 @@ if(flag_empty == 0){
 
 
 *End Report - **`r Sys.time()`** *
-

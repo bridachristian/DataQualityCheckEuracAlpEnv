@@ -1,0 +1,346 @@
+---
+title: "Data Quality Check Report"
+author: "Insitute for Alpine Environment, Eurac Research"
+output: html_document
+params:
+    input_dir:             # dir:  Directory where to put input files.
+    output_dir_data:       # dir:  Directory where to save output files
+    output_dir_report:     # dir:  Directory where to save output report
+    project_dir:           # dir:  Directory of DataQualityCheckEuracAlpEnv package. Inside there are R script, Rmarkdown document and support files.
+    data_from_row:         # num:  The row number of the first data row. (How many rows are dedicated to headers? + 1)
+    header_row_number:     # num:  The row number of the header names
+    datetime_header:       # chr:  The string to use to recognize datetime
+    datetime_format:       # chr:  The string to use to recognize datetime. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+    datetime_sampling:     # chr:  The string that define the time sampling (in POSIXct format)
+    record_header:         # chr:  The string to use to recognize record header
+    range_file:            # chr:  The string that indicate the name of range file saved in folder "project_dir/Data/Support_files/Range"
+    write_output_files:    # log:  Logical status (TRUE/FALSE) to decide if save output data or not
+    write_output_report:   # log:  Logical status (TRUE/FALSE) to decide if save output report or not
+    file:                  # chr:  The string that indicate the name of file to process
+    start_date:            # date: First date to consider for the analysis. Date before are not considered
+---
+
+Report start at **`r Sys.time()`**
+
+
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
+
+# remove(list=ls())
+# Sys.setenv(TZ='Etc/GMT-1') # sets the environment on italy?s time zone
+# 
+# # ..... Libraries .....................................................................................................................................
+# 
+# library(devtools)
+# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
+# library("DataQualityCheckEuracAlpEnv")
+# 
+# library(zoo)
+# library(timeSeries)
+# library(knitr)
+# library(ggplot2)
+# library(dplyr)
+# library(plyr)
+# library(imputeTS)
+# library(reshape2)
+# library(kableExtra)
+
+
+# .....................................................................................................................................................
+
+# ..... Input section .................................................................................................................................
+
+# ~~~ Params ~~~~
+
+input_dir <- params$input_dir
+output_dir_data <- params$output_dir_data
+output_dir_report <- params$output_dir_report
+project_dir <- params$project_dir
+data_from_row <- params$data_from_row
+header_row_number <- params$header_row_number
+datetime_header <- params$datetime_header
+datetime_format <- params$datetime_format
+datetime_sampling <- params$datetime_sampling
+record_header <- params$record_header
+range_file <- params$range_file
+write_output_files <- params$write_output_files
+write_output_report <- params$write_output_report
+file <- params$file
+start_date <- params$start_date
+
+# ~~~ Debug inputs ~~~~
+# 
+# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/"
+# output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Data/"
+# output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/test_output/Out_Report/"
+# project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"
+# data_from_row =  5
+# header_row_number =  2
+# datetime_header =  "TIMESTAMP"
+# datetime_format =  "yyyy-mm-dd HH:MM"
+# datetime_sampling =  "15 min"
+# record_header =  "RECORD"
+# range_file =  "Range.csv"
+# write_output_files =  "FALSE"
+# write_output_report =  "FALSE"
+# file <- "M3.dat"
+# start_date <- "2017-11-23 05:45:00"
+
+# ~~~ Default directory ~~~~
+
+range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
+
+
+# .....................................................................................................................................................
+
+# ..... Define flags ..................................................................................................................................
+
+flag_empty = NA
+flag_error_df = NA
+flag_date = NA
+flag_duplicates_rows = NA
+flag_overlap = NA
+flag_missing_dates = NA
+flag_range_variable_to_set = NA
+flag_range_variable_new = NA
+flag_out_of_range = NA
+
+# ..... Body ..........................................................................................................................................
+
+if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
+  
+  flag_empty = 1
+  
+}else{
+  
+  flag_empty = 0
+  
+  data_import <- read_data(INPUT_DATA_DIR = input_dir, FILE_NAME = file, 
+                           DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format,
+                           DATA_FROM_ROW = data_from_row, HEADER_ROW_NUMBER = header_row_number)  
+  header = data_import [[1]]
+  header_colnames = data_import [[2]]
+  data = data_import [[3]]
+  flag_error_df = data_import [[4]]
+  
+  rm(data_import)
+  
+  if(flag_error_df == 0){
+    time_data = data[,which(colnames(data)==datetime_header)]
+    
+    if(is.na(start_date)){
+      
+      original <- data
+      mydata <- data    
+      flag_date = 0
+      
+      rm(data)
+
+    }else{
+      
+      if(as.POSIXct(start_date) < time_data[length(time_data)]){
+        original = data[(which(time_data == as.POSIXct(start_date))+1):nrow(data),]      # possible issues in data subset!!! to check 
+        mydata = data[(which(time_data == as.POSIXct(start_date))+1):nrow(data),]
+        
+        flag_date = 0
+        
+        rm(data)
+        
+      } else {
+        
+        flag_date = 1
+      }
+    }
+    
+    
+    if(flag_date == 0){
+      deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = datetime_header)         # <- Deletes identical rows if found
+      mydata = deletes_duplcated [[1]]
+      duplicated_data = deletes_duplcated [[2]]
+      duplicated_data = time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+      
+      rm(deletes_duplcated)
+       
+      if(unique(as.character(duplicated_data[1,])) == "---"){
+        flag_duplicates_rows = 0
+      } else{
+        flag_duplicates_rows = 1
+      }
+      
+      data_in_old_files <- deletes_old_datetime(DATA = mydata,DATETIME_HEADER = datetime_header)  
+      mydata = data_in_old_files [[1]]
+      old_data = data_in_old_files[[2]]
+      
+      rm(data_in_old_files)
+      
+      overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
+      
+      
+      if(length(overlap) != 0){
+        
+        flag_overlap = 1
+        overlap[,1]<- overlap[,1] + data_from_row - 1
+        colnames(overlap)[1]= "File Row"
+        
+      }else{
+        
+        flag_overlap = 0
+        
+        missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
+        mydata = missing[[1]]
+        missing_index_date = missing[[2]]
+        
+        rm(missing)
+
+        
+        range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
+        mydata = range[[1]]
+        check_out_of_range = range[[2]]
+        variable_new = range[[3]]
+        variable_to_set = range[[4]]
+        
+        rm(range)
+        # ..... Flags .....................................................................................................................................
+        
+        if(length(variable_to_set) != 0){
+          flag_range_variable_to_set = 1
+        }else{
+          flag_range_variable_to_set = 0
+        }
+        
+        if(length(variable_new) != 0){
+          flag_range_variable_new = 1
+        }else{
+          flag_range_variable_new = 0
+        }
+        
+        
+        if(1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
+          flag_out_of_range = 1
+        }else{
+          if(-1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
+            flag_out_of_range = 1
+          }else{
+            flag_out_of_range = 0
+          }
+        }
+        
+        
+        time_tot = as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+        time_missing = missing_index_date[,2]
+        
+        if(length(which(time_tot %in% time_missing )) == 0){
+          flag_missing_dates = 0      # No missing dates
+        }else{
+          flag_missing_dates = 1      # YES missing dates
+        }
+        
+        mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+        
+      }
+    }
+  }
+}
+
+
+
+# ..... Output ..........................................................................................................................................
+
+if(flag_empty == 0){
+  if(flag_error_df == 0){
+    if(flag_date == 0){
+      if(flag_overlap == 0){
+        if(write_output_files == TRUE){
+          #~~~~~~~~~~
+          colnames(header) = header[1,]
+          
+          out_my = mydata
+          colnames(out_my) = colnames(header)
+          
+          out_mydata=rbind(header[-1,],out_my)
+          
+          out_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
+                           substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
+                           substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
+                           # "_",
+                           substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+                           substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+                           sep = "")
+          out_filename_data = paste("DQCok_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
+          out_filename_dupli = paste("Duplicated_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
+          
+          output_dir_data_DQC_OK = paste(output_dir_data, "DQC_OK/",sep = "")
+          ifelse(test = !dir.exists(output_dir_data_DQC_OK),yes = dir.create(output_dir_data_DQC_OK),no = FALSE)
+          
+          output_dir_data_duplicated = paste(output_dir_data, "Duplicated/",sep = "")
+          ifelse(test = !dir.exists(output_dir_data_duplicated),yes = dir.create(output_dir_data_duplicated),no = FALSE)
+          
+          write.csv(out_mydata,paste(output_dir_data_DQC_OK,out_filename_data,sep = ""),quote = F,row.names = F, na = "NaN")
+          
+          rm(out_my)
+          rm(out_mydata)
+          #~~~~~~~~~~
+          out_duplicated = duplicated_data
+          colnames(out_duplicated) = colnames(header)
+          
+          out_duplicated_data=rbind(header[-1,],out_duplicated)
+          write.csv(out_duplicated_data,paste(output_dir_data_duplicated,out_filename_dupli,sep = ""),quote = F,row.names = F, na = "NaN")
+          rm(out_duplicated)
+          rm(out_duplicated_data)
+        }
+      }
+    }
+  }
+}
+
+
+flags_names = c("flag_empty","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_dates","flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range")
+flags_df = data.frame(flags_names, rep(NA,times = length(flags_names)))
+colnames(flags_df) = c("flag_names", "value")
+
+for(i in 1: nrow(flags_df)){
+  if(exists(flags_names[i])){
+    flags_df$value[i] = eval(parse(text = flags_names[i]))
+  }
+}
+# 
+# flag_empty = flags_df$value[1]
+# flag_error_df = flags_df$value[2]
+# flag_date = flags_df$value[3]
+# flag_duplicates_rows = flags_df$value[4]
+# flag_overlap = flags_df$value[5]
+# flag_missing_dates = flags_df$value[6]
+# flag_range_variable_to_set = flags_df$value[7]
+# flag_range_variable_new = flags_df$value[8]
+# flag_out_of_range = flags_df$value[9]
+
+```
+
+
+### INPUT info:
+
+File selected: **`r  file`**
+
+You have also select these parameters:
+
++ Data start from row: *`r data_from_row`*
++ The name of column is on row: *`r header_row_number`*
++ The datetime header is: *`r datetime_header`*
++ The record header is: *`r record_header`*
++ The datetime format is: *`r datetime_format`*
++ The sampling interval is: *`r datetime_sampling`*
+
+The folders are:
+
++ Input data folder: *`r input_dir`*
++ Output data folder: *`r output_dir_data`*
++ Output report folder: *`r output_dir_report`*
++ Project folder: *`r project_dir`*
+
+
+Range file in *`r range_dir`* is called: *`r range_file`*
+
+You decide:  *`r if(write_output_files == TRUE){paste("to write output file here:", output_dir_data)} else{paste(("to don't write output file"))}`*
+
+And: *`r if(write_output_report == TRUE){paste("to write output report here:", output_dir_report)} else{paste(("to don't write output report"))}`*
+
+*End Report - **`r Sys.time()`** *

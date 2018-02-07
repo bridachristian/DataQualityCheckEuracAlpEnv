@@ -59,7 +59,7 @@ write_output_report =  "TRUE"
 
 range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
 download_table_dir <- paste(project_dir, "Data/Support_files/Download_table/",sep = "")
-Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
+Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator2.Rmd",sep = "")
 
 # ..........................................................................................................................................................
 
@@ -131,6 +131,7 @@ for(t in  1: length(files_available)){
 
       file = FILE
       start_date = dwnl_info$Last_date
+      rm(dwnl_info)
 
       output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
 

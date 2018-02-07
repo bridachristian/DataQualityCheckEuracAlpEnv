@@ -12,22 +12,24 @@
 #'
 
 detect_overlap = function(DATA, DATETIME_HEADER = "TIMESTAMP", RECORD_HEADER = "RECORD"){
-  
-  if(any(duplicated(DATA[,which(colnames(data) == DATETIME_HEADER)]))){
-    
-    w <- which(duplicated(DATA[,which(colnames(data) == DATETIME_HEADER)]))
-    
-    date_overlap = data[w,which(colnames(data) == DATETIME_HEADER)]
-    
-    index_overlap = which(data[,which(colnames(data) == DATETIME_HEADER)] %in% date_overlap)
-    
-    record_overlap = data[index_overlap,which(colnames(data) == RECORD_HEADER)]
-    
-    date_record = data[index_overlap,which(colnames(data) == DATETIME_HEADER)]
-    
+
+
+
+  if(any(duplicated(DATA[,which(colnames(DATA) == DATETIME_HEADER)]))){
+
+    w <- which(duplicated(DATA[,which(colnames(DATA) == DATETIME_HEADER)]))
+
+    date_overlap = DATA[w,which(colnames(DATA) == DATETIME_HEADER)]
+
+    index_overlap = which(DATA[,which(colnames(DATA) == DATETIME_HEADER)] %in% date_overlap)
+
+    record_overlap = DATA[index_overlap,which(colnames(DATA) == RECORD_HEADER)]
+
+    date_record = DATA[index_overlap,which(colnames(DATA) == DATETIME_HEADER)]
+
     df_overlap = data.frame(index_overlap,record_overlap,date_record)
     colnames(df_overlap)= c("Index",RECORD_HEADER,DATETIME_HEADER )
-    
+
   }else{
     df_overlap = NULL
   }

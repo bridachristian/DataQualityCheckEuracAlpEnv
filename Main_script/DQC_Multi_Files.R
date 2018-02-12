@@ -33,11 +33,11 @@ library(htmltools)
 
 # ..... Params section .....................................................................................................................................
 
-input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/QualityCheck_20180208/Input_file/"                # where input files are
+input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/QualityCheck_20180212/Input_file/"                # where input files are
 # input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
-output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/QualityCheck_20180208/Output/Output_Data/"   # where to put output files
+output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/QualityCheck_20180212/Output/Output_Data/"   # where to put output files
 # output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
-output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/QualityCheck_20180208/Output/Output_Report/"   # where to put output reports
+output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/QualityCheck_20180212/Output/Output_Report/"   # where to put output reports
 # output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
 project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
@@ -61,7 +61,7 @@ write_output_report =  "TRUE"
 
 range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
 # download_table_dir <- paste(project_dir, "Data/Support_files/Download_table/",sep = "")
-download_table_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/QualityCheck_20180208/Download_table/"
+download_table_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/QualityCheck_20180212/Download_table/"
 Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
 
 # ..........................................................................................................................................................

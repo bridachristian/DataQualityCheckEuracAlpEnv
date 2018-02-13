@@ -3,8 +3,8 @@
 # TITLE:        Data quality check LTER on different files in scheduling folder
 # Author:       Brida Christian, Genova Giulio, Zandonai Alessandro
 #               Institute for Alpine Environment
-# Data:         13/12/2017
-# Version:      1.0
+# Data:         13/02/2018
+# Version:      2.0
 #
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 

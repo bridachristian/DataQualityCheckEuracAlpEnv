@@ -59,7 +59,7 @@ record_header =  "RECORD"
 range_file =  "Range.csv"
 
 write_output_files =  "TRUE"
-write_output_report =  "TRUE"
+write_output_report =  "FALSE"
 file <- "M3.dat"
 start_date <- "2017-11-23 05:45:00"
 

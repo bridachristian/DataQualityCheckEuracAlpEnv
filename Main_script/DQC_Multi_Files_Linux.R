@@ -25,6 +25,7 @@ library(DT)
 library(htmltools)
 library(rmarkdown)
 
+Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
 
 # ..... Params section .....................................................................................................................................
@@ -59,7 +60,7 @@ write_output_report =  "TRUE"
 
 range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
 # download_table_dir <- paste(project_dir, "Data/Support_files/Download_table/",sep = "")
-download_table_dir <- "../Desktop/DQC_20180215/download_table/"
+download_table_dir <- "/home/cbrida/Desktop/DQC_20180215/download_table/"
 Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
 
 # ..........................................................................................................................................................
@@ -247,7 +248,7 @@ for(t in  1: length(files_available)){
 
 
 
-input_final = "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Rmd/DQC_Final_Report.Rmd"
+input_final = "/home/cbrida/DataQualityCheckEuracAlpEnv/Rmd/DQC_Final_Report.Rmd"
 output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
                            substring(report_start,6,7),
                            substring(report_start,9,10),

@@ -18,7 +18,6 @@ check_empty_file = function(INPUT_DATA_DIR,FILE_NAME){
     empty <- FALSE
   }
 
-
-  gc(reset = T)
+    gc(reset = T)
   return(empty)
 }

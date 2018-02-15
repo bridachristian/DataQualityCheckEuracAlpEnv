@@ -90,7 +90,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       mydata <- data    
       flag_date = 0
       
-      rm(data)
+      # rm(data)
 
     }else{
       

@@ -449,43 +449,9 @@ if(flag_empty == 0){
           
           statistic_missing = data.frame(date_start,date_end,gap_lenght,gap_hour)
           colnames(statistic_missing) = c("From", "To", "Number of Record", "Hours")
-          
+          statistic_missing[,1:2] = format(statistic_missing[,1:2], format = datetime_format)
+        
           datatable(statistic_missing,rownames = F)
-          
-          # if(nrow(statistic_missing) == 1){
-          #   kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-          #     kable_styling() %>%
-          #     scroll_box( height = "120px")
-          # }else{
-          #   if(nrow(statistic_missing) == 2){
-          #     kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-          #       kable_styling() %>%
-          #       scroll_box( height = "150px")
-          #   }else{
-          #     if(nrow(statistic_missing) == 3){
-          #       kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-          #         kable_styling() %>%
-          #         scroll_box( height = "180px")
-          #     }else{
-          #       if(nrow(statistic_missing) >  3){
-          #         kable(statistic_missing, format = "html",align = "c",row.names = F)%>%
-          #           kable_styling() %>%
-          #           scroll_box( height = "210px")
-          #       }
-          #     }
-          #   }
-          # }
-          
-           # rm(Status_num_NA)
-           # rm(differ)
-           # rm(start)
-           # rm(end)
-           # rm(gap_lenght)
-           # rm(date_start)
-           # rm(date_end)
-           # rm(date_end_tmp)
-           # rm(gap_hour)
-          # rm(statistic_missing)
           
         }
       }
@@ -530,36 +496,9 @@ if(flag_empty == 0){
         }
         
         df_to_print = rbind(df_variable_new,df_variable_to_set)
-        
+
         datatable(df_to_print,rownames = F)
         
-        # if(nrow(df_to_print) == 1){
-        #   kable(df_to_print, format = "html",align = "l",row.names = F)%>%
-        #     kable_styling() %>%
-        #     scroll_box( height = "120px")
-        # }else{
-        #   if(nrow(df_to_print) == 2){
-        #     kable(df_to_print, format = "html",align = "l",row.names = F)%>%
-        #       kable_styling() %>%
-        #       scroll_box( height = "150px")
-        #   }else{
-        #     if(nrow(df_to_print) == 3){
-        #       kable(df_to_print, format = "html",align = "l",row.names = F)%>%
-        #         kable_styling() %>%
-        #         scroll_box( height = "180px")
-        #     }else{
-        #       if(nrow(df_to_print) >  3){
-        #         kable(df_to_print, format = "html",align = "l",row.names = F)%>%
-        #           kable_styling() %>%
-        #           scroll_box( height = "210px")
-        #       }
-        #     }
-        #   }
-        # }
-        
-        # rm(df_variable_new)
-        # rm(df_variable_to_set)
-        # rm(df_to_print)
         
       }
     }
@@ -644,6 +583,7 @@ if(flag_empty == 0){
               colnames(set_limits) = colnames(df_factor)
               
               df_factor = rbind(df_factor,set_limits)
+              df_factor$Variable =as.numeric(df_factor$Variable)
               
               df_factor$Variable = factor(df_factor$Variable, ordered = TRUE)
               df_factor$Variable <- factor( df_factor$Variable, levels=rev(levels( df_factor$Variable)))
@@ -746,6 +686,7 @@ if(flag_empty == 0){
               
               
               statistic_oor = statistic_oor[order(statistic_oor$From),]
+              statistic_oor[,2:3] = format(statistic_oor[,2:3], format = datetime_format) 
               
               print(htmltools::tagList(datatable(statistic_oor)))
               

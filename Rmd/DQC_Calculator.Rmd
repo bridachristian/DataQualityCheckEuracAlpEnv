@@ -92,8 +92,8 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
     
     if(is.na(start_date)){
       
-      original <- data
-      mydata <- data    
+      original = data
+      mydata = data    
       flag_date = 0
       
       rm(data)

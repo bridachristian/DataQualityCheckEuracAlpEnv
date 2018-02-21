@@ -1,0 +1,21 @@
+Package: mockr
+Title: Mocking in R
+Version: 0.1
+Authors@R: person("Kirill", "Müller", role = c("aut", "cre"), email = "krlmlr+r@mailbox.org")
+Description: Provides a means to mock a package function, i.e., temporarily substitute it for testing. Designed as a drop-in replacement for 'testthat::with_mock()', which may break in R 3.4.0 and later.
+Imports: lazyeval
+Suggests: testthat, covr
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Date: 2017-04-28
+BugReports: https://github.com/krlmlr/mockr/issues
+URL: https://github.com/krlmlr/mockr, http://krlmlr.github.io/mockr
+RoxygenNote: 6.0.1
+NeedsCompilation: no
+Packaged: 2017-04-29 08:10:46 UTC; muelleki
+Author: Kirill Müller [aut, cre]
+Maintainer: Kirill Müller <krlmlr+r@mailbox.org>
+Repository: CRAN
+Date/Publication: 2017-04-29 13:18:38 UTC
+Built: R 3.4.3; ; 2018-02-21 11:43:01 UTC; unix

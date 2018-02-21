@@ -12,18 +12,18 @@ rm(list = ls(all.names = TRUE))
 
 
 # ..... Libraries .....................................................................................................................................
-
-library(devtools) 
+library(devtools,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/') 
 install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 library("DataQualityCheckEuracAlpEnv")
 
-library(zoo)
-library(knitr)
-library(ggplot2)
-library(reshape2)
-library(DT)
-library(htmltools)
-library(rmarkdown)
+library(zoo,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
+library(knitr,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
+library(ggplot2,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
+library(reshape2,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
+library(DT,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
+library(htmltools,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
+library(rmarkdown,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
+library(yaml,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
 
 Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
@@ -32,9 +32,9 @@ Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 
 input_dir <- "/shared/Schedluin_test/"                    # where input files are
 # input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
-data_output_dir <- "/home/cbrida/Desktop/DQC_20180220/output/out_data/"   # where to put output files
+data_output_dir <- "/home/cbrida/Desktop/DQC_20180221/output/out_data/"   # where to put output files
 # output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
-report_output_dir <- "/home/cbrida/Desktop/DQC_20180220/output/out_report/"  # where to put output reports
+report_output_dir <- "/home/cbrida/Desktop/DQC_20180221/output/out_report/"  # where to put output reports
 # output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
@@ -58,7 +58,7 @@ write_output_report =  "FALSE"
 
 range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
 # download_table_dir <- paste(project_dir, "Data/Support_files/Download_table/",sep = "")
-download_table_dir <- "/home/cbrida/Desktop/DQC_20180220/download_table/"
+download_table_dir <- "/home/cbrida/Desktop/DQC_20180221/download_table/"
 
 if(write_output_report == TRUE){
   Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")

@@ -10,7 +10,7 @@
 
 rm(list = ls(all.names = TRUE))
 
-
+print(paste("Data Quality Check:",Sys.time()))
 # ..... Libraries .....................................................................................................................................
 library(devtools,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/') 
 install_github("bridachristian/DataQualityCheckEuracAlpEnv")

@@ -9,7 +9,7 @@
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 
 rm(list = ls(all.names = TRUE))
-
+print("--------------------------------------------------------------------------------------------------")
 print(paste("Data Quality Check:",Sys.time()))
 # ..... Libraries .....................................................................................................................................
 library(devtools,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/') 
@@ -34,7 +34,7 @@ input_dir <- "/shared/loggernet.old/scheduling_test/"                    # where
 # input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
 data_output_dir <- "/shared/loggernet.old/data_quality_check/output/out_data/"   # where to put output files
 # output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
-report_output_dir <- "/shared/loggernet.old/data_quality_check//output/out_report/"  # where to put output reports
+report_output_dir <- "/shared/loggernet.old/data_quality_check/output/out_report/"  # where to put output reports
 # output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
@@ -80,7 +80,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 1
+t = 20
 
 final_dataframe = matrix(ncol = 17, nrow = length(files_available))
 
@@ -102,7 +102,7 @@ for(t in  1: length(files_available)){
   rm(list = setdiff(ls(all.names = TRUE),c("tf","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                                            "files_available","header_row_number","input_dir","data_output_dir","report_output_dir","project_dir",
                                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
-                                           "report_start", "final_dataframe")))
+                                           "report_start", "final_dataframe","output_dir_report")))
 
 
   FILE = files_available[t]
@@ -283,7 +283,7 @@ rmarkdown::render(input = input_final,
                   params = list(report_start = report_start ,
                                 final_dataframe = final_dataframe))
 
-
+print("--------------------------------------------------------------------------------------------------")
 
 
 

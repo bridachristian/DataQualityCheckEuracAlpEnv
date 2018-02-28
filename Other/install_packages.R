@@ -28,5 +28,3 @@ install.packages('yaml',lib = '/home/cbrida/DataQualityCheckEuracAlpEnv/Librarie
 install.packages('highr',lib = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/', dependencies = TRUE)
 
 
-
-

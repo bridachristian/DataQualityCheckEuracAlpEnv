@@ -30,18 +30,17 @@ Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 
 # ..... Params section .....................................................................................................................................
 
-input_dir <- "/shared/Schedluin_test/"                    # where input files are
+input_dir <- "/shared/loggernet.old/scheduling_test/"                    # where input files are
 # input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
-data_output_dir <- "/home/cbrida/Desktop/DQC_20180221/output/out_data/"   # where to put output files
+data_output_dir <- "/shared/loggernet.old/data_quality_check/output/out_data/"   # where to put output files
 # output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
-report_output_dir <- "/home/cbrida/Desktop/DQC_20180221/output/out_report/"  # where to put output reports
+report_output_dir <- "/shared/loggernet.old/data_quality_check//output/out_report/"  # where to put output reports
 # output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
 data_from_row =  5                                             # <-- Row number of first data
 header_row_number =  2                                         # <-- Row number of header
 datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-# datetime_format =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
 datetime_format =  "%Y-%m-%d %H:%M"                          # <-- datetime format. Use only: Y -> year, m -> month, d -> day, H -> hour, M -> minute
 datetime_sampling =  "15 min"
 record_header =  "RECORD"
@@ -58,7 +57,7 @@ write_output_report =  "FALSE"
 
 range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
 # download_table_dir <- paste(project_dir, "Data/Support_files/Download_table/",sep = "")
-download_table_dir <- "/home/cbrida/Desktop/DQC_20180221/download_table/"
+download_table_dir <- "/shared/loggernet.old/data_quality_check/download_table/"
 
 if(write_output_report == TRUE){
   Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
@@ -223,14 +222,14 @@ for(t in  1: length(files_available)){
         final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
                          flags_df$value,
                          paste(output_dir_report,out_filename_report,sep = ""),
-                         paste(output_dir_data,"DQC_OK/",sep = ""),
-                         paste("DQCok_",file_name_output,sep = ""))
+                         paste(output_dir_data,sep = ""),
+                         paste(file_name_output,sep = ""))
       }else{
         final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
                        flags_df$value,
                        NA,
-                       paste(output_dir_data_new,"DQC_OK/",sep = ""),
-                       paste("DQCok_",file_name_output, ".csv",sep = ""))
+                       paste(output_dir_data_new,sep = ""),
+                       paste(file_name_output,sep = ""))
       }
 
 

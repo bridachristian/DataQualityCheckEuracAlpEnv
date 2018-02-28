@@ -24,6 +24,7 @@ library(DT,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
 library(htmltools,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
 library(rmarkdown,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
 library(yaml,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
+library(highr,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
 
 Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
@@ -80,7 +81,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 20
+t = 8
 
 final_dataframe = matrix(ncol = 17, nrow = length(files_available))
 
@@ -199,7 +200,7 @@ for(t in  1: length(files_available)){
           }
         } else {
           out_filename_report_new = out_filename_report
-        }
+          }
 
         out_filename_report = out_filename_report_new
 
@@ -235,11 +236,18 @@ for(t in  1: length(files_available)){
 
     }else{
       # file_stopped = c(file_stopped, FILE)
-
-      final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",
-                     flags_df$value,
-                     paste(output_dir_report,out_filename_report,sep = ""),
-                     NA, NA )
+      if(write_output_report == TRUE){
+        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",
+                       flags_df$value,
+                       paste(output_dir_report,out_filename_report,sep = ""),
+                       NA, NA )
+      }else{
+        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",
+                       flags_df$value,
+                       NA,
+                       NA, NA )
+      }
+      
 
     }
 

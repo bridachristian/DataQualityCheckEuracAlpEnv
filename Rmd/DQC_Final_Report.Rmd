@@ -24,14 +24,14 @@ final_dataframe <- params$final_dataframe
 
 ```{r echo=FALSE, warning=FALSE}
 
-ff = as.data.frame(final_dataframe)
+ff = as.data.frame(final_dataframe,stringsAsFactors = F)
 
 for(i in 3:14){
   ff[,i] = as.numeric(ff[,i])
 }
 
 
-final_2 = as.data.frame(final_dataframe[,1:14])
+final_2 = as.data.frame(final_dataframe[,1:14],stringsAsFactors = F)
 
 
 final_2$Status[ff$Status == "Already analyzed"] = "B" 

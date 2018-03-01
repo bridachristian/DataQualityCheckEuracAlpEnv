@@ -18,6 +18,7 @@ params:
     write_output_report:   # log:  Logical status (TRUE/FALSE) to decide if save output report or not
     file:                  # chr:  The string that indicate the name of file to process
     start_date:            # date: First date to consider for the analysis. Date before are not considered
+    database_dir:          # chr: where to store files for database preprocessing
 ---
 
 
@@ -37,6 +38,7 @@ write_output_files <- params$write_output_files
 write_output_report <- params$write_output_report
 file <- params$file
 start_date <- params$start_date
+database_dir <- param$database_dir
 ```
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
@@ -234,11 +236,11 @@ if(flag_empty == 0){
               old_header_colnames = old_data_list [[2]]
               old_data = old_data_list [[3]]
               
+              last_old_datetime = old_data[nrow(old_data),which(colnames(old_data) == datetime_header)]
+              
               rm(old_data_list)
               
-              
-              
-              if(all(old_header_colnames == header_colnames)){
+              if(all(old_header == header)){
                 
                 # append new data to old data if headers new and old are the same
                 
@@ -290,6 +292,17 @@ if(flag_empty == 0){
                   file_name_output = file_names[k]
                   write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
                   
+                  # for database
+                  db_mydata = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+                  
+                  db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
+                  db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = "%Y-%m-%dT%H:%M")
+                  colnames(db_mydata) = colnames(header)
+                  db_mydata=rbind(header[-1,],db_mydata)
+                  
+                  write.csv(db_mydata, paste(database_dir ,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                  
+                  
                 }else{
                   flag_new_overlap = 1
                   
@@ -335,6 +348,31 @@ if(flag_empty == 0){
               file_name_output = file_names[k]
               
               write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+              
+              
+              # create a dataframe database formatted
+              
+              db_mydata = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+              
+              db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
+              
+              from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]
+              to_date = db_mydata[nrow(db_mydata),which(colnames(db_mydata) == datetime_header)]
+              
+              db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = "%Y-%m-%dT%H:%M")
+              
+              
+              
+              colnames(db_mydata) = colnames(header)
+              db_mydata=rbind(header[-1,],db_mydata)
+              
+              date_to_print_filename = paste(paste(format(from_date,format = "%Y"),format(from_date,format = "%m"),format(from_date,format = "%d"),
+                                             format(from_date,format = "%H"),format(from_date,format = "%M"),sep = ""),
+                                             paste(format(to_date,format = "%Y"),format(to_date,format = "%m"),format(to_date,format = "%d"),
+                                             format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
+              
+              write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
+
               
             }
           }

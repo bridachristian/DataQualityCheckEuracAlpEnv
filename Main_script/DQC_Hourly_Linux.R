@@ -39,6 +39,8 @@ report_output_dir <- "/shared/loggernet.old/data_quality_check/output/out_report
 # output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
+database_file_dir <- "/shared/loggernet.old/data_quality_check/database/total_files/"   # where to put output files
+
 data_from_row =  5                                             # <-- Row number of first data
 header_row_number =  2                                         # <-- Row number of header
 datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
@@ -81,7 +83,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 8
+t = 1
 
 final_dataframe = matrix(ncol = 17, nrow = length(files_available))
 
@@ -103,7 +105,7 @@ for(t in  1: length(files_available)){
   rm(list = setdiff(ls(all.names = TRUE),c("tf","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                                            "files_available","header_row_number","input_dir","data_output_dir","report_output_dir","project_dir",
                                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
-                                           "report_start", "final_dataframe","output_dir_report")))
+                                           "report_start", "final_dataframe","output_dir_report", "database_file_dir")))
 
 
   FILE = files_available[t]
@@ -111,13 +113,21 @@ for(t in  1: length(files_available)){
   w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
   dwnl_info = download_table[w_dwnl,]
 
-  if(dir.exists(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))){
+  if(dir.exists(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))){                # create subfolder to store data organized by station name
     output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
   }else{
     dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))
     output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
   }
 
+  
+  if(dir.exists(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))){                # create subfolder to store mini files for database organized by station name 
+    database_file_dir_new = paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
+  }else{
+    dir.create(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))
+    database_file_dir_new = paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
+  }
+  
   if(dwnl_info$Stop_DQC == 0){
 
     date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE,sep = "")),format = datetime_format))
@@ -137,6 +147,8 @@ for(t in  1: length(files_available)){
       range_file = range_file
       write_output_files = write_output_files
       write_output_report = write_output_report
+      
+      database_dir = database_file_dir_new
 
       file = FILE
       start_date = dwnl_info$Last_date
@@ -163,6 +175,7 @@ for(t in  1: length(files_available)){
                                       range_file = range_file ,
                                       write_output_files = write_output_files ,
                                       write_output_report = write_output_report ,
+                                      database_dir = database_dir,
                                       file = file ,
                                       start_date = start_date))
 
@@ -275,6 +288,7 @@ final_dataframe[t,] = final_info
 gc(reset = T)
 }
 
+# ..... Final Report .....................................................................................................................................
 
 
 input_final = paste(project_dir,"Rmd/DQC_Final_Report.Rmd",sep = "")
@@ -290,6 +304,10 @@ rmarkdown::render(input = input_final,
                   output_dir = output_dir_final,
                   params = list(report_start = report_start ,
                                 final_dataframe = final_dataframe))
+
+
+# ..... Data preparation for Database .....................................................................................................................................
+
 
 print("--------------------------------------------------------------------------------------------------")
 

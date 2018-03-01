@@ -125,7 +125,7 @@ ggplot(melt_final, aes(x = variable, y = Station))+
         panel.background = element_rect(fill = "white", colour = "grey"),
         panel.border = element_rect(fill = "NA", colour = "white"))+
   geom_tile(aes(fill = value),colour = "black")+
-  geom_text(data = melt_ff2,aes(label = value ))+
+  # geom_text(data = melt_ff2,aes(label = value ))+
   colScale+
   scale_y_discrete(limits = rev(level_station))+
   scale_x_discrete(position = "top")

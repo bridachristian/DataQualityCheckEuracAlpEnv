@@ -288,27 +288,32 @@ if(flag_empty == 0){
                   out_my = new_mydata
                   colnames(out_my) = colnames(header)
                   out_mydata=rbind(header[-1,],out_my)
-                  
                   file_name_output = file_names[k]
                   write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
                   
-                  # for database
-                  db_mydata = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+                  # create a dataframe database formatted
                   
+                  db_mydata = new_mydata
                   db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
+                  first_row_selected = which(db_mydata[, which(colnames(db_mydata) == datetime_header)] == last_old_datetime)+1
+                  db_mydata = db_mydata[first_row_selected: nrow(db_mydata),]
+                  from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]
+                  to_date = db_mydata[nrow(db_mydata),which(colnames(db_mydata) == datetime_header)]
                   db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = "%Y-%m-%dT%H:%M")
                   colnames(db_mydata) = colnames(header)
                   db_mydata=rbind(header[-1,],db_mydata)
+                  date_to_print_filename = paste(paste(format(from_date,format = "%Y"),format(from_date,format = "%m"),format(from_date,format = "%d"),
+                                                       format(from_date,format = "%H"),format(from_date,format = "%M"),sep = ""),
+                                                 paste(format(to_date,format = "%Y"),format(to_date,format = "%m"),format(to_date,format = "%d"),
+                                                       format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
                   
-                  write.csv(db_mydata, paste(database_dir ,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                  write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
                   
                   
                 }else{
                   flag_new_overlap = 1
-                  
                   new_overlap[,1]<- new_overlap[,1] + data_from_row - 1
                   colnames(new_overlap)[1]= "File Row"
-                  
                 }
                 
                 
@@ -320,9 +325,7 @@ if(flag_empty == 0){
                 out_my = mydata
                 colnames(out_my) = colnames(header)
                 out_mydata=rbind(header[-1,],out_my)
-                
                 new_file_names = file_names[k]
-                
                 j=0
                 repeat{
                   j=j+1
@@ -334,6 +337,22 @@ if(flag_empty == 0){
                   write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
                 }
                 
+                # create a dataframe database formatted
+                
+                db_mydata = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+                db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
+                from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]
+                to_date = db_mydata[nrow(db_mydata),which(colnames(db_mydata) == datetime_header)]
+                db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = "%Y-%m-%dT%H:%M")
+                colnames(db_mydata) = colnames(header)
+                db_mydata=rbind(header[-1,],db_mydata)
+                date_to_print_filename = paste(paste(format(from_date,format = "%Y"),format(from_date,format = "%m"),format(from_date,format = "%d"),
+                                                     format(from_date,format = "%H"),format(from_date,format = "%M"),sep = ""),
+                                               paste(format(to_date,format = "%Y"),format(to_date,format = "%m"),format(to_date,format = "%d"),
+                                                     format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
+                
+                
+                # write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
                 
               }
             }else{
@@ -344,35 +363,25 @@ if(flag_empty == 0){
               out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
               colnames(out_my) = colnames(header)
               out_mydata=rbind(header[-1,],out_my)
-              
               file_name_output = file_names[k]
-              
               write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
               
               
               # create a dataframe database formatted
               
               db_mydata = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
-              
               db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
-              
               from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]
               to_date = db_mydata[nrow(db_mydata),which(colnames(db_mydata) == datetime_header)]
-              
               db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = "%Y-%m-%dT%H:%M")
-              
-              
-              
               colnames(db_mydata) = colnames(header)
               db_mydata=rbind(header[-1,],db_mydata)
-              
               date_to_print_filename = paste(paste(format(from_date,format = "%Y"),format(from_date,format = "%m"),format(from_date,format = "%d"),
-                                             format(from_date,format = "%H"),format(from_date,format = "%M"),sep = ""),
+                                                   format(from_date,format = "%H"),format(from_date,format = "%M"),sep = ""),
                                              paste(format(to_date,format = "%Y"),format(to_date,format = "%m"),format(to_date,format = "%d"),
-                                             format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
-              
+                                                   format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
               write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
-
+              
               
             }
           }

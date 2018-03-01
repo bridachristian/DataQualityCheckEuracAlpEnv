@@ -337,8 +337,15 @@ if(flag_empty == 0){
                   write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
                 }
                 
-                # create a dataframe database formatted
-                
+                # # create a dataframe database formatted
+                # dir.create(paste(database_dir,"backup",sep = ""))
+                # db_files = list.files(database_dir,pattern = ".csv")
+                # for(f in 1: length(db_files)){
+                #   x = paste(database_dir,db_files[f],sep = "")
+                #   file.copy(from = x, to = paste(database_dir,"backup",sep = ""))
+                #   file.remove(x)
+                # } 
+                # 
                 db_mydata = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
                 db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
                 from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]

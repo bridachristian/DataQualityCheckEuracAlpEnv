@@ -40,6 +40,7 @@ report_output_dir <- "/shared/loggernet.old/data_quality_check/output/out_report
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
 database_file_dir <- "/shared/loggernet.old/data_quality_check/database/total_files/"   # where to put output files
+logger_info_file <- "/shared/loggernet.old/data_quality_check/config_files/Logger_number_and_software.csv" 
 
 data_from_row =  5                                             # <-- Row number of first data
 header_row_number =  2                                         # <-- Row number of header
@@ -105,7 +106,7 @@ for(t in  1: length(files_available)){
   rm(list = setdiff(ls(all.names = TRUE),c("tf","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                                            "files_available","header_row_number","input_dir","data_output_dir","report_output_dir","project_dir",
                                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
-                                           "report_start", "final_dataframe","output_dir_report", "database_file_dir")))
+                                           "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file")))
 
 
   FILE = files_available[t]
@@ -152,12 +153,11 @@ for(t in  1: length(files_available)){
 
       file = FILE
       start_date = dwnl_info$Last_date
-
+  
+      logger_info_file = logger_info_file
+      
       rm(dwnl_info)
-
       output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
-
-
 
       rmarkdown::render(input = Rmd_report_generator ,
                         output_file = output_file_report,
@@ -177,7 +177,8 @@ for(t in  1: length(files_available)){
                                       write_output_report = write_output_report ,
                                       database_dir = database_dir,
                                       file = file ,
-                                      start_date = start_date))
+                                      start_date = start_date,
+                                      logger_info_file = logger_info_file))
 
       gc(reset = T)
 

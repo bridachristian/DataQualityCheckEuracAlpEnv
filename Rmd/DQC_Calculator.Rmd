@@ -18,7 +18,8 @@ params:
     write_output_report:   # log:  Logical status (TRUE/FALSE) to decide if save output report or not
     file:                  # chr:  The string that indicate the name of file to process
     start_date:            # date: First date to consider for the analysis. Date before are not considered
-    database_dir:          # chr: where to store files for database preprocessing
+    database_dir:          # chr:  Directory where to store files for database preprocessing
+    logger_info_file:      # chr:  Path of file containing logger info
 ---
 
 
@@ -39,6 +40,8 @@ write_output_report <- params$write_output_report
 file <- params$file
 start_date <- params$start_date
 database_dir <- param$database_dir
+logger_info_file <- param$logger_info_file
+
 ```
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
@@ -62,6 +65,8 @@ flag_range_variable_to_set = NA
 flag_range_variable_new = NA
 flag_out_of_range = NA
 
+flag_logger_number = NA
+
 flag_new_duplicates_rows = NA
 flag_new_overlap = NA
 flag_new_missing_dates = NA
@@ -76,7 +81,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
   
   flag_empty = 0
   
-  data_import <- read_data(INPUT_DATA_DIR = input_dir, FILE_NAME = file, 
+  data_import <- read_data(INPUT_DATA_DIR = input_dir, FILE_NAME = file,                             # read and import data well formatted
                            DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format,
                            DATA_FROM_ROW = data_from_row, HEADER_ROW_NUMBER = header_row_number)  
   header = data_import [[1]]
@@ -86,6 +91,20 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
   
   rm(data_import)
   
+  logger_number = header[1,4]                                                                   # check logger numbers
+  software_versiont = header[1,6]
+  
+  logger_info_csv = read.csv(file = logger_info_file, stringsAsFactors = F)
+  
+  
+  
+  # logger_info = logger_info_csv[which(logger_info_csv[,1] == substring(file, 1, nchar(file)-4)),]
+  # 
+  # if(logger_number != logger_info[,2]){
+  #   flag_logger_number = 1
+  # }else{
+  #   flag_logger_number = 0
+  #   
   if(flag_error_df == 0){
     time_data = data[,which(colnames(data)==datetime_header)]
     time_data = time_data[order(time_data)]
@@ -205,6 +224,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
     }
   }
 }
+# }
 
 
 

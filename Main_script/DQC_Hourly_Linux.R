@@ -11,6 +11,7 @@
 rm(list = ls(all.names = TRUE))
 print("--------------------------------------------------------------------------------------------------")
 print(paste("Data Quality Check:",Sys.time()))
+
 # ..... Libraries .....................................................................................................................................
 library(devtools,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/') 
 install_github("bridachristian/DataQualityCheckEuracAlpEnv")
@@ -84,12 +85,12 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 1
+t = 4
 
-final_dataframe = matrix(ncol = 17, nrow = length(files_available))
+final_dataframe = matrix(ncol = 18, nrow = length(files_available))
 
 colnames(final_dataframe) = c("Station", "Status",
-                              "flag_empty","flag_error_df","flag_date",
+                              "flag_empty","flag_logger_number", "flag_error_df","flag_date",
                               "flag_duplicates_rows","flag_overlap","flag_missing_dates",
                               "flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range",
                               "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates",
@@ -103,7 +104,7 @@ report_start = Sys.time()
 for(t in  1: length(files_available)){
   gc(reset = T)
 
-  rm(list = setdiff(ls(all.names = TRUE),c("tf","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
+  rm(list = setdiff(ls(all.names = TRUE),c("t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                                            "files_available","header_row_number","input_dir","data_output_dir","report_output_dir","project_dir",
                                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
                                            "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file")))
@@ -148,17 +149,15 @@ for(t in  1: length(files_available)){
       range_file = range_file
       write_output_files = write_output_files
       write_output_report = write_output_report
-      
       database_dir = database_file_dir_new
-
       file = FILE
       start_date = dwnl_info$Last_date
-  
       logger_info_file = logger_info_file
       
-      rm(dwnl_info)
       output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
-
+        
+      rm(dwnl_info)
+        
       rmarkdown::render(input = Rmd_report_generator ,
                         output_file = output_file_report,
                         output_dir = output_dir_report,
@@ -196,8 +195,6 @@ for(t in  1: length(files_available)){
       } else {
         out_filename_date = "no_datetime"
       }
-
-
 
 
         out_filename_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_",out_filename_date,".html",sep = "")

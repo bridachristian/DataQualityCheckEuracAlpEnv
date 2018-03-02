@@ -71,6 +71,8 @@ flag_new_duplicates_rows = NA
 flag_new_overlap = NA
 flag_new_missing_dates = NA
 
+flag_append_new = NA
+
 # ..... Body ..........................................................................................................................................
 
 if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
@@ -92,151 +94,156 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
   rm(data_import)
   
   logger_number = header[1,4]                                                                   # check logger numbers
-  software_versiont = header[1,6]
-  
+  software_version = header[1,6]
   logger_info_csv = read.csv(file = logger_info_file, stringsAsFactors = F)
+  w_logger = which(logger_info_csv[,1] == substring(file, 1, nchar(file)-4))
   
-  
-  
-  # logger_info = logger_info_csv[which(logger_info_csv[,1] == substring(file, 1, nchar(file)-4)),]
-  # 
-  # if(logger_number != logger_info[,2]){
-  #   flag_logger_number = 1
-  # }else{
-  #   flag_logger_number = 0
-  #   
-  if(flag_error_df == 0){
-    time_data = data[,which(colnames(data)==datetime_header)]
-    time_data = time_data[order(time_data)]
-    
-    data = data[order(data[,which(colnames(data)==datetime_header)]),] 
-    
-    if(is.na(start_date)){
-      
-      original = data
-      mydata = data    
-      flag_date = 0
-      
-      rm(data)
-      
+  if(length(w_logger) == 0){
+    logger_info_csv = rbind(logger_info_csv, c(substring(file, 1, nchar(file)-4), logger_number, software_version))
+    write.csv(logger_info_csv,logger_info_file,row.names = F,col.names = F )
+  }else{
+    logger_info = logger_info_csv[w_logger,]
+    if(logger_number != logger_info[,2]){
+      flag_logger_number = 1
     }else{
+      flag_logger_number = 0
+    }
+  }
+  
+  if(flag_logger_number == 0){
+    if(flag_error_df == 0){
+      time_data = data[,which(colnames(data)==datetime_header)]
+      time_data = time_data[order(time_data)]
       
-      if(as.POSIXct(start_date,tz = 'Etc/GMT-1') < time_data[length(time_data)]){
-        original = data[(which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))+1):nrow(data),]      # possible issues in data subset!!! to check 
-        mydata = data[(which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))+1):nrow(data),]
+      data = data[order(data[,which(colnames(data)==datetime_header)]),] 
+      
+      if(is.na(start_date)){
         
+        original = data
+        mydata = data    
         flag_date = 0
         
         rm(data)
         
-      } else {
-        
-        flag_date = 1
-      }
-    }
-    
-    
-    if(flag_date == 0){
-      deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = datetime_header)         # <- Deletes identical rows if found
-      mydata = deletes_duplcated [[1]]
-      duplicated_data = deletes_duplcated [[2]]
-      duplicated_data = time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
-      
-      rm(deletes_duplcated)
-      
-      if(unique(as.character(duplicated_data[1,])) == "---"){
-        flag_duplicates_rows = 0
-      } else{
-        flag_duplicates_rows = 1
-      }
-      
-      data_in_old_files <- deletes_old_datetime(DATA = mydata,DATETIME_HEADER = datetime_header)  
-      mydata = data_in_old_files [[1]]
-      old_data = data_in_old_files[[2]]
-      
-      rm(data_in_old_files)
-      
-      overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
-      
-      
-      if(length(overlap) != 0){
-        
-        flag_overlap = 1
-        overlap[,1]<- overlap[,1] + data_from_row - 1
-        colnames(overlap)[1]= "File Row"
-        
       }else{
         
-        flag_overlap = 0
+        if(as.POSIXct(start_date,tz = 'Etc/GMT-1') < time_data[length(time_data)]){
+          original = data[(which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))+1):nrow(data),]      # possible issues in data subset!!! to check 
+          mydata = data[(which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))+1):nrow(data),]
+          
+          flag_date = 0
+          
+          rm(data)
+          
+        } else {
+          
+          flag_date = 1
+        }
+      }
+      
+      
+      if(flag_date == 0){
+        deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = datetime_header)         # <- Deletes identical rows if found
+        mydata = deletes_duplcated [[1]]
+        duplicated_data = deletes_duplcated [[2]]
+        duplicated_data = time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
         
-        missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
-        mydata = missing[[1]]
-        missing_index_date = missing[[2]]
+        rm(deletes_duplcated)
         
-        rm(missing)
-        
-        
-        range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
-        mydata = range[[1]]
-        check_out_of_range = range[[2]]
-        variable_new = range[[3]]
-        variable_to_set = range[[4]]
-        
-        rm(range)
-        # ..... Flags .....................................................................................................................................
-        
-        if(length(variable_to_set) != 0){
-          flag_range_variable_to_set = 1
-        }else{
-          flag_range_variable_to_set = 0
+        if(unique(as.character(duplicated_data[1,])) == "---"){
+          flag_duplicates_rows = 0
+        } else{
+          flag_duplicates_rows = 1
         }
         
-        if(length(variable_new) != 0){
-          flag_range_variable_new = 1
-        }else{
-          flag_range_variable_new = 0
-        }
+        data_in_old_files <- deletes_old_datetime(DATA = mydata,DATETIME_HEADER = datetime_header)  
+        mydata = data_in_old_files [[1]]
+        old_data = data_in_old_files[[2]]
+        
+        rm(data_in_old_files)
+        
+        overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
         
         
-        if(1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
-          flag_out_of_range = 1
+        if(length(overlap) != 0){
+          
+          flag_overlap = 1
+          overlap[,1]<- overlap[,1] + data_from_row - 1
+          colnames(overlap)[1]= "File Row"
+          
         }else{
-          if(-1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
+          
+          flag_overlap = 0
+          
+          missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
+          mydata = missing[[1]]
+          missing_index_date = missing[[2]]
+          
+          rm(missing)
+          
+          
+          range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
+          mydata = range[[1]]
+          check_out_of_range = range[[2]]
+          variable_new = range[[3]]
+          variable_to_set = range[[4]]
+          
+          rm(range)
+          # ..... Flags .....................................................................................................................................
+          
+          if(length(variable_to_set) != 0){
+            flag_range_variable_to_set = 1
+          }else{
+            flag_range_variable_to_set = 0
+          }
+          
+          if(length(variable_new) != 0){
+            flag_range_variable_new = 1
+          }else{
+            flag_range_variable_new = 0
+          }
+          
+          
+          if(1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
             flag_out_of_range = 1
           }else{
-            flag_out_of_range = 0
+            if(-1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
+              flag_out_of_range = 1
+            }else{
+              flag_out_of_range = 0
+            }
           }
+          
+          
+          time_tot = as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+          time_missing = missing_index_date[,2]
+          
+          if(length(which(time_tot %in% time_missing )) == 0){
+            flag_missing_dates = 0      # No missing dates
+          }else{
+            flag_missing_dates = 1      # YES missing dates
+          }
+          
+          mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+          
         }
-        
-        
-        time_tot = as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
-        time_missing = missing_index_date[,2]
-        
-        if(length(which(time_tot %in% time_missing )) == 0){
-          flag_missing_dates = 0      # No missing dates
-        }else{
-          flag_missing_dates = 1      # YES missing dates
-        }
-        
-        mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
-        
       }
     }
   }
 }
-# }
+
 
 
 
 # ..... Output ..........................................................................................................................................
 
 if(flag_empty == 0){
+ if(flag_logger_number == 0){
   if(flag_error_df == 0){
     if(flag_date == 0){
       if(flag_overlap == 0){
         if(write_output_files == TRUE){
           time_mydata = as.POSIXct(mydata[,which(colnames(mydata)== datetime_header)],format = datetime_format, tz = 'Etc/GMT-1')
-          
           years = as.numeric(unique(format(time_mydata, format = "%Y")))
           file_names = paste(substring(file,1, nchar(file)-4),"_", years,".csv",sep = "")
           
@@ -309,6 +316,9 @@ if(flag_empty == 0){
                   colnames(out_my) = colnames(header)
                   out_mydata=rbind(header[-1,],out_my)
                   file_name_output = file_names[k]
+                  
+                  flag_append_new = 0
+                  
                   write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
                   
                   # create a dataframe database formatted
@@ -339,47 +349,38 @@ if(flag_empty == 0){
                 
               }else{
                 
-                # create a new dataframe if headers new and old are not identical
-                
-                colnames(header) = header[1,]
-                out_my = mydata
-                colnames(out_my) = colnames(header)
-                out_mydata=rbind(header[-1,],out_my)
-                new_file_names = file_names[k]
-                j=0
-                repeat{
-                  j=j+1
-                  new_file_names = paste(substring(new_file_names,1, nchar(new_file_names)-4),"_v",j,".csv",sep = "")
-                  if(!file.exists(paste(output_dir_data,new_file_names,sep = ""))){
-                    break
-                  }
-                  file_name_output = new_file_names
-                  write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
-                }
-                
-                # # create a dataframe database formatted
-                # dir.create(paste(database_dir,"backup",sep = ""))
-                # db_files = list.files(database_dir,pattern = ".csv")
-                # for(f in 1: length(db_files)){
-                #   x = paste(database_dir,db_files[f],sep = "")
-                #   file.copy(from = x, to = paste(database_dir,"backup",sep = ""))
-                #   file.remove(x)
-                # } 
+                # rm(mydata)
                 # 
-                db_mydata = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
-                db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
-                from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]
-                to_date = db_mydata[nrow(db_mydata),which(colnames(db_mydata) == datetime_header)]
-                db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = "%Y-%m-%dT%H:%M")
-                colnames(db_mydata) = colnames(header)
-                db_mydata=rbind(header[-1,],db_mydata)
-                date_to_print_filename = paste(paste(format(from_date,format = "%Y"),format(from_date,format = "%m"),format(from_date,format = "%d"),
-                                                     format(from_date,format = "%H"),format(from_date,format = "%M"),sep = ""),
-                                               paste(format(to_date,format = "%Y"),format(to_date,format = "%m"),format(to_date,format = "%d"),
-                                                     format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
+                # flag_append_new = 1
+                # 
+                # a = as.data.frame(matrix(c(0,1,2,9,8,7),nrow = 3, ncol = 2))
+                # b = as.data.frame(matrix(c(0,1,3,9,8,7),nrow = 3, ncol = 2))
+                # 
+                # all.equal(a,b)
+                
+                # CALCOLARE DOVE SONO LE DIFFERENZE POI ELIMINARE  mydata! 
+                # SE NON ELIMINO mydata VIENE AGGIONATA LA DOWNLOAD TABLE!!!!
+                
+                # create a new dataframe if headers new and old are not identical
+
+                # colnames(header) = header[1,]
+                # out_my = mydata
+                # colnames(out_my) = colnames(header)
+                # out_mydata=rbind(header[-1,],out_my)
+                # new_file_names = file_names[k]
+            
+                # j=0
+                # repeat{
+                #   j=j+1
+                #   new_file_names = paste(substring(new_file_names,1, nchar(new_file_names)-4),"_v",j,".csv",sep = "")
+                #   if(!file.exists(paste(output_dir_data,new_file_names,sep = ""))){
+                #     break
+                #   }
+                #   file_name_output = new_file_names
+                #   write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                # }
                 
                 
-                # write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
                 
               }
             }else{
@@ -416,10 +417,11 @@ if(flag_empty == 0){
       }
     }
   }
+ }
 }
 
 
-flags_names = c("flag_empty","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_dates","flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range","flag_new_duplicates_rows", "flag_new_overlap", "flag_new_missing_dates" )
+flags_names = c("flag_empty","flag_logger_number","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_dates","flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range","flag_new_duplicates_rows", "flag_new_overlap", "flag_new_missing_dates" )
 flags_df = data.frame(flags_names, rep(NA,times = length(flags_names)))
 colnames(flags_df) = c("flag_names", "value")
 

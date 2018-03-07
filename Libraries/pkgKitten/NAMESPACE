@@ -1,4 +1,0 @@
-export(kitten,
-       playWithPerPackageHelpPage)
-#importFrom(whoami, "fullname", "email_address")
-importFrom("utils", "package.skeleton")

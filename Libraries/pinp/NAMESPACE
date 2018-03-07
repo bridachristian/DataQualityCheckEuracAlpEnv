@@ -1,3 +1,0 @@
-export(pinp)
-import(knitr)
-import(rmarkdown)

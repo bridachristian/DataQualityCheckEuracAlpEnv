@@ -1,5 +1,0 @@
-%==%	assert
-assert	assert
-has_error	has_message
-has_warning	has_message
-test_pkg	test_pkg

@@ -26,12 +26,12 @@ final_dataframe <- params$final_dataframe
 
 ff = as.data.frame(final_dataframe,stringsAsFactors = F)
 
-for(i in 3:11){
+for(i in 3:14){
   ff[,i] = as.numeric(ff[,i])
 }
 
 
-final_2 = as.data.frame(final_dataframe[,1:11],stringsAsFactors = F)
+final_2 = as.data.frame(final_dataframe[,1:14],stringsAsFactors = F)
 
 
 final_2$Status[ff$Status == "Already analyzed"] = "B" 
@@ -68,7 +68,14 @@ final_2$flag_range_variable_new[ff$flag_range_variable_new == 0] = "G"
 final_2$flag_out_of_range[ff$flag_out_of_range == 1] = "Y" 
 final_2$flag_out_of_range[ff$flag_out_of_range == 0] = "G"
 
+final_2$flag_new_duplicates_rows[ff$flag_new_duplicates_rows == 1] = "Y" 
+final_2$flag_new_duplicates_rows[ff$flag_new_duplicates_rows == 0] = "G"
 
+final_2$flag_new_overlap[ff$flag_new_overlap == 1] = "R" 
+final_2$flag_new_overlap[ff$flag_new_overlap == 0] = "G"
+
+final_2$flag_new_missing_dates[ff$flag_new_missing_dates == 1] = "Y" 
+final_2$flag_new_missing_dates[ff$flag_new_missing_dates == 0] = "G"
 
 
 colnames(final_2) = c("Station",
@@ -81,14 +88,18 @@ colnames(final_2) = c("Station",
                       "Missing dates",
                       "Range to update: old variables ",
                       "Range to update: new variable",
-                      "Out of range")
+                      "Out of range",
+                      "NEW Duplicated rows",
+                      "NEW Overlap",
+                      "NEW Missing dates"
+                      )
 
 # missing_color = data.frame( rep("R", times= nrow(final_2)), rep("Y", times= nrow(final_2)),rep("G", times= nrow(final_2)),rep(NA, times= nrow(final_2)))
 # colnames(missing_color) = c("Red", "Yellow", "Green", "NaN")
 
 # final_2 = cbind(final_2[,1:2],message,final_2[,3:11] )
 
-ff2 = ff[,c(1:11)]
+ff2 = ff[,c(1:14)]
 colnames(ff2)  = colnames(final_2)
 melt_final = melt(final_2,id.vars = "Station")
 melt_ff2 = melt(ff2[,-2],id.vars = "Station")
@@ -155,7 +166,7 @@ ff$Data_folder[w4]<- paste0("[", "Data available", "](",d_folder_text[w4], ")")
 
 ff$File_name[is.na(ff$File_name)] = paste0("---")
 
-new_ff = ff[,c(1,12,13,14)]
+new_ff = ff[,c(1,15,16,17)]
 colnames(new_ff) = c("Station", "Report", "Data folder", "File name")
 
 

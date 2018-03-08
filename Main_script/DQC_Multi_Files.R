@@ -244,7 +244,7 @@ for(t in  1: length(files_available)){
 
 
 
-input_final = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheckEuracAlpEnv/Rmd/DQC_Final_Report.Rmd"
+input_final = paste(project_dir,"Rmd/DQC_Final_Report.Rmd",sep = "")
 output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
                            substring(report_start,6,7),
                            substring(report_start,9,10),

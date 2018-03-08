@@ -13,21 +13,22 @@ print("-------------------------------------------------------------------------
 print(paste("Data Quality Check:",Sys.time()))
 
 # ..... Libraries .....................................................................................................................................
-library(devtools,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/') 
+library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/') 
 install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 library("DataQualityCheckEuracAlpEnv")
 
-library(zoo,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
-library(knitr,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
-library(ggplot2,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
-library(reshape2,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
-library(DT,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
-library(htmltools,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
-library(rmarkdown,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
-library(yaml,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
-library(highr,lib.loc = '/home/cbrida/DataQualityCheckEuracAlpEnv/Libraries/')
+library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 
 Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
+
 # .....................................................................................................................................................
 
 # ..... Params section .....................................................................................................................................
@@ -289,7 +290,7 @@ gc(reset = T)
 # ..... Final Report .....................................................................................................................................
 
 
-input_final = paste(project_dir,"Rmd/DQC_Final_Report.Rmd",sep = "")
+input_final = paste(project_dir,"Rmd/DQC_Final_Report_Hourly.Rmd",sep = "")
 output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
                            substring(report_start,6,7),
                            substring(report_start,9,10),

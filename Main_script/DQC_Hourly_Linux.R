@@ -154,6 +154,7 @@ for(t in  1: length(files_available)){
       file = FILE
       start_date = dwnl_info$Last_date
       logger_info_file = logger_info_file
+      record_check = dwnl_info$record_check
       
       output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
         
@@ -178,7 +179,8 @@ for(t in  1: length(files_available)){
                                       database_dir = database_dir,
                                       file = file ,
                                       start_date = start_date,
-                                      logger_info_file = logger_info_file))
+                                      logger_info_file = logger_info_file,
+                                      record_check = record_check))
 
       gc(reset = T)
 

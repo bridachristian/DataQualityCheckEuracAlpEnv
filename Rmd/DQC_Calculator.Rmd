@@ -303,7 +303,7 @@ if(flag_empty == 0){
                     new_missing_index_date = new_missing[[2]]
                     
                     
-                   # check if the first record in new data is immediately successive to the last record
+                    # check if the first record in new data is immediately successive to the last record
                     
                     r = 0
                     repeat{
@@ -326,52 +326,52 @@ if(flag_empty == 0){
                       flag_append_new = -1
                     }
                     
-                    if(record_check == 1)
+                    if(record_check != 1 | flag_append_new != -1){      # We avoid to write output if record control is active (record_check = 1) and record has some issues (indicated by flag_append_new = -1)
                     
-                    # prepare tata for output
-                    
-                    new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
-                    
-                    new_time_tot = as.POSIXct(new_mydata[,which(colnames(new_mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
-                    new_time_missing = new_missing_index_date[,2]
-                    
-                    if(length(which(new_time_tot %in% new_time_missing )) == 0){
-                      flag_new_missing_dates = 0      # No missing dates
-                    }else{
-                      flag_new_missing_dates = 1      # YES missing dates
+                      # prepare tata for output
+                      
+                      new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                      
+                      new_time_tot = as.POSIXct(new_mydata[,which(colnames(new_mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+                      new_time_missing = new_missing_index_date[,2]
+                      
+                      if(length(which(new_time_tot %in% new_time_missing )) == 0){
+                        flag_new_missing_dates = 0      # No missing dates
+                      }else{
+                        flag_new_missing_dates = 1      # YES missing dates
+                      }
+                      
+                      rm(missing)
+                      
+                      colnames(header) = header[1,]
+                      out_my = new_mydata
+                      colnames(out_my) = colnames(header)
+                      out_mydata=rbind(header[-1,],out_my)
+                      file_name_output = file_names[k]
+                      
+                      flag_append_new = 0
+                      
+                      write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                      
+                      # create a dataframe database formatted
+                      
+                      db_mydata = new_mydata
+                      db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
+                      first_row_selected = which(db_mydata[, which(colnames(db_mydata) == datetime_header)] == last_old_datetime)+1
+                      db_mydata = db_mydata[first_row_selected: nrow(db_mydata),]
+                      from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]
+                      to_date = db_mydata[nrow(db_mydata),which(colnames(db_mydata) == datetime_header)]
+                      db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = "%Y-%m-%dT%H:%M")
+                      colnames(db_mydata) = colnames(header)
+                      db_mydata=rbind(header[-1,],db_mydata)
+                      date_to_print_filename = paste(paste(format(from_date,format = "%Y"),format(from_date,format = "%m"),format(from_date,format = "%d"),
+                                                           format(from_date,format = "%H"),format(from_date,format = "%M"),sep = ""),
+                                                     paste(format(to_date,format = "%Y"),format(to_date,format = "%m"),format(to_date,format = "%d"),
+                                                           format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
+                      
+                      write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
+                      
                     }
-                    
-                    rm(missing)
-                    
-                    colnames(header) = header[1,]
-                    out_my = new_mydata
-                    colnames(out_my) = colnames(header)
-                    out_mydata=rbind(header[-1,],out_my)
-                    file_name_output = file_names[k]
-                    
-                    flag_append_new = 0
-                    
-                    write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
-                    
-                    # create a dataframe database formatted
-                    
-                    db_mydata = new_mydata
-                    db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
-                    first_row_selected = which(db_mydata[, which(colnames(db_mydata) == datetime_header)] == last_old_datetime)+1
-                    db_mydata = db_mydata[first_row_selected: nrow(db_mydata),]
-                    from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]
-                    to_date = db_mydata[nrow(db_mydata),which(colnames(db_mydata) == datetime_header)]
-                    db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = "%Y-%m-%dT%H:%M")
-                    colnames(db_mydata) = colnames(header)
-                    db_mydata=rbind(header[-1,],db_mydata)
-                    date_to_print_filename = paste(paste(format(from_date,format = "%Y"),format(from_date,format = "%m"),format(from_date,format = "%d"),
-                                                         format(from_date,format = "%H"),format(from_date,format = "%M"),sep = ""),
-                                                   paste(format(to_date,format = "%Y"),format(to_date,format = "%m"),format(to_date,format = "%d"),
-                                                         format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
-                    
-                    write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
-                    
-                    
                   }else{
                     flag_new_overlap = 1
                     new_overlap[,1]<- new_overlap[,1] + data_from_row - 1

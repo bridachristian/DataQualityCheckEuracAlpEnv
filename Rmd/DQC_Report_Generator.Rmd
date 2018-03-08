@@ -44,7 +44,7 @@ start_date <- params$start_date
 
 # ~~~ Default directory ~~~~
 
-range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
+# range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
 
 
 # .....................................................................................................................................................

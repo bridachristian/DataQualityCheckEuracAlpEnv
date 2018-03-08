@@ -27,13 +27,13 @@ library(htmltools)
 
 # ..... Params section .....................................................................................................................................
 
-input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/QualityCheck_20180212/Input_file/"                # where input files are
+input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Input/"                # where input files are
 # input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
-output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/QualityCheck_20180212/Output/Output_Data/"   # where to put output files
+output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Output/Data/"   # where to put output files
 # output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
-output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/QualityCheck_20180212/Output/Output_Report/"   # where to put output reports
+output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Output/Report/"   # where to put output reports
 # output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
-project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
 data_from_row =  5                                             # <-- Row number of first data
 header_row_number =  2                                         # <-- Row number of header
@@ -53,9 +53,10 @@ write_output_report =  "TRUE"
 
 # ~~~ Default directory ~~~~
 
-range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
+range_dir <-"H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Process/"
+# paste(project_dir, "Data/Support_files/Range/",sep = "")
 # download_table_dir <- paste(project_dir, "Data/Support_files/Download_table/",sep = "")
-download_table_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC_BrC_test_data/QualityCheck_20180212/Download_table/"
+download_table_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Process/"
 Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
 
 # ..........................................................................................................................................................
@@ -243,7 +244,7 @@ for(t in  1: length(files_available)){
 
 
 
-input_final = "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Rmd/DQC_Final_Report.Rmd"
+input_final = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheckEuracAlpEnv/Rmd/DQC_Final_Report.Rmd"
 output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
                            substring(report_start,6,7),
                            substring(report_start,9,10),

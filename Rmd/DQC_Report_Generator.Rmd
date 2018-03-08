@@ -115,6 +115,10 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       duplicated_data = deletes_duplcated [[2]]
       duplicated_data = time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
       
+      
+      orig_wihtout_dupli = mydata
+      write.csv(orig_wihtout_dupli,paste(output_dir_data,file, sep = ""),quote = F,row.names = F, na = "NaN")      # <- write "origina data" 
+      
       rm(deletes_duplcated)
        
       if(unique(as.character(duplicated_data[1,])) == "---"){
@@ -222,27 +226,27 @@ if(flag_empty == 0){
                            substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
                            substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
                            sep = "")
-          out_filename_data = paste("DQCok_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
-          out_filename_dupli = paste("Duplicated_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
+          out_filename_data = paste(substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
+          # out_filename_dupli = paste("Duplicated_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
+          # 
+          # output_dir_data_DQC_OK = paste(output_dir_data, "DQC_OK/",sep = "")
+          # ifelse(test = !dir.exists(output_dir_data_DQC_OK),yes = dir.create(output_dir_data_DQC_OK),no = FALSE)
+          # 
+          # output_dir_data_duplicated = paste(output_dir_data, "Duplicated/",sep = "")
+          # ifelse(test = !dir.exists(output_dir_data_duplicated),yes = dir.create(output_dir_data_duplicated),no = FALSE)
           
-          output_dir_data_DQC_OK = paste(output_dir_data, "DQC_OK/",sep = "")
-          ifelse(test = !dir.exists(output_dir_data_DQC_OK),yes = dir.create(output_dir_data_DQC_OK),no = FALSE)
-          
-          output_dir_data_duplicated = paste(output_dir_data, "Duplicated/",sep = "")
-          ifelse(test = !dir.exists(output_dir_data_duplicated),yes = dir.create(output_dir_data_duplicated),no = FALSE)
-          
-          write.csv(out_mydata,paste(output_dir_data_DQC_OK,out_filename_data,sep = ""),quote = F,row.names = F, na = "NaN")
+          write.csv(out_mydata,paste(output_dir_data,out_filename_data,sep = ""),quote = F,row.names = F, na = "NaN")
           
           rm(out_my)
           rm(out_mydata)
           #~~~~~~~~~~
-          out_duplicated = duplicated_data
-          colnames(out_duplicated) = colnames(header)
-          
-          out_duplicated_data=rbind(header[-1,],out_duplicated)
-          write.csv(out_duplicated_data,paste(output_dir_data_duplicated,out_filename_dupli,sep = ""),quote = F,row.names = F, na = "NaN")
-          rm(out_duplicated)
-          rm(out_duplicated_data)
+          # out_duplicated = duplicated_data
+          # colnames(out_duplicated) = colnames(header)
+          # 
+          # out_duplicated_data=rbind(header[-1,],out_duplicated)
+          # write.csv(out_duplicated_data,paste(output_dir_data_duplicated,out_filename_dupli,sep = ""),quote = F,row.names = F, na = "NaN")
+          # rm(out_duplicated)
+          # rm(out_duplicated_data)
         }
       }
     }

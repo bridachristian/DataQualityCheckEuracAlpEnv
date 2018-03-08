@@ -25,7 +25,6 @@ read_and_update_download_table = function(DOWNLOAD_TABLE_DIR,FILES_AVAILABLE,DAT
                                       rep(NA, times = length(FILES_AVAILABLE)),
                                       rep(1,times = length(FILES_AVAILABLE)))
     
-    # as.character(format(file.mtime(paste(input_dir,FILES_AVAILABLE,sep = "")),format = DATETIME_FORMAT)))
     colnames(first_download_table) = c("Station", "Last_date", "Stop_DQC", "Last_Modification", "record_check")
     
     download_table = first_download_table
@@ -45,15 +44,14 @@ read_and_update_download_table = function(DOWNLOAD_TABLE_DIR,FILES_AVAILABLE,DAT
     
     w = which(substring(FILES_AVAILABLE,1, nchar(FILES_AVAILABLE)-4) %in% station_to_add)
     
-    # file.mtime(paste(input_dir,FILES_AVAILABLE[w],sep = ""))
-    
+
     if(length(w) != 0){
       
       df_to_add = data.frame(station_to_add,
                              rep(NA, times = length(station_to_add)),
                              rep(0,times = length(station_to_add)),
                              rep(NA, times = length(station_to_add)),
-                             rep(1,times = length(station_to_add))
+                             rep(1,times = length(station_to_add)))
                              
                              # as.character(file.mtime(paste(input_dir,FILES_AVAILABLE[w],sep = ""))))
       colnames(df_to_add) = c("Station", "Last_date", "Stop_DQC", "Last_Modification", "record_check")

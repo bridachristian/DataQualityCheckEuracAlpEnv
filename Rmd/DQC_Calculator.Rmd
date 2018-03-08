@@ -268,10 +268,9 @@ if(flag_empty == 0){
                 last_old_datetime = old_data[nrow(old_data),which(colnames(old_data) == datetime_header)]
                 last_old_record = old_data[nrow(old_data),which(colnames(old_data) == record_header)]
                 
-                
                 rm(old_data_list)
                 
-                if(all(old_header == header)){
+                if(identical(old_header, header)){
                   
                   # append new data to old data if headers new and old are the same
                   
@@ -326,8 +325,9 @@ if(flag_empty == 0){
                       flag_append_new = -1
                     }
                     
-                    if(record_check != 1 | flag_append_new != -1){      # We avoid to write output if record control is active (record_check = 1) and record has some issues (indicated by flag_append_new = -1)
-                    
+                    if(record_check != 1 | flag_append_new != -1){     
+                      # We avoid to write output if record control is active (record_check = 1) and record has some issues (indicated by flag_append_new = -1)
+                      
                       # prepare tata for output
                       
                       new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)

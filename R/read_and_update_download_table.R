@@ -23,8 +23,9 @@ read_and_update_download_table = function(DOWNLOAD_TABLE_DIR,FILES_AVAILABLE,DAT
                                       rep(NA, times = length(FILES_AVAILABLE)),
                                       rep(0,times = length(FILES_AVAILABLE)),
                                       rep(NA, times = length(FILES_AVAILABLE)),
-                                      rep(1,times = length(station_to_add)))
-                                      # as.character(format(file.mtime(paste(input_dir,FILES_AVAILABLE,sep = "")),format = DATETIME_FORMAT)))
+                                      rep(1,times = length(FILES_AVAILABLE)))
+    
+    # as.character(format(file.mtime(paste(input_dir,FILES_AVAILABLE,sep = "")),format = DATETIME_FORMAT)))
     colnames(first_download_table) = c("Station", "Last_date", "Stop_DQC", "Last_Modification", "record_check")
     
     download_table = first_download_table

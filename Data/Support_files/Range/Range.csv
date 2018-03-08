@@ -740,6 +740,7 @@ TargTempC_Std,,,
 T_Box_Avg,-100,100,
 T_Box_Std,,,
 TEST_VAR,,,1
+TEST_VAR,,,1
 TIMESTAMP,,,
 T_Log_Avg,-100,100,
 T_Ref_Box_Avg,-50,100,
@@ -847,4 +848,4 @@ W_Precip_Tot,-1,500,
 WPrecip__Tot,-1,100,
 WSpeed_Avg,-5,100,
 WSpeed_Std,,,
-TEST_VAR,,,1
+Wind_Diag8F,,,1

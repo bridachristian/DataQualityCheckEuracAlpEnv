@@ -382,7 +382,6 @@ if(flag_empty == 0){
                   
                   flag_append_new = 1
                   
-                  
                   header_t = as.data.frame(t(header))
                   header_t = cbind(rep(NA, times = nrow(header_t)),header_t )
                   colnames(header_t) = paste("row_",seq(1:ncol(header_t))-1,sep = "")
@@ -393,8 +392,8 @@ if(flag_empty == 0){
                   
                   df_comp = compare_df(header_t, old_header_t, group_col ="row_0")
                   
-                  print(df_comp$comparison_df)
-                  
+                  datatable(df_comp$comparison_df[,-1])
+                  df_comp$html_output
                   print(df_comp$change_summary)
                   
                   # if(ncol(old_header) != ncol(header)){

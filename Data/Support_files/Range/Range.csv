@@ -846,3 +846,4 @@ W_Precip_Tot,-1,500,
 WPrecip__Tot,-1,100,
 WSpeed_Avg,-5,100,
 WSpeed_Std,,,
+TEST_VAR,,,1

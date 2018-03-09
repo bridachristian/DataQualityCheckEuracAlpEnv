@@ -631,9 +631,9 @@ if(flag_empty == 0){
                 
               p1 = ggplot(df_factor,aes(x = time, y = y,colour = Variable))+
                 geom_point(aes(size = Variable,shape = Variable ))+
-                scale_colour_manual(values = c("black","#F8766D","#7CAE00","#0000FF"),labels = c("NaN", "Above upper limit", "In the range","Below lower limit"))+
+                scale_colour_manual(values = c("#d3d3d3","#F8766D","#7CAE00","#0000FF"),labels = c("NaN", "Above upper limit", "In the range","Below lower limit"))+
                 scale_shape_manual(values = c(124,124,20,124),labels =c("NaN","Above upper limit", "In the range","Below lower limit"))+
-                scale_size_manual(values = c(10,10,1,10),labels = c("NaN","Above upper limit", "In the range","Below lower limit"))+
+                scale_size_manual(values = c(7,10,1,10),labels = c("NaN","Above upper limit", "In the range","Below lower limit"))+
                 theme_new2 +
                 scale_y_continuous(limits = c(0.7,1.3))+
                 labs(title=paste(colnames(check_out_of_range)[j]),

@@ -310,7 +310,7 @@ And: *`r if(write_output_report == TRUE){paste("to write output report here:", o
 
 ### OUTPUT:
 
-####** Reminder: no problem => no message **
+####** Reminder (for developer): no problem => no message **
 
 #### **Is the file empty? ** `r if(flag_empty == 0){paste("NO: all right!")}else{paste("YES: check it!")}`
 

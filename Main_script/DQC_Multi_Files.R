@@ -74,7 +74,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 1
+t = 2
 
 # final_dataframe = data.frame(t(rep(NA, times = 14)))
 final_dataframe = matrix(ncol = 14, nrow = length(files_available))

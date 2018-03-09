@@ -102,7 +102,7 @@ for(t in  1: length(files_available)){
 
   FILE = files_available[t]
 
-  warning(paste("********* File to process:", FILE, "*********"))
+  cat(paste("********* a. File to process:", FILE, "*********"),sep = "\n")
 
   w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
   dwnl_info = download_table[w_dwnl,]
@@ -142,7 +142,7 @@ for(t in  1: length(files_available)){
 
       output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
 
-      warning(paste("********* File under processing:", FILE, "*********"))
+      cat(paste("********* b. File under processing:", FILE, "*********"),sep = "\n")
 
       rmarkdown::render(input = Rmd_report_generator ,
                         output_file = output_file_report,
@@ -247,7 +247,7 @@ for(t in  1: length(files_available)){
   final_dataframe[t,] = final_info
 
   gc(reset = T)
-  warning(paste("*********", FILE, "analized! *********"))
+  cat(paste("********* c.", FILE, "analyzed! *********"),sep = "\n")
 
 }
 

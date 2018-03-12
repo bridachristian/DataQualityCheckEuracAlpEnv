@@ -35,16 +35,16 @@ Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 
 # ..... Params section .....................................................................................................................................
 
-input_dir <- "/shared/loggernet.old/scheduling_test/"                    # where input files are
+input_dir <- "/shared/loggernet/scheduling_test/"                    # where input files are
 # input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
-data_output_dir <- "/shared/loggernet.old/data_quality_check/output/out_data/"   # where to put output files
+data_output_dir <- "/shared/loggernet/data_quality_check_test/Output/Data/"   # where to put output files
 # output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
-report_output_dir <- "/shared/loggernet.old/data_quality_check/output/out_report/"  # where to put output reports
+report_output_dir <- "/shared/loggernet/data_quality_check_test/Output/Report/"   # where to put output reports
 # output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
-database_file_dir <- "/shared/loggernet.old/data_quality_check/database/total_files/"   # where to put output files
-logger_info_file <- "/shared/loggernet.old/data_quality_check/config_files/Logger_number_and_software.csv" 
+database_file_dir <- "/shared/loggernet/data_quality_check_test/Database/total_files/"  # where to put output files
+logger_info_file <- "/shared/loggernet/data_quality_check_test/Process/Logger_number_and_software.csv" 
 
 data_from_row =  5                                             # <-- Row number of first data
 header_row_number =  2                                         # <-- Row number of header
@@ -63,9 +63,10 @@ write_output_report =  "FALSE"
 
 # ~~~ Default directory ~~~~
 
-range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
+# range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
+range_dir <-"/shared/loggernet/data_quality_check_test/Process/"  
 # download_table_dir <- paste(project_dir, "Data/Support_files/Download_table/",sep = "")
-download_table_dir <- "/shared/loggernet.old/data_quality_check/download_table/"
+download_table_dir <- "/shared/loggernet/data_quality_check_test/Process/" 
 
 if(write_output_report == TRUE){
   Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
@@ -88,16 +89,17 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 4
+t = 1
 
-final_dataframe = matrix(ncol = 18, nrow = length(files_available))
+final_dataframe = matrix(ncol = 19, nrow = length(files_available))
 
 colnames(final_dataframe) = c("Station", "Status",
                               "flag_empty","flag_logger_number", "flag_error_df","flag_date",
                               "flag_duplicates_rows","flag_overlap","flag_missing_dates",
                               "flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range",
-                              "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates",
+                              "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates", "flag_append_new",   
                               "Report_link", "Data_folder", "File_name")
+
 
 
 

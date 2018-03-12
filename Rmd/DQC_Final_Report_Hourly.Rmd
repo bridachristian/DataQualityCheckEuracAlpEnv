@@ -26,13 +26,12 @@ final_dataframe <- params$final_dataframe
 
 ff = as.data.frame(final_dataframe,stringsAsFactors = F)
 
-for(i in 3:14){
+for(i in 3:16){
   ff[,i] = as.numeric(ff[,i])
 }
 
 
-final_2 = as.data.frame(final_dataframe[,1:14],stringsAsFactors = F)
-
+final_2 = as.data.frame(final_dataframe[,1:16],stringsAsFactors = F)
 
 final_2$Status[ff$Status == "Already analyzed"] = "B" 
 final_2$Status[ff$Status == "Analyzed with errors"] = "R" 
@@ -77,6 +76,7 @@ final_2$flag_new_overlap[ff$flag_new_overlap == 0] = "G"
 final_2$flag_new_missing_dates[ff$flag_new_missing_dates == 1] = "Y" 
 final_2$flag_new_missing_dates[ff$flag_new_missing_dates == 0] = "G"
 
+final_2$flag_append_new[ff$flag_new_missing_dates == 1]
 
 colnames(final_2) = c("Station",
                       "Status",

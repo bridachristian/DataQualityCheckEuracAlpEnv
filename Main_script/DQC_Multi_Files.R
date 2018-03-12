@@ -29,10 +29,10 @@ library(htmltools)
 
 input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Input/"                # where input files are
 # input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
-output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Output/Data/"   # where to put output files
+data_output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Output/Data/"   # where to put output files
 # output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
-output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Output/Report/"   # where to put output reports
-# output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
+report_output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Output/Report/"   # where to put output reports
+# report_output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
 project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
 data_from_row =  5                                             # <-- Row number of first data
@@ -74,7 +74,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 1
+t = 2
 
 # final_dataframe = data.frame(t(rep(NA, times = 14)))
 final_dataframe = matrix(ncol = 14, nrow = length(files_available))
@@ -95,28 +95,35 @@ for(t in  1: length(files_available)){
   gc(reset = T)
 
   rm(list = setdiff(ls(all.names = TRUE),c("tf","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
-                                           "files_available","header_row_number","input_dir","output_dir_data","output_dir_report","project_dir",
+                                           "files_available","header_row_number","input_dir","data_output_dir","report_output_dir","project_dir",
                                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
                                            "report_start", "final_dataframe")))
 
 
   FILE = files_available[t]
 
+  cat(paste("********* a. File to process:", FILE, "*********"),sep = "\n")
+
   w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
   dwnl_info = download_table[w_dwnl,]
+
+  # if(dir.exists(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))){                # create subfolder to store data organized by station name
+  #   output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
+  # }else{
+  #   dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))
+  #   output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
+  # }
 
 
   if(dwnl_info$Stop_DQC == 0){
 
-
     date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE,sep = "")),format = datetime_format))
-
 
     if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
 
       input_dir = input_dir
-      output_dir_data = output_dir_data
-      output_dir_report = output_dir_report
+      output_dir_data = data_output_dir
+      output_dir_report = report_output_dir
       project_dir = project_dir
       data_from_row = data_from_row
       header_row_number = header_row_number
@@ -135,7 +142,7 @@ for(t in  1: length(files_available)){
 
       output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
 
-
+      cat(paste("********* b. File under processing:", FILE, "*********"),sep = "\n")
 
       rmarkdown::render(input = Rmd_report_generator ,
                         output_file = output_file_report,
@@ -240,6 +247,8 @@ for(t in  1: length(files_available)){
   final_dataframe[t,] = final_info
 
   gc(reset = T)
+  cat(paste("********* c.", FILE, "analyzed! *********"),sep = "\n")
+
 }
 
 

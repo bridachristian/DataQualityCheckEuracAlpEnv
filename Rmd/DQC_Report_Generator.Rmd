@@ -91,7 +91,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       flag_date = 0
       
       # rm(data)
-
+      
     }else{
       
       if(as.POSIXct(start_date) < time_data[length(time_data)]){
@@ -115,8 +115,10 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       duplicated_data = deletes_duplcated [[2]]
       duplicated_data = time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
       
+      
+      
       rm(deletes_duplcated)
-       
+      
       if(unique(as.character(duplicated_data[1,])) == "---"){
         flag_duplicates_rows = 0
       } else{
@@ -128,6 +130,9 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       old_data = data_in_old_files[[2]]
       
       rm(data_in_old_files)
+      
+      orig_wihtout_dupli = mydata
+      write.csv(orig_wihtout_dupli,paste(output_dir_data,file, sep = ""),quote = F,row.names = F, na = "NaN")      # <- write "origina data"
       
       overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
       
@@ -147,7 +152,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         missing_index_date = missing[[2]]
         
         rm(missing)
-
+        
         
         range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
         mydata = range[[1]]
@@ -222,27 +227,30 @@ if(flag_empty == 0){
                            substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
                            substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
                            sep = "")
-          out_filename_data = paste("DQCok_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
-          out_filename_dupli = paste("Duplicated_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
+          out_filename_data = paste(substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
           
-          output_dir_data_DQC_OK = paste(output_dir_data, "DQC_OK/",sep = "")
-          ifelse(test = !dir.exists(output_dir_data_DQC_OK),yes = dir.create(output_dir_data_DQC_OK),no = FALSE)
-          
-          output_dir_data_duplicated = paste(output_dir_data, "Duplicated/",sep = "")
-          ifelse(test = !dir.exists(output_dir_data_duplicated),yes = dir.create(output_dir_data_duplicated),no = FALSE)
-          
-          write.csv(out_mydata,paste(output_dir_data_DQC_OK,out_filename_data,sep = ""),quote = F,row.names = F, na = "NaN")
+          write.csv(out_mydata,paste(output_dir_data,out_filename_data,sep = ""),quote = F,row.names = F, na = "NaN")
           
           rm(out_my)
           rm(out_mydata)
-          #~~~~~~~~~~
-          out_duplicated = duplicated_data
-          colnames(out_duplicated) = colnames(header)
           
-          out_duplicated_data=rbind(header[-1,],out_duplicated)
-          write.csv(out_duplicated_data,paste(output_dir_data_duplicated,out_filename_dupli,sep = ""),quote = F,row.names = F, na = "NaN")
-          rm(out_duplicated)
-          rm(out_duplicated_data)
+          #~~~~~~~~~~
+          
+          # out_filename_dupli = paste("Duplicated_",substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
+          # 
+          # output_dir_data_DQC_OK = paste(output_dir_data, "DQC_OK/",sep = "")
+          # ifelse(test = !dir.exists(output_dir_data_DQC_OK),yes = dir.create(output_dir_data_DQC_OK),no = FALSE)
+          # 
+          # output_dir_data_duplicated = paste(output_dir_data, "Duplicated/",sep = "")
+          # ifelse(test = !dir.exists(output_dir_data_duplicated),yes = dir.create(output_dir_data_duplicated),no = FALSE)
+          
+          # out_duplicated = duplicated_data
+          # colnames(out_duplicated) = colnames(header)
+          # 
+          # out_duplicated_data=rbind(header[-1,],out_duplicated)
+          # write.csv(out_duplicated_data,paste(output_dir_data_duplicated,out_filename_dupli,sep = ""),quote = F,row.names = F, na = "NaN")
+          # rm(out_duplicated)
+          # rm(out_duplicated_data)
         }
       }
     }
@@ -302,7 +310,9 @@ And: *`r if(write_output_report == TRUE){paste("to write output report here:", o
 
 ### OUTPUT:
 
-#### **Is the file empty?** `r if(flag_empty == 0){paste("NO: all right!")}else{paste("YES: check it!")}`
+####** Reminder (for developer): no problem => no message **
+
+#### **Is the file empty? ** `r if(flag_empty == 0){paste("NO: all right!")}else{paste("YES: check it!")}`
 
 
 `r if(flag_empty == 0){paste("Ok:",file,"is not empty")}else{paste("Error:",file,"is empty")}`
@@ -358,22 +368,22 @@ if(flag_empty == 0){
         time_tot <- as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1' )
         time_missing <- missing_index_date[,2]
         # time_missing <-as.character(time_missing)
-
+        
         df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
         colnames(df_missing) = c("time","Status")
         df_missing[which(time_tot %in% time_missing ),2] = "Missing dates filled"
         y = rep(1, times = length(time_tot))
-
+        
         Status_num = rep(1,times = length(time_tot))
         Status_num[which(time_tot %in% time_missing )] = 0
-
+        
         df_missing = cbind(df_missing, y,Status_num)
         
         rm(time_tot)
         rm(time_missing)
         rm(y)
         rm(Status_num)
-
+        
         
       }
     }
@@ -396,9 +406,9 @@ if(flag_empty == 0){
                                        axis.text.y=element_blank(),
                                        axis.ticks.y=element_blank(),
                                        axis.text.x = element_text(angle = 90, hjust = 1))
-
+          
           tot_missing =length(which(df_missing$Status_num == 0))
-
+          
           ggplot(df_missing,aes(x = time, y=y ,colour = Status)) +
             geom_point(aes(size = Status,shape = Status) )+
             scale_colour_manual(values = c("#7CAE00","#F8766D"))+
@@ -450,7 +460,7 @@ if(flag_empty == 0){
           statistic_missing = data.frame(date_start,date_end,gap_lenght,gap_hour)
           colnames(statistic_missing) = c("From", "To", "Number of Record", "Hours")
           statistic_missing[,1:2] = format(statistic_missing[,1:2], format = datetime_format)
-        
+          
           datatable(statistic_missing,rownames = F)
           
         }
@@ -496,8 +506,10 @@ if(flag_empty == 0){
         }
         
         df_to_print = rbind(df_variable_new,df_variable_to_set)
-
-        datatable(df_to_print,rownames = F)
+        
+        if(flag_range_variable_to_set == 1 | flag_range_variable_new == 1){
+          datatable(df_to_print,rownames = F)
+        }
         
         
       }
@@ -523,10 +535,18 @@ if(flag_empty == 0){
             # ~~~~~~ preparation data for ggplot ~~~~~~
             
             df_tmp = check_out_of_range[,c(which(colnames(check_out_of_range)==datetime_header), j)]
+            df_data = mydata[,c(which(colnames(check_out_of_range)==datetime_header), j)]
+            
+            df_tmp_new = cbind(df_tmp, df_data[,2])
+            df_tmp_new[is.na(df_data[,2]),3] = 1
+            df_tmp_new[!is.na(df_data[,2]),3] = 0
+            df_tmp_new[which(df_tmp[,2] != 0),3] = 0
+            colnames(df_tmp_new)[3] = "na_flag"
+            
             df_factor = df_tmp
             
             df_factor[,2]=as.character(df_factor[,2])
-            
+
             y = rep(1,times = nrow(df_factor))
             df_factor = cbind(df_factor,y)
             colnames(df_factor) = c("time", "Variable", "y")
@@ -537,6 +557,17 @@ if(flag_empty == 0){
             # ~~~~~~ preparation data for statistic table ~~~~~~
             
             c_oor = colnames(check_out_of_range)[j]
+            
+            df_oor0 = df_tmp_new[,c(1,3)]
+            colnames(df_oor0)= c("time", "variable")
+            
+            nan = rep(0, times = nrow(df_oor0))
+            
+            how_many_nan = length(which(df_oor0$variable == 1))
+            
+            if(length(which(df_oor0$variable == 1)) != 0){
+              nan[which(df_oor0$variable == 1)] = 1
+            }
             
             df_oor = df_tmp
             colnames(df_oor)= c("time", "variable")
@@ -556,13 +587,13 @@ if(flag_empty == 0){
               under_range[which(df_oor$variable == -1)] = 1
             }
             
-            df_oor2 = data.frame(df_oor$time, under_range, over_range)
+            df_oor2 = data.frame(df_oor$time, under_range, over_range, nan)
             
             df_oor3 = rbind(df_oor2[1,],df_oor2,df_oor2[nrow(df_oor2),])
             
             
-            df_oor3[1,2] = 0 ; df_oor3[1,3] = 0
-            df_oor3[nrow(df_oor3),2] = 0 ; df_oor3[nrow(df_oor3),3] = 0
+            df_oor3[1,2] = 0 ; df_oor3[1,3] = 0; df_oor3[1,4] = 0
+            df_oor3[nrow(df_oor3),2] = 0 ; df_oor3[nrow(df_oor3),3] = 0; df_oor3[nrow(df_oor3),4] = 0
             
             a=as.data.frame(rbind(c(0,0),apply(df_oor3[,-1],2, diff)))
             time_a =c(df_oor$time[1],df_oor$time,df_oor$time[nrow(df_oor)])
@@ -582,27 +613,76 @@ if(flag_empty == 0){
               set_limits = data.frame(as.POSIXct(c(df_factor$time[1], df_factor$time[nrow(df_factor)%/%2], df_factor$time[nrow(df_factor)])), c(-1,0,1), c(0,0,0))
               colnames(set_limits) = colnames(df_factor)
               
+              df_tmp_new[,2] = rep(2, times = nrow(df_tmp_new))
+              colnames(df_tmp_new) = colnames(df_factor)
+              df_na = df_tmp_new[which(df_tmp_new[,3] == 1),]
+              
               df_factor = rbind(df_factor,set_limits)
+              df_factor = rbind(df_factor, df_na)
+              
               df_factor$Variable =as.numeric(df_factor$Variable)
               
               df_factor$Variable = factor(df_factor$Variable, ordered = TRUE)
               df_factor$Variable <- factor( df_factor$Variable, levels=rev(levels( df_factor$Variable)))
               
               
+              
+              
+                
               p1 = ggplot(df_factor,aes(x = time, y = y,colour = Variable))+
                 geom_point(aes(size = Variable,shape = Variable ))+
-                scale_colour_manual(values = c("#0000FF","#7CAE00","#F8766D"),labels = c("Above upper limit", "In the range","Below lower limit"))+
-                scale_shape_manual(values = c(124,20,124),labels =c("Above upper limit", "In the range","Below lower limit"))+
-                scale_size_manual(values = c(10,1,10),labels = c("Above upper limit", "In the range","Below lower limit"))+
+                scale_colour_manual(values = c("#777777","#F8766D","#7CAE00","#0000FF"),labels = c("NaN", "Above upper limit", "In the range","Below lower limit"))+
+                scale_shape_manual(values = c(124,124,20,124),labels =c("NaN","Above upper limit", "In the range","Below lower limit"))+
+                scale_size_manual(values = c(7,10,1,10),labels = c("NaN","Above upper limit", "In the range","Below lower limit"))+
                 theme_new2 +
                 scale_y_continuous(limits = c(0.7,1.3))+
                 labs(title=paste(colnames(check_out_of_range)[j]),
-                     subtitle=paste("Total Above upper limit: ", how_many_over_range, "\n",
+                     subtitle=paste("Total NaN: ", how_many_nan, "\n",
+                                    "Total Above upper limit: ", how_many_over_range, "\n",
                                     "Total Below lower limit: ", how_many_under_range, sep = ""))
               
               print(p1)
               
               # ~~~~~~ preparation data for statistic table ~~~~~~
+              
+              # NaN
+              nan_start_oor = which(diff_df$nan == 1) - 1
+              nan_end_oor  = which(diff_df$nan == -1) - 2
+              
+              
+              if(length(nan_start_oor) != 0 & length(nan_end_oor) != 0){
+                if(nan_end_oor[1] < nan_start_oor[1]){
+                  nan_start_oor = c(1,nan_start_oor)
+                }
+                if(nan_start_oor[length(nan_start_oor)] > nan_end_oor[length(nan_end_oor)] ){
+                  nan_end_oor = c(nan_end_oor,nrow(diff_df))
+                }
+              }
+              
+              nan_gap_lenght_oor = nan_end_oor - nan_start_oor + 1
+              nan_date_start_oor = df_oor[nan_start_oor,1]
+              nan_date_end_oor = df_oor[nan_end_oor,1]
+              
+              if(length(nan_date_end_oor) != 0){
+                nan_date_end_oor_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
+                for(k in 1:length(nan_date_end_oor)){
+                  
+                  nan_date_end_oor_tmp[k] =  seq.POSIXt(nan_date_end_oor[k], by = datetime_sampling, length. =  2)[2]
+                }
+                
+                nan_gap_hour_oor = difftime(time1 = nan_date_end_oor_tmp,time2 = nan_date_start_oor,units = "hours")
+              }else{
+                nan_gap_hour_oor = numeric(0)
+              }
+              
+              nan_statistic_oor = data.frame(rep("NaN", times = length(nan_date_start_oor)),
+                                               nan_date_start_oor,
+                                               nan_date_end_oor,
+                                               nan_gap_lenght_oor,
+                                               nan_gap_hour_oor)
+              colnames(nan_statistic_oor) = c(" ","From", "To", "Number of Record", "Hours")
+              
+              # under
               
               under_start_oor = which(diff_df$under_range == 1) - 1
               under_end_oor  = which(diff_df$under_range == -1) - 2
@@ -675,12 +755,22 @@ if(flag_empty == 0){
               
               
               if(nrow(under_statistic_oor) == 0){
-                statistic_oor = over_statistic_oor
+                statistic_oor_under_over = over_statistic_oor
               }else{
                 if(nrow(over_statistic_oor) == 0){
-                  statistic_oor = under_statistic_oor
+                  statistic_oor_under_over = under_statistic_oor
                 }else{
-                  statistic_oor= rbind(under_statistic_oor,over_statistic_oor)
+                  statistic_oor_under_over= rbind(under_statistic_oor,over_statistic_oor)
+                }
+              }
+              
+              if(nrow(nan_statistic_oor) == 0){
+                statistic_oor = statistic_oor_under_over
+              }else{
+                if(nrow(under_statistic_oor) == 0 & nrow(over_statistic_oor) == 0){
+                  statistic_oor = nan_statistic_oor
+                }else{
+                  statistic_oor = rbind(nan_statistic_oor,statistic_oor_under_over)
                 }
               }
               

@@ -127,7 +127,6 @@ for(t in  1: length(files_available)){
     output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
   }
 
-  
   if(dir.exists(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))){                # create subfolder to store mini files for database organized by station name 
     database_file_dir_new = paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
   }else{

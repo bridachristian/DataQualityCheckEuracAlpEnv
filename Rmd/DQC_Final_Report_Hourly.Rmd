@@ -42,6 +42,9 @@ final_2$Status[ff$Status == "Not analyzed"] = NA
 final_2$flag_empty[ff$flag_empty == 1] = "R" 
 final_2$flag_empty[ff$flag_empty == 0] = "G"
 
+final_2$flag_logger_number[ff$flag_logger_number == 1] = "R"
+final_2$flag_logger_number[ff$flag_logger_number == 0] = "G"
+
 final_2$flag_error_df[ff$flag_error_df == 1] = "R"
 final_2$flag_error_df[ff$flag_error_df == -1] = "R" 
 final_2$flag_error_df[ff$flag_error_df == 0] = "G"
@@ -76,11 +79,14 @@ final_2$flag_new_overlap[ff$flag_new_overlap == 0] = "G"
 final_2$flag_new_missing_dates[ff$flag_new_missing_dates == 1] = "Y" 
 final_2$flag_new_missing_dates[ff$flag_new_missing_dates == 0] = "G"
 
-final_2$flag_append_new[ff$flag_new_missing_dates == 1]
+final_2$flag_append_new[ff$flag_append_new == 0] = "G"
+final_2$flag_append_new[ff$flag_append_new == 1] = "R"
+final_2$flag_append_new[ff$flag_append_new == -1] = "Y" 
 
 colnames(final_2) = c("Station",
                       "Status",
                       "File is empty",
+                      "Logger number",
                       "Structure isssues",
                       "Date issues",
                       "Duplicated rows",
@@ -91,15 +97,16 @@ colnames(final_2) = c("Station",
                       "Out of range",
                       "NEW Duplicated rows",
                       "NEW Overlap",
-                      "NEW Missing dates"
-                      )
+                      "NEW Missing dates",
+                      "Append new data")
+
 
 # missing_color = data.frame( rep("R", times= nrow(final_2)), rep("Y", times= nrow(final_2)),rep("G", times= nrow(final_2)),rep(NA, times= nrow(final_2)))
 # colnames(missing_color) = c("Red", "Yellow", "Green", "NaN")
 
 # final_2 = cbind(final_2[,1:2],message,final_2[,3:11] )
 
-ff2 = ff[,c(1:14)]
+ff2 = ff[,c(1:16)]
 colnames(ff2)  = colnames(final_2)
 melt_final = melt(final_2,id.vars = "Station")
 melt_ff2 = melt(ff2[,-2],id.vars = "Station")

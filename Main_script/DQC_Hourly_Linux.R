@@ -89,7 +89,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 1
+t = 10
 
 final_dataframe = matrix(ncol = 19, nrow = length(files_available))
 

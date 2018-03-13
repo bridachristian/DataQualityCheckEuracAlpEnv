@@ -248,6 +248,11 @@ if(flag_empty == 0){
             years = as.numeric(unique(format(time_mydata, format = "%Y")))
             file_names = paste(substring(file,1, nchar(file)-4),"_", years,".csv",sep = "")
             
+            flag_new_duplicates_rows_tmp = c()
+            flag_new_overlap_tmp = c()
+            flag_new_missing_dates_tmp = c()
+            flag_append_new_tmp = c()
+            
             for(k in 1: length(years)){
               
               if(file.exists(paste(output_dir_data,file_names[k],sep = ""))){
@@ -279,9 +284,9 @@ if(flag_empty == 0){
                   new_duplicated_data = new_deletes_duplcated [[2]]
                   
                   if(unique(as.character(new_duplicated_data[1,])) == "---"){
-                    flag_new_duplicates_rows = 0
+                    flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,0)
                   } else{
-                    flag_new_duplicates_rows = 1
+                    flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,1)
                   }
                   
                   
@@ -291,7 +296,7 @@ if(flag_empty == 0){
                   
                   if(length(new_overlap) == 0){
                     
-                    flag_new_overlap = 0
+                    flag_new_overlap_tmp = c(flag_new_overlap_tmp,0)
                     
                     new_missing  <- missing_dates(DATA = new_mydata,
                                                   DATETIME_HEADER = datetime_header,
@@ -302,7 +307,13 @@ if(flag_empty == 0){
                     
                     
                     # check if the first record in new data is immediately successive to the last record
+                    nrow(new_mydata)
+                    nrow(old_data)
                     
+                    # if(nrow(new_mydata) == nrow(old_data)){
+                    #   flag_append_tmp = 1
+                    #   flag_append_new_tmp = c(flag_append_new_tmp, flag_append_tmp)
+                    #   }else {}
                     r = 0
                     repeat{
                       r = r+1 
@@ -319,12 +330,15 @@ if(flag_empty == 0){
                     first_new_record = new_mydata[which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)+r, which(colnames(new_mydata) == record_header)] 
                     
                     if(first_new_record == last_old_record + 1| first_new_record == 0 | first_new_record == -1){
-                      flag_append_new = 0
+                      flag_append_tmp = 0
+                      flag_append_new_tmp = c(flag_append_new_tmp,flag_append_tmp)
                     } else {
-                      flag_append_new = -1
+                      flag_append_tmp = -1
+                      flag_append_new_tmp = c(flag_append_new_tmp, flag_append_tmp)
                     }
                     
-                    if(record_check != 1 | flag_append_new != -1){     
+                    
+                    if(record_check != 1 | flag_append_tmp != -1){     
                       # We avoid to write output if record control is active (record_check = 1) and record has some issues (indicated by flag_append_new = -1)
                       
                       # prepare tata for output
@@ -335,9 +349,9 @@ if(flag_empty == 0){
                       new_time_missing = new_missing_index_date[,2]
                       
                       if(length(which(new_time_tot %in% new_time_missing )) == 0){
-                        flag_new_missing_dates = 0      # No missing dates
+                        flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,0)      # No missing dates
                       }else{
-                        flag_new_missing_dates = 1      # YES missing dates
+                        flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,1)      # YES missing dates
                       }
                       
                       rm(missing)
@@ -348,7 +362,7 @@ if(flag_empty == 0){
                       out_mydata=rbind(header[-1,],out_my)
                       file_name_output = file_names[k]
                       
-                      flag_append_new = 0
+                      flag_append_new_tmp = c(flag_append_new_tmp, 0)
                       
                       write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
                       
@@ -372,7 +386,7 @@ if(flag_empty == 0){
                       
                     }
                   }else{
-                    flag_new_overlap = 1
+                    flag_new_overlap_tmp = c(flag_new_overlap_tmp,1)
                     new_overlap[,1]<- new_overlap[,1] + data_from_row - 1
                     colnames(new_overlap)[1]= "File Row"
                   }
@@ -380,7 +394,7 @@ if(flag_empty == 0){
                   
                 }else{
                   
-                  flag_append_new = 1
+                  flag_append_new_tmp = c(flag_append_new_tmp, 1)
                   
                   header_t = as.data.frame(t(header))
                   header_t = cbind(rep(NA, times = nrow(header_t)),header_t )
@@ -413,10 +427,6 @@ if(flag_empty == 0){
                   # CALCOLARE DOVE SONO LE DIFFERENZE POI ELIMINARE  mydata! 
                   # SE NON ELIMINO mydata VIENE AGGIONATA LA DOWNLOAD TABLE!!!!
                   
-                  
-                  
-                  
-                  
                 }
               }else{
                 
@@ -448,6 +458,32 @@ if(flag_empty == 0){
                 
               }
             }
+            
+            # inserire qui conversione flag tmp
+            if(all(flag_new_duplicates_rows_tmp == 0)){
+              flag_new_duplicates_rows = 0
+            } else{
+              flag_new_duplicates_rows = 1
+            }
+            
+            if(all(flag_new_overlap_tmp == 0)){
+              flag_new_overlap = 0
+            } else{
+              flag_new_overlap = 1
+            }
+            
+            if(all(flag_new_missing_dates_tmp == 0)){
+              flag_new_missing_dates = 0
+            } else{
+              flag_new_missing_dates = 1
+            }
+            
+            if(all(flag_append_new_tmp == 0)){
+              flag_append_new = 0
+            } else{
+              flag_append_new = 1
+            }
+            
           }
         }
       }
@@ -456,7 +492,7 @@ if(flag_empty == 0){
 }
 
 
-flags_names = c("flag_empty","flag_logger_number","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_dates","flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range","flag_new_duplicates_rows", "flag_new_overlap", "flag_new_missing_dates" ,"flag_append_new")
+flags_names = c("flag_empty","flag_logger_number","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_dates","flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range","flag_append_new", "flag_new_overlap", "flag_new_missing_dates" ,"flag_append_new")
 flags_df = data.frame(flags_names, rep(NA,times = length(flags_names)))
 colnames(flags_df) = c("flag_names", "value")
 

@@ -173,7 +173,7 @@ ff$Data_folder[w4]<- paste0("[", "Data available", "](",d_folder_text[w4], ")")
 
 ff$File_name[is.na(ff$File_name)] = paste0("---")
 
-new_ff = ff[,c(1,15,16,17)]
+new_ff = ff[,c(1,17,18,19)]
 colnames(new_ff) = c("Station", "Report", "Data folder", "File name")
 
 

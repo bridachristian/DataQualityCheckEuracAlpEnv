@@ -272,16 +272,14 @@ for(t in  1: length(files_available)){
     warning(paste("File",FILE, "already analyzed!"))
     # file_already_processed = c(file_already_processed,FILE)
     final_info = c(substring(FILE,1,nchar(FILE)-4), "Already analyzed",
-                   NA, NA, NA, NA, NA, NA, NA, NA, NA,
-                   NA, NA, NA,
+                   NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                    NA,
                    NA, NA)
   }
 
 }else{
   final_info = c(substring(FILE,1,nchar(FILE)-4), "Not analyzed",
-                 NA, NA, NA, NA, NA, NA, NA, NA, NA,
-                 NA, NA, NA,
+                 NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                  NA,
                  NA, NA)
 }

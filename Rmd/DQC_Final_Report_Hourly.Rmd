@@ -35,8 +35,8 @@ final_2 = as.data.frame(final_dataframe[,1:16],stringsAsFactors = F)
 
 final_2$Status[ff$Status == "Already analyzed"] = "B" 
 final_2$Status[ff$Status == "Analyzed with errors"] = "R" 
-final_2$Status[ff$Status == "Analyzed and write output" & !all(ff[3,11] == 0)] = "Y" 
-final_2$Status[ff$Status == "Analyzed and write output" & all(ff[3,11] == 0)] = "G" 
+final_2$Status[ff$Status == "Analyzed and write output" & !all(ff[3,16] == 0)] = "Y"  # ff[3,11] ??????
+final_2$Status[ff$Status == "Analyzed and write output" & all(ff[3,16] == 0)] = "G"   # ff[3,11] ??????
 final_2$Status[ff$Status == "Not analyzed"] = NA
 
 final_2$flag_empty[ff$flag_empty == 1] = "R" 

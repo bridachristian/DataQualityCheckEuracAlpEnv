@@ -1,8 +1,30 @@
 rm(list = ls())
-# library(readxl)
-# library(plyr)
 
 #--- input section ---
+# 
+# input_dir <- "/shared/loggernet/scheduling_test/"                    # where input files are
+# # input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
+# data_output_dir <- "/shared/loggernet/data_quality_check_test/Output/Data/"   # where to put output files
+# # output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
+# report_output_dir <- "/shared/loggernet/data_quality_check_test/Output/Report/"   # where to put output reports
+# # output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
+# project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+# 
+# database_file_dir <- "/shared/loggernet/data_quality_check_test/Database/total_files/"  # where to put output files
+# logger_info_file <- "/shared/loggernet/data_quality_check_test/Process/Logger_number_and_software.csv" 
+# 
+# data_from_row =  5                                             # <-- Row number of first data
+# header_row_number =  2                                         # <-- Row number of header
+# datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
+# datetime_format =  "%Y-%m-%d %H:%M"                          # <-- datetime format. Use only: Y -> year, m -> month, d -> day, H -> hour, M -> minute
+# datetime_sampling =  "15 min"
+# record_header =  "RECORD"
+# range_file =  "Range.csv"
+# 
+# write_output_files =  "TRUE"
+# write_output_report =  "FALSE"
+
+
 
 path_input_folder = "/shared/loggernet/data_quality_check_test/Database/total_files/B1_new/" # Folder where stations data are storaged
 
@@ -49,7 +71,7 @@ new_row[which(config_file[2,] == datetime_header)] = datetime_header
 
 #--- read data and metadata ---
 
-data_to_split = read.csv(paste(path_input_folder,input_file,sep = ""), header = F, stringsAsFactors = F)
+data_to_split = read.csv(paste(path_input_folder,input_file,sep = ""), header = F, stringsAsFactors = F,na.strings = c(NA, "NaN"))
 header = data_to_split[1:(data_from_row-1),]
 header_colnames = data_to_split[header_row_number,]
 data_to_split_new = data_to_split[-c(1:(data_from_row-1)),]
@@ -97,7 +119,7 @@ if(identical(header, config_file[1:(data_from_row-1),])){  # split data only hea
       rm(data_new)      # initialize
       w = which(categ[i]==substring(template,1,4)) # index of file (in template data) to load
       
-      template_data = read.csv(paste(data_template_folder,template[w],sep = ""),nrows = 1,header = T,stringsAsFactors = F) #import the template data selected with id_model
+      template_data = read.csv(paste(data_template_folder,template[w],sep = ""),nrows = 1,header = T,stringsAsFactors = F,na.strings = c(NA, "NaN")) #import the template data selected with id_model
       cn=colnames(template_data) # extract colnames
       data_new = matrix(data = NA,nrow = length(TIMESTAMP),ncol = length(cn)) # create empty matrix
       data_new=as.data.frame(data_new) # convert matrix in a dataframe

@@ -24,23 +24,7 @@ for(i in 1:length(configuration_files)){
   input_file = files_available[1]
   for(input_file in files_available){
     
-    
-    
-    
-    # input_file = "B1_new_201611140615_201612312345.csv"  # File (organized by station) to split in different files per sensors (one sensor could measure one or more parameter)
-    # 
-    # # station_parameters_folder = "/shared/loggernet/data_quality_check_test/Database/config_stations/config_files/" # Excel table where the connection between database paramters and station parameters are specified
-    # config_folder = "/shared/loggernet/data_quality_check_test/Database/config_stations/config_files/" # Excel table where the connection between database paramters and station parameters are specified
-    # 
-    # data_template_folder = "/shared/loggernet/data_quality_check_test/Database/config_stations/template_out_files/" # Folder where there are some template of data for each sensor model
-    # 
-    # 
-    # 
-    # output_folder = "/shared/loggernet/data_quality_check_test/Database/splitted_files/" # Folder to storage data splitted by sensors.
-    # 
-    # backup_input_folder = "H:/Projekte/LTER/11_DataBase/LTER_test/Input/Uploaded/" # Folder where stations data are storaged as backup
-    
-    #--- controllare QUI che header del file di config e header dati siano uguali ---
+    #--- read and update header columns in configuration files ---
     config_file = read.csv(paste(config_file_dir,substring(input_file,1, nchar(input_file)-30), ".csv", sep = ""),header = F,stringsAsFactors = F,na.strings = c(NA, "NaN"))
     config_file_header = config_file[1:(data_from_row-1),]
     
@@ -48,7 +32,6 @@ for(i in 1:length(configuration_files)){
     new_row[which(config_file[data_from_row+3,] == "")] = NA
     new_row[which(config_file[header_row_number,] == datetime_header)] = datetime_header
     
-    # file_conf = rbind(config_file, new_row)
     
     #--- read data and metadata ---
     
@@ -71,9 +54,6 @@ for(i in 1:length(configuration_files)){
       
       # --- prepare TIMESTAMP ---
       TIMESTAMP = data_to_split_new[,which(colnames(data_to_split_new) == datetime_header)] # extract date and time from input data
-      
-      
-      
       
       #--- assign station_category and sensor ID ---
       
@@ -109,7 +89,6 @@ for(i in 1:length(configuration_files)){
           
           rr=regexpr("-",substring(colnames(data),6,nchar(colnames(data))))
           v = which(EuracID[j]==substring(colnames(data),6,rr+4)) # select one sensor
-          # var = substring(colnames(data)[v],rr[v]+6,nchar(colnames(data)[v])) # find the parameter measured (as in database)
           var = substring(colnames(data)[v],rr[v]+6,nchar(colnames(data)[v])) # find the parameter measured (as in database)
           
           
@@ -124,7 +103,7 @@ for(i in 1:length(configuration_files)){
             
           }
           colnames(data_new)=cn
-          name_output=paste(EuracID[j],"_",unique(as.character(config_file[5,which(config_file[6,]==EuracID[j])])),"_",
+          name_output=paste(EuracID[j],"_",unique(as.character(config_file[data_from_row,which(config_file[data_from_row+1,]==EuracID[j])])),"_",
                             substring(TIMESTAMP[1],1,4),substring(TIMESTAMP[1],6,7),substring(TIMESTAMP[1],9,10),
                             substring(TIMESTAMP[1],12,13),substring(TIMESTAMP[1],15,16),"-",
                             substring(TIMESTAMP[length(TIMESTAMP)],1,4),substring(TIMESTAMP[length(TIMESTAMP)],6,7),substring(TIMESTAMP[length(TIMESTAMP)],9,10),
@@ -133,11 +112,11 @@ for(i in 1:length(configuration_files)){
           
           
           write.csv(data_new, paste(output_dir,name_output,".csv",sep = ""),na = "-999999",row.names = F,quote = F) # write output
+          
         }
       }
     }
   }
-  
 }
 
 # file.rename(from = paste(path_input_folder, input_file, sep = ""), to=paste(backup_input_folder, input_file, sep = ""))

@@ -94,9 +94,9 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       
     }else{
       
-      if(as.POSIXct(start_date) < time_data[length(time_data)]){
-        original = data[(which(time_data == as.POSIXct(start_date))+1):nrow(data),]      # possible issues in data subset!!! to check 
-        mydata = data[(which(time_data == as.POSIXct(start_date))+1):nrow(data),]
+      if(as.POSIXct(start_date, tz = 'Etc/GMT-1') < time_data[length(time_data)]){
+        original = data[(which(time_data == as.POSIXct(start_date, tz = 'Etc/GMT-1'))+1):nrow(data),]      # possible issues in data subset!!! to check 
+        mydata = data[(which(time_data == as.POSIXct(start_date, tz = 'Etc/GMT-1'))+1):nrow(data),]
         
         flag_date = 0
         
@@ -132,7 +132,16 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       rm(data_in_old_files)
       
       orig_wihtout_dupli = mydata
-      write.csv(orig_wihtout_dupli,paste(output_dir_data,file, sep = ""),quote = F,row.names = F, na = "NaN")      # <- write "origina data"
+      
+      lastdate_orig = orig_wihtout_dupli[nrow(orig_wihtout_dupli), which(colnames(orig_wihtout_dupli) == datetime_header)]
+      out_lastdate_orig = paste(substring(lastdate_orig,1,4),
+                           substring(lastdate_orig,6,7),
+                           substring(lastdate_orig,9,10),
+                           substring(lastdate_orig,12,13),
+                           substring(lastdate_orig,15,16),
+                           sep = "")
+
+      write.csv(orig_wihtout_dupli,paste(output_dir_data,substring(file, 1, nchar(file)-4),"_", out_lastdate_orig,".dat", sep = ""),quote = F,row.names = F, na = "NaN")      # <- write "origina data"
       
       overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
       
@@ -494,22 +503,26 @@ if(flag_empty == 0){
           colnames(df_variable_new) = c("Variable", "Warning")
         }
         
-        if(flag_range_variable_to_set == 1){
-          df_variable_to_set = data.frame(variable_to_set, rep("Remember: update threshold in range file and disables flag *to_set* ", times = length(variable_to_set)))
-          colnames(df_variable_to_set) = c("Variable", "Warning")
-          
-          
-        }else{
-          df_variable_to_set = data.frame("---", rep("All variables in range file are up to date",times = 1))
-          colnames(df_variable_to_set) = c("Variable", "Warning")
-          # print("Any variables to set in range file.")
-        }
+        # if(flag_range_variable_to_set == 1){
+        #   df_variable_to_set = data.frame(variable_to_set, rep("Remember: update threshold in range file and disables flag *to_set* ", times = length(variable_to_set)))
+        #   colnames(df_variable_to_set) = c("Variable", "Warning")
+        #   
+        #   
+        # }else{
+        #   df_variable_to_set = data.frame("---", rep("All variables in range file are up to date",times = 1))
+        #   colnames(df_variable_to_set) = c("Variable", "Warning")
+        #   # print("Any variables to set in range file.")
+        # }
         
-        df_to_print = rbind(df_variable_new,df_variable_to_set)
+        # df_to_print = rbind(df_variable_new,df_variable_to_set)
+        df_to_print = df_variable_new
         
-        if(flag_range_variable_to_set == 1 | flag_range_variable_new == 1){
-          datatable(df_to_print,rownames = F)
-        }
+        # if(flag_range_variable_to_set == 1 | flag_range_variable_new == 1){
+        #   datatable(df_to_print,rownames = F)
+        # }
+        
+        datatable(df_to_print,rownames = F)
+        
         
         
       }

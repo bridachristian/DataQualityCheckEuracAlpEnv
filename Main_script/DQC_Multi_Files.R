@@ -35,6 +35,13 @@ report_output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQua
 # report_output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
 project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
+# input_dir <- "C:/Users/azandonai/Desktop/Data/DQC/in/"                # where input files are
+# data_output_dir <- "C:/Users/azandonai/Desktop/Data/DQC/out/"   # where to put output files
+# report_output_dir <- "C:/Users/azandonai/Desktop/Data/DQC/out/"   # where to put output reports
+# project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+# range_dir <- "C:/Users/azandonai/Desktop/Data/DQC/process/"
+# download_table_dir <- "C:/Users/azandonai/Desktop/Data/DQC/process/"
+
 data_from_row =  5                                             # <-- Row number of first data
 header_row_number =  2                                         # <-- Row number of header
 datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
@@ -53,8 +60,8 @@ write_output_report =  "TRUE"
 
 # ~~~ Default directory ~~~~
 
+
 range_dir <-"H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Process/"
-# paste(project_dir, "Data/Support_files/Range/",sep = "")
 # download_table_dir <- paste(project_dir, "Data/Support_files/Download_table/",sep = "")
 download_table_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Process/"
 Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
@@ -74,7 +81,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 2
+t = 1
 
 # final_dataframe = data.frame(t(rep(NA, times = 14)))
 final_dataframe = matrix(ncol = 14, nrow = length(files_available))

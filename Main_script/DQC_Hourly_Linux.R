@@ -89,7 +89,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 10
+t = 11
 
 final_dataframe = matrix(ncol = 19, nrow = length(files_available))
 
@@ -241,13 +241,13 @@ for(t in  1: length(files_available)){
                          flags_df$value,
                          paste(output_dir_report,out_filename_report,sep = ""),
                          paste(output_dir_data,sep = ""),
-                         paste(file_name_output,sep = ""))
+                         paste(file_names,sep = ""))
       }else{
         final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
                        flags_df$value,
                        NA,
                        paste(output_dir_data_new,sep = ""),
-                       paste(file_name_output,sep = ""))
+                       paste(file_names,sep = ""))
       }
 
 

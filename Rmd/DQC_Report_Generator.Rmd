@@ -140,13 +140,13 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
                                 substring(lastdate_orig,12,13),
                                 substring(lastdate_orig,15,16),
                                 sep = "")
-      orig_filename = paste(substring(file, 1, nchar(file)-4),"_", out_lastdate_orig,".dat", sep = "")
+      orig_filename = paste(substring(file, 1, nchar(file)-4),"_", out_lastdate_orig,"_raw.dat", sep = "")
       
       if(file.exists(paste(output_dir_data,orig_filename,sep = ""))){
             j=0
             repeat{
               j=j+1
-              out_filename_orig_new = paste(substring(orig_filename,1, nchar(orig_filename)-4),"_",j,".dat",sep = "")
+              out_filename_orig_new = paste(substring(orig_filename,1, nchar(orig_filename)-4),"_raw_",j,".dat",sep = "")
               if(!file.exists(paste(output_dir_data,out_filename_orig_new,sep = ""))){
                 break
               }

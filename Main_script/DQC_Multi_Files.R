@@ -93,7 +93,7 @@ colnames(final_dataframe) = c("Station", "Status",
 
 
 
-report_start = Sys.time()
+report_start = as.POSIXct(Sys.time(), tz = "Etc/GMT-1")
 
 # load(file = paste(output_dir_data,"final_dataframe.RData",sep = "") )
 
@@ -104,7 +104,7 @@ for(t in  1: length(files_available)){
   rm(list = setdiff(ls(all.names = TRUE),c("tf","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                                            "files_available","header_row_number","input_dir","data_output_dir","report_output_dir","project_dir",
                                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
-                                           "report_start", "final_dataframe")))
+                                           "report_start", "final_dataframe","output_dir_report")))
 
 
   FILE = files_available[t]
@@ -177,8 +177,8 @@ for(t in  1: length(files_available)){
                                   substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
                                   substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
                                   # "_",
-                                  substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
-                                  substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+                                  # substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+                                  # substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
                                   sep = "")
 
         last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
@@ -195,7 +195,7 @@ for(t in  1: length(files_available)){
         j=0
         repeat{
           j=j+1
-          out_filename_report_new = paste(substring(out_filename_report,1, nchar(out_filename_report)-5),"_vers",j,".html",sep = "")
+          out_filename_report_new = paste(substring(out_filename_report,1, nchar(out_filename_report)-5),"_",j,".html",sep = "")
           if(!file.exists(paste(output_dir_report,out_filename_report_new,sep = ""))){
             break
           }
@@ -221,9 +221,9 @@ for(t in  1: length(files_available)){
         final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
                        flags_df$value,
                        paste(output_dir_report,out_filename_report,sep = ""),
-                       paste(output_dir_data,"DQC_OK/",sep = ""),
-                       paste("DQCok_",substring(FILE,1,nchar(FILE)-4),"_",out_filename_date, ".csv",sep = ""))
-
+                       paste(output_dir_data,sep = ""),
+                       # paste(substring(FILE,1,nchar(FILE)-4),"_",out_filename_date, ".csv",sep = ""))
+                       paste(out_filename_data_new,sep = ""))
       }else{
         # file_stopped = c(file_stopped, FILE)
 
@@ -264,12 +264,27 @@ input_final = paste(project_dir,"Rmd/DQC_Final_Report.Rmd",sep = "")
 output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
                            substring(report_start,6,7),
                            substring(report_start,9,10),
-                           substring(report_start,12,13),
-                           substring(report_start,15,16),".html", sep = "")
-output_dir_final = output_dir_report
+                           # substring(report_start,12,13),
+                           # substring(report_start,15,16),
+                           ".html", sep = "")
+# output_dir_final = output_dir_report
+output_dir_final = report_output_dir
+
+if(file.exists(paste(output_dir_final,output_file_final,sep = ""))){
+  j=0
+  repeat{
+    j=j+1
+    output_file_final_new = paste(substring(output_file_final,1, nchar(output_file_final)-5),"_",j,".html",sep = "")
+    if(!file.exists(paste(output_dir_final,output_file_final_new,sep = ""))){
+      break
+    }
+  }
+} else {
+  output_file_final_new = output_file_final
+}
 
 rmarkdown::render(input = input_final,
-                  output_file = output_file_final ,
+                  output_file = output_file_final_new ,
                   output_dir = output_dir_final,
                   params = list(report_start = report_start ,
                                 final_dataframe = final_dataframe))

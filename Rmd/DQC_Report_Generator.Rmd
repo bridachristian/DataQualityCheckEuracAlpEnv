@@ -95,6 +95,9 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
     }else{
       
       if(as.POSIXct(start_date, tz = 'Etc/GMT-1') < time_data[length(time_data)]){
+        
+        
+        
         original = data[(which(time_data == as.POSIXct(start_date, tz = 'Etc/GMT-1'))+1):nrow(data),]      # possible issues in data subset!!! to check 
         mydata = data[(which(time_data == as.POSIXct(start_date, tz = 'Etc/GMT-1'))+1):nrow(data),]
         

@@ -89,7 +89,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 11
+t = 10
 
 final_dataframe = matrix(ncol = 19, nrow = length(files_available))
 
@@ -108,25 +108,25 @@ report_start = Sys.time()
 
 for(t in  1: length(files_available)){
   gc(reset = T)
-
+  
   rm(list = setdiff(ls(all.names = TRUE),c("t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
                                            "files_available","header_row_number","input_dir","data_output_dir","report_output_dir","project_dir",
                                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
                                            "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file")))
-
-
+  
+  
   FILE = files_available[t]
-
+  
   w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
   dwnl_info = download_table[w_dwnl,]
-
+  
   if(dir.exists(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))){                # create subfolder to store data organized by station name
     output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
   }else{
     dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))
     output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
   }
-
+  
   if(dir.exists(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))){                # create subfolder to store mini files for database organized by station name 
     database_file_dir_new = paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
   }else{
@@ -135,11 +135,11 @@ for(t in  1: length(files_available)){
   }
   
   if(dwnl_info$Stop_DQC == 0){
-
+    
     date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE,sep = "")),format = datetime_format))
-
+    
     if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
-
+      
       input_dir = input_dir
       output_dir_data = output_dir_data_new
       output_dir_report = report_output_dir
@@ -160,9 +160,9 @@ for(t in  1: length(files_available)){
       record_check = dwnl_info$record_check
       
       output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
-        
+      
       rm(dwnl_info)
-        
+      
       rmarkdown::render(input = Rmd_report_generator ,
                         output_file = output_file_report,
                         output_dir = output_dir_report,
@@ -184,9 +184,9 @@ for(t in  1: length(files_available)){
                                       start_date = start_date,
                                       logger_info_file = logger_info_file,
                                       record_check = record_check))
-
+      
       gc(reset = T)
-
+      
       if(flag_empty == 0 & flag_error_df == 0){
         out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                                   substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
@@ -195,99 +195,98 @@ for(t in  1: length(files_available)){
                                   substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
                                   substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
                                   sep = "")
-
+        
         last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
-
+        
       } else {
         out_filename_date = "no_datetime"
       }
-
-
-        out_filename_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_",out_filename_date,".html",sep = "")
-
-        if(file.exists(paste(output_dir_report,out_filename_report,sep = ""))){
-
-          j=0
-          repeat{
-            j=j+1
-            out_filename_report_new = paste(substring(out_filename_report,1, nchar(out_filename_report)-5),"_vers",j,".html",sep = "")
-            if(!file.exists(paste(output_dir_report,out_filename_report_new,sep = ""))){
-              break
-              }
+      
+      
+      out_filename_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_",out_filename_date,".html",sep = "")
+      
+      if(file.exists(paste(output_dir_report,out_filename_report,sep = ""))){
+        
+        j=0
+        repeat{
+          j=j+1
+          out_filename_report_new = paste(substring(out_filename_report,1, nchar(out_filename_report)-5),"_vers",j,".html",sep = "")
+          if(!file.exists(paste(output_dir_report,out_filename_report_new,sep = ""))){
+            break
           }
-        } else {
-          out_filename_report_new = out_filename_report
-          }
-
-        out_filename_report = out_filename_report_new
-
-        if(write_output_report == TRUE){
+        }
+      } else {
+        out_filename_report_new = out_filename_report
+      }
+      
+      out_filename_report = out_filename_report_new
+      
+      if(write_output_report == TRUE){
         output_file_report = file.rename(from = paste(output_dir_report,output_file_report,sep = ""),
                                          to = paste(output_dir_report,out_filename_report,sep = ""))
-        }else{
-          file.remove(paste(output_dir_report,output_file_report,sep = ""))
-        }
+      }else{
+        file.remove(paste(output_dir_report,output_file_report,sep = ""))
+      }
+      
+      
 
-
-
-    if(!is.na(flag_missing_dates)){
-      download_table$Last_date[w_dwnl] = last_date
-      download_table$Last_Modification[w_dwnl] = date_last_modif_file
-      write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
-      # file_ok = c(file_ok,FILE)
-
-      if(write_output_report == TRUE){
-        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
+      if(!is.na(flag_missing_dates)){
+          download_table$Last_date[w_dwnl] = last_date
+          download_table$Last_Modification[w_dwnl] = date_last_modif_file
+          write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
+      
+        if(write_output_report == TRUE){
+          final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
                          flags_df$value,
                          paste(output_dir_report,out_filename_report,sep = ""),
                          paste(output_dir_data,sep = ""),
                          paste(file_names,sep = ""))
+        }else{
+          final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
+                         flags_df$value,
+                         NA,
+                         paste(output_dir_data_new,sep = ""),
+                         paste(file_names,sep = ""))
+        }
+        
+        
       }else{
-        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
-                       flags_df$value,
-                       NA,
-                       paste(output_dir_data_new,sep = ""),
-                       paste(file_names,sep = ""))
-      }
-
-
-    }else{
-      # file_stopped = c(file_stopped, FILE)
-      if(write_output_report == TRUE){
-        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",
-                       flags_df$value,
-                       paste(output_dir_report,out_filename_report,sep = ""),
-                       NA, NA )
-      }else{
-        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",
-                       flags_df$value,
-                       NA,
-                       NA, NA )
+        # file_stopped = c(file_stopped, FILE)
+        if(write_output_report == TRUE){
+          final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",
+                         flags_df$value,
+                         paste(output_dir_report,out_filename_report,sep = ""),
+                         NA, NA )
+        }else{
+          final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",
+                         flags_df$value,
+                         NA,
+                         NA, NA )
+        }
+        
+        
       }
       
-
+    } else {
+      warning(paste("File",FILE, "already analyzed!"))
+      # file_already_processed = c(file_already_processed,FILE)
+      final_info = c(substring(FILE,1,nchar(FILE)-4), "Already analyzed",
+                     NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
+                     NA,
+                     NA, NA)
     }
-
-  } else {
-    warning(paste("File",FILE, "already analyzed!"))
-    # file_already_processed = c(file_already_processed,FILE)
-    final_info = c(substring(FILE,1,nchar(FILE)-4), "Already analyzed",
+    
+  }else{
+    final_info = c(substring(FILE,1,nchar(FILE)-4), "Not analyzed",
                    NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                    NA,
                    NA, NA)
   }
-
-}else{
-  final_info = c(substring(FILE,1,nchar(FILE)-4), "Not analyzed",
-                 NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-                 NA,
-                 NA, NA)
-}
-
-# final_dataframe = rbind(final_dataframe,final_info)
-final_dataframe[t,] = final_info
-
-gc(reset = T)
+  
+  # final_dataframe = rbind(final_dataframe,final_info)
+  final_dataframe[t,] = final_info
+  
+  gc(reset = T)
 }
 
 # ..... Final Report .....................................................................................................................................

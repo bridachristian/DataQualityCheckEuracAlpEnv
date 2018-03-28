@@ -277,8 +277,9 @@ if(flag_empty == 0){
                 if(identical(old_header, header)){
                   
                   # append new data to old data if headers new and old are the same
-                  
-                  new = rbind(old_data, mydata[which(format(time_mydata, format = "%Y") == years[k]),])
+                  df_toadd =  mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+                  df_toadd[,which(colnames(df_toadd)== datetime_header)] = as.POSIXct(format(df_toadd[,which(colnames(df_toadd)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
+                  new = rbind(old_data,df_toadd)
                   new_deletes_duplcated <- deletes_duplcated_data(DATA = new,DATETIME_HEADER = datetime_header)        
                   new_mydata = new_deletes_duplcated [[1]]
                   new_duplicated_data = new_deletes_duplcated [[2]]
@@ -307,9 +308,9 @@ if(flag_empty == 0){
                     
                     
                     # check if the first record in new data is immediately successive to the last record
-                    nrow(new_mydata)
-                    nrow(old_data)
-                    
+                    # nrow(new_mydata)
+                    # nrow(old_data)
+                    # 
                     # if(nrow(new_mydata) == nrow(old_data)){
                     #   flag_append_tmp = 1
                     #   flag_append_new_tmp = c(flag_append_new_tmp, flag_append_tmp)
@@ -483,6 +484,7 @@ if(flag_empty == 0){
             } else{
               flag_append_new = 1
             }
+            
             
           }
         }

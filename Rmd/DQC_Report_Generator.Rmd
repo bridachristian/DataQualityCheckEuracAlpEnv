@@ -147,7 +147,8 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       
       orig_wihtout_dupli = mydata
       
-      lastdate_orig = orig_wihtout_dupli[nrow(orig_wihtout_dupli), which(colnames(orig_wihtout_dupli) == datetime_header)]
+      lastdate_orig = format(orig_wihtout_dupli[nrow(orig_wihtout_dupli), which(colnames(orig_wihtout_dupli) == datetime_header)],datetime_format)
+                      
       out_lastdate_orig = paste(substring(lastdate_orig,1,4),
                                 substring(lastdate_orig,6,7),
                                 substring(lastdate_orig,9,10),

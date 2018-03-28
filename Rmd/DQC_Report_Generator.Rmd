@@ -85,25 +85,36 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
     time_data = data[,which(colnames(data)==datetime_header)]
     
     if(is.na(start_date)){
-      
       original <- data
       mydata <- data    
       flag_date = 0
-      
-      # rm(data)
+      rm(data)
       
     }else{
       
       if(as.POSIXct(start_date, tz = 'Etc/GMT-1') < time_data[length(time_data)]){
         
-        
-        
-        original = data[(which(time_data == as.POSIXct(start_date, tz = 'Etc/GMT-1'))+1):nrow(data),]      # possible issues in data subset!!! to check 
-        mydata = data[(which(time_data == as.POSIXct(start_date, tz = 'Etc/GMT-1'))+1):nrow(data),]
-        
-        flag_date = 0
-        
-        rm(data)
+        if(as.POSIXct(start_date, tz = 'Etc/GMT-1') < time_data[1]){
+          original <- data
+          mydata <- data
+          first_row <- data.frame(t(rep(NA,times = ncol(data))))
+          colnames(first_row) = colnames(data)
+          
+          fd = as.POSIXct(seq(from = as.POSIXct(start_date, tz = "Etc/GMT-1"), by = datetime_sampling,length.out = 2)[2],tz = "Etc/GMT-1")
+          first_row[,which(colnames(data) == datetime_header)] = as.POSIXct(first_row[,which(colnames(data) == datetime_header)])
+          first_row[1,which(colnames(data) == datetime_header)] <- fd
+          first_row[which(colnames(data) == record_header)] = -1
+          
+          mydata <- rbind(first_row,data)
+          flag_date = 0
+          rm(data)
+          
+        }else{
+          original = data[(which(time_data == as.POSIXct(start_date, tz = 'Etc/GMT-1'))+1):nrow(data),]      # possible issues in data subset!!! to check
+          mydata = data[(which(time_data == as.POSIXct(start_date, tz = 'Etc/GMT-1'))+1):nrow(data),]
+          flag_date = 0
+          rm(data)
+        }
         
       } else {
         
@@ -146,17 +157,17 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       orig_filename = paste(substring(file, 1, nchar(file)-4),"_", out_lastdate_orig,"_raw.dat", sep = "")
       
       if(file.exists(paste(output_dir_data,orig_filename,sep = ""))){
-            j=0
-            repeat{
-              j=j+1
-              out_filename_orig_new = paste(substring(orig_filename,1, nchar(orig_filename)-4),"_raw_",j,".dat",sep = "")
-              if(!file.exists(paste(output_dir_data,out_filename_orig_new,sep = ""))){
-                break
-              }
-            }
-          } else {
-            out_filename_orig_new = orig_filename
+        j=0
+        repeat{
+          j=j+1
+          out_filename_orig_new = paste(substring(orig_filename,1, nchar(orig_filename)-8),"_raw_",j,".dat",sep = "")
+          if(!file.exists(paste(output_dir_data,out_filename_orig_new,sep = ""))){
+            break
           }
+        }
+      } else {
+        out_filename_orig_new = orig_filename
+      }
       
       write.csv(orig_wihtout_dupli,paste(output_dir_data,out_filename_orig_new,sep = ""),quote = F,row.names = F, na = "NaN")      # <- write "origina data"
       

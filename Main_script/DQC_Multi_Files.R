@@ -95,9 +95,7 @@ colnames(final_dataframe) = c("Station", "Status",
 
 report_start = as.POSIXct(Sys.time(), tz = "Etc/GMT-1")
 
-# load(file = paste(output_dir_data,"final_dataframe.RData",sep = "") )
 
-# for(t in  16:19){
 for(t in  1: length(files_available)){
   gc(reset = T)
 

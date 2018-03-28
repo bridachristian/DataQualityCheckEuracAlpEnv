@@ -229,27 +229,41 @@ for(t in  1: length(files_available)){
       }
       
       
-
+      
       if(!is.na(flag_missing_dates)){
+        if(flag_new_overlap == 1){
+          if(write_output_report == TRUE){
+            final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
+                           flags_df$value,
+                           paste(output_dir_report,out_filename_report,sep = ""),
+                           NA,
+                           NA)
+          }else{
+            final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
+                           flags_df$value,
+                           NA,
+                           NA,
+                           NA)
+          }
+        }else{
           download_table$Last_date[w_dwnl] = last_date
           download_table$Last_Modification[w_dwnl] = date_last_modif_file
           write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
-      
-        if(write_output_report == TRUE){
-          final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
-                         flags_df$value,
-                         paste(output_dir_report,out_filename_report,sep = ""),
-                         paste(output_dir_data,sep = ""),
-                         paste(file_names,sep = ""))
-        }else{
-          final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
-                         flags_df$value,
-                         NA,
-                         paste(output_dir_data_new,sep = ""),
-                         paste(file_names,sep = ""))
+          
+          if(write_output_report == TRUE){
+            final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
+                           flags_df$value,
+                           paste(output_dir_report,out_filename_report,sep = ""),
+                           paste(output_dir_data,sep = ""),
+                           paste(file_names,sep = ""))
+          }else{
+            final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
+                           flags_df$value,
+                           NA,
+                           paste(output_dir_data_new,sep = ""),
+                           paste(file_names,sep = ""))
+          }
         }
-        
-        
       }else{
         # file_stopped = c(file_stopped, FILE)
         if(write_output_report == TRUE){

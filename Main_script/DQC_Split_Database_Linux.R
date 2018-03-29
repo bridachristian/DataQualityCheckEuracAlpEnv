@@ -9,6 +9,8 @@
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 
 rm(list = ls())
+cat()
+cat(paste("--- DQC_Split_Database_Linux.R start:",Sys.time(),"----------------------------------------------------------"), sep = "\n")
 
 database_dir = "/shared/loggernet/data_quality_check_test/Database/"
 
@@ -28,7 +30,7 @@ record_header =  "RECORD"
 
 configuration_files = substring(dir(config_file_dir, pattern = ".csv"), 1,nchar(dir(config_file_dir, pattern = ".csv"))-4)
 
-t = 2
+# t = 2
 for(t in 1:length(configuration_files)){
   cat(paste("***** Start splitting wiht:", configuration_files[t], "*****"),sep = "\n")
   path_input_folder = paste(total_file_dir, configuration_files[t],"/", sep = "")# "/shared/loggernet/data_quality_check_test/Database/total_files/B1_new/"# Folder where stations data are storaged
@@ -137,5 +139,5 @@ for(t in 1:length(configuration_files)){
   
 }
 
-# 
-
+cat(paste("----- Finish -----"), sep = "\n")
+cat(sep = "\n" )

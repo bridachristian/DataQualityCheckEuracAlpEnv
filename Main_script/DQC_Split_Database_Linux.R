@@ -30,10 +30,10 @@ record_header =  "RECORD"
 
 configuration_files = substring(dir(config_file_dir, pattern = ".csv"), 1,nchar(dir(config_file_dir, pattern = ".csv"))-4)
 
-# t = 2
-for(t in 1:length(configuration_files)){
-  cat(paste("***** Start splitting wiht:", configuration_files[t], "*****"),sep = "\n")
-  path_input_folder = paste(total_file_dir, configuration_files[t],"/", sep = "")# "/shared/loggernet/data_quality_check_test/Database/total_files/B1_new/"# Folder where stations data are storaged
+tt = 2
+for(tt in 1:length(configuration_files)){
+  cat(paste("***** Start splitting wiht:", configuration_files[tt], "*****"),sep = "\n")
+  path_input_folder = paste(total_file_dir, configuration_files[tt],"/", sep = "")# "/shared/loggernet/data_quality_check_test/Database/total_files/B1_new/"# Folder where stations data are storaged
   files_available = dir(path_input_folder, pattern = ".csv")
   
   input_file = files_available[1]
@@ -134,7 +134,7 @@ for(t in 1:length(configuration_files)){
     
     file.rename(from = paste(path_input_folder, input_file, sep = ""), to=paste(delete_total_file_dir, input_file, sep = ""))
     }
-  cat(paste("*****", configuration_files[t], "completed! *****"),sep = "\n")
+  cat(paste("*****", configuration_files[tt], "completed! *****"),sep = "\n")
   
   
 }

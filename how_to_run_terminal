@@ -1,7 +1,8 @@
 R < DQC_Multi_Files_Linux.R  --no-save
 
 sudo crontab -e
-20 * * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Hourly_Linux.R'  >> '/shared/loggernet/data_quality_check_test/log/DQC_Hourly_Linux.log' 2>&1
+30 * * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Hourly_Linux.R'  >> '/shared/loggernet/data_quality_check_test/log/DQC_Hourly_Linux.log' 2>&1
 
+59 * * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Split_Database_Linux.R'  >> '/shared/loggernet/data_quality_check_test/log/DQC_Split_Database_Linux.log' 2>&1
 
 

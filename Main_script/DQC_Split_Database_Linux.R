@@ -1,3 +1,13 @@
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+# File Title:   DQC_Split_Database_Linux.R
+# TITLE:        Splitter of data for database structure
+# Author:       Brida Christian, Genova Giulio, Zandonai Alessandro
+#               Institute for Alpine Environment
+# Data:         29/03/2018
+# Version:      1.0
+#
+#------------------------------------------------------------------------------------------------------------------------------------------------------
+
 rm(list = ls())
 
 database_dir = "/shared/loggernet/data_quality_check_test/Database/"
@@ -6,6 +16,8 @@ config_file_dir = paste(database_dir,"config_stations/config_files/", sep = "")
 total_file_dir = paste(database_dir,"total_files/", sep = "")
 data_template_dir = paste(database_dir,"config_stations/template_out_files/", sep = "")
 output_dir = paste(database_dir,"splitted_files/", sep = "")
+delete_total_file_dir = paste(database_dir,"delete/", sep = "")
+
 
 data_from_row =  5                                             # <-- Row number of first data
 header_row_number =  2                                         # <-- Row number of header
@@ -16,8 +28,9 @@ record_header =  "RECORD"
 
 configuration_files = substring(dir(config_file_dir, pattern = ".csv"), 1,nchar(dir(config_file_dir, pattern = ".csv"))-4)
 
-t = 1
-for(i in 1:length(configuration_files)){
+t = 2
+for(t in 1:length(configuration_files)){
+  cat(paste("***** Start splitting wiht:", configuration_files[t], "*****"),sep = "\n")
   path_input_folder = paste(total_file_dir, configuration_files[t],"/", sep = "")# "/shared/loggernet/data_quality_check_test/Database/total_files/B1_new/"# Folder where stations data are storaged
   files_available = dir(path_input_folder, pattern = ".csv")
   
@@ -116,8 +129,13 @@ for(i in 1:length(configuration_files)){
         }
       }
     }
-  }
+    
+    file.rename(from = paste(path_input_folder, input_file, sep = ""), to=paste(delete_total_file_dir, input_file, sep = ""))
+    }
+  cat(paste("*****", configuration_files[t], "completed! *****"),sep = "\n")
+  
+  
 }
 
-# file.rename(from = paste(path_input_folder, input_file, sep = ""), to=paste(backup_input_folder, input_file, sep = ""))
+# 
 

@@ -87,13 +87,16 @@ for(tt in 1:length(configuration_files)){
       for( j in 1:length(EuracID)){
         
         # categ=unique(file_sensors$id_model[file_sensors$EuracID==EuracID[j]]) # create a vector containing the id_model (~ station_category)  
-        categ= unique(as.character(config_file[data_from_row+2,which(config_file[data_from_row+1,]==EuracID[j])]))
+        categ = unique(as.character(config_file[data_from_row+2,which(config_file[data_from_row+1,]==EuracID[j])]))
+        
         
         # for( i in 1:length(st_cat)){
         for( i in 1:length(categ)){
           rm(template_data) # initialize
           rm(data_new)      # initialize
           w = which(categ[i]==substring(template,1,4)) # index of file (in template data) to load
+          
+          categ_name = substring(template[w], 6, nchar(template[w])-4)
           
           template_data = read.csv(paste(data_template_dir,template[w],sep = ""),nrows = 1,header = T,stringsAsFactors = F,na.strings = c(NA, "NaN")) #import the template data selected with id_model
           cn=colnames(template_data) # extract colnames
@@ -124,15 +127,21 @@ for(tt in 1:length(configuration_files)){
                             substring(TIMESTAMP[length(TIMESTAMP)],1,4),substring(TIMESTAMP[length(TIMESTAMP)],6,7),substring(TIMESTAMP[length(TIMESTAMP)],9,10),
                             substring(TIMESTAMP[length(TIMESTAMP)],12,13),substring(TIMESTAMP[length(TIMESTAMP)],15,16),sep = "") # write name of output file
           
+          if(dir.exists(paste(output_dir, categ_name,"/",EuracID[j],"/",sep = ""))){
+            output_path = paste(output_dir, categ_name,"/",EuracID[j],"/",sep = "")
+          }else{
+            dir.create(paste(output_dir, categ_name,"/",EuracID[j],"/",sep = ""))
+            output_path = paste(output_dir, categ_name,"/",EuracID[j],"/",sep = "")
+            
+          }
           
-          
-          write.csv(data_new, paste(output_dir,name_output,".csv",sep = ""),na = "-999999",row.names = F,quote = F) # write output
+          write.csv(data_new, paste(output_path,name_output,".csv",sep = ""),na = "-999999",row.names = F,quote = F) # write output
           
         }
       }
     }
     
-    file.rename(from = paste(path_input_folder, input_file, sep = ""), to=paste(delete_total_file_dir, input_file, sep = ""))
+    file.rename(from = paste(path_input_folder, input_file, sep = ""), to=paste(delete_total_file_dir, input_file, sep = "")) # remove data processed from scheduling folder (to delete in the future)
     }
   cat(paste("*****", configuration_files[tt], "completed! *****"),sep = "\n")
   

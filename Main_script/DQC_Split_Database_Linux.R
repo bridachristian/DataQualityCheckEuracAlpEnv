@@ -25,12 +25,13 @@ data_from_row =  5                                             # <-- Row number 
 header_row_number =  2                                         # <-- Row number of header
 datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
 datetime_format =  "%Y-%m-%d %H:%M"                          # <-- datetime format. Use only: Y -> year, m -> month, d -> day, H -> hour, M -> minute
+DB_datetime_format =  "%Y-%m-%dT%H:%M"                          # <-- datetime format. Use only: Y -> year, m -> month, d -> day, H -> hour, M -> minute
 datetime_sampling =  "15 min"
 record_header =  "RECORD"
 
 configuration_files = substring(dir(config_file_dir, pattern = ".csv"), 1,nchar(dir(config_file_dir, pattern = ".csv"))-4)
 
-tt = 2
+tt = 1
 for(tt in 1:length(configuration_files)){
   cat(paste("***** Start splitting wiht:", configuration_files[tt], "*****"),sep = "\n")
   path_input_folder = paste(total_file_dir, configuration_files[tt],"/", sep = "")# "/shared/loggernet/data_quality_check_test/Database/total_files/B1_new/"# Folder where stations data are storaged
@@ -69,7 +70,9 @@ for(tt in 1:length(configuration_files)){
       
       # --- prepare TIMESTAMP ---
       TIMESTAMP = data_to_split_new[,which(colnames(data_to_split_new) == datetime_header)] # extract date and time from input data
-      
+      TIMESTAMP = as.POSIXct(strptime(TIMESTAMP,format = datetime_format),tz = "Etc/GMT-1")
+      TIMESTAMP_new = format(TIMESTAMP,format = DB_datetime_format)
+
       #--- assign station_category and sensor ID ---
       
       st_cat=unique(substring(colnames(data),1,4)) # extract from column names the station category (id_model)
@@ -100,7 +103,7 @@ for(tt in 1:length(configuration_files)){
           
           template_data = read.csv(paste(data_template_dir,template[w],sep = ""),nrows = 1,header = T,stringsAsFactors = F,na.strings = c(NA, "NaN")) #import the template data selected with id_model
           cn=colnames(template_data) # extract colnames
-          data_new = matrix(data = NA,nrow = length(TIMESTAMP),ncol = length(cn)) # create empty matrix
+          data_new = matrix(data = NA,nrow = length(TIMESTAMP_new),ncol = length(cn)) # create empty matrix
           data_new=as.data.frame(data_new) # convert matrix in a dataframe
           # colnames(data_new)=cn # assign colnames as in template_data
           colnames(data_new)=paste(EuracID[j],cn,sep = "-") # assign colnames as in template_data
@@ -112,7 +115,7 @@ for(tt in 1:length(configuration_files)){
           
           for( k in 1:length(var)){
             t = which(colnames(template_data) == var[k]) # find the column in template data corresponding to parameter measured
-            data_new[,1]=TIMESTAMP # assing to the first column the date and time in the new format
+            data_new[,1]=TIMESTAMP_new # assing to the first column the date and time in the new format
             
             rrr=regexpr("-",substring(colnames(data),6,nchar(colnames(data))))
             
@@ -122,10 +125,10 @@ for(tt in 1:length(configuration_files)){
           }
           colnames(data_new)=cn
           name_output=paste(EuracID[j],"_",unique(as.character(config_file[data_from_row,which(config_file[data_from_row+1,]==EuracID[j])])),"_",
-                            substring(TIMESTAMP[1],1,4),substring(TIMESTAMP[1],6,7),substring(TIMESTAMP[1],9,10),
-                            substring(TIMESTAMP[1],12,13),substring(TIMESTAMP[1],15,16),"-",
-                            substring(TIMESTAMP[length(TIMESTAMP)],1,4),substring(TIMESTAMP[length(TIMESTAMP)],6,7),substring(TIMESTAMP[length(TIMESTAMP)],9,10),
-                            substring(TIMESTAMP[length(TIMESTAMP)],12,13),substring(TIMESTAMP[length(TIMESTAMP)],15,16),sep = "") # write name of output file
+                            substring(TIMESTAMP_new[1],1,4),substring(TIMESTAMP_new[1],6,7),substring(TIMESTAMP_new[1],9,10),
+                            substring(TIMESTAMP_new[1],12,13),substring(TIMESTAMP_new[1],15,16),"-",
+                            substring(TIMESTAMP_new[length(TIMESTAMP_new)],1,4),substring(TIMESTAMP_new[length(TIMESTAMP_new)],6,7),substring(TIMESTAMP_new[length(TIMESTAMP_new)],9,10),
+                            substring(TIMESTAMP_new[length(TIMESTAMP_new)],12,13),substring(TIMESTAMP_new[length(TIMESTAMP_new)],15,16),sep = "") # write name of output file
           
           if(dir.exists(paste(output_dir, categ_name,"/",EuracID[j],"/",sep = ""))){
             output_path = paste(output_dir, categ_name,"/",EuracID[j],"/",sep = "")
@@ -134,7 +137,7 @@ for(tt in 1:length(configuration_files)){
             output_path = paste(output_dir, categ_name,"/",EuracID[j],"/",sep = "")
             
           }
-          
+          # data_new[,which(colnames(data_new) == datetime_header)] = paste 
           write.csv(data_new, paste(output_path,name_output,".csv",sep = ""),na = "-999999",row.names = F,quote = F) # write output
           
         }

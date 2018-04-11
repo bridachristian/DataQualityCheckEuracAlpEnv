@@ -255,13 +255,13 @@ for(t in  1: length(files_available)){
                            flags_df$value,
                            paste(output_dir_report,out_filename_report,sep = ""),
                            paste(output_dir_data,sep = ""),
-                           paste(file_names,sep = ""))
+                           paste(file_names[length(file_names)],sep = ""))
           }else{
             final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
                            flags_df$value,
                            NA,
                            paste(output_dir_data_new,sep = ""),
-                           paste(file_names,sep = ""))
+                           paste(file_names[length(file_names)],sep = ""))
           }
         }
       }else{

@@ -447,7 +447,7 @@ if(flag_empty == 0){
                 db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
                 from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]
                 to_date = db_mydata[nrow(db_mydata),which(colnames(db_mydata) == datetime_header)]
-                db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = "%Y-%m-%dT%H:%M")
+                db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = datetime_format)
                 colnames(db_mydata) = colnames(header)
                 db_mydata=rbind(header[-1,],db_mydata)
                 date_to_print_filename = paste(paste(format(from_date,format = "%Y"),format(from_date,format = "%m"),format(from_date,format = "%d"),

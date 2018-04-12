@@ -31,7 +31,7 @@ record_header =  "RECORD"
 
 configuration_files = substring(dir(config_file_dir, pattern = ".csv"), 1,nchar(dir(config_file_dir, pattern = ".csv"))-4)
 
-tt = 1
+tt = 2
 for(tt in 1:length(configuration_files)){
   cat(paste("***** Start splitting wiht:", configuration_files[tt], "*****"),sep = "\n")
   path_input_folder = paste(total_file_dir, configuration_files[tt],"/", sep = "")# "/shared/loggernet/data_quality_check_test/Database/total_files/B1_new/"# Folder where stations data are storaged
@@ -143,8 +143,11 @@ for(tt in 1:length(configuration_files)){
         }
       }
     }
-    
-    file.rename(from = paste(path_input_folder, input_file, sep = ""), to=paste(delete_total_file_dir, input_file, sep = "")) # remove data processed from scheduling folder (to delete in the future)
+    delete_out_dir = paste(delete_total_file_dir, configuration_files[tt], "/",sep = "")
+    if(!dir.exists(delete_out_dir)){
+      dir.create(delete_out_dir)
+    }
+    file.rename(from = paste(path_input_folder,input_file, sep = ""), to=paste(delete_out_dir, input_file, sep = "")) # remove data processed from scheduling folder (to delete in the future)
     }
   cat(paste("*****", configuration_files[tt], "completed! *****"),sep = "\n")
   

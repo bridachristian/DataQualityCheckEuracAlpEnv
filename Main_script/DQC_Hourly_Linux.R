@@ -36,15 +36,15 @@ Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # ..... Params section .....................................................................................................................................
 
 input_dir <- "/shared/loggernet/scheduling_test/"                    # where input files are
-# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
-data_output_dir <- "/shared/loggernet/data_quality_check_test/Output/Data/"   # where to put output files
+data_output_dir <- "/shared/Stations_Data/LTER/DQC_Processed_Data/Stations/"   # where to put output files
 # output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
-report_output_dir <- "/shared/loggernet/data_quality_check_test/Output/Report/"   # where to put output reports
+report_output_dir <- "/shared/Stations_Data/LTER/DQC_Processed_Data/DQC_Reports/"   # where to put output reports
 # output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
-database_file_dir <- "/shared/loggernet/data_quality_check_test/Database/total_files/"  # where to put output files
-logger_info_file <- "/shared/loggernet/data_quality_check_test/Process/Logger_number_and_software.csv" 
+# database_file_dir <- "/shared/loggernet/data_quality_check_test/Database/total_files/"  # where to put output files
+database_file_dir <- "/shared/Stations_Data/LTER/DQC_DB/"  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
+logger_info_file <- "/shared/Stations_Data/DQC/Logger_number_and_software.csv" 
 
 data_from_row =  5                                             # <-- Row number of first data
 header_row_number =  2                                         # <-- Row number of header
@@ -64,9 +64,9 @@ write_output_report =  "FALSE"
 # ~~~ Default directory ~~~~
 
 # range_dir <- paste(project_dir, "Data/Support_files/Range/",sep = "")
-range_dir <-"/shared/loggernet/data_quality_check_test/Process/"  
+range_dir <-"/shared/Stations_Data/DQC/"
 # download_table_dir <- paste(project_dir, "Data/Support_files/Download_table/",sep = "")
-download_table_dir <- "/shared/loggernet/data_quality_check_test/Process/" 
+download_table_dir <- "/shared/Stations_Data/DQC/"
 
 if(write_output_report == TRUE){
   Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")

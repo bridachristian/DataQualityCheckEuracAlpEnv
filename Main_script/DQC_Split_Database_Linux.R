@@ -16,8 +16,11 @@ database_dir = "/shared/loggernet/data_quality_check_test/Database/"
 
 config_file_dir = paste(database_dir,"config_stations/config_files/", sep = "")
 total_file_dir = paste(database_dir,"total_files/", sep = "")
+# total_file_dir = "/shared/Stations_Data/LTER/DQC_DB/"  # (MODIFIED FOR DATABASE TESTING) -----> "Permission denied" 
 data_template_dir = paste(database_dir,"config_stations/template_out_files/", sep = "")
 output_dir = paste(database_dir,"splitted_files/", sep = "")
+# output_dir = "/shared/DB_LTER/"  # (MODIFIED FOR DATABASE TESTING) -----> "Permission denied" 
+
 delete_total_file_dir = paste(database_dir,"delete/", sep = "")
 
 

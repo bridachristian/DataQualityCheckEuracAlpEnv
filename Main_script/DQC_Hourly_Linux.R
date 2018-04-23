@@ -121,17 +121,44 @@ for(t in  1: length(files_available)){
   dwnl_info = download_table[w_dwnl,]
   
   if(dir.exists(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))){                # create subfolder to store data organized by station name
-    output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
+    if(dir.exists(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Total/", sep = ""))){
+    output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Total/", sep = "")
+    output_dir_raw_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Raw/", sep = "")
+    }else{
+      dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Reports/", sep = ""))
+      dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Raw/", sep = ""))
+      dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Total/", sep = ""))
+      dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Processed/", sep = ""))
+      dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Pics/", sep = ""))
+      output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Total/", sep = "")
+      output_dir_raw_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Raw/", sep = "")
+      
+    }
   }else{
     dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))
-    output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
+    dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Reports/", sep = ""))
+    dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Raw/", sep = ""))
+    dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Total/", sep = ""))
+    dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Processed/", sep = ""))
+    dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Pics/", sep = ""))
+    output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Total/", sep = "")
+    output_dir_raw_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Raw/", sep = "")
   }
   
   if(dir.exists(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))){                # create subfolder to store mini files for database organized by station name 
-    database_file_dir_new = paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
+    if(dir.exists(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Data/", sep = ""))){ 
+      database_file_dir_new = paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Data/", sep = "")
+    }else{
+      dir.create(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Data/", sep = ""))
+      dir.create(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Pics/", sep = ""))
+      database_file_dir_new = paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Data/", sep = "")
+      
+    }
   }else{
-    dir.create(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))
-    database_file_dir_new = paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")
+    dir.create(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")) 
+    dir.create(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Data/", sep = ""))
+    dir.create(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Pics/", sep = ""))
+    database_file_dir_new = paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Data/", sep = "")
   }
   
   if(dwnl_info$Stop_DQC == 0){
@@ -142,6 +169,7 @@ for(t in  1: length(files_available)){
       
       input_dir = input_dir
       output_dir_data = output_dir_data_new
+      output_dir_raw = output_dir_raw_new
       output_dir_report = report_output_dir
       project_dir = project_dir
       data_from_row = data_from_row

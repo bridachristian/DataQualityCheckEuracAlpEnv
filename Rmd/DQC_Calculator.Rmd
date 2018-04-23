@@ -43,6 +43,7 @@ start_date <- params$start_date
 database_dir <- params$database_dir
 logger_info_file <- params$logger_info_file
 record_check <- params$record_check
+output_dir_raw <-params$output_dir_raw
 
 ```
 
@@ -162,6 +163,8 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
         old_data = data_in_old_files[[2]]
         
         rm(data_in_old_files)
+        
+        orig_wihtout_dupli = mydata
         
         overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
         
@@ -315,6 +318,9 @@ if(flag_empty == 0){
                     #   flag_append_tmp = 1
                     #   flag_append_new_tmp = c(flag_append_new_tmp, flag_append_tmp)
                     #   }else {}
+                    
+                    # aggiungere controllo se file gia presenete che sia almeno successivo all' ultima data!
+                    # ora ci sono problemi perche tmp_new_datetime == NA
                     r = 0
                     repeat{
                       r = r+1 
@@ -439,6 +445,7 @@ if(flag_empty == 0){
                 out_mydata=rbind(header[-1,],out_my)
                 file_name_output = file_names[k]
                 write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                # write.csv(orig_wihtout_dupli,paste(output_dir_raw,substring(file_name_output,1,nchar(file_name_output)-4),".dat",sep = ""),quote = F,row.names = F, na = "NaN")
                 
                 
                 # create a dataframe database formatted

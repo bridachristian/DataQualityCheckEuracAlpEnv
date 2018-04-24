@@ -9,13 +9,13 @@
 #------------------------------------------------------------------------------------------------------------------------------------------------------
 
 rm(list = ls())
-
+cat()  
+cat(paste("--- DQC_Split_Database_Linux.R start:",Sys.time(),"----------------------------------------------------------"), sep = "\n")
 DQC_setting_dir <- "/shared/Stations_Data/DQC/"
 
 if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
   
-  cat()  
-  cat(paste("--- DQC_Split_Database_Linux.R start:",Sys.time(),"----------------------------------------------------------"), sep = "\n")
+  
   
   database_dir = "/shared/loggernet/data_quality_check_test/Database/"
   
@@ -171,4 +171,9 @@ if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
   
   cat(paste("----- Finish -----"), sep = "\n")
   cat(sep = "\n" )
+}else{
+  cat(paste("File: lock_DQC.lock still present! "), sep = "\n")
+  
+  cat(paste("DQC_Hourly_Linux.R need more time to finish data quality check!"), sep = "\n")
+  
 }

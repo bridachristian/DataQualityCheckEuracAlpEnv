@@ -12,15 +12,19 @@ rm(list = ls())
 cat()
 cat(paste("--- DQC_Split_Database_Linux.R start:",Sys.time(),"----------------------------------------------------------"), sep = "\n")
 
+DQC_setting_dir <- "/shared/Stations_Data/DQC/"
+
 database_dir = "/shared/loggernet/data_quality_check_test/Database/"
 
-# config_file_dir = paste(database_dir,"config_stations/config_files/", sep = "")
-config_file_dir = "/shared/Stations_Data/DQC/DB_configuration_files/config_files/"
+config_file_dir = paste(DQC_setting_dir,"DB_configuration_files/config_files/", sep = "")
+# config_file_dir = "/shared/Stations_Data/DQC/DB_configuration_files/config_files/"
 
 # total_file_dir = paste(database_dir,"total_files/", sep = "")
 total_file_dir = "/shared/Stations_Data/LTER/DQC_DB/"
-# data_template_dir = paste(database_dir,"config_stations/template_out_files/", sep = "")
-data_template_dir = "/shared/Stations_Data/DQC/DB_configuration_files/template_out_files/"
+
+data_template_dir = paste(DQC_setting_dir,"DB_configuration_files/template_out_files/", sep = "")
+# data_template_dir = "/shared/Stations_Data/DQC/DB_configuration_files/template_out_files/"
+
 # output_dir = paste(database_dir,"splitted_files/", sep = "")
 output_dir = "/shared/DB_LTER_test/"  
 
@@ -36,6 +40,7 @@ DB_datetime_format =  "%Y-%m-%dT%H:%M"                          # <-- datetime f
 datetime_sampling =  "15 min"
 record_header =  "RECORD"
 
+if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
 configuration_files = substring(dir(config_file_dir, pattern = ".csv"), 1,nchar(dir(config_file_dir, pattern = ".csv"))-4)
 
 tt = 2
@@ -163,3 +168,4 @@ for(tt in 1:length(configuration_files)){
 
 cat(paste("----- Finish -----"), sep = "\n")
 cat(sep = "\n" )
+}

@@ -35,15 +35,17 @@ Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 
 # ..... Params section .....................................................................................................................................
 
+PROJECT = "Monalisa" # Possible project: "LTER"; "Monalisa";
+
 input_dir <- "/shared/loggernet/scheduling_test/"                    # where input files are
-data_output_dir <- "/shared/Stations_Data/LTER/DQC_Processed_Data/Stations/"   # where to put output files
+data_output_dir <- paste("/shared/Stations_Data/",PROJECT,"/DQC_Processed_Data/Stations/",sep = "")  # where to put output files
 # output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
-report_output_dir <- "/shared/Stations_Data/LTER/DQC_Processed_Data/DQC_Reports/"   # where to put output reports
+report_output_dir <- paste("/shared/Stations_Data/",PROJECT,"/DQC_Processed_Data/DQC_Reports/",sep = "")  # where to put output reports
 # output_dir_report <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
 # database_file_dir <- "/shared/loggernet/data_quality_check_test/Database/total_files/"  # where to put output files
-database_file_dir <- "/shared/Stations_Data/LTER/DQC_DB/"  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
+database_file_dir <- paste("/shared/Stations_Data/",PROJECT,"/DQC_DB/",sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
 logger_info_file <- "/shared/Stations_Data/DQC/Logger_number_and_software.csv" 
 
 data_from_row =  5                                             # <-- Row number of first data
@@ -87,6 +89,9 @@ files_available = dir(input_dir,pattern = ".dat")                  # <-- Admitte
 
 download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_table_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format)
 
+download_table_proj = download_table$Station[which(download_table$Project == PROJECT)]
+
+files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
 
 ############################################
 t = 10
@@ -106,7 +111,7 @@ colnames(final_dataframe) = c("Station", "Status",
 report_start = Sys.time()
 
 
-for(t in  1: length(files_available)){
+for(t in  1: length(files_available_project)){
   gc(reset = T)
   
   rm(list = setdiff(ls(all.names = TRUE),c("t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
@@ -115,7 +120,7 @@ for(t in  1: length(files_available)){
                                            "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file")))
   
   
-  FILE = files_available[t]
+  FILE = files_available_project[t]
   
   w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
   dwnl_info = download_table[w_dwnl,]

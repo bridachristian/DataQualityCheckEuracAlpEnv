@@ -14,14 +14,18 @@ cat(paste("--- DQC_Split_Database_Linux.R start:",Sys.time(),"------------------
 
 database_dir = "/shared/loggernet/data_quality_check_test/Database/"
 
-config_file_dir = paste(database_dir,"config_stations/config_files/", sep = "")
-total_file_dir = paste(database_dir,"total_files/", sep = "")
-# total_file_dir = "/shared/Stations_Data/LTER/DQC_DB/"  # (MODIFIED FOR DATABASE TESTING) -----> "Permission denied" 
-data_template_dir = paste(database_dir,"config_stations/template_out_files/", sep = "")
-output_dir = paste(database_dir,"splitted_files/", sep = "")
-# output_dir = "/shared/DB_LTER/"  # (MODIFIED FOR DATABASE TESTING) -----> "Permission denied" 
+# config_file_dir = paste(database_dir,"config_stations/config_files/", sep = "")
+config_file_dir = "/shared/Stations_Data/DQC/DB_configuration_files/config_files/"
 
-delete_total_file_dir = paste(database_dir,"delete/", sep = "")
+# total_file_dir = paste(database_dir,"total_files/", sep = "")
+total_file_dir = "/shared/Stations_Data/LTER/DQC_DB/"
+# data_template_dir = paste(database_dir,"config_stations/template_out_files/", sep = "")
+data_template_dir = "/shared/Stations_Data/DQC/DB_configuration_files/template_out_files/"
+# output_dir = paste(database_dir,"splitted_files/", sep = "")
+output_dir = "/shared/DB_LTER_test/"  
+
+# delete_total_file_dir = paste(database_dir,"delete/", sep = "")
+delete_total_file_dir = "/shared/Stations_Data/LTER/DQC_DB_moved/"  
 
 
 data_from_row =  5                                             # <-- Row number of first data
@@ -37,7 +41,7 @@ configuration_files = substring(dir(config_file_dir, pattern = ".csv"), 1,nchar(
 tt = 2
 for(tt in 1:length(configuration_files)){
   cat(paste("***** Start splitting wiht:", configuration_files[tt], "*****"),sep = "\n")
-  path_input_folder = paste(total_file_dir, configuration_files[tt],"/", sep = "")# "/shared/loggernet/data_quality_check_test/Database/total_files/B1_new/"# Folder where stations data are storaged
+  path_input_folder = paste(total_file_dir, configuration_files[tt],"/Data/", sep = "")# "/shared/loggernet/data_quality_check_test/Database/total_files/B1_new/"# Folder where stations data are storaged
   files_available = dir(path_input_folder, pattern = ".csv")
   
   input_file = files_available[1]

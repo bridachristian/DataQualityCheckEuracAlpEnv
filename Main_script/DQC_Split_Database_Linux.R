@@ -16,13 +16,13 @@ DQC_setting_dir <- "/shared/Stations_Data/DQC/"
 
 database_dir = "/shared/loggernet/data_quality_check_test/Database/"
 
-config_file_dir = paste(DQC_setting_dir,"DB_configuration_files/config_files/", sep = "")
+config_file_dir = paste(DQC_setting_dir,"Process/DB_configuration_files/config_files/", sep = "")
 # config_file_dir = "/shared/Stations_Data/DQC/DB_configuration_files/config_files/"
 
 # total_file_dir = paste(database_dir,"total_files/", sep = "")
 total_file_dir = "/shared/Stations_Data/LTER/DQC_DB/"
 
-data_template_dir = paste(DQC_setting_dir,"DB_configuration_files/template_out_files/", sep = "")
+data_template_dir = paste(DQC_setting_dir,"Process/DB_configuration_files/template_out_files/", sep = "")
 # data_template_dir = "/shared/Stations_Data/DQC/DB_configuration_files/template_out_files/"
 
 # output_dir = paste(database_dir,"splitted_files/", sep = "")

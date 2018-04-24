@@ -4,7 +4,8 @@ author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
 params:
     input_dir:             # dir:  Directory where to put input files.
-    output_dir_data:       # dir:  Directory where to save output files
+    output_dir_data:       # dir:  Directory where to save output quality checked files
+    output_dir_raw:        # dir:  Directory where to save output raw data files
     output_dir_report:     # dir:  Directory where to save output report
     project_dir:           # dir:  Directory of DataQualityCheckEuracAlpEnv package. Inside there are R script, Rmarkdown document and support files.
     data_from_row:         # num:  The row number of the first data row. (How many rows are dedicated to headers? + 1)
@@ -248,6 +249,7 @@ if(flag_empty == 0){
         if(flag_overlap == 0){
           if(write_output_files == TRUE){
             time_mydata = as.POSIXct(mydata[,which(colnames(mydata)== datetime_header)],format = datetime_format, tz = 'Etc/GMT-1')
+            time_orig = as.POSIXct(orig_wihtout_dupli[,which(colnames(orig_wihtout_dupli)== datetime_header)],format = datetime_format, tz = 'Etc/GMT-1')
             years = as.numeric(unique(format(time_mydata, format = "%Y")))
             file_names = paste(substring(file,1, nchar(file)-4),"_", years,".csv",sep = "")
             
@@ -268,6 +270,14 @@ if(flag_empty == 0){
                                           DATA_FROM_ROW = data_from_row, 
                                           HEADER_ROW_NUMBER = header_row_number)
                 
+                old_original_list = read_data(INPUT_DATA_DIR = output_dir_raw,
+                                              FILE_NAME = paste(substring(file_names[k],1, nchar(file_names[k])-4),".dat",sep = ""),
+                                              DATETIME_HEADER = datetime_header,
+                                              DATETIME_FORMAT = datetime_format,
+                                              DATA_FROM_ROW = data_from_row,
+                                              HEADER_ROW_NUMBER = header_row_number)
+                
+                
                 old_header = old_data_list [[1]]
                 old_header_colnames = old_data_list [[2]]
                 old_data = old_data_list [[3]]
@@ -277,15 +287,38 @@ if(flag_empty == 0){
                 
                 rm(old_data_list)
                 
+                old_orig_header = old_original_list [[1]]
+                old_orig_header_colnames = old_original_list [[2]]
+                old_orig_data = old_original_list [[3]]
+                
+                last_old_orig_datetime = old_orig_data[nrow(old_orig_data),which(colnames(old_orig_data) == datetime_header)]
+                last_old_orig_record = old_orig_data[nrow(old_orig_data),which(colnames(old_orig_data) == record_header)]
+                
+                rm(old_original_list)
+
                 if(identical(old_header, header)){
                   
                   # append new data to old data if headers new and old are the same
                   df_toadd =  mydata[which(format(time_mydata, format = "%Y") == years[k]),]
                   df_toadd[,which(colnames(df_toadd)== datetime_header)] = as.POSIXct(format(df_toadd[,which(colnames(df_toadd)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
                   new = rbind(old_data,df_toadd)
+                  
+                  # append new raw data to old data if headers new and old are the same
+                  df_toadd_raw = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
+                  df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)] = as.POSIXct(format(df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
+                  
+                  new_raw = rbind(old_orig_data,df_toadd_raw)
+                  
                   new_deletes_duplcated <- deletes_duplcated_data(DATA = new,DATETIME_HEADER = datetime_header)        
                   new_mydata = new_deletes_duplcated [[1]]
                   new_duplicated_data = new_deletes_duplcated [[2]]
+                  
+                  raw_new_deletes_duplcated <- deletes_duplcated_data(DATA = new_raw,DATETIME_HEADER = datetime_header)        
+                  raw_new_mydata = raw_new_deletes_duplcated [[1]]
+                  
+                  orig_data_new = raw_new_mydata
+                  
+                  raw_new_duplicated_data = raw_new_deletes_duplcated [[2]]
                   
                   if(unique(as.character(new_duplicated_data[1,])) == "---"){
                     flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,0)
@@ -294,7 +327,8 @@ if(flag_empty == 0){
                   }
                   
                   
-                  new_duplicated_data = time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                  new_duplicated_data = time_to_char(DATA = new_duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                  raw_new_duplicated_data = time_to_char(DATA = raw_new_duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
                   
                   new_overlap <- detect_overlap(DATA = new_mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header) 
                   
@@ -351,8 +385,12 @@ if(flag_empty == 0){
                       # prepare tata for output
                       
                       new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                      orig_data_new <- time_to_char(DATA = orig_data_new, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                      
                       
                       new_time_tot = as.POSIXct(new_mydata[,which(colnames(new_mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+                      new_time_orig = as.POSIXct(orig_data_new[,which(colnames(orig_data_new) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+                      
                       new_time_missing = new_missing_index_date[,2]
                       
                       if(length(which(new_time_tot %in% new_time_missing )) == 0){
@@ -368,10 +406,15 @@ if(flag_empty == 0){
                       colnames(out_my) = colnames(header)
                       out_mydata=rbind(header[-1,],out_my)
                       file_name_output = file_names[k]
-                      
                       flag_append_new_tmp = c(flag_append_new_tmp, 0)
-                      
                       write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                      
+                      out_orig = orig_data_new[which(format(new_time_orig, format = "%Y") == years[k]),]
+                      out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
+                      colnames(out_orig) = colnames(header)
+                      out_original=rbind(header[-1,],out_orig)
+                      file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
+                      write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
                       
                       # create a dataframe database formatted
                       
@@ -445,7 +488,14 @@ if(flag_empty == 0){
                 out_mydata=rbind(header[-1,],out_my)
                 file_name_output = file_names[k]
                 write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
-                # write.csv(orig_wihtout_dupli,paste(output_dir_raw,substring(file_name_output,1,nchar(file_name_output)-4),".dat",sep = ""),quote = F,row.names = F, na = "NaN")
+                
+                
+                out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
+                out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
+                colnames(out_orig) = colnames(header)
+                out_original=rbind(header[-1,],out_orig)
+                file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
+                write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
                 
                 
                 # create a dataframe database formatted

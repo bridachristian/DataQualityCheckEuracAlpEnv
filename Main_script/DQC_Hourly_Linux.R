@@ -89,7 +89,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 1
+t = 10
 
 final_dataframe = matrix(ncol = 19, nrow = length(files_available))
 
@@ -110,7 +110,7 @@ for(t in  1: length(files_available)){
   gc(reset = T)
   
   rm(list = setdiff(ls(all.names = TRUE),c("t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
-                                           "files_available","header_row_number","input_dir","data_output_dir","report_output_dir","project_dir",
+                                           "files_available","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
                                            "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
                                            "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file")))
   
@@ -196,6 +196,7 @@ for(t in  1: length(files_available)){
                         output_dir = output_dir_report,
                         params = list(input_dir = input_dir ,
                                       output_dir_data = output_dir_data ,
+                                      output_dir_raw = output_dir_raw,
                                       output_dir_report = output_dir_report ,
                                       project_dir = project_dir ,
                                       data_from_row = data_from_row ,

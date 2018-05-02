@@ -15,18 +15,16 @@ DQC_setting_dir <- "/shared/Stations_Data/DQC/"
 
 if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
   
+  # database_dir = "/shared/loggernet/data_quality_check_test/Database/"
   
-  
-  database_dir = "/shared/loggernet/data_quality_check_test/Database/"
-  
-  config_file_dir = paste(DQC_setting_dir,"Process/DB_configuration_files/config_files/", sep = "")
-  # config_file_dir = "/shared/Stations_Data/DQC/DB_configuration_files/config_files/"
+  # config_file_dir = paste(DQC_setting_dir,"Process/DB_configuration_files/config_files/", sep = "")
+  config_file_dir = "/shared/Stations_Data/DQC/Process/DB_configuration_files/config_files/"
   
   # total_file_dir = paste(database_dir,"total_files/", sep = "")
   total_file_dir = "/shared/Stations_Data/LTER/DQC_DB/"
   
-  data_template_dir = paste(DQC_setting_dir,"Process/DB_configuration_files/template_out_files/", sep = "")
-  # data_template_dir = "/shared/Stations_Data/DQC/DB_configuration_files/template_out_files/"
+  # data_template_dir = paste(DQC_setting_dir,"Process/DB_configuration_files/template_out_files/", sep = "")
+  data_template_dir = "/shared/Stations_Data/DQC/Process/DB_configuration_files/template_out_files/"
   
   # output_dir = paste(database_dir,"splitted_files/", sep = "")
   output_dir = "/shared/DB_LTER_test/"  
@@ -46,7 +44,7 @@ if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
   
   configuration_files = substring(dir(config_file_dir, pattern = ".csv"), 1,nchar(dir(config_file_dir, pattern = ".csv"))-4)
   
-  tt = 2
+  tt = 1
   for(tt in 1:length(configuration_files)){
     cat(paste("***** Start splitting wiht:", configuration_files[tt], "*****"),sep = "\n")
     path_input_folder = paste(total_file_dir, configuration_files[tt],"/Data/", sep = "")# "/shared/loggernet/data_quality_check_test/Database/total_files/B1_new/"# Folder where stations data are storaged

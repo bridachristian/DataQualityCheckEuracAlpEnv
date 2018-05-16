@@ -31,15 +31,16 @@ library(highr)
 
 # ..... Params section .....................................................................................................................................
 
-main_dir = "/shared/"
+main_dir = "/shared/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
 # PROJECT = "LTER" # Possible project: "LTER"; "Monalisa";
-input_dir <- paste(main_dir,"/loggernet/scheduling_test/",sep = "")                    # where input files are
+# input_dir <- paste(main_dir,"/loggernet/scheduling_test/",sep = "")                    # where input files are
+input_dir <- paste("/shared/","/loggernet/scheduling_test/",sep = "")                    # where input files are
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
-DQC_setting_dir <- paste(main_dir,"/Stations_Data_test/DQC/",sep = "")
+DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
 logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.csv", sep = "")
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
@@ -48,9 +49,9 @@ download_table_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
 for(PROJECT in project_type){
-  data_output_dir <- paste(main_dir,"/Stations_Data_test/",PROJECT,"/DQC_Processed_Data/Stations/",sep = "")  # where to put output files
-  report_output_dir <- paste(main_dir,"/Stations_Data_test/",PROJECT,"/DQC_Processed_Data/DQC_Reports/",sep = "")  # where to put output reports
-  database_file_dir <- paste(main_dir,"/Stations_Data_test/",PROJECT,"/DQC_DB/",sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
+  data_output_dir <- paste(main_dir,"/Stations_Data/",PROJECT,"/DQC_Processed_Data/Stations/",sep = "")  # where to put output files
+  report_output_dir <- paste(main_dir,"/Stations_Data/",PROJECT,"/DQC_Processed_Data/DQC_Reports/",sep = "")  # where to put output reports
+  database_file_dir <- paste(main_dir,"/Stations_Data/",PROJECT,"/DQC_DB/",sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
   
   data_from_row =  5                                             # <-- Row number of first data
   header_row_number =  2                                         # <-- Row number of header
@@ -68,8 +69,6 @@ for(PROJECT in project_type){
   # start_date <- NA
   
   # ~~~ Default directory ~~~~
-  
-  
   
   if(write_output_report == TRUE){
     Rmd_report_generator <- paste(project_dir, "/Rmd/DQC_Report_Generator.Rmd",sep = "")
@@ -197,29 +196,52 @@ for(PROJECT in project_type){
         
         rm(dwnl_info)
         
-        rmarkdown::render(input = Rmd_report_generator ,
-                          output_file = output_file_report,
-                          output_dir = output_dir_report,
-                          params = list(input_dir = input_dir ,
-                                        output_dir_data = output_dir_data ,
-                                        output_dir_raw = output_dir_raw,
-                                        output_dir_report = output_dir_report ,
-                                        project_dir = project_dir ,
-                                        data_from_row = data_from_row ,
-                                        header_row_number = header_row_number ,
-                                        datetime_header = datetime_header ,
-                                        datetime_format = datetime_format ,
-                                        datetime_sampling = datetime_sampling ,
-                                        record_header = record_header ,
-                                        range_file = range_file ,
-                                        write_output_files = write_output_files ,
-                                        write_output_report = write_output_report ,
-                                        database_dir = database_dir,
-                                        file = file ,
-                                        start_date = start_date,
-                                        logger_info_file = logger_info_file,
-                                        record_check = record_check))
+        source("/home/cbrida/DataQualityCheckEuracAlpEnv/R/DQC_function.R")
         
+        aaa= DQC_function(input_dir = input_dir,
+                          output_dir_data = output_dir_data_new,
+                          output_dir_raw = output_dir_raw_new,
+                          output_dir_report = report_output_dir,
+                          project_dir = project_dir,
+                          data_from_row = data_from_row,
+                          header_row_number = header_row_number,
+                          datetime_header = datetime_header,
+                          datetime_format = datetime_format,
+                          datetime_sampling = datetime_sampling,
+                          record_header = record_header,
+                          range_file = range_file,
+                          write_output_files = write_output_files,
+                          write_output_report = write_output_report,
+                          database_dir = database_file_dir_new,
+                          file = FILE,
+                          start_date = dwnl_info$Last_date,
+                          logger_info_file = logger_info_file,
+                          record_check = dwnl_info$record_check)
+        
+        
+        # rmarkdown::render(input = Rmd_report_generator ,
+        #                   output_file = output_file_report,
+        #                   output_dir = output_dir_report,
+        #                   params = list(input_dir = input_dir ,
+        #                                 output_dir_data = output_dir_data ,
+        #                                 output_dir_raw = output_dir_raw,
+        #                                 output_dir_report = output_dir_report ,
+        #                                 project_dir = project_dir ,
+        #                                 data_from_row = data_from_row ,
+        #                                 header_row_number = header_row_number ,
+        #                                 datetime_header = datetime_header ,
+        #                                 datetime_format = datetime_format ,
+        #                                 datetime_sampling = datetime_sampling ,
+        #                                 record_header = record_header ,
+        #                                 range_file = range_file ,
+        #                                 write_output_files = write_output_files ,
+        #                                 write_output_report = write_output_report ,
+        #                                 database_dir = database_dir,
+        #                                 file = file ,
+        #                                 start_date = start_date,
+        #                                 logger_info_file = logger_info_file,
+        #                                 record_check = record_check))
+        # 
         gc(reset = T)
         
         if(flag_empty == 0 & flag_error_df == 0){

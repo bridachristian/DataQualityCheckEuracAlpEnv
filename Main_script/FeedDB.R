@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
-# File Title:   DQC_Split_Database_Linux.R
+# File Title:   FeedDB.R
 # TITLE:        Splitter of data for database structure
 # Author:       Brida Christian, Genova Giulio, Zandonai Alessandro
 #               Institute for Alpine Environment
@@ -10,28 +10,28 @@
 
 rm(list = ls())
 cat()  
-cat(paste("--- DQC_Split_Database_Linux.R start:",Sys.time(),"----------------------------------------------------------"), sep = "\n")
+cat(paste("--- FeedDB.R start:",Sys.time(),"----------------------------------------------------------"), sep = "\n")
 main_dir = "/shared/"
-DQC_setting_dir <- paste(main_dir,"/Stations_Data_test/DQC/",sep = "")
+DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
 if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
   
   # database_dir = "/shared/loggernet/data_quality_check_test/Database/"
   
   # config_file_dir = paste(DQC_setting_dir,"Process/DB_configuration_files/config_files/", sep = "")
-  config_file_dir = paste(main_dir,"/Stations_Data_test/DQC/Process/DB_configuration_files/config_files/",sep = "")
+  config_file_dir = paste(main_dir,"/Stations_Data/DQC/Process/DB_configuration_files/config_files/",sep = "")
   
   # total_file_dir = paste(database_dir,"total_files/", sep = "")
-  total_file_dir = paste(main_dir,"/Stations_Data_test/LTER/DQC_DB/",sep = "")
+  total_file_dir = paste(main_dir,"/Stations_Data/Data/DQC_DB/LTER/",sep = "")
   
   # data_template_dir = paste(DQC_setting_dir,"Process/DB_configuration_files/template_out_files/", sep = "")
-  data_template_dir = paste(main_dir,"/Stations_Data_test/DQC/Process/DB_configuration_files/template_out_files/",sep = "")
+  data_template_dir = paste(main_dir,"/Stations_Data/DQC/Process/DB_configuration_files/template_out_files/",sep = "")
   
   # output_dir = paste(database_dir,"splitted_files/", sep = "")
-  output_dir = paste(main_dir,"/DB_LTER_test2/",sep = "")  
+  output_dir = paste(main_dir,"/DB_LTER_test/",sep = "")  
   
   # delete_total_file_dir = paste(database_dir,"delete/", sep = "")
-  delete_total_file_dir = paste(main_dir,"/Stations_Data_test/LTER/DQC_DB_moved/",sep = "")  
+  delete_total_file_dir = paste(main_dir,"/Stations_Data/Data/DQC_DB_moved/LTER/",sep = "")  
   
   
   data_from_row =  5                                             # <-- Row number of first data
@@ -173,6 +173,6 @@ if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
 }else{
   cat(paste("File: lock_DQC.lock still present! "), sep = "\n")
   
-  cat(paste("DQC_Hourly_Linux.R need more time to finish data quality check!"), sep = "\n")
+  cat(paste("DQC_DataQualityCheck.R need more time to finish data quality check!"), sep = "\n")
   
 }

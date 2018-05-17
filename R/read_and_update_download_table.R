@@ -52,7 +52,7 @@ read_and_update_download_table = function(DOWNLOAD_TABLE_DIR,FILES_AVAILABLE,DAT
                              rep(NA, times = length(station_to_add)),
                              rep(0,times = length(station_to_add)),
                              rep(NA, times = length(station_to_add)),
-                             rep(1,times = length(station_to_add))
+                             rep(1,times = length(station_to_add)),
                              rep(NA, times = length(FILES_AVAILABLE)))
                              
                              # as.character(file.mtime(paste(input_dir,FILES_AVAILABLE[w],sep = ""))))

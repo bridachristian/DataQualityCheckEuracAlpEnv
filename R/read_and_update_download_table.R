@@ -23,9 +23,10 @@ read_and_update_download_table = function(DOWNLOAD_TABLE_DIR,FILES_AVAILABLE,DAT
                                       rep(NA, times = length(FILES_AVAILABLE)),
                                       rep(0,times = length(FILES_AVAILABLE)),
                                       rep(NA, times = length(FILES_AVAILABLE)),
-                                      rep(1,times = length(FILES_AVAILABLE)))
+                                      rep(1,times = length(FILES_AVAILABLE)),
+                                      rep(NA, times = length(FILES_AVAILABLE)))
     
-    colnames(first_download_table) = c("Station", "Last_date", "Stop_DQC", "Last_Modification", "record_check")
+    colnames(first_download_table) = c("Station", "Last_date", "Stop_DQC", "Last_Modification", "record_check", "Project")
     
     download_table = first_download_table
     
@@ -51,10 +52,11 @@ read_and_update_download_table = function(DOWNLOAD_TABLE_DIR,FILES_AVAILABLE,DAT
                              rep(NA, times = length(station_to_add)),
                              rep(0,times = length(station_to_add)),
                              rep(NA, times = length(station_to_add)),
-                             rep(1,times = length(station_to_add)))
+                             rep(1,times = length(station_to_add))
+                             rep(NA, times = length(FILES_AVAILABLE)))
                              
                              # as.character(file.mtime(paste(input_dir,FILES_AVAILABLE[w],sep = ""))))
-      colnames(df_to_add) = c("Station", "Last_date", "Stop_DQC", "Last_Modification", "record_check")
+      colnames(df_to_add) = c("Station", "Last_date", "Stop_DQC", "Last_Modification", "record_check", "Project")
       
       download_table = rbind(download_table, df_to_add)
       

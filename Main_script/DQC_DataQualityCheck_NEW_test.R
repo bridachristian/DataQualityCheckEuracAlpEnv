@@ -35,7 +35,7 @@ main_dir = "/shared/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
-# PROJECT = "LTER" # Possible project: "LTER"; "Monalisa";
+PROJECT = "LTER" # Possible project: "LTER"; "Monalisa";
 # input_dir <- paste(main_dir,"/loggernet/scheduling_test/",sep = "")                    # where input files are
 input_dir <- paste("/shared/","/loggernet/scheduling_test/",sep = "")                    # where input files are
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
@@ -191,10 +191,10 @@ for(PROJECT in project_type){
         start_date = dwnl_info$Last_date
         logger_info_file = logger_info_file
         record_check = dwnl_info$record_check
-        
-        output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
-        
-        rm(dwnl_info)
+        # 
+        # output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
+        # 
+        # rm(dwnl_info)
         
         source("/home/cbrida/DataQualityCheckEuracAlpEnv/R/DQC_function.R")
         

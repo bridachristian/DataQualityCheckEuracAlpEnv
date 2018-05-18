@@ -23,5 +23,7 @@ missing_record = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER
   data_new =  data[,which(colnames(data) %in% c(RECORD_HEADER, DATETIME_HEADER))]
   data_new = cbind(data_new,c(1,diff(data_record)))
   
+  w = which(diff(data_record) != 1)
+  data_new[w,1:2]
   return(list(df_merge,missing))
 }

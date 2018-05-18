@@ -14,19 +14,23 @@ print("-------------------------------------------------------------------------
 print(paste("Data Quality Check:",Sys.time()))
 
 # ..... Libraries .....................................................................................................................................
-library(devtools) 
+library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/') 
+install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 library("DataQualityCheckEuracAlpEnv")
+install_github("alexsanjoseph/compareDF")
 library(compareDF)
-library(zoo)
-library(knitr)
-library(ggplot2)
-library(reshape2)
-library(DT)
-library(htmltools)
-library(rmarkdown)
-library(yaml)
-library(highr)
 
+library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+
+Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
 
 # ..... Params section .....................................................................................................................................
@@ -35,14 +39,14 @@ main_dir = "/shared/"
 
 project_type = c("LTER","MONALISA")
 
-# PROJECT = "LTER" # Possible project: "LTER"; "Monalisa";
+# PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 # input_dir <- paste(main_dir,"/loggernet/scheduling_test/",sep = "")                    # where input files are
 
-input_dir <- paste(main_dir,"Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
-DQC_setting_dir <- paste(main_dir,"Stations_Data/DQC/",sep = "")
+DQC_setting_dir <- paste(main_dir,"test_christian/Stations_Data/DQC/",sep = "")
 
 logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.csv", sep = "")
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
@@ -51,9 +55,9 @@ download_table_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
 for(PROJECT in project_type){
-  data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
-  report_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/DQC_Reports/",sep = "")  # where to put output reports
-  database_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
+  data_output_dir <- paste(main_dir,"test_christian/Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
+  report_output_dir <- paste(main_dir,"test_christian/Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/DQC_Reports/",sep = "")  # where to put output reports
+  database_file_dir <- paste(main_dir,"test_christian/Stations_Data/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
   
   data_from_row =  5                                             # <-- Row number of first data
   header_row_number =  2                                         # <-- Row number of header
@@ -84,6 +88,7 @@ for(PROJECT in project_type){
   
   files_available = dir(input_dir,pattern = ".dat")                  # <-- Admitted pattern:  ".dat" or ".csv"
   
+  files_available = files_available[!grepl(pattern = "backup",x = files_available)]          # REMOVE FILES WITH WRONG NAMES (XXX.dat.backup not admitted) 
   files_available = files_available[!grepl(pattern = "LTER",x = files_available)]          # REMOVE FILES WITH WRONG NAMES (LTER_XXX.dat not admitted) 
   files_available = files_available[!grepl(pattern = "MONALISA",x = files_available)]      # REMOVE FILES WITH WRONG NAMES (MONALISA_XXX.dat not admitted) 
   

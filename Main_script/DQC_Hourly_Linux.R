@@ -233,7 +233,7 @@ for(PROJECT in project_type){
         
         gc(reset = T)
         
-        if(flag_empty == 0 & flag_error_df == 0 & flag_date == 0){
+        if(flag_empty == 0 & flag_logger_number == 0 & flag_error_df == 0 & flag_date == 0){
           out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),

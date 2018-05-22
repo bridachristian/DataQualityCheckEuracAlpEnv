@@ -52,7 +52,7 @@ logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.c
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 download_table_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 
-file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
+# file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
 for(PROJECT in project_type){
   data_output_dir <- paste(main_dir,"test_christian/Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
@@ -104,7 +104,7 @@ for(PROJECT in project_type){
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
   
   ############################################
-  t = 1
+  t = 11
   
   final_dataframe = matrix(ncol = 19, nrow = length(files_available_project))
   

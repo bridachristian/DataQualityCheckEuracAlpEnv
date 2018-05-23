@@ -39,7 +39,7 @@ main_dir = "/shared/"
 
 project_type = c("LTER","MONALISA")
 
-# PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
+ PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 # input_dir <- paste(main_dir,"/loggernet/scheduling_test/",sep = "")                    # where input files are
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
@@ -76,10 +76,12 @@ for(PROJECT in project_type){
   
   # ~~~ Default directory ~~~~
   
+  
+  
   if(write_output_report == TRUE){
-    Rmd_report_generator <- paste(project_dir, "/Rmd/DQC_Report_Generator.Rmd",sep = "")
+    Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
   }else{
-    Rmd_report_generator <- paste(project_dir, "/Rmd/DQC_Calculator.Rmd",sep = "")
+    Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Calculator_2.Rmd",sep = "")
   }
   
   # ..........................................................................................................................................................
@@ -88,7 +90,7 @@ for(PROJECT in project_type){
   
   files_available = dir(input_dir,pattern = ".dat")                  # <-- Admitted pattern:  ".dat" or ".csv"
   
-  files_available = files_available[!grepl(pattern = "backup",x = files_available)]          # REMOVE FILES WITH WRONG NAMES (XXX.dat.backup not admitted) 
+  files_available = files_available[!grepl(pattern = "backup",x = files_available)]          # REMOVE FILES WITH WRONG NAMES (.dat.backup not admitted) 
   files_available = files_available[!grepl(pattern = "LTER",x = files_available)]          # REMOVE FILES WITH WRONG NAMES (LTER_XXX.dat not admitted) 
   files_available = files_available[!grepl(pattern = "MONALISA",x = files_available)]      # REMOVE FILES WITH WRONG NAMES (MONALISA_XXX.dat not admitted) 
   
@@ -106,11 +108,11 @@ for(PROJECT in project_type){
   ############################################
   t = 11
   
-  final_dataframe = matrix(ncol = 19, nrow = length(files_available_project))
+  final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
   
   colnames(final_dataframe) = c("Station", "Status",
                                 "flag_empty","flag_logger_number", "flag_error_df","flag_date",
-                                "flag_duplicates_rows","flag_overlap","flag_missing_dates",
+                                "flag_duplicates_rows","flag_overlap","flag_missing_records","flag_missing_dates",
                                 "flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range",
                                 "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates", "flag_append_new",   
                                 "Report_link", "Data_folder", "File_name")
@@ -201,60 +203,37 @@ for(PROJECT in project_type){
         start_date = dwnl_info$Last_date
         logger_info_file = logger_info_file
         record_check = dwnl_info$record_check
-        # 
-        # output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
-        # 
-        # rm(dwnl_info)
         
-        source("/home/cbrida/DataQualityCheckEuracAlpEnv/R/DQC_function.R")
+        output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
         
-        aaa= DQC_function(input_dir = input_dir,
-                          output_dir_data = output_dir_data_new,
-                          output_dir_raw = output_dir_raw_new,
-                          output_dir_report = report_output_dir,
-                          project_dir = project_dir,
-                          data_from_row = data_from_row,
-                          header_row_number = header_row_number,
-                          datetime_header = datetime_header,
-                          datetime_format = datetime_format,
-                          datetime_sampling = datetime_sampling,
-                          record_header = record_header,
-                          range_file = range_file,
-                          write_output_files = write_output_files,
-                          write_output_report = write_output_report,
-                          database_dir = database_file_dir_new,
-                          file = FILE,
-                          start_date = dwnl_info$Last_date,
-                          logger_info_file = logger_info_file,
-                          record_check = dwnl_info$record_check)
+        rm(dwnl_info)
         
+        rmarkdown::render(input = Rmd_report_generator ,
+                          output_file = output_file_report,
+                          output_dir = output_dir_report,
+                          params = list(input_dir = input_dir ,
+                                        output_dir_data = output_dir_data ,
+                                        output_dir_raw = output_dir_raw,
+                                        output_dir_report = output_dir_report ,
+                                        project_dir = project_dir ,
+                                        data_from_row = data_from_row ,
+                                        header_row_number = header_row_number ,
+                                        datetime_header = datetime_header ,
+                                        datetime_format = datetime_format ,
+                                        datetime_sampling = datetime_sampling ,
+                                        record_header = record_header ,
+                                        range_file = range_file ,
+                                        write_output_files = write_output_files ,
+                                        write_output_report = write_output_report ,
+                                        database_dir = database_dir,
+                                        file = file ,
+                                        start_date = start_date,
+                                        logger_info_file = logger_info_file,
+                                        record_check = record_check))
         
-        # rmarkdown::render(input = Rmd_report_generator ,
-        #                   output_file = output_file_report,
-        #                   output_dir = output_dir_report,
-        #                   params = list(input_dir = input_dir ,
-        #                                 output_dir_data = output_dir_data ,
-        #                                 output_dir_raw = output_dir_raw,
-        #                                 output_dir_report = output_dir_report ,
-        #                                 project_dir = project_dir ,
-        #                                 data_from_row = data_from_row ,
-        #                                 header_row_number = header_row_number ,
-        #                                 datetime_header = datetime_header ,
-        #                                 datetime_format = datetime_format ,
-        #                                 datetime_sampling = datetime_sampling ,
-        #                                 record_header = record_header ,
-        #                                 range_file = range_file ,
-        #                                 write_output_files = write_output_files ,
-        #                                 write_output_report = write_output_report ,
-        #                                 database_dir = database_dir,
-        #                                 file = file ,
-        #                                 start_date = start_date,
-        #                                 logger_info_file = logger_info_file,
-        #                                 record_check = record_check))
-        # 
         gc(reset = T)
         
-        if(flag_empty == 0 & flag_error_df == 0){
+        if(flag_empty == 0 & flag_logger_number == 0 & flag_error_df == 0 & flag_date == 0){
           out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
@@ -377,19 +356,19 @@ for(PROJECT in project_type){
   # ..... Final Report .....................................................................................................................................
   
   
-  input_final = paste(project_dir,"Rmd/DQC_Final_Report_Hourly.Rmd",sep = "")
-  output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
-                             substring(report_start,6,7),
-                             substring(report_start,9,10),
-                             substring(report_start,12,13),
-                             substring(report_start,15,16),".html", sep = "")
-  output_dir_final = output_dir_report
-  
-  rmarkdown::render(input = input_final,
-                    output_file = output_file_final ,
-                    output_dir = output_dir_final,
-                    params = list(report_start = report_start ,
-                                  final_dataframe = final_dataframe))
+  # input_final = paste(project_dir,"Rmd/DQC_Final_Report_Hourly.Rmd",sep = "")
+  # output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
+  #                            substring(report_start,6,7),
+  #                            substring(report_start,9,10),
+  #                            substring(report_start,12,13),
+  #                            substring(report_start,15,16),".html", sep = "")
+  # output_dir_final = output_dir_report
+  # 
+  # rmarkdown::render(input = input_final,
+  #                   output_file = output_file_final ,
+  #                   output_dir = output_dir_final,
+  #                   params = list(report_start = report_start ,
+  #                                 final_dataframe = final_dataframe))
   
   
   # ..... Data preparation for Database .....................................................................................................................................
@@ -399,4 +378,4 @@ for(PROJECT in project_type){
   
 }
 
-file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
+# file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))

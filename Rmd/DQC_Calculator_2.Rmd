@@ -1,24 +1,55 @@
+---
+title: "Data Quality Check Report"
+author: "Insitute for Alpine Environment, Eurac Research"
+output: html_document
+params:
+    input_dir:             # dir:  Directory where to put input files.
+    output_dir_data:       # dir:  Directory where to save output quality checked files
+    output_dir_raw:        # dir:  Directory where to save output raw data files
+    output_dir_report:     # dir:  Directory where to save output report
+    project_dir:           # dir:  Directory of DataQualityCheckEuracAlpEnv package. Inside there are R script, Rmarkdown document and support files.
+    data_from_row:         # num:  The row number of the first data row. (How many rows are dedicated to headers? + 1)
+    header_row_number:     # num:  The row number of the header names
+    datetime_header:       # chr:  The string to use to recognize datetime
+    datetime_format:       # chr:  The string to use to recognize datetime. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
+    datetime_sampling:     # chr:  The string that define the time sampling (in POSIXct format)
+    record_header:         # chr:  The string to use to recognize record header
+    range_file:            # chr:  The string that indicate the name of range file saved in folder "project_dir/Data/Support_files/Range"
+    write_output_files:    # log:  Logical status (TRUE/FALSE) to decide if save output data or not
+    write_output_report:   # log:  Logical status (TRUE/FALSE) to decide if save output report or not
+    file:                  # chr:  The string that indicate the name of file to process
+    start_date:            # date: First date to consider for the analysis. Date before are not considered
+    database_dir:          # chr:  Directory where to store files for database preprocessing
+    logger_info_file:      # chr:  Path of file containing logger info
+    record_check:          # num:  Flag for exclude the check of record number (default record_check = 1, this mean that the control is activated. Switch to 0 to disable it.)
+---
 
-DQC_function = function(input_dir,
-                        output_dir_data,
-                        output_dir_report,
-                        project_dir,
-                        data_from_row,
-                        header_row_number,
-                        datetime_header,
-                        datetime_format,
-                        datetime_sampling,
-                        record_header,
-                        range_file,
-                        write_output_files,
-                        write_output_report,
-                        file,
-                        start_date,
-                        database_dir,
-                        logger_info_file,
-                        record_check, 
-                        output_dir_raw){
-  
+
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
+input_dir <- params$input_dir
+output_dir_data <- params$output_dir_data
+output_dir_report <- params$output_dir_report
+project_dir <- params$project_dir
+data_from_row <- params$data_from_row
+header_row_number <- params$header_row_number
+datetime_header <- params$datetime_header
+datetime_format <- params$datetime_format
+datetime_sampling <- params$datetime_sampling
+record_header <- params$record_header
+range_file <- params$range_file
+write_output_files <- params$write_output_files
+write_output_report <- params$write_output_report
+file <- params$file
+start_date <- params$start_date
+database_dir <- params$database_dir
+logger_info_file <- params$logger_info_file
+record_check <- params$record_check
+output_dir_raw <-params$output_dir_raw
+
+```
+
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
+
   # ..... Define flags ..................................................................................................................................
   
   flag_empty = NA
@@ -537,8 +568,7 @@ DQC_function = function(input_dir,
       flags_df$value[i] = eval(parse(text = flags_names[i]))
     }
   }
-  
-  ####################################################################
-  output = list(pippo = 1, topolino = 3)
-}
+```
+
+
 

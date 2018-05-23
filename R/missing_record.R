@@ -13,7 +13,6 @@
 #'  missing_record(DATA = mydata ,DATETIME_HEADER = "TIMESTAMP", RECORD_HEADER = "Record", DATETIME_SAMPLING = "15 min")
 #'  missing_record(DATA = your data.frame ,DATETIME_HEADER = "your datetime header", RECORD_HEADER = "your datetime record", DATETIME_SAMPLING = "your datetime sampling")
 
-# TO COMPLETE!
 missing_record = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER = RECORD_HEADER, DATETIME_SAMPLING = DATETIME_SAMPLING, DATETIME_FORMAT = DATETIME_FORMAT){
   
   data = DATA
@@ -54,61 +53,3 @@ missing_record = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER
   
   return(list(flag_missing_records,dd))
 } 
-# missed = which(sign(record_diff-1) > 0)
-# 
-# m_en = data_new[missed,which(colnames(data) == DATETIME_HEADER)]
-# m_st = data_new[missed-1,which(colnames(data) == DATETIME_HEADER)]
-# dm = matrix(nrow = length(missed),ncol = 4)
-# colnames(dm) = c("From", "To", "N_datetime", "N_record")
-# dm = as.data.frame(dm)
-# 
-# for(i in 1:length(missed)){
-#   dm[i,1] = format(m_st[i])
-#   dm[i,2] = format(m_en[i])
-#   dm[i,3] = length(seq(from = m_st[i],to = m_en[i],by = DATETIME_SAMPLING))-1
-#   dm[i,4] = data_new[missed[i],which(colnames(data) == RECORD_HEADER)]-data_new[missed[i]-1,which(colnames(data) == RECORD_HEADER)]
-# }
-# 
-# dm
-# 
-# restarted = which(sign(record_diff-1) < 0)
-# 
-# r_en = data_new[restarted,which(colnames(data) == DATETIME_HEADER)]
-# r_st = data_new[restarted-1,which(colnames(data) == DATETIME_HEADER)]
-# dr = matrix(nrow = length(restarted),ncol = 4)
-# colnames(dr) = c("From", "To", "N_datetime", "N_record")
-# dr = as.data.frame(dr)
-# 
-# for(i in 1:length(restarted)){
-#   dr[i,1] = format(r_st[i])
-#   dr[i,2] = format(r_en[i])
-#   dr[i,3] = length(seq(from = r_st[i],to = r_en[i],by = DATETIME_SAMPLING))-1
-#   dr[i,4] = data_new[restarted[i],which(colnames(data) == RECORD_HEADER)]-data_new[restarted[i]-1,which(colnames(data) == RECORD_HEADER)]
-# }
-# 
-# dm
-# dr 
-# 
-# if(length(missed)!=0 | length(restarted) !=0){
-#   
-# }
-# 
-# data_timestamp[www]
-# cc = sort(c(www-1,www))
-# dd = sort(c(ppp-1,ppp))
-# 
-# data_new[cc,]
-# data_new[dd,]
-# 
-# str(data_new)
-# p=as.numeric(96*diff(data_new$TIMESTAMP[www]))
-# data_record[cc]
-# 
-# plot(data_timestamp,sign(dif-1))
-# data_new =  data[,which(colnames(data) %in% c(RECORD_HEADER, DATETIME_HEADER))]
-# data_new = cbind(data_new,c(1,diff(data_record)))
-# 
-# w = which(diff(data_record) != 1)
-# data_new[w,1:2]
-# return(list(df_merge,missing))
-# }

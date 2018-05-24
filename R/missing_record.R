@@ -88,57 +88,8 @@ missing_record = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER
     flag_missing_records = 0
   }
   
-  l = list(flag_missing_records,dataframe_miss, dataframe_miss)
-  names(l) = c("flag_missing_records", "data_table_missing_records")
+  l = list(flag_missing_records,dataframe_miss, dataframe_rest)
+  names(l) = c("flag_missing_records", "data_table_missing_records","data_table_restarted_records")
   return(l)
 } 
 
-
-# data$TIMESTAMP[nrow(data)]
-# data$RECORD[nrow(data)]
-# 
-# date_new1 = c("2018-05-24 09:30")
-# rec_new1 = 28246
-# other1 = rep(-999, times = ncol(data)-2)
-# new1= c(date_new1, rec_new1,other1)
-# new1 = as.data.frame(t(new1))
-# colnames(new1) = colnames(data)
-# new1$TIMESTAMP = as.POSIXct(new1$TIMESTAMP, tz =  "Etc/GMT-1")
-# 
-# for(i in 2:ncol(new1)){
-#   new1[,i] = as.numeric(new1[,i])
-# }
-# 
-# date_new2 = c("2018-05-24 09:45")
-# rec_new2 = 0
-# other2 = rep(-999, times = ncol(data)-2)
-# new2= c(date_new2, rec_new2,other2)
-# new2 = as.data.frame(t(new2))
-# colnames(new2) = colnames(data)
-# new2$TIMESTAMP = as.POSIXct(new2$TIMESTAMP, tz =  "Etc/GMT-1")
-# 
-# for(i in 2:ncol(new2)){
-#   new2[,i] = as.numeric(new2[,i])
-# }
-# # 
-# # date_new2 = c("2018-05-24 09:45")
-# # rec_new2 = 0
-# # other2 = rep(-999, times = ncol(data)-2)
-# # new2= c(date_new2, rec_new2,other2)
-# # new2 = as.data.frame(t(new2))
-# # colnames(new2) = colnames(data)
-# # new2$TIMESTAMP = as.POSIXct(new2$TIMESTAMP, tz =  "Etc/GMT-1")
-# # 
-# # for(i in 2:ncol(new2)){
-# #   new2[,i] = as.numeric(new2[,i])
-# # }
-# 
-# colnames(new2) = colnames(data)
-# data = rbind(data,new1,new2)
-# 
-# 
-# 
-# 
-# 
-# 
-# 

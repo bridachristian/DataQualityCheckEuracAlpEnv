@@ -23,44 +23,122 @@ missing_record = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER
   
   record_diff = c(1,diff(data_record))
   
-  hhh = which(sign(record_diff-1) != 0)
+  # missing record
+  miss = which(sign(record_diff-1) > 0)
   
-  dd = matrix(nrow = length(hhh),ncol = 6)
-  colnames(dd) = c("Datetime_From", "Datetime_To","Datetime_Missing","Record_From", "Record_To", "Record_Missing")
-  dd = as.data.frame(dd)
+  dataframe_miss = matrix(nrow = length(miss),ncol = 6)
+  colnames(dataframe_miss) = c("Datetime_From", "Datetime_To","Datetime_Missing","Record_From", "Record_To", "Record_Missing")
+  dataframe_miss = as.data.frame(dataframe_miss)
   
-  if(length(hhh) != 0){
+  if(length(miss) != 0){
     
-    d_st = data_new[hhh-1,which(colnames(data) == DATETIME_HEADER)]
-    d_en = data_new[hhh,which(colnames(data) == DATETIME_HEADER)]
-    r_st = data_new[hhh-1,which(colnames(data) == RECORD_HEADER)]
-    r_en = data_new[hhh,which(colnames(data) == RECORD_HEADER)]
-    # dd = matrix(nrow = length(hhh),ncol = 6)
-    # colnames(dd) = c("Datetime_From", "Datetime_To","Datetime_Missing","Record_From", "Record_To", "Record_Missing")
-    # dd = as.data.frame(dd)
+    miss_date_start = data_new[miss-1,which(colnames(data) == DATETIME_HEADER)]
+    miss_date_end = data_new[miss,which(colnames(data) == DATETIME_HEADER)]
+    miss_record_start= data_new[miss-1,which(colnames(data) == RECORD_HEADER)]
+    miss_record_end = data_new[miss,which(colnames(data) == RECORD_HEADER)]
     
-    for(i in 1:length(hhh)){
-      dd[i,1] = format(d_st[i],format = DATETIME_FORMAT)
-      dd[i,2] = format(d_en[i],format = DATETIME_FORMAT)   
-      dd[i,3] = length(seq(from = d_st[i],to = d_en[i],by = DATETIME_SAMPLING))-1
+    for(i in 1:length(miss)){
+      dataframe_miss[i,1] = format(miss_date_start[i],format = DATETIME_FORMAT)
+      dataframe_miss[i,2] = format(miss_date_end[i],format = DATETIME_FORMAT)   
+      dataframe_miss[i,3] = length(seq(from = miss_date_start[i],to = miss_date_end[i],by = DATETIME_SAMPLING))-1
       
-      dd[i,4] = format(r_st[i])
-      dd[i,5] = format(r_en[i])
-      dd[i,6] = data_new[hhh[i],which(colnames(data) == RECORD_HEADER)]-data_new[hhh[i]-1,which(colnames(data) == RECORD_HEADER)]
+      dataframe_miss[i,4] = format(miss_record_start[i])
+      dataframe_miss[i,5] = format(miss_record_end[i])
+      dataframe_miss[i,6] = data_new[miss[i],which(colnames(data) == RECORD_HEADER)]-data_new[miss[i]-1,which(colnames(data) == RECORD_HEADER)]
     }
+  }
+ 
+  # restart record
+  rest = which(sign(record_diff-1) < 0)
+
+  dataframe_rest = matrix(nrow = length(rest),ncol = 6)
+  colnames(dataframe_rest) = c("Datetime_From", "Datetime_To","Datetime_Missing","Record_From", "Record_To", "Record_Missing")
+  dataframe_rest = as.data.frame(dataframe_rest)
+  
+  if(length(rest) != 0){
+    
+    rest_date_start = data_new[rest-1,which(colnames(data) == DATETIME_HEADER)]
+    rest_date_end = data_new[rest,which(colnames(data) == DATETIME_HEADER)]
+    rest_record_start= data_new[rest-1,which(colnames(data) == RECORD_HEADER)]
+    rest_record_end = data_new[rest,which(colnames(data) == RECORD_HEADER)]
+    
+    for(i in 1:length(rest)){
+      dataframe_rest[i,1] = format(rest_date_start[i],format = DATETIME_FORMAT)
+      dataframe_rest[i,2] = format(rest_date_end[i],format = DATETIME_FORMAT) 
+      dataframe_rest[i,3] = length(seq(from = rest_date_start[i],to = rest_date_end[i],by = DATETIME_SAMPLING))-2
+      
+      dataframe_rest[i,4] = format(rest_record_start[i])
+      dataframe_rest[i,5] = format(rest_record_end[i])
+      dataframe_rest[i,6] = data_new[rest[i],which(colnames(data) == RECORD_HEADER)]-data_new[rest[i]-1,which(colnames(data) == RECORD_HEADER)]
+    }
+    
+    
+    for(i in 1:nrow(dataframe_rest)){
+      if(dataframe_rest$Datetime_Missing[i] == 0){
+        dataframe_rest = dataframe_rest[-i,]
+      }
+      
+    }
+    
+  }
+  
+  if(length(miss) > 0 | length(rest) > 0){
     flag_missing_records = 1
-  } else{
+  }else{
     flag_missing_records = 0
   }
   
-  # if(length(hhh) == 0){
-  #   flag_missing_records = 0 
-  # } else{
-  #   flag_missing_records = 1
-  # }
-  # 
-  
-  l = list(flag_missing_records,dd)
+  l = list(flag_missing_records,dataframe_miss, dataframe_miss)
   names(l) = c("flag_missing_records", "data_table_missing_records")
   return(l)
 } 
+
+
+# data$TIMESTAMP[nrow(data)]
+# data$RECORD[nrow(data)]
+# 
+# date_new1 = c("2018-05-24 09:30")
+# rec_new1 = 28246
+# other1 = rep(-999, times = ncol(data)-2)
+# new1= c(date_new1, rec_new1,other1)
+# new1 = as.data.frame(t(new1))
+# colnames(new1) = colnames(data)
+# new1$TIMESTAMP = as.POSIXct(new1$TIMESTAMP, tz =  "Etc/GMT-1")
+# 
+# for(i in 2:ncol(new1)){
+#   new1[,i] = as.numeric(new1[,i])
+# }
+# 
+# date_new2 = c("2018-05-24 09:45")
+# rec_new2 = 0
+# other2 = rep(-999, times = ncol(data)-2)
+# new2= c(date_new2, rec_new2,other2)
+# new2 = as.data.frame(t(new2))
+# colnames(new2) = colnames(data)
+# new2$TIMESTAMP = as.POSIXct(new2$TIMESTAMP, tz =  "Etc/GMT-1")
+# 
+# for(i in 2:ncol(new2)){
+#   new2[,i] = as.numeric(new2[,i])
+# }
+# # 
+# # date_new2 = c("2018-05-24 09:45")
+# # rec_new2 = 0
+# # other2 = rep(-999, times = ncol(data)-2)
+# # new2= c(date_new2, rec_new2,other2)
+# # new2 = as.data.frame(t(new2))
+# # colnames(new2) = colnames(data)
+# # new2$TIMESTAMP = as.POSIXct(new2$TIMESTAMP, tz =  "Etc/GMT-1")
+# # 
+# # for(i in 2:ncol(new2)){
+# #   new2[,i] = as.numeric(new2[,i])
+# # }
+# 
+# colnames(new2) = colnames(data)
+# data = rbind(data,new1,new2)
+# 
+# 
+# 
+# 
+# 
+# 
+# 

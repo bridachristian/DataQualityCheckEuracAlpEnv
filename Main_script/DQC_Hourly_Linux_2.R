@@ -39,7 +39,7 @@ main_dir = "/shared/"
 
 project_type = c("LTER","MONALISA")
 
- PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
+# PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 # input_dir <- paste(main_dir,"/loggernet/scheduling_test/",sep = "")                    # where input files are
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
@@ -76,8 +76,6 @@ for(PROJECT in project_type){
   
   # ~~~ Default directory ~~~~
   
-  
-  
   if(write_output_report == TRUE){
     Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
   }else{
@@ -106,7 +104,7 @@ for(PROJECT in project_type){
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
   
   ############################################
-  t = 14
+  t = 1
   
   final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
   
@@ -331,7 +329,7 @@ for(PROJECT in project_type){
         warning(paste("File",FILE, "already analyzed!"))
         # file_already_processed = c(file_already_processed,FILE)
         final_info = c(substring(FILE,1,nchar(FILE)-4), "Already analyzed",
-                       NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
+                       NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                        NA,
                        NA, NA)
         output_dir_report = report_output_dir
@@ -340,7 +338,7 @@ for(PROJECT in project_type){
       
     }else{
       final_info = c(substring(FILE,1,nchar(FILE)-4), "Not analyzed",
-                     NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
+                     NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                      NA,
                      NA, NA)
       output_dir_report = report_output_dir
@@ -363,7 +361,7 @@ for(PROJECT in project_type){
                              substring(report_start,12,13),
                              substring(report_start,15,16),".html", sep = "")
   output_dir_final = output_dir_report
-
+  
   rmarkdown::render(input = input_final,
                     output_file = output_file_final ,
                     output_dir = output_dir_final,

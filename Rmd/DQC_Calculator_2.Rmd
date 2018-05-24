@@ -181,8 +181,9 @@ output_dir_raw <-params$output_dir_raw
               rec_miss  <- missing_record(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
               flag_missing_records = rec_miss[[1]]
               records_missing = rec_miss[[2]]
+              records_restart = rec_miss[[3]]
             }else{
-              flag_missing_records = NA
+              flag_missing_records = 50
             }
             
             if(flag_missing_records != 1){

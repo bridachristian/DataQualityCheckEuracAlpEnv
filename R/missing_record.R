@@ -54,6 +54,8 @@ missing_record = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER
   dataframe_rest = matrix(nrow = length(rest),ncol = 6)
   colnames(dataframe_rest) = c("Datetime_From", "Datetime_To","Datetime_Missing","Record_From", "Record_To", "Record_Missing")
   dataframe_rest = as.data.frame(dataframe_rest)
+  dataframe_rest_new = dataframe_rest
+  
   
   if(length(rest) != 0){
     

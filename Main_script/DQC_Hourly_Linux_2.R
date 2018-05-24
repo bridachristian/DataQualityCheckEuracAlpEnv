@@ -106,7 +106,7 @@ for(PROJECT in project_type){
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
   
   ############################################
-  t = 11
+  t = 14
   
   final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
   
@@ -356,19 +356,19 @@ for(PROJECT in project_type){
   # ..... Final Report .....................................................................................................................................
   
   
-  # input_final = paste(project_dir,"Rmd/DQC_Final_Report_Hourly.Rmd",sep = "")
-  # output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
-  #                            substring(report_start,6,7),
-  #                            substring(report_start,9,10),
-  #                            substring(report_start,12,13),
-  #                            substring(report_start,15,16),".html", sep = "")
-  # output_dir_final = output_dir_report
-  # 
-  # rmarkdown::render(input = input_final,
-  #                   output_file = output_file_final ,
-  #                   output_dir = output_dir_final,
-  #                   params = list(report_start = report_start ,
-  #                                 final_dataframe = final_dataframe))
+  input_final = paste(project_dir,"Rmd/DQC_Final_Report_Hourly_2.Rmd",sep = "")
+  output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
+                             substring(report_start,6,7),
+                             substring(report_start,9,10),
+                             substring(report_start,12,13),
+                             substring(report_start,15,16),".html", sep = "")
+  output_dir_final = output_dir_report
+
+  rmarkdown::render(input = input_final,
+                    output_file = output_file_final ,
+                    output_dir = output_dir_final,
+                    params = list(report_start = report_start ,
+                                  final_dataframe = final_dataframe))
   
   
   # ..... Data preparation for Database .....................................................................................................................................

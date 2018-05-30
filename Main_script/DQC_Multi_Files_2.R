@@ -83,7 +83,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 1
+t = 6
 
 # final_dataframe = data.frame(t(rep(NA, times = 14)))
 final_dataframe = matrix(ncol = 16, nrow = length(files_available))
@@ -107,11 +107,15 @@ for(t in  1: length(files_available)){
                                            "report_start", "final_dataframe","output_dir_report")))
 
 
-  FILE = files_available[t]
+  FILE_NAME = files_available[t]
 
-  cat(paste("********* a. File to process:", FILE, "*********"),sep = "\n")
+  u2 = gregexpr(FILE_NAME,pattern = "_")[[1]][2]      # <- here we find the sencond "[[1]][2]" underscore!!!!!
 
-  w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
+  STATION_NAME = substring(FILE_NAME,u2+1, nchar(FILE_NAME)-4)
+
+  cat(paste("********* a. File to process:", FILE_NAME, "*********"),sep = "\n")
+
+  w_dwnl = which(download_table$Station == substring(FILE_NAME, 1, nchar(FILE_NAME) - 4))
   dwnl_info = download_table[w_dwnl,]
 
   # if(dir.exists(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))){                # create subfolder to store data organized by station name
@@ -124,7 +128,7 @@ for(t in  1: length(files_available)){
 
   if(dwnl_info$Stop_DQC == 0){
 
-    date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE,sep = "")),format = datetime_format))
+    date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE_NAME,sep = "")),format = datetime_format))
 
     if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
 
@@ -141,16 +145,19 @@ for(t in  1: length(files_available)){
       range_file = range_file
       write_output_files = write_output_files
       write_output_report = write_output_report
-      file = FILE
+      file_name = FILE_NAME
+      station_name = STATION_NAME
       start_date = dwnl_info$Last_date
       logger_info_file = logger_info_file
       record_check = dwnl_info$record_check
 
       rm(dwnl_info)
 
-      output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
+      output_file_report = paste("DQC_Report_",station_name,"_tmp.html",sep = "")
+      # output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
 
-      cat(paste("********* b. File under processing:", FILE, "*********"),sep = "\n")
+      cat(paste("********* b. File under processing:", station_name, "*********"),sep = "\n")
+
 
       rmarkdown::render(input = Rmd_report_generator ,
                         output_file = output_file_report,
@@ -168,7 +175,8 @@ for(t in  1: length(files_available)){
                                       range_file = range_file ,
                                       write_output_files = write_output_files ,
                                       write_output_report = write_output_report ,
-                                      file = file ,
+                                      file_name = file_name ,
+                                      station_name = station_name,
                                       start_date = start_date,
                                       logger_info_file = logger_info_file,
                                       record_check = record_check))

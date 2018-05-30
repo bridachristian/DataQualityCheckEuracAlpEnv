@@ -4,7 +4,7 @@ author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
 params:
     input_dir:             # dir:  Directory where to put input files.
-    output_dir_data:       # dir:  Directory where to save output files
+    output_dir_data:       # dir:  Directory where to save output quality checked files
     output_dir_report:     # dir:  Directory where to save output report
     project_dir:           # dir:  Directory of DataQualityCheckEuracAlpEnv package. Inside there are R script, Rmarkdown document and support files.
     data_from_row:         # num:  The row number of the first data row. (How many rows are dedicated to headers? + 1)
@@ -16,15 +16,18 @@ params:
     range_file:            # chr:  The string that indicate the name of range file saved in folder "project_dir/Data/Support_files/Range"
     write_output_files:    # log:  Logical status (TRUE/FALSE) to decide if save output data or not
     write_output_report:   # log:  Logical status (TRUE/FALSE) to decide if save output report or not
-    file:                  # chr:  The string that indicate the name of file to process
+    file_name:             # chr:  The string that indicate the name of file to process
     start_date:            # date: First date to consider for the analysis. Date before are not considered
-    logger_info_file:      # chr:  logger_number  
-    record_check:          # num:  Flag on record number check
+    station_name:          # chr:  The string that indicate the name of the station
+    logger_info_file:      # chr:  Path of file containing logger info
+    record_check:          # num:  Flag for exclude the check of record number (default record_check = 1, this mean that the control is activated. Switch to 0 to disable it.)
+    
 ---
 
 Report start at **`r Sys.time()`**
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
+
 input_dir <- params$input_dir
 output_dir_data <- params$output_dir_data
 output_dir_report <- params$output_dir_report
@@ -38,10 +41,14 @@ record_header <- params$record_header
 range_file <- params$range_file
 write_output_files <- params$write_output_files
 write_output_report <- params$write_output_report
-file <- params$file
+
 start_date <- params$start_date
+
+file_name <- params$file_name
+station_name <- params$station_name
 logger_info_file <- params$logger_info_file
 record_check <- params$record_check
+
 ```
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
@@ -55,9 +62,23 @@ record_check <- params$record_check
 
 # ..... Define flags ..................................................................................................................................
 
+flag_empty = NA
+flag_logger_number = NA
+flag_error_df = NA
+flag_date = NA
+flag_duplicates_rows = NA
+flag_overlap = NA
+flag_missing_records = NA
+flag_missing_dates = NA
+flag_range_variable_to_set = NA
+flag_range_variable_new = NA
+flag_out_of_range = NA
+
+
+
 # ..... Body ..........................................................................................................................................
 
-if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
+if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file_name) == TRUE){
   
   flag_empty = 1
   
@@ -65,7 +86,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
   
   flag_empty = 0
   
-  data_import <- read_data(INPUT_DATA_DIR = input_dir, FILE_NAME = file, 
+  data_import <- read_data(INPUT_DATA_DIR = input_dir, FILE_NAME = file_name, 
                            DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format,
                            DATA_FROM_ROW = data_from_row, HEADER_ROW_NUMBER = header_row_number)  
   header = data_import [[1]]
@@ -78,11 +99,15 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
   logger_number = header[1,4]                                                                   # check logger numbers
   software_version = header[1,6]
   logger_info_csv = read.csv(file = logger_info_file, stringsAsFactors = F)
-  w_logger = which(logger_info_csv[,1] == substring(file, 1, nchar(file)-4))
+  col_log = colnames(logger_info_csv)
+  w_logger = which(logger_info_csv[,1] == station_name)
+  # w_logger = which(logger_info_csv[,1] == substring(file_name, 1, nchar(file_name)-4))
   
   if(length(w_logger) == 0){
-    logger_info_csv = rbind(logger_info_csv, c(substring(file, 1, nchar(file)-4), logger_number, software_version))
-    write.csv(logger_info_csv,logger_info_file,row.names = F,col.names = F )
+    logger_info_csv = rbind(logger_info_csv, c(station_name, logger_number, software_version))
+    colnames(logger_info_csv) = col_log
+    # logger_info_csv = rbind(logger_info_csv, c(substring(file, 1, nchar(file)-4), logger_number, software_version))
+    write.csv(logger_info_csv,logger_info_file,row.names = F,col.names = T )
   }else{
     logger_info = logger_info_csv[w_logger,]
     if(logger_number != logger_info[,2]){
@@ -157,30 +182,31 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       
       orig_wihtout_dupli = mydata
       
-      # lastdate_orig = format(orig_wihtout_dupli[nrow(orig_wihtout_dupli), which(colnames(orig_wihtout_dupli) == datetime_header)],datetime_format)
-      # 
-      # out_lastdate_orig = paste(substring(lastdate_orig,1,4),
-      #                           substring(lastdate_orig,6,7),
-      #                           substring(lastdate_orig,9,10),
-      #                           substring(lastdate_orig,12,13),
-      #                           substring(lastdate_orig,15,16),
-      #                           sep = "")
+      lastdate_orig = format(orig_wihtout_dupli[nrow(orig_wihtout_dupli), which(colnames(orig_wihtout_dupli) == datetime_header)],datetime_format)
+
+      out_lastdate_orig = paste(substring(lastdate_orig,1,4),
+                                substring(lastdate_orig,6,7),
+                                substring(lastdate_orig,9,10),
+                                substring(lastdate_orig,12,13),
+                                substring(lastdate_orig,15,16),
+                                sep = "")
+      orig_filename = paste(station_name,"_", out_lastdate_orig,"_raw.dat", sep = "")
       # orig_filename = paste(substring(file, 1, nchar(file)-4),"_", out_lastdate_orig,"_raw.dat", sep = "")
-      # 
-      # if(file.exists(paste(output_dir_data,orig_filename,sep = ""))){
-      #   j=0
-      #   repeat{
-      #     j=j+1
-      #     out_filename_orig_new = paste(substring(orig_filename,1, nchar(orig_filename)-8),"_raw_",j,".dat",sep = "")
-      #     if(!file.exists(paste(output_dir_data,out_filename_orig_new,sep = ""))){
-      #       break
-      #     }
-      #   }
-      # } else {
-      #   out_filename_orig_new = orig_filename
-      # }
-      # 
-      # write.csv(orig_wihtout_dupli,paste(output_dir_data,out_filename_orig_new,sep = ""),quote = F,row.names = F, na = "NaN")      # <- write "origina data"
+
+      if(file.exists(paste(output_dir_data,orig_filename,sep = ""))){
+        j=0
+        repeat{
+          j=j+1
+          out_filename_orig_new = paste(substring(orig_filename,1, nchar(orig_filename)-8),"_raw_",j,".dat",sep = "")
+          if(!file.exists(paste(output_dir_data,out_filename_orig_new,sep = ""))){
+            break
+          }
+        }
+      } else {
+        out_filename_orig_new = orig_filename
+      }
+
+      write.csv(orig_wihtout_dupli,paste(output_dir_data,out_filename_orig_new,sep = ""),quote = F,row.names = F, na = "NaN")      # <- write "origina data"
       
       overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
       
@@ -282,14 +308,16 @@ if(flag_empty == 0){
               
               out_mydata=rbind(header[-1,],out_my)
               
-              out_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
-                               substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
-                               substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
-                               # # "_",
-                               # substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
-                               # substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
-                               sep = "")
-              out_filename_data = paste(substring(file,1,nchar(file)-4),"_",out_date,".csv",sep = "")
+              # out_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
+              #                  substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
+              #                  substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
+              #                  # # "_",
+              #                  # substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+              #                  # substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+              #                  sep = "")      
+              
+
+              out_filename_data = paste(station_name,"_",out_date,".csv",sep = "")
               
               if(file.exists(paste(output_dir_data,out_filename_data,sep = ""))){
                 j=0
@@ -347,7 +375,7 @@ for(i in 1: nrow(flags_df)){
   }
 }
 
- 
+
 # flag_empty = flags_df$value[1]
 # flag_error_df = flags_df$value[2]
 # flag_date = flags_df$value[3]
@@ -388,13 +416,15 @@ You decide:  *`r if(write_output_files == TRUE){paste("to write output file here
 
 And: *`r if(write_output_report == TRUE){paste("to write output report here:", output_dir_report)} else{paste(("to don't write output report"))}`*
 
-### OUTPUT:
+### OUTPUT/ISSUE:
 
 ####** Reminder (for developer): no problem => no message **
 
-#### **Is the file empty? ** `r if(flag_empty == 0){paste("NO: all right!")}else{paste("YES: check it!")}`
+<!-- #### **Is the file empty? ** `r if(flag_empty == 0){paste("NO: all right!")}else{paste("YES: check it!")}` -->
 
-`r if(flag_empty == 0){paste("Ok:",file,"is not empty")}else{paste("Error:",file,"is empty")}`
+<!-- `r if(flag_empty == 0){paste("Ok:",file,"is not empty")}else{paste("Error:",file,"is empty")}` -->
+
+##### `r if(flag_empty != 0){paste("Error:",file_name,"is empty")}`
 
 
 #### **There are problems in data file structure?**  `r if(is.na(flag_error_df)){paste("- - -")}else{if(flag_error_df == -1){paste("YES, there are more header than data!")}else{if(flag_error_df == 0){paste("NO: all right!")}else{if(flag_error_df == 1){paste("YES: there are some data without header!")}}}}`

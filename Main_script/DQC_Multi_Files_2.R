@@ -66,7 +66,7 @@ range_dir <-"H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck
 download_table_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Process/"
 logger_info_file <- paste("H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Process/Logger_number_and_software.csv", sep = "")
 
-Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
+Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator_2.Rmd",sep = "")
 
 # ..........................................................................................................................................................
 

@@ -83,7 +83,7 @@ download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_ta
 
 
 ############################################
-t = 6
+t = 1
 
 # final_dataframe = data.frame(t(rep(NA, times = 14)))
 final_dataframe = matrix(ncol = 16, nrow = length(files_available))
@@ -183,7 +183,7 @@ for(t in  1: length(files_available)){
 
       gc(reset = T)
 
-      if(flag_empty == 0 & flag_error_df == 0){
+      if(flag_empty == 0 & flag_logger_number == 0 & flag_error_df == 0){
         out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                                   substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
                                   substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
@@ -199,7 +199,7 @@ for(t in  1: length(files_available)){
       }
 
 
-      out_filename_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_",out_filename_date,".html",sep = "")
+      out_filename_report = paste("DQC_Report_",STATION_NAME,"_",out_filename_date,".html",sep = "")
 
       if(file.exists(paste(output_dir_report,out_filename_report,sep = ""))){
 
@@ -221,15 +221,13 @@ for(t in  1: length(files_available)){
 
 
 
-
-
       if(!is.na(flag_missing_dates)){
         download_table$Last_date[w_dwnl] = last_date
         download_table$Last_Modification[w_dwnl] = date_last_modif_file
-        write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
+        write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = T,row.names = F, na = "NA")
         # file_ok = c(file_ok,FILE)
 
-        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
+        final_info = c(STATION_NAME, "Analyzed and write output",
                        flags_df$value,
                        paste(output_dir_report,out_filename_report,sep = ""),
                        paste(output_dir_data,sep = ""),
@@ -238,7 +236,7 @@ for(t in  1: length(files_available)){
       }else{
         # file_stopped = c(file_stopped, FILE)
 
-        final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",
+        final_info = c(STATION_NAME, "Analyzed with errors",
                        flags_df$value,
                        paste(output_dir_report,out_filename_report,sep = ""),
                        NA, NA )
@@ -246,17 +244,17 @@ for(t in  1: length(files_available)){
       }
 
     } else {
-      warning(paste("File",FILE, "already analyzed!"))
+      warning(paste("File",STATION_NAME, "already analyzed!"))
       # file_already_processed = c(file_already_processed,FILE)
-      final_info = c(substring(FILE,1,nchar(FILE)-4), "Already analyzed",
-                     NA, NA, NA, NA, NA, NA, NA, NA, NA,
+      final_info = c(STATION_NAME, "Already analyzed",
+                     NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                      NA,
                      NA, NA)
     }
 
   }else{
-    final_info = c(substring(FILE,1,nchar(FILE)-4), "Not analyzed",
-                   NA, NA, NA, NA, NA, NA, NA, NA, NA,
+    final_info = c(STATION_NAME, "Not analyzed",
+                   NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                    NA,
                    NA, NA)
   }
@@ -265,7 +263,7 @@ for(t in  1: length(files_available)){
   final_dataframe[t,] = final_info
 
   gc(reset = T)
-  cat(paste("********* c.", FILE, "analyzed! *********"),sep = "\n")
+  cat(paste("********* c.", STATION_NAME, "analyzed! *********"),sep = "\n")
 
 }
 

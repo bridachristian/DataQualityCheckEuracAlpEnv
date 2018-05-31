@@ -103,7 +103,7 @@ colnames(final_2) = c("Station",
                       "NEW Duplicated rows",
                       "NEW Overlap",
                       "NEW Missing dates",
-                      "Append new data")
+                      "NEW Missing records")
 
 
 # missing_color = data.frame( rep("R", times= nrow(final_2)), rep("Y", times= nrow(final_2)),rep("G", times= nrow(final_2)),rep(NA, times= nrow(final_2)))

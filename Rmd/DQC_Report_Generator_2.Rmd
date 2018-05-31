@@ -69,8 +69,6 @@ flag_range_variable_to_set = NA
 flag_range_variable_new = NA
 flag_out_of_range = NA
 
-
-
 # ..... Body ..........................................................................................................................................
 
 if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file_name) == TRUE){
@@ -962,8 +960,9 @@ if(flag_empty == 0){
                   statistic_oor = statistic_oor[order(statistic_oor$From),]
                   statistic_oor[,2:3] = format(statistic_oor[,2:3], format = datetime_format)
                   
-                  print(htmltools::tagList(datatable(statistic_oor)))
-                  
+                  # print(htmltools::tagList(datatable(statistic_oor)))
+                  print(xtable(statistic_oor),type = "html")
+
                   # if(nrow(statistic_oor) == 1){
                   #   print(kable(statistic_oor, format = "html",align = "c",row.names = F)%>%
                   #           kable_styling() %>%

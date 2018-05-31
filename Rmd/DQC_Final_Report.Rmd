@@ -26,12 +26,12 @@ final_dataframe <- params$final_dataframe
 
 ff = as.data.frame(final_dataframe,stringsAsFactors = F)
 
-for(i in 3:11){
+for(i in 3:13){
   ff[,i] = as.numeric(ff[,i])
 }
 
 
-final_2 = as.data.frame(final_dataframe[,1:11],stringsAsFactors = F)
+final_2 = as.data.frame(final_dataframe[,1:13],stringsAsFactors = F)
 
 
 final_2$Status[ff$Status == "Already analyzed"] = "B" 
@@ -42,6 +42,9 @@ final_2$Status[ff$Status == "Not analyzed"] = NA
 
 final_2$flag_empty[ff$flag_empty == 1] = "R" 
 final_2$flag_empty[ff$flag_empty == 0] = "G"
+
+final_2$flag_logger_number[ff$flag_logger_number == 1] = "R"
+final_2$flag_logger_number[ff$flag_logger_number == 0] = "G"
 
 final_2$flag_error_df[ff$flag_error_df == 1] = "R"
 final_2$flag_error_df[ff$flag_error_df == -1] = "R" 
@@ -56,6 +59,10 @@ final_2$flag_duplicates_rows[ff$flag_duplicates_rows == 0] = "G"
 final_2$flag_overlap[ff$flag_overlap == 1] = "R" 
 final_2$flag_overlap[ff$flag_overlap == 0] = "G"
 
+final_2$flag_missing_records[ff$flag_missing_records == 1] = "R" 
+final_2$flag_missing_records[ff$flag_missing_records == 0] = "G"
+final_2$flag_missing_records[ff$flag_missing_records == 50] = "GR"
+
 final_2$flag_missing_dates[ff$flag_missing_dates == 1] = "Y" 
 final_2$flag_missing_dates[ff$flag_missing_dates == 0] = "G"
 
@@ -67,8 +74,6 @@ final_2$flag_range_variable_new[ff$flag_range_variable_new == 0] = "G"
 
 final_2$flag_out_of_range[ff$flag_out_of_range == 1] = "Y" 
 final_2$flag_out_of_range[ff$flag_out_of_range == 0] = "G"
-
-
 
 
 colnames(final_2) = c("Station",

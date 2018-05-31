@@ -89,9 +89,12 @@ for(PROJECT in project_type){
   files_available_raw = dir(input_dir,pattern = ".dat")                  # <-- Admitted pattern:  ".dat" or ".csv"
   
   files_available_raw = files_available_raw[!grepl(pattern = "backup",x = files_available_raw)]          # REMOVE FILES WITH WRONG NAMES (.dat.backup not admitted) 
-  files_available_raw = files_available_raw[!grepl(pattern = "IP",x = files_available_raw)]          # REMOVE FILES WITH WRONG NAMES (.dat.backup not admitted) 
   
-  files_available = files_available_raw[grepl(pattern = paste("^",PROJECT,sep = ""),x = files_available_raw)]          # REMOVE FILES WITH WRONG NAMES (LTER_XXX.dat not admitted) 
+  if(PROJECT != "MONALISA"){
+    files_available_raw = files_available_raw[!grepl(pattern = "IP",x = files_available_raw)]          # <- for MONALISA  IP in name is admitted 
+  }
+  
+  files_available = files_available_raw[grepl(pattern = paste("^",PROJECT,sep = ""),x = files_available_raw)]          
   
   files_no_project = substring(files_available, nchar(PROJECT)+2, nchar(files_available)-4)
   
@@ -103,17 +106,17 @@ for(PROJECT in project_type){
     for(h in 1:length(files_no_project)){
       u1[h] = gregexpr(files_no_project,pattern = "_")[[h]][1]   # <- here we find the sencond "[[1]][2]" underscore!!!!!
       logg_data_NAME[h] = substring(text = files_no_project[h],first = 1,last = u1[h]-1)
-      table_data_NAME[h] = substring(text = files_no_project[h],first = u1[h]+1,last = nchar(file_no_project[h]))
+      table_data_NAME[h] = substring(text = files_no_project[h],first = u1[h]+1,last = nchar(files_no_project[h]))
     }  
     df_files = data.frame(files_available, logg_data_NAME, table_data_NAME)
     colnames(df_files) = c("Files", "LoggerNet_name", "Datatable_name")
     
     if(PROJECT == "LTER"){                                                                        # <--Filter files based on Project (diffent if is MONALISA or LTER)
-      file_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
+      files_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
     }
     
     if(PROJECT == "MONALISA"){                                                                        # <--Filter files based on Project (diffent if is MONALISA or LTER)
-      file_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
+      files_available = df_files$Files
     }
   } else{
     files_available = files_no_project
@@ -125,7 +128,7 @@ for(PROJECT in project_type){
   # ..... download table section .....................................................................................................................................
   
   
-  download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_table_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format)
+  download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_table_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format,PROJECT = PROJECT)
   
   download_table_proj = download_table$Station[which(download_table$Project == PROJECT)]
   
@@ -140,7 +143,7 @@ for(PROJECT in project_type){
                                 "flag_empty","flag_logger_number", "flag_error_df","flag_date",
                                 "flag_duplicates_rows","flag_overlap","flag_missing_records","flag_missing_dates",
                                 "flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range",
-                                "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates", "flag_append_new",   
+                                "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates", "flag_missing_records_new",   
                                 "Report_link", "Data_folder", "File_name")
   
   
@@ -158,55 +161,64 @@ for(PROJECT in project_type){
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file")))
     
     
-    FILE = files_available_project[t]
+    FILE_NAME = files_available_project[t]
     
-    w_dwnl = which(download_table$Station == substring(FILE, 1, nchar(FILE) - 4))
-    dwnl_info = download_table[w_dwnl,]
+    u1 = gregexpr(FILE_NAME,pattern = "_")[[1]][1]      # <- here we find the first "[[1]][1]" underscore!!!!!
+    u2 = gregexpr(FILE_NAME,pattern = "_")[[1]][2]      # <- here we find the first "[[1]][1]" underscore!!!!!
     
-    if(dir.exists(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))){                # create subfolder to store data organized by station name
-      if(dir.exists(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Total/", sep = ""))){
-        output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Total/", sep = "")
-        output_dir_raw_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Raw/", sep = "")
-      }else{
-        dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Reports/", sep = ""))
-        dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Raw/", sep = ""))
-        dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Total/", sep = ""))
-        dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Processed/", sep = ""))
-        dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Pics/", sep = ""))
-        output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Total/", sep = "")
-        output_dir_raw_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Raw/", sep = "")
-        
-      }
+    if(PROJECT == "MONALISA"){
+      STATION_NAME = substring(FILE_NAME,u1+1, u1+9)
     }else{
-      dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))
-      dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Reports/", sep = ""))
-      dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Raw/", sep = ""))
-      dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Total/", sep = ""))
-      dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Processed/", sep = ""))
-      dir.create(paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Pics/", sep = ""))
-      output_dir_data_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Total/", sep = "")
-      output_dir_raw_new = paste(data_output_dir,substring(FILE,1,nchar(FILE)-4),"/Raw/", sep = "")
+      STATION_NAME = substring(FILE_NAME,u1+1, u2-1)
     }
     
-    if(dir.exists(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = ""))){                # create subfolder to store mini files for database organized by station name 
-      if(dir.exists(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Data/", sep = ""))){ 
-        database_file_dir_new = paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Data/", sep = "")
+    w_dwnl = which(download_table$Station == substring(FILE_NAME, 1, nchar(FILE_NAME) - 4))
+    dwnl_info = download_table[w_dwnl,]
+    
+    if(dir.exists(paste(data_output_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store data organized by station name
+      if(dir.exists(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))){
+        output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
+        output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
       }else{
-        dir.create(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Data/", sep = ""))
-        dir.create(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Pics/", sep = ""))
-        database_file_dir_new = paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Data/", sep = "")
+        dir.create(paste(data_output_dir,STATION_NAME,"/Reports/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Processed/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
+        output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
+        output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
         
       }
     }else{
-      dir.create(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/", sep = "")) 
-      dir.create(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Data/", sep = ""))
-      dir.create(paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Pics/", sep = ""))
-      database_file_dir_new = paste(database_file_dir,substring(FILE,1,nchar(FILE)-4),"/Data/", sep = "")
+      dir.create(paste(data_output_dir,STATION_NAME,"/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Reports/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Processed/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
+      output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
+      output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
+    }
+    
+    if(dir.exists(paste(database_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store mini files for database organized by station name 
+      if(dir.exists(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))){ 
+        database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
+      }else{
+        dir.create(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))
+        dir.create(paste(database_file_dir,STATION_NAME,"/Pics/", sep = ""))
+        database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
+        
+      }
+    }else{
+      dir.create(paste(database_file_dir,STATION_NAME,"/", sep = "")) 
+      dir.create(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))
+      dir.create(paste(database_file_dir,STATION_NAME,"/Pics/", sep = ""))
+      database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
     }
     
     if(dwnl_info$Stop_DQC == 0){
       
-      date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE,sep = "")),format = datetime_format))
+      date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE_NAME,sep = "")),format = datetime_format))
       
       if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
         
@@ -225,12 +237,13 @@ for(PROJECT in project_type){
         write_output_files = write_output_files
         write_output_report = write_output_report
         database_dir = database_file_dir_new
-        file = FILE
+        file_name = FILE_NAME
+        station_name = STATION_NAME
         start_date = dwnl_info$Last_date
         logger_info_file = logger_info_file
         record_check = dwnl_info$record_check
         
-        output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
+        output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
         
         rm(dwnl_info)
         
@@ -252,7 +265,8 @@ for(PROJECT in project_type){
                                         write_output_files = write_output_files ,
                                         write_output_report = write_output_report ,
                                         database_dir = database_dir,
-                                        file = file ,
+                                        file_name = file_name ,
+                                        station_name = station_name,
                                         start_date = start_date,
                                         logger_info_file = logger_info_file,
                                         record_check = record_check))
@@ -275,7 +289,7 @@ for(PROJECT in project_type){
         }
         
         
-        out_filename_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_",out_filename_date,".html",sep = "")
+        out_filename_report = paste("DQC_Report_",STATION_NAME,"_",out_filename_date,".html",sep = "")
         
         if(file.exists(paste(output_dir_report,out_filename_report,sep = ""))){
           
@@ -303,48 +317,50 @@ for(PROJECT in project_type){
         
         
         if(!is.na(flag_missing_dates)){
-          if(flag_new_overlap == 1){
-            if(write_output_report == TRUE){
-              final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
-                             flags_df$value,
-                             paste(output_dir_report,out_filename_report,sep = ""),
-                             NA,
-                             NA)
+          if(flag_logger_number == 0){
+            if(flag_new_overlap == 1){
+              if(write_output_report == TRUE){
+                final_info = c(STATION_NAME, "Analyzed and write output",
+                               flags_df$value,
+                               paste(output_dir_report,out_filename_report,sep = ""),
+                               NA,
+                               NA)
+              }else{
+                final_info = c(STATION_NAME, "Analyzed and write output",
+                               flags_df$value,
+                               NA,
+                               NA,
+                               NA)
+              }
             }else{
-              final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
-                             flags_df$value,
-                             NA,
-                             NA,
-                             NA)
-            }
-          }else{
-            download_table$Last_date[w_dwnl] = last_date
-            download_table$Last_Modification[w_dwnl] = date_last_modif_file
-            write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
-            
-            if(write_output_report == TRUE){
-              final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
-                             flags_df$value,
-                             paste(output_dir_report,out_filename_report,sep = ""),
-                             paste(output_dir_data,sep = ""),
-                             paste(file_names[length(file_names)],sep = ""))
-            }else{
-              final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed and write output",
-                             flags_df$value,
-                             NA,
-                             paste(output_dir_data_new,sep = ""),
-                             paste(file_names[length(file_names)],sep = ""))
+              download_table$Last_date[w_dwnl] = last_date
+              download_table$Last_Modification[w_dwnl] = date_last_modif_file
+              write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
+              
+              if(write_output_report == TRUE){
+                final_info = c(STATION_NAME, "Analyzed and write output",
+                               flags_df$value,
+                               paste(output_dir_report,out_filename_report,sep = ""),
+                               paste(output_dir_data,sep = ""),
+                               paste(file_names[length(file_names)],sep = ""))
+              }else{
+                final_info = c(STATION_NAME, "Analyzed and write output",
+                               flags_df$value,
+                               NA,
+                               paste(output_dir_data_new,sep = ""),
+                               paste(file_names[length(file_names)],sep = ""))
+              }
             }
           }
         }else{
           # file_stopped = c(file_stopped, FILE)
           if(write_output_report == TRUE){
-            final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",
+            final_info = c(STATION_NAME, "Analyzed with errors",
                            flags_df$value,
                            paste(output_dir_report,out_filename_report,sep = ""),
                            NA, NA )
           }else{
-            final_info = c(substring(FILE,1,nchar(FILE)-4), "Analyzed with errors",
+            final_info = c(STATION_NAME, "Analyzed with errors",
                            flags_df$value,
                            NA,
                            NA, NA )
@@ -354,9 +370,9 @@ for(PROJECT in project_type){
         }
         
       } else {
-        warning(paste("File",FILE, "already analyzed!"))
+        warning(paste(STATION_NAME, "already analyzed!"))
         # file_already_processed = c(file_already_processed,FILE)
-        final_info = c(substring(FILE,1,nchar(FILE)-4), "Already analyzed",
+        final_info = c(STATION_NAME, "Already analyzed",
                        NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                        NA,
                        NA, NA)
@@ -365,7 +381,7 @@ for(PROJECT in project_type){
       }
       
     }else{
-      final_info = c(substring(FILE,1,nchar(FILE)-4), "Not analyzed",
+      final_info = c(STATION_NAME, "Not analyzed",
                      NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                      NA,
                      NA, NA)

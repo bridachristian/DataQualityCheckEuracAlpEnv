@@ -83,9 +83,9 @@ final_2$flag_new_overlap[ff$flag_new_overlap == 0] = "G"
 final_2$flag_new_missing_dates[ff$flag_new_missing_dates == 1] = "Y" 
 final_2$flag_new_missing_dates[ff$flag_new_missing_dates == 0] = "G"
 
-final_2$flag_append_new[ff$flag_append_new == 0] = "G"
-final_2$flag_append_new[ff$flag_append_new == 1] = "R"
-final_2$flag_append_new[ff$flag_append_new == -1] = "Y" 
+final_2$flag_missing_records_new[ff$flag_missing_records_new == 1] = "R" 
+final_2$flag_missing_records_new[ff$flag_missing_records_new == 0] = "G"
+final_2$flag_missing_records_new[ff$flag_missing_records_new == 50] = "GR"
 
 colnames(final_2) = c("Station",
                       "Status",

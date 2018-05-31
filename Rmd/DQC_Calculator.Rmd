@@ -104,6 +104,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
   if(length(w_logger) == 0){
     logger_info_csv = rbind(logger_info_csv, c(substring(file, 1, nchar(file)-4), logger_number, software_version))
     write.csv(logger_info_csv,logger_info_file,row.names = F,col.names = F )
+    flag_logger_number = 0
   }else{
     logger_info = logger_info_csv[w_logger,]
     if(logger_number != logger_info[,2]){
@@ -131,12 +132,24 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
       }else{
         
         if(as.POSIXct(start_date,tz = 'Etc/GMT-1') < time_data[length(time_data)]){
-          original = data[(which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))+1):nrow(data),]      # possible issues in data subset!!! to check 
-          mydata = data[(which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))+1):nrow(data),]
           
-          flag_date = 0
+          w_date = which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))
           
-          rm(data)
+          if(length(w_date) != 0){
+            original = data[(w_date + 1):nrow(data),]      # possible issues in data subset!!! to check 
+            mydata = data[(w_date + 1):nrow(data),]
+            
+            flag_date = 0
+            
+            rm(data)
+          }else{
+            original = data
+            mydata = data 
+            
+            flag_date = 0 
+            
+            rm(data)
+          }
           
         } else {
           
@@ -459,23 +472,6 @@ if(flag_empty == 0){
                   datatable(df_comp$comparison_df[,-1])
                   df_comp$html_output
                   print(df_comp$change_summary)
-                  
-                  # if(ncol(old_header) != ncol(header)){
-                  #   
-                  # }else{
-                  #   for(c in 1: max(ncol(old_header),ncol(header))){
-                  #     for(r in 1: data_from_row-1){
-                  #       
-                  #     }
-                  #   }
-                  #   
-                  # }else{
-                  #   
-                  # }
-                  
-                  
-                  # CALCOLARE DOVE SONO LE DIFFERENZE POI ELIMINARE  mydata! 
-                  # SE NON ELIMINO mydata VIENE AGGIONATA LA DOWNLOAD TABLE!!!!
                   
                 }
               }else{

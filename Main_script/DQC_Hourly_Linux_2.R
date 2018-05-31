@@ -39,14 +39,14 @@ main_dir = "/shared/"
 
 project_type = c("LTER","MONALISA")
 
-# PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
+PROJECT = "MONALISA" # Possible project: "LTER"; "MONALISA";
 # input_dir <- paste(main_dir,"/loggernet/scheduling_test/",sep = "")                    # where input files are
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
-DQC_setting_dir <- paste(main_dir,"test_christian/Stations_Data/DQC/",sep = "")
+DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
 logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.csv", sep = "")
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
@@ -55,9 +55,9 @@ download_table_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 # file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
 for(PROJECT in project_type){
-  data_output_dir <- paste(main_dir,"test_christian/Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
-  report_output_dir <- paste(main_dir,"test_christian/Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/DQC_Reports/",sep = "")  # where to put output reports
-  database_file_dir <- paste(main_dir,"test_christian/Stations_Data/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
+  data_output_dir <- paste(main_dir,"/Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
+  report_output_dir <- paste(main_dir,"/Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/DQC_Reports/",sep = "")  # where to put output reports
+  database_file_dir <- paste(main_dir,"/Stations_Data/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
   
   data_from_row =  5                                             # <-- Row number of first data
   header_row_number =  2                                         # <-- Row number of header
@@ -86,11 +86,39 @@ for(PROJECT in project_type){
   
   # ..... files selection .....................................................................................................................................
   
-  files_available = dir(input_dir,pattern = ".dat")                  # <-- Admitted pattern:  ".dat" or ".csv"
+  files_available_raw = dir(input_dir,pattern = ".dat")                  # <-- Admitted pattern:  ".dat" or ".csv"
   
-  files_available = files_available[!grepl(pattern = "backup",x = files_available)]          # REMOVE FILES WITH WRONG NAMES (.dat.backup not admitted) 
-  files_available = files_available[!grepl(pattern = "LTER",x = files_available)]          # REMOVE FILES WITH WRONG NAMES (LTER_XXX.dat not admitted) 
-  files_available = files_available[!grepl(pattern = "MONALISA",x = files_available)]      # REMOVE FILES WITH WRONG NAMES (MONALISA_XXX.dat not admitted) 
+  files_available_raw = files_available_raw[!grepl(pattern = "backup",x = files_available_raw)]          # REMOVE FILES WITH WRONG NAMES (.dat.backup not admitted) 
+  files_available_raw = files_available_raw[!grepl(pattern = "IP",x = files_available_raw)]          # REMOVE FILES WITH WRONG NAMES (.dat.backup not admitted) 
+  
+  files_available = files_available_raw[grepl(pattern = paste("^",PROJECT,sep = ""),x = files_available_raw)]          # REMOVE FILES WITH WRONG NAMES (LTER_XXX.dat not admitted) 
+  
+  files_no_project = substring(files_available, nchar(PROJECT)+2, nchar(files_available)-4)
+  
+  if(length(files_no_project) > 0){
+    u1 =c()
+    logg_data_NAME = c()
+    table_data_NAME = c()
+    
+    for(h in 1:length(files_no_project)){
+      u1[h] = gregexpr(files_no_project,pattern = "_")[[h]][1]   # <- here we find the sencond "[[1]][2]" underscore!!!!!
+      logg_data_NAME[h] = substring(text = files_no_project[h],first = 1,last = u1[h]-1)
+      table_data_NAME[h] = substring(text = files_no_project[h],first = u1[h]+1,last = nchar(file_no_project[h]))
+    }  
+    df_files = data.frame(files_available, logg_data_NAME, table_data_NAME)
+    colnames(df_files) = c("Files", "LoggerNet_name", "Datatable_name")
+    
+    if(PROJECT == "LTER"){                                                                        # <--Filter files based on Project (diffent if is MONALISA or LTER)
+      file_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
+    }
+    
+    if(PROJECT == "MONALISA"){                                                                        # <--Filter files based on Project (diffent if is MONALISA or LTER)
+      file_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
+    }
+  } else{
+    files_available = files_no_project
+  }
+  
   
   # ..........................................................................................................................................................
   

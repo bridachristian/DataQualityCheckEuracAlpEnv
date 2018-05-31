@@ -126,13 +126,23 @@ output_dir_raw <-params$output_dir_raw
         }else{
           
           if(as.POSIXct(start_date,tz = 'Etc/GMT-1') < time_data[length(time_data)]){
-            original = data[(which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))+1):nrow(data),]      # possible issues in data subset!!! to check 
-            mydata = data[(which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))+1):nrow(data),]
+            w_date = which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))
             
-            flag_date = 0
-            
-            rm(data)
-            
+            if(length(w_date) != 0){
+              original = data[(w_date + 1):nrow(data),]      # possible issues in data subset!!! to check 
+              mydata = data[(w_date + 1):nrow(data),]
+              
+              flag_date = 0
+              
+              rm(data)
+            }else{
+              original = data
+              mydata = data 
+              
+              flag_date = 0 
+              
+              rm(data)
+            } 
           } else {
             
             flag_date = 1

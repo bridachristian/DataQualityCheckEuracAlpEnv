@@ -79,10 +79,12 @@ final_2$flag_out_of_range[ff$flag_out_of_range == 0] = "G"
 colnames(final_2) = c("Station",
                       "Status",
                       "File is empty",
-                      "Structure isssues",
+                      "Logger number",
+                      "Structure issues",
                       "Date issues",
                       "Duplicated rows",
                       "Overlap",
+                      "Missing records",
                       "Missing dates",
                       "Range to update: old variables ",
                       "Range to update: new variable",
@@ -93,7 +95,7 @@ colnames(final_2) = c("Station",
 
 # final_2 = cbind(final_2[,1:2],message,final_2[,3:11] )
 
-ff2 = ff[,c(1:11)]
+ff2 = ff[,c(1:13)]
 colnames(ff2)  = colnames(final_2)
 melt_final = melt(final_2,id.vars = "Station")
 melt_ff2 = melt(ff2[,-2],id.vars = "Station")
@@ -102,12 +104,12 @@ melt_ff2 = melt(ff2[,-2],id.vars = "Station")
 message = data.frame(final_dataframe[,1], rep("Status", times = nrow(final_dataframe)), final_dataframe [,2])
 colnames(message) = colnames(melt_final)
 
-mycolors = c("lightblue","red", "yellow","green","white")
-names(mycolors) = c("B", "R", "Y", "G", "NA")
+mycolors = c("lightblue","red", "yellow","green","grey","white")
+names(mycolors) = c("B", "R", "Y", "G","GR", "NA")
 # colScale <- scale_fill_manual(name = "mycolors",values =  mycolors, drop = FALSE)
 colScale <- scale_fill_manual(name = "",values = mycolors,
-                              limits = c("B","R", "Y", "G", "NA"),
-                              labels = c("Already processed!","Fatal Error!", "Warning!", "OK!", "Not Evaluated!"),
+                              limits = c("B","R", "Y", "G", "GR", "NA"),
+                              labels = c("Already processed!","Fatal Error!", "Warning!", "OK!","Check disabled!", "Not Evaluated!"),
                               drop = FALSE)
 
 

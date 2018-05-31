@@ -27,25 +27,22 @@ library(htmltools)
 
 # ..... Params section .....................................................................................................................................
 
-input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Input/"                # where input files are
-# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Input/"                # where input files are
-data_output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Output/Data/"   # where to put output files
-# output_dir_data <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/data/"   # where to put output files
-report_output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Output/Report/"   # where to put output reports
-# report_output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DataQualityCheckEuracAlpEnv/Data/Output/report/"   # where to put output reports
-project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+main_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/"
 
-# input_dir <- "C:/Users/azandonai/Desktop/Data/DQC/in/"                # where input files are
-# data_output_dir <- "C:/Users/azandonai/Desktop/Data/DQC/out/"   # where to put output files
-# report_output_dir <- "C:/Users/azandonai/Desktop/Data/DQC/out/"   # where to put output reports
+input_dir <- paste(main_dir, "/DataQualityCheck_results/Input/",sep = "")               # where input files are
+data_output_dir <- paste(main_dir, "/DataQualityCheck_results/Output/Data/",sep = "")   # where to put output files
+report_output_dir <- paste(main_dir, "/DataQualityCheck_results/Output/Report/",sep = "")   # where to put output reports
+project_dir <- paste(main_dir, "/DataQualityCheckEuracAlpEnv/",sep = "")  # where package is developed or cloned from github
+
+# input_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Input/"                # where input files are
+# data_output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Output/Data/"   # where to put output files
+# report_output_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Output/Report/"   # where to put output reports
 # project_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-# range_dir <- "C:/Users/azandonai/Desktop/Data/DQC/process/"
-# download_table_dir <- "C:/Users/azandonai/Desktop/Data/DQC/process/"
+
 
 data_from_row =  5                                             # <-- Row number of first data
 header_row_number =  2                                         # <-- Row number of header
 datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
-# datetime_format =  "yyyy-mm-dd HH:MM"                          # <-- datetime format. Use only: y -> year, m -> month, d -> day, H -> hour, M -> minute
 datetime_format =  "%Y-%m-%d %H:%M"                          # <-- datetime format. Use only: Y -> year, m -> month, d -> day, H -> hour, M -> minute
 datetime_sampling =  "15 min"
 record_header =  "RECORD"
@@ -53,18 +50,12 @@ range_file =  "Range.csv"
 
 write_output_files =  "TRUE"
 write_output_report =  "TRUE"
-
-
-# file <- "M4s.dat"
-# start_date <- NA
-
 # ~~~ Default directory ~~~~
 
 
-range_dir <-"H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Process/"
-# download_table_dir <- paste(project_dir, "Data/Support_files/Download_table/",sep = "")
-download_table_dir <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Process/"
-logger_info_file <- "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/DataQualityCheck_results/Process/Logger_number_and_software.csv"
+range_dir <-paste(main_dir, "/DataQualityCheck_results/Process/",sep = "")
+download_table_dir <- paste(main_dir, "/DataQualityCheck_results/Process/",sep = "")
+logger_info_file <- paste(main_dir, "/DataQualityCheck_results/Process/Logger_number_and_software.csv",sep = "")
 
 Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
 

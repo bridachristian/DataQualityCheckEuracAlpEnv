@@ -39,7 +39,7 @@ main_dir = "/shared/"
 
 project_type = c("LTER","MONALISA")
 
-PROJECT = "MONALISA" # Possible project: "LTER"; "MONALISA";
+PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 # input_dir <- paste(main_dir,"/loggernet/scheduling_test/",sep = "")                    # where input files are
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
@@ -69,7 +69,6 @@ for(PROJECT in project_type){
   
   write_output_files =  "TRUE"
   write_output_report =  "FALSE"
-  
   
   # file <- "M4s.dat"
   # start_date <- NA

@@ -363,9 +363,10 @@ if(flag_empty == 0){
                         records_missing_new = rec_miss[[2]]
                         records_restart_new = rec_miss[[3]]
                       }else{
-                        flag_missing_records_new = 50
+                        flag_missing_records_new_tmp = 50
                       }
                       
+                      if(flag_missing_records_new_tmp != 1){
                       new_missing  <- missing_dates(DATA = new_mydata,
                                                     DATETIME_HEADER = datetime_header,
                                                     RECORD_HEADER = record_header, 

@@ -497,6 +497,7 @@ if(flag_empty == 0){
                       # SE NON ELIMINO mydata VIENE AGGIONATA LA DOWNLOAD TABLE!!!!
                       
                     }
+                  }
                   }else{
                     
                     # create a new dataframe for missing year
@@ -534,7 +535,7 @@ if(flag_empty == 0){
                     
                     
                   }
-                }
+                
                 
                 # inserire qui conversione flag tmp
                 if(all(flag_new_duplicates_rows_tmp == 0)){

@@ -64,7 +64,7 @@ Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = 
 
 project_type = c("LTER","MONALISA")
 
-PROJECT = "LTER"   # <- comment at the end of test
+PROJECT = "MONALISA"   # <- comment at the end of test
 
 for(PROJECT in project_type){
 
@@ -118,7 +118,7 @@ for(PROJECT in project_type){
 
 
   ############################################
-  t = 1
+  t = 2
 
   # final_dataframe = data.frame(t(rep(NA, times = 14)))
   final_dataframe = matrix(ncol = 16, nrow = length(files_available))
@@ -196,7 +196,7 @@ for(PROJECT in project_type){
         output_file_report = paste("DQC_Report_",station_name,"_tmp.html",sep = "")
         # output_file_report = paste("DQC_Report_",substring(FILE,1,nchar(FILE)-4),"_tmp.html",sep = "")
 
-        cat(paste("********* b. File under processing:", station_name, "*********"),sep = "\n")
+        cat(paste("********* b. Station under processing:", station_name, "*********"),sep = "\n")
 
 
         rmarkdown::render(input = Rmd_report_generator ,
@@ -223,7 +223,7 @@ for(PROJECT in project_type){
 
         gc(reset = T)
 
-        if(flag_empty == 0 & flag_logger_number == 0 & flag_error_df == 0){
+        if(flag_empty == 0 & flag_logger_number == 0 & flag_error_df == 0 & flag_date == 0){
           out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
@@ -343,3 +343,4 @@ for(PROJECT in project_type){
 
 
 }
+

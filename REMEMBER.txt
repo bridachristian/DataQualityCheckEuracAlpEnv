@@ -1,0 +1,2 @@
+REMEMBER:
+1. script DQC automatico Linux: Aggiungiere ordinamento input data subito dopo averli importati! Stessa cosa quando faccio l'append.

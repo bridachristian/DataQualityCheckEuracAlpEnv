@@ -529,6 +529,6 @@ DQC_function = function(input_dir,
     }
   }
   
-  output = list(mydata, flags_df)
+  output = list(mydata, flags_df,file_names)
 }
 

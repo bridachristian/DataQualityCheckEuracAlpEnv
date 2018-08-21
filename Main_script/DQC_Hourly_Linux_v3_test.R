@@ -136,7 +136,7 @@ for(PROJECT in project_type){
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
   
   ############################################
-  t = 1
+  t = 2
   
   final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
   
@@ -248,34 +248,59 @@ for(PROJECT in project_type){
         
         rm(dwnl_info)
         
-        rmarkdown::render(input = Rmd_report_generator ,
-                          output_file = output_file_report,
-                          output_dir = output_dir_report,
-                          params = list(input_dir = input_dir ,
-                                        output_dir_data = output_dir_data ,
-                                        output_dir_raw = output_dir_raw,
-                                        output_dir_report = output_dir_report ,
-                                        project_dir = project_dir ,
-                                        data_from_row = data_from_row ,
-                                        header_row_number = header_row_number ,
-                                        datetime_header = datetime_header ,
-                                        datetime_format = datetime_format ,
-                                        datetime_sampling = datetime_sampling ,
-                                        record_header = record_header ,
-                                        range_file = range_file ,
-                                        write_output_files = write_output_files ,
-                                        write_output_report = write_output_report ,
-                                        database_dir = database_dir,
-                                        file_name = file_name ,
-                                        station_name = station_name,
-                                        start_date = start_date,
-                                        logger_info_file = logger_info_file,
-                                        record_check = record_check))
+        aaa = DQC_function(input_dir,
+                           output_dir_data,
+                           output_dir_report,
+                           project_dir,
+                           data_from_row,
+                           header_row_number,
+                           datetime_header,
+                           datetime_format,
+                           datetime_sampling,
+                           record_header,
+                           range_file,
+                           write_output_files,
+                           write_output_report,
+                           file_name,
+                           station_name,
+                           start_date,
+                           database_dir,
+                           logger_info_file,
+                           record_check,
+                           output_dir_raw)
         
+        # rmarkdown::render(input = Rmd_report_generator ,
+        #                   output_file = output_file_report,
+        #                   output_dir = output_dir_report,
+        #                   params = list(input_dir = input_dir ,
+        #                                 output_dir_data = output_dir_data ,
+        #                                 output_dir_raw = output_dir_raw,
+        #                                 output_dir_report = output_dir_report ,
+        #                                 project_dir = project_dir ,
+        #                                 data_from_row = data_from_row ,
+        #                                 header_row_number = header_row_number ,
+        #                                 datetime_header = datetime_header ,
+        #                                 datetime_format = datetime_format ,
+        #                                 datetime_sampling = datetime_sampling ,
+        #                                 record_header = record_header ,
+        #                                 range_file = range_file ,
+        #                                 write_output_files = write_output_files ,
+        #                                 write_output_report = write_output_report ,
+        #                                 database_dir = database_dir,
+        #                                 file_name = file_name ,
+        #                                 station_name = station_name,
+        #                                 start_date = start_date,
+        #                                 logger_info_file = logger_info_file,
+        #                                 record_check = record_check))
+        # 
         
+        mydata = aaa[[1]]
+        flags_df = aaa[[2]]
+        mylist <- split(flags_df$value, seq(nrow(flags_df)))
+        names(mylist) = flags_df$flag_names
+       
         
-        
-        if(flag_empty == 0 & flag_logger_number == 0 & flag_error_df == 0 & flag_date == 0){
+        if(mylist$flag_empty == 0 & mylist$flag_logger_number == 0 & mylist$flag_error_df == 0 & mylist$flag_date == 0){
           out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
@@ -290,7 +315,8 @@ for(PROJECT in project_type){
           out_filename_date = "no_datetime"
         }
         
-        
+        # non serve?  
+        # Verificare che si puo togliere da qui: 
         out_filename_report = paste("DQC_Report_",STATION_NAME,"_",out_filename_date,".html",sep = "")
         
         if(file.exists(paste(output_dir_report,out_filename_report,sep = ""))){
@@ -316,11 +342,12 @@ for(PROJECT in project_type){
           file.remove(paste(output_dir_report,output_file_report,sep = ""))
         }
         
+        # a qui!
+        # Report su script esterno! Nella funzione DQC_Function prevedere il salvataggio e l' append degli errori!
         
-        
-        if(!is.na(flag_missing_dates)){
-          if(flag_logger_number == 0){
-            if(flag_new_overlap == 1){
+        if(!is.na(mylist$flag_missing_dates)){
+          if(mylist$flag_logger_number == 0){
+            if(mylist$flag_new_overlap == 1){
               if(write_output_report == TRUE){
                 final_info = c(STATION_NAME, "Analyzed and write output",
                                flags_df$value,

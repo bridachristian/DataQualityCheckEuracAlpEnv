@@ -136,7 +136,7 @@ for(PROJECT in project_type){
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
   
   ############################################
-  t = 2
+  t = 1
   
   final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
   
@@ -248,7 +248,7 @@ for(PROJECT in project_type){
         
         rm(dwnl_info)
         
-        aaa = DQC_function(input_dir,
+        DQC_results = DQC_function(input_dir,
                            output_dir_data,
                            output_dir_report,
                            project_dir,
@@ -294,11 +294,12 @@ for(PROJECT in project_type){
         #                                 record_check = record_check))
         # 
         
-        mydata = aaa[[1]]
-        flags_df = aaa[[2]]
+        mydata = DQC_results[[1]]
+        flags_df = DQC_results[[2]]
+        file_names = DQC_results[[3]]
+
         mylist <- split(flags_df$value, seq(nrow(flags_df)))
         names(mylist) = flags_df$flag_names
-       
         
         if(mylist$flag_empty == 0 & mylist$flag_logger_number == 0 & mylist$flag_error_df == 0 & mylist$flag_date == 0){
           out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),

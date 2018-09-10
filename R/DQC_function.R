@@ -1,4 +1,5 @@
 
+
 DQC_function = function(input_dir,
                         output_dir_data,
                         output_dir_report,
@@ -12,16 +13,18 @@ DQC_function = function(input_dir,
                         range_file,
                         write_output_files,
                         write_output_report,
-                        file,
+                        file_name,
+                        station_name,
                         start_date,
                         database_dir,
                         logger_info_file,
-                        record_check, 
+                        record_check,
                         output_dir_raw){
   
   # ..... Define flags ..................................................................................................................................
   
   flag_empty = NA
+  flag_logger_number = NA
   flag_error_df = NA
   flag_date = NA
   flag_duplicates_rows = NA
@@ -32,17 +35,15 @@ DQC_function = function(input_dir,
   flag_range_variable_new = NA
   flag_out_of_range = NA
   
-  flag_logger_number = NA
-  
   flag_new_duplicates_rows = NA
   flag_new_overlap = NA
   flag_new_missing_dates = NA
   
-  flag_append_new = NA
+  flag_missing_records_new = NA
   
   # ..... Body ..........................................................................................................................................
   
-  if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file) == TRUE){
+  if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file_name) == TRUE){
     
     flag_empty = 1
     
@@ -50,7 +51,7 @@ DQC_function = function(input_dir,
     
     flag_empty = 0
     
-    data_import <- read_data(INPUT_DATA_DIR = input_dir, FILE_NAME = file,                             # read and import data well formatted
+    data_import <- read_data(INPUT_DATA_DIR = input_dir, FILE_NAME = file_name,                             # read and import data well formatted
                              DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format,
                              DATA_FROM_ROW = data_from_row, HEADER_ROW_NUMBER = header_row_number)  
     header = data_import [[1]]
@@ -63,10 +64,10 @@ DQC_function = function(input_dir,
     logger_number = header[1,4]                                                                   # check logger numbers
     software_version = header[1,6]
     logger_info_csv = read.csv(file = logger_info_file, stringsAsFactors = F)
-    w_logger = which(logger_info_csv[,1] == substring(file, 1, nchar(file)-4))
+    w_logger = which(logger_info_csv[,1] == station_name)
     
     if(length(w_logger) == 0){
-      logger_info_csv = rbind(logger_info_csv, c(substring(file, 1, nchar(file)-4), logger_number, software_version))
+      logger_info_csv = rbind(logger_info_csv, c(station_name, logger_number, software_version))
       write.csv(logger_info_csv,logger_info_file,row.names = F,col.names = F )
     }else{
       logger_info = logger_info_csv[w_logger,]
@@ -95,13 +96,23 @@ DQC_function = function(input_dir,
         }else{
           
           if(as.POSIXct(start_date,tz = 'Etc/GMT-1') < time_data[length(time_data)]){
-            original = data[(which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))+1):nrow(data),]      # possible issues in data subset!!! to check 
-            mydata = data[(which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))+1):nrow(data),]
+            w_date = which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))
             
-            flag_date = 0
-            
-            rm(data)
-            
+            if(length(w_date) != 0){
+              original = data[(w_date + 1):nrow(data),]      # possible issues in data subset!!! to check 
+              mydata = data[(w_date + 1):nrow(data),]
+              
+              flag_date = 0
+              
+              rm(data)
+            }else{
+              original = data
+              mydata = data 
+              
+              flag_date = 0 
+              
+              rm(data)
+            } 
           } else {
             
             flag_date = 1
@@ -150,8 +161,9 @@ DQC_function = function(input_dir,
               rec_miss  <- missing_record(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
               flag_missing_records = rec_miss[[1]]
               records_missing = rec_miss[[2]]
+              records_restart = rec_miss[[3]]
             }else{
-              flag_missing_records = NA
+              flag_missing_records = 50
             }
             
             if(flag_missing_records != 1){
@@ -216,6 +228,7 @@ DQC_function = function(input_dir,
   
   
   
+  
   # ..... Output ..........................................................................................................................................
   
   if(flag_empty == 0){
@@ -228,12 +241,12 @@ DQC_function = function(input_dir,
                 time_mydata = as.POSIXct(mydata[,which(colnames(mydata)== datetime_header)],format = datetime_format, tz = 'Etc/GMT-1')
                 time_orig = as.POSIXct(orig_wihtout_dupli[,which(colnames(orig_wihtout_dupli)== datetime_header)],format = datetime_format, tz = 'Etc/GMT-1')
                 years = as.numeric(unique(format(time_mydata, format = "%Y")))
-                file_names = paste(substring(file,1, nchar(file)-4),"_", years,".csv",sep = "")
+                file_names = paste(station_name,"_", years,".csv",sep = "")
                 
                 flag_new_duplicates_rows_tmp = c()
                 flag_new_overlap_tmp = c()
                 flag_new_missing_dates_tmp = c()
-                flag_append_new_tmp = c()
+                flag_missing_records_new_tmp = c()
                 
                 for(k in 1: length(years)){
                   
@@ -273,7 +286,7 @@ DQC_function = function(input_dir,
                     
                     rm(old_original_list)
                     
-                    if(identical(old_header, header)){
+                    if(identical(old_header, header)){   # <-- delete  [-1,] when all station are updated. Substitute header new in old datatable. 
                       
                       # append new data to old data if headers new and old are the same
                       df_toadd =  mydata[which(format(time_mydata, format = "%Y") == years[k]),]
@@ -313,104 +326,105 @@ DQC_function = function(input_dir,
                         
                         flag_new_overlap_tmp = c(flag_new_overlap_tmp,0)
                         
-                        new_missing  <- missing_dates(DATA = new_mydata,
-                                                      DATETIME_HEADER = datetime_header,
-                                                      RECORD_HEADER = record_header, 
-                                                      DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
-                        new_mydata = new_missing[[1]]
-                        new_missing_index_date = new_missing[[2]]
-                        
-                        
-                        # check if the first record in new data is immediately successive to the last record
-                        # nrow(new_mydata)
-                        # nrow(old_data)
-                        # 
-                        # if(nrow(new_mydata) == nrow(old_data)){
-                        #   flag_append_tmp = 1
-                        #   flag_append_new_tmp = c(flag_append_new_tmp, flag_append_tmp)
-                        #   }else {}
-                        
-                        # aggiungere controllo se file gia presenete che sia almeno successivo all' ultima data!
-                        # ora ci sono problemi perche tmp_new_datetime == NA
-                        r = 0
-                        repeat{
-                          r = r+1 
-                          tmp_new_datetime = new_mydata[which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)+r, which(colnames(new_mydata) == datetime_header)] # check if date is too late!!
-                          
-                          tmp_new_record = new_mydata[which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)+r, which(colnames(new_mydata) == record_header)] 
-                          if(tmp_new_record != -1){
-                            break()
-                          }
+                        if(record_check == 1){
+                          w_last = which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)
+                          rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+                          flag_missing_records_new_tmp = rec_miss[[1]]
+                          records_missing_new = rec_miss[[2]]
+                          records_restart_new = rec_miss[[3]]
+                        }else{
+                          flag_missing_records_new_tmp = 50
                         }
                         
-                        first_new_datetime = new_mydata[which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)+r, which(colnames(new_mydata) == datetime_header)]
-                        
-                        first_new_record = new_mydata[which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)+r, which(colnames(new_mydata) == record_header)] 
-                        
-                        if(first_new_record == last_old_record + 1| first_new_record == 0 | first_new_record == -1){
-                          flag_append_tmp = 0
-                          flag_append_new_tmp = c(flag_append_new_tmp,flag_append_tmp)
-                        } else {
-                          flag_append_tmp = -1
-                          flag_append_new_tmp = c(flag_append_new_tmp, flag_append_tmp)
-                        }
-                        
-                        
-                        if(record_check != 1 | flag_append_tmp != -1){     
-                          # We avoid to write output if record control is active (record_check = 1) and record has some issues (indicated by flag_append_new = -1)
-                          
-                          # prepare tata for output
-                          
-                          new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
-                          orig_data_new <- time_to_char(DATA = orig_data_new, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                        if(flag_missing_records_new_tmp != 1){
+                          new_missing  <- missing_dates(DATA = new_mydata,
+                                                        DATETIME_HEADER = datetime_header,
+                                                        RECORD_HEADER = record_header, 
+                                                        DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
+                          new_mydata = new_missing[[1]]
+                          new_missing_index_date = new_missing[[2]]
                           
                           
-                          new_time_tot = as.POSIXct(new_mydata[,which(colnames(new_mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
-                          new_time_orig = as.POSIXct(orig_data_new[,which(colnames(orig_data_new) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+                          # r = 0
+                          # repeat{
+                          #   r = r+1 
+                          #   tmp_new_datetime = new_mydata[which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)+r, which(colnames(new_mydata) == datetime_header)] # check if date is too late!!
+                          #   
+                          #   tmp_new_record = new_mydata[which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)+r, which(colnames(new_mydata) == record_header)] 
+                          #   if(tmp_new_record != -1){
+                          #     break()
+                          #   }
+                          # }
+                          # 
+                          # first_new_datetime = new_mydata[which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)+r, which(colnames(new_mydata) == datetime_header)]
+                          # 
+                          # first_new_record = new_mydata[which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)+r, which(colnames(new_mydata) == record_header)] 
+                          # 
+                          # if(first_new_record == last_old_record + 1| first_new_record == 0 | first_new_record == -1){
+                          #   flag_append_tmp = 0
+                          #   flag_append_new_tmp = c(flag_append_new_tmp,flag_append_tmp)
+                          # } else {
+                          #   flag_append_tmp = -1
+                          #   flag_append_new_tmp = c(flag_append_new_tmp, flag_append_tmp)
+                          # }
                           
-                          new_time_missing = new_missing_index_date[,2]
                           
-                          if(length(which(new_time_tot %in% new_time_missing )) == 0){
-                            flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,0)      # No missing dates
-                          }else{
-                            flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,1)      # YES missing dates
+                          if(record_check != 1 | flag_missing_records_new_tmp != 1){     
+                            # We avoid to write output if record control is active (record_check = 1) and record has some issues (indicated by flag_append_new = -1)
+                            
+                            # prepare tata for output
+                            
+                            new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                            orig_data_new <- time_to_char(DATA = orig_data_new, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                            
+                            
+                            new_time_tot = as.POSIXct(new_mydata[,which(colnames(new_mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+                            new_time_orig = as.POSIXct(orig_data_new[,which(colnames(orig_data_new) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+                            
+                            new_time_missing = new_missing_index_date[,2]
+                            
+                            if(length(which(new_time_tot %in% new_time_missing )) == 0){
+                              flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,0)      # No missing dates
+                            }else{
+                              flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,1)      # YES missing dates
+                            }
+                            
+                            rm(missing)
+                            
+                            colnames(header) = header[1,]
+                            out_my = new_mydata
+                            colnames(out_my) = colnames(header)
+                            out_mydata=rbind(header[-1,],out_my)
+                            file_name_output = file_names[k]
+                            flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 0)
+                            write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                            
+                            out_orig = orig_data_new[which(format(new_time_orig, format = "%Y") == years[k]),]
+                            out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
+                            colnames(out_orig) = colnames(header)
+                            out_original=rbind(header[-1,],out_orig)
+                            file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
+                            write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
+                            
+                            # create a dataframe database formatted
+                            
+                            db_mydata = new_mydata
+                            db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
+                            first_row_selected = which(db_mydata[, which(colnames(db_mydata) == datetime_header)] == last_old_datetime)+1
+                            db_mydata = db_mydata[first_row_selected: nrow(db_mydata),]
+                            from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]
+                            to_date = db_mydata[nrow(db_mydata),which(colnames(db_mydata) == datetime_header)]
+                            db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = datetime_format ) #change here if you want change datetime output format (for example  in database "%Y-%m-%dT%H:%M")
+                            colnames(db_mydata) = colnames(header)
+                            db_mydata=rbind(header[-1,],db_mydata)
+                            date_to_print_filename = paste(paste(format(from_date,format = "%Y"),format(from_date,format = "%m"),format(from_date,format = "%d"),
+                                                                 format(from_date,format = "%H"),format(from_date,format = "%M"),sep = ""),
+                                                           paste(format(to_date,format = "%Y"),format(to_date,format = "%m"),format(to_date,format = "%d"),
+                                                                 format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
+                            
+                            write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
+                            
                           }
-                          
-                          rm(missing)
-                          
-                          colnames(header) = header[1,]
-                          out_my = new_mydata
-                          colnames(out_my) = colnames(header)
-                          out_mydata=rbind(header[-1,],out_my)
-                          file_name_output = file_names[k]
-                          flag_append_new_tmp = c(flag_append_new_tmp, 0)
-                          write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
-                          
-                          out_orig = orig_data_new[which(format(new_time_orig, format = "%Y") == years[k]),]
-                          out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
-                          colnames(out_orig) = colnames(header)
-                          out_original=rbind(header[-1,],out_orig)
-                          file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
-                          write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
-                          
-                          # create a dataframe database formatted
-                          
-                          db_mydata = new_mydata
-                          db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
-                          first_row_selected = which(db_mydata[, which(colnames(db_mydata) == datetime_header)] == last_old_datetime)+1
-                          db_mydata = db_mydata[first_row_selected: nrow(db_mydata),]
-                          from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]
-                          to_date = db_mydata[nrow(db_mydata),which(colnames(db_mydata) == datetime_header)]
-                          db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = datetime_format ) #change here if you want change datetime output format (for example  in database "%Y-%m-%dT%H:%M")
-                          colnames(db_mydata) = colnames(header)
-                          db_mydata=rbind(header[-1,],db_mydata)
-                          date_to_print_filename = paste(paste(format(from_date,format = "%Y"),format(from_date,format = "%m"),format(from_date,format = "%d"),
-                                                               format(from_date,format = "%H"),format(from_date,format = "%M"),sep = ""),
-                                                         paste(format(to_date,format = "%Y"),format(to_date,format = "%m"),format(to_date,format = "%d"),
-                                                               format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
-                          
-                          write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
-                          
                         }
                       }else{
                         flag_new_overlap_tmp = c(flag_new_overlap_tmp,1)
@@ -418,10 +432,9 @@ DQC_function = function(input_dir,
                         colnames(new_overlap)[1]= "File Row"
                       }
                       
-                      
                     }else{
                       
-                      flag_append_new_tmp = c(flag_append_new_tmp, 1)
+                      flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 1)
                       
                       header_t = as.data.frame(t(header))
                       header_t = cbind(rep(NA, times = nrow(header_t)),header_t )
@@ -431,34 +444,9 @@ DQC_function = function(input_dir,
                       old_header_t = cbind(rep(NA, times = nrow(old_header_t)),old_header_t )
                       colnames(old_header_t) = paste("row_",seq(1:ncol(old_header_t))-1,sep = "")
                       
-                      df_comp = compare_df(header_t, old_header_t, group_col ="row_0")
-                      
-                      datatable(df_comp$comparison_df[,-1])
-                      df_comp$html_output
-                      print(df_comp$change_summary)
-                      
-                      # if(ncol(old_header) != ncol(header)){
-                      #   
-                      # }else{
-                      #   for(c in 1: max(ncol(old_header),ncol(header))){
-                      #     for(r in 1: data_from_row-1){
-                      #       
-                      #     }
-                      #   }
-                      #   
-                      # }else{
-                      #   
-                      # }
-                      
-                      
-                      # CALCOLARE DOVE SONO LE DIFFERENZE POI ELIMINARE  mydata! 
-                      # SE NON ELIMINO mydata VIENE AGGIONATA LA DOWNLOAD TABLE!!!!
-                      
                     }
+                    
                   }else{
-                    
-                    # create a new dataframe for missing year
-                    
                     colnames(header) = header[1,]
                     out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
                     colnames(out_my) = colnames(header)
@@ -492,34 +480,37 @@ DQC_function = function(input_dir,
                     
                     
                   }
+                  
+                  
+                  # inserire qui conversione flag tmp
+                  if(all(flag_new_duplicates_rows_tmp == 0)){
+                    flag_new_duplicates_rows = 0
+                  } else{
+                    flag_new_duplicates_rows = 1
+                  }
+                  
+                  if(all(flag_new_overlap_tmp == 0)){
+                    flag_new_overlap = 0
+                  } else{
+                    flag_new_overlap = 1
+                  }
+                  
+                  if(all(flag_new_missing_dates_tmp == 0)){
+                    flag_new_missing_dates = 0
+                  } else{
+                    flag_new_missing_dates = 1
+                  }
+                  
+                  if(record_check == 1){
+                    if(all(flag_missing_records_new_tmp == 0)){
+                      flag_missing_records_new = 0
+                    } else{
+                      flag_missing_records_new = 1
+                    }
+                  }else{
+                    flag_missing_records_new = 50
+                  }
                 }
-                
-                # inserire qui conversione flag tmp
-                if(all(flag_new_duplicates_rows_tmp == 0)){
-                  flag_new_duplicates_rows = 0
-                } else{
-                  flag_new_duplicates_rows = 1
-                }
-                
-                if(all(flag_new_overlap_tmp == 0)){
-                  flag_new_overlap = 0
-                } else{
-                  flag_new_overlap = 1
-                }
-                
-                if(all(flag_new_missing_dates_tmp == 0)){
-                  flag_new_missing_dates = 0
-                } else{
-                  flag_new_missing_dates = 1
-                }
-                
-                if(all(flag_append_new_tmp == 0)){
-                  flag_append_new = 0
-                } else{
-                  flag_append_new = 1
-                }
-                
-                
               }
             }
           }
@@ -528,7 +519,7 @@ DQC_function = function(input_dir,
     }
   }
   
-  flags_names = c("flag_empty","flag_logger_number","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_records","flag_missing_dates","flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range","flag_append_new", "flag_new_overlap", "flag_new_missing_dates" ,"flag_append_new")
+  flags_names = c("flag_empty","flag_logger_number","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_records","flag_missing_dates","flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range", "flag_new_duplicates_rows", "flag_new_overlap", "flag_new_missing_dates" ,"flag_missing_records_new")
   flags_df = data.frame(flags_names, rep(NA,times = length(flags_names)))
   colnames(flags_df) = c("flag_names", "value")
   
@@ -538,7 +529,6 @@ DQC_function = function(input_dir,
     }
   }
   
-  ####################################################################
-  output = list(pippo = 1, topolino = 3)
+  output = list(mydata, flags_df,file_names)
 }
 

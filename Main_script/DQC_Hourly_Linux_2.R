@@ -336,6 +336,7 @@ for(PROJECT in project_type){
             }else{
               download_table$Last_date[w_dwnl] = last_date
               download_table$Last_Modification[w_dwnl] = date_last_modif_file
+              # download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
               write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
               
               if(write_output_report == TRUE){

@@ -118,7 +118,7 @@ for(PROJECT in project_type){
 
 
   ############################################
-  t = 2
+  t = 1
 
   # final_dataframe = data.frame(t(rep(NA, times = 14)))
   final_dataframe = matrix(ncol = 16, nrow = length(files_available))
@@ -264,6 +264,7 @@ for(PROJECT in project_type){
         if(!is.na(flag_missing_dates)){
           download_table$Last_date[w_dwnl] = last_date
           download_table$Last_Modification[w_dwnl] = date_last_modif_file
+          download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
           write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = T,row.names = F, na = "NA")
           # file_ok = c(file_ok,FILE)
 

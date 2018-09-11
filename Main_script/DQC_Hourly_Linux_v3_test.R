@@ -51,6 +51,7 @@ DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.csv", sep = "")
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 download_table_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
+issue_counter_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 
 # file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
@@ -130,13 +131,14 @@ for(PROJECT in project_type){
   
   
   download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_table_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format, PROJECT = PROJECT)
+  issue_counter = read_and_update_issue_counter(ISSUE_COUNTER_DIR = issue_counter_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format, PROJECT = PROJECT)
   
   download_table_proj = download_table$Station[which(download_table$Project == PROJECT)]
   
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
   
   ############################################
-  t = 1
+  t = 15
   
   final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
   
@@ -156,9 +158,9 @@ for(PROJECT in project_type){
   for(t in  1: length(files_available_project)){
     gc(reset = T)
     
-    rm(list = setdiff(ls(all.names = TRUE),c("main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir",
+    rm(list = setdiff(ls(all.names = TRUE),c("main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir","issue_counter", "issue_counter_dir",
                                              "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
-                                             "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report",
+                                             "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file")))
     
     

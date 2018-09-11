@@ -21,13 +21,9 @@ read_and_update_issue_counter = function(ISSUE_COUNTER_DIR,FILES_AVAILABLE,DATET
   if(!file.exists(issue_counter_file)){              # <- define or extact info from download table
     
     first_issue_counter = data.frame(substring(FILES_AVAILABLE,1, nchar(FILES_AVAILABLE)-4), 
-                                      rep(NA, times = length(FILES_AVAILABLE)),
-                                      rep(0,times = length(FILES_AVAILABLE)),
-                                      rep(NA, times = length(FILES_AVAILABLE)),
-                                      rep(1,times = length(FILES_AVAILABLE)),
-                                      rep(PROJECT,times = length(FILES_AVAILABLE)))
+                                    rep(PROJECT,times = length(FILES_AVAILABLE)))
     
-    colnames(first_issue_counter) = c("Station", "Last_date", "Stop_DQC", "Last_Modification", "record_check", "Project")
+    colnames(first_issue_counter) = c("Station", "Project")
     
     issue_counter = first_issue_counter
     
@@ -50,14 +46,10 @@ read_and_update_issue_counter = function(ISSUE_COUNTER_DIR,FILES_AVAILABLE,DATET
     if(length(w) != 0){
       
       df_to_add = data.frame(station_to_add,
-                             rep(NA, times = length(station_to_add)),
-                             rep(0,times = length(station_to_add)),
-                             rep(NA, times = length(station_to_add)),
-                             rep(1,times = length(station_to_add)),
                              rep(PROJECT, times = length(station_to_add)))
       
       # as.character(file.mtime(paste(input_dir,FILES_AVAILABLE[w],sep = ""))))
-      colnames(df_to_add) = c("Station", "Last_date", "Stop_DQC", "Last_Modification", "record_check", "Project")
+      colnames(df_to_add) = c("Station", "Project")
       
       issue_counter = rbind(issue_counter, df_to_add)
       

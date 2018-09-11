@@ -134,6 +134,7 @@ for(PROJECT in project_type){
   issue_counter = read_and_update_issue_counter(ISSUE_COUNTER_DIR = issue_counter_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format, PROJECT = PROJECT)
   
   download_table_proj = download_table$Station[which(download_table$Project == PROJECT)]
+  issue_counter_proj = issue_counter$Station[which(issue_counter$Project == PROJECT)]
   
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
   
@@ -431,8 +432,9 @@ for(PROJECT in project_type){
   
   
   
+  aaa = as.data.frame(final_dataframe)
   
-  
+  aaa$Station[which(aaa$Status == "Already analyzed")]
   # ..... Final Report .....................................................................................................................................
   
   

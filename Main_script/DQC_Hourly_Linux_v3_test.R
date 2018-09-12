@@ -43,7 +43,7 @@ main_dir = "/shared/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
-PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
+PROJECT = "MONALISA" # Possible project: "LTER"; "MONALISA";
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
@@ -163,7 +163,8 @@ for(PROJECT in project_type){
   for(t in  1: length(files_available_project)){
     gc(reset = T)
     
-    rm(list = setdiff(ls(all.names = TRUE),c("main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
+    rm(list = setdiff(ls(all.names = TRUE),c("main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling",
+                                             "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
                                              "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file")))

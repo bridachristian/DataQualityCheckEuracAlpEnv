@@ -51,7 +51,7 @@ read_and_update_issue_counter = function(ISSUE_COUNTER_DIR,FILES_AVAILABLE,DATET
                              rep(PROJECT, times = length(station_to_add)))
       
       # as.character(file.mtime(paste(input_dir,FILES_AVAILABLE[w],sep = ""))))
-      colnames(df_to_add) = c("Station", "Project")
+      colnames(df_to_add) = c("Station", "Project", "Already_analyzed_ALERT")
       
       issue_counter = rbind(issue_counter, df_to_add)
       

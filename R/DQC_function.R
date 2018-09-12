@@ -231,7 +231,7 @@ DQC_function = function(input_dir,
   
   # ..... Output ..........................................................................................................................................
   file_names = NULL
-  mydata = NULL
+  
   
   if(flag_empty == 0){
     if(flag_logger_number == 0){
@@ -529,6 +529,10 @@ DQC_function = function(input_dir,
     if(exists(flags_names[i])){
       flags_df$value[i] = eval(parse(text = flags_names[i]))
     }
+  }
+  
+  if(!exists("mydata")){
+    mydata= NULL
   }
   
   output = list(mydata, flags_df,file_names)

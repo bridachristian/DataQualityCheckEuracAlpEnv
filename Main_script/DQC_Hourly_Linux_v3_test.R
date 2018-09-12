@@ -257,25 +257,25 @@ for(PROJECT in project_type){
         rm(dwnl_info)
         
         DQC_results = DQC_function(input_dir,
-                           output_dir_data,
-                           output_dir_report,
-                           project_dir,
-                           data_from_row,
-                           header_row_number,
-                           datetime_header,
-                           datetime_format,
-                           datetime_sampling,
-                           record_header,
-                           range_file,
-                           write_output_files,
-                           write_output_report,
-                           file_name,
-                           station_name,
-                           start_date,
-                           database_dir,
-                           logger_info_file,
-                           record_check,
-                           output_dir_raw)
+                                   output_dir_data,
+                                   output_dir_report,
+                                   project_dir,
+                                   data_from_row,
+                                   header_row_number,
+                                   datetime_header,
+                                   datetime_format,
+                                   datetime_sampling,
+                                   record_header,
+                                   range_file,
+                                   write_output_files,
+                                   write_output_report,
+                                   file_name,
+                                   station_name,
+                                   start_date,
+                                   database_dir,
+                                   logger_info_file,
+                                   record_check,
+                                   output_dir_raw)
         
         # rmarkdown::render(input = Rmd_report_generator ,
         #                   output_file = output_file_report,
@@ -305,7 +305,7 @@ for(PROJECT in project_type){
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]
         file_names = DQC_results[[3]]
-
+        
         mylist <- split(flags_df$value, seq(nrow(flags_df)))
         names(mylist) = flags_df$flag_names
         
@@ -439,7 +439,7 @@ for(PROJECT in project_type){
   
   aaa = as.data.frame(final_dataframe)
   
- 
+  
   
   if(PROJECT == "MONALISA"){
     FILE_NAME_recon = paste("MONALISA_",aaa$Station, "_MeteoVal",sep = "")
@@ -454,19 +454,21 @@ for(PROJECT in project_type){
   
   already_analyzed = aaa$file_name_recon[which(aaa$Status == "Already analyzed")]
   
-  # which(issue_counter$Station %in% already_analyzed)
-  issue_counter$Already_analyzed_ALERT[which(issue_counter$Station %in% already_analyzed)] = issue_counter$Already_analyzed_ALERT[which(issue_counter$Station %in% already_analyzed)] +1
-  issue_counter$Already_analyzed_ALERT[which(!(issue_counter$Station %in% already_analyzed))] = 0
+  which(issue_counter$Station %in% already_analyzed & issue_counter$Project %in% PROJECT)
+  which(!(issue_counter$Station %in% already_analyzed) & issue_counter$Project %in% PROJECT)
   
-  issue_counter$Already_analyzed_ALERT = 0
+  issue_counter$Already_analyzed_ALERT[which(issue_counter$Station %in% already_analyzed & issue_counter$Project %in% PROJECT)] = issue_counter$Already_analyzed_ALERT[which(issue_counter$Station %in% already_analyzed & issue_counter$Project %in% PROJECT)] +1
+  issue_counter$Already_analyzed_ALERT[ which(!(issue_counter$Station %in% already_analyzed) & issue_counter$Project %in% PROJECT)] = 0
+  write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
+  
   SET_HOURS = 2
   if(any( issue_counter$Already_analyzed_ALERT >= SET_HOURS)){
     file_to_write = issue_counter$Station[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]
     hour_to_write = issue_counter$Already_analyzed_ALERT[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]
-   
+    
     text_to_write = paste(file_to_write,".dat --> Last download: ",hour_to_write, "hours ago", sep = "")
     body = cat("The following files .dat were not update for much than X hours.", text_to_write, sep = "\n")
-
+    
     # send.mail(from = "data.quality.check@gmail.com",
     #           to = c("Christia.Brida@eurac.edu"),
     #           subject = paste("DQC: test1: file dati non aggiornati"),
@@ -475,6 +477,7 @@ for(PROJECT in project_type){
     #           authenticate = TRUE,
     #           send = TRUE)
   }
+  
   # ..... Final Report .....................................................................................................................................
   
   

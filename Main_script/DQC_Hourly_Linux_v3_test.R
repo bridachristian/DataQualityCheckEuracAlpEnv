@@ -143,7 +143,7 @@ for(PROJECT in project_type){
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
   
   ############################################
-  t = 11
+  t = 1
   
   final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
   
@@ -325,30 +325,30 @@ for(PROJECT in project_type){
         
         # non serve?  
         # Verificare che si puo togliere da qui: 
-        out_filename_report = paste("DQC_Report_",STATION_NAME,"_",out_filename_date,".html",sep = "")
-        
-        if(file.exists(paste(output_dir_report,out_filename_report,sep = ""))){
-          
-          j=0
-          repeat{
-            j=j+1
-            out_filename_report_new = paste(substring(out_filename_report,1, nchar(out_filename_report)-5),"_vers",j,".html",sep = "")
-            if(!file.exists(paste(output_dir_report,out_filename_report_new,sep = ""))){
-              break
-            }
-          }
-        } else {
-          out_filename_report_new = out_filename_report
-        }
-        
-        out_filename_report = out_filename_report_new
-        
-        if(write_output_report == TRUE){
-          output_file_report = file.rename(from = paste(output_dir_report,output_file_report,sep = ""),
-                                           to = paste(output_dir_report,out_filename_report,sep = ""))
-        }else{
-          file.remove(paste(output_dir_report,output_file_report,sep = ""))
-        }
+        # out_filename_report = paste("DQC_Report_",STATION_NAME,"_",out_filename_date,".html",sep = "")
+        # 
+        # if(file.exists(paste(output_dir_report,out_filename_report,sep = ""))){
+        #   
+        #   j=0
+        #   repeat{
+        #     j=j+1
+        #     out_filename_report_new = paste(substring(out_filename_report,1, nchar(out_filename_report)-5),"_vers",j,".html",sep = "")
+        #     if(!file.exists(paste(output_dir_report,out_filename_report_new,sep = ""))){
+        #       break
+        #     }
+        #   }
+        # } else {
+        #   out_filename_report_new = out_filename_report
+        # }
+        # 
+        # out_filename_report = out_filename_report_new
+        # 
+        # if(write_output_report == TRUE){
+        #   output_file_report = file.rename(from = paste(output_dir_report,output_file_report,sep = ""),
+        #                                    to = paste(output_dir_report,out_filename_report,sep = ""))
+        # }else{
+        #   file.remove(paste(output_dir_report,output_file_report,sep = ""))
+        # }
         
         # a qui!
         # Report su script esterno! Nella funzione DQC_Function prevedere il salvataggio e l' append degli errori!

@@ -143,7 +143,7 @@ for(PROJECT in project_type){
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
   
   ############################################
-  t = 1
+  t = 11
   
   final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
   
@@ -498,5 +498,4 @@ for(PROJECT in project_type){
   print("--------------------------------------------------------------------------------------------------")
   
 }
-cat(body)
-file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
+# file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))

@@ -33,7 +33,7 @@ read_and_update_issue_counter = function(ISSUE_COUNTER_DIR,FILES_AVAILABLE,DATET
     
   } else{
     
-    file.copy(from = issue_counter_file, to = paste(substring(issue_counter_file,1,nchar(issue_counter_file)-4),"_old.csv",sep = ""),overwrite = TRUE)
+    # file.copy(from = issue_counter_file, to = paste(substring(issue_counter_file,1,nchar(issue_counter_file)-4),"_old.csv",sep = ""),overwrite = TRUE)
     
     issue_counter = read.csv(issue_counter_file,stringsAsFactors = F)
     

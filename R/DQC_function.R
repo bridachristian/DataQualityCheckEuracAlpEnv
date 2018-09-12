@@ -231,6 +231,7 @@ DQC_function = function(input_dir,
   
   # ..... Output ..........................................................................................................................................
   file_names = NULL
+  mydata = NULL
   
   if(flag_empty == 0){
     if(flag_logger_number == 0){

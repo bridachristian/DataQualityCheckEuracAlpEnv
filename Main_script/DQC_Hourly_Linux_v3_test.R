@@ -461,7 +461,8 @@ for(PROJECT in project_type){
   issue_counter$Already_analyzed_ALERT[ which(!(issue_counter$Station %in% already_analyzed) & issue_counter$Project %in% PROJECT)] = 0
   write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
   
-  SET_HOURS = 2
+  SET_HOURS = 2 ##### Check how to do an alert every X hours! Now the script send an alert every hour when issue_counter > SET_HOURS !
+  
   if(any( issue_counter$Already_analyzed_ALERT >= SET_HOURS)){
     file_to_write = issue_counter$Station[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]
     hour_to_write = issue_counter$Already_analyzed_ALERT[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]

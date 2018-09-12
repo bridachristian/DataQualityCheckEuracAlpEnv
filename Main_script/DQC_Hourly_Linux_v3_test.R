@@ -29,6 +29,10 @@ library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/
 library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# # library("mailR",lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# install.packages("sendmailR")
+# install.packages("mailR")
+
 
 Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
@@ -139,7 +143,7 @@ for(PROJECT in project_type){
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
   
   ############################################
-  t = 15
+  t = 1
   
   final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
   
@@ -159,7 +163,7 @@ for(PROJECT in project_type){
   for(t in  1: length(files_available_project)){
     gc(reset = T)
     
-    rm(list = setdiff(ls(all.names = TRUE),c("main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir","issue_counter", "issue_counter_dir",
+    rm(list = setdiff(ls(all.names = TRUE),c("main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
                                              "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file")))
@@ -434,7 +438,42 @@ for(PROJECT in project_type){
   
   aaa = as.data.frame(final_dataframe)
   
-  aaa$Station[which(aaa$Status == "Already analyzed")]
+ 
+  
+  if(PROJECT == "MONALISA"){
+    FILE_NAME_recon = paste("MONALISA_",aaa$Station, "_MeteoVal",sep = "")
+  }else{
+    if(PROJECT == "LTER"){
+      FILE_NAME_recon = paste("LTER_",aaa$Station, "_",aaa$Station,sep = "")
+    }
+  }
+  aaa = cbind(FILE_NAME_recon, aaa)
+  colnames(aaa)[1] = "file_name_recon"
+  
+  
+  already_analyzed = aaa$file_name_recon[which(aaa$Status == "Already analyzed")]
+  
+  # which(issue_counter$Station %in% already_analyzed)
+  issue_counter$Already_analyzed_ALERT[which(issue_counter$Station %in% already_analyzed)] = issue_counter$Already_analyzed_ALERT[which(issue_counter$Station %in% already_analyzed)] +1
+  issue_counter$Already_analyzed_ALERT[which(!(issue_counter$Station %in% already_analyzed))] = 0
+  
+  issue_counter$Already_analyzed_ALERT = 0
+  SET_HOURS = 2
+  if(any( issue_counter$Already_analyzed_ALERT >= SET_HOURS)){
+    file_to_write = issue_counter$Station[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]
+    hour_to_write = issue_counter$Already_analyzed_ALERT[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]
+   
+    text_to_write = paste(file_to_write,".dat --> Last download: ",hour_to_write, "hours ago", sep = "")
+    body = cat("The following files .dat were not update for much than X hours.", text_to_write, sep = "\n")
+
+    # send.mail(from = "data.quality.check@gmail.com",
+    #           to = c("Christia.Brida@eurac.edu"),
+    #           subject = paste("DQC: test1: file dati non aggiornati"),
+    #           body = body,
+    #           smtp = list(host.name = "smtp.gmail.com", port = 465, user.name = "data.quality.check", passwd = "alpenv78", ssl = TRUE),
+    #           authenticate = TRUE,
+    #           send = TRUE)
+  }
   # ..... Final Report .....................................................................................................................................
   
   
@@ -459,5 +498,5 @@ for(PROJECT in project_type){
   print("--------------------------------------------------------------------------------------------------")
   
 }
-
+cat(body)
 file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))

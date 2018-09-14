@@ -300,12 +300,15 @@ DQC_function = function(input_dir,
                       df_toadd =  mydata[which(format(time_mydata, format = "%Y") == years[k]),]
                       df_toadd[,which(colnames(df_toadd)== datetime_header)] = as.POSIXct(format(df_toadd[,which(colnames(df_toadd)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
                       new = rbind(old_data,df_toadd)
-                      
+                      new[order(new$TIMESTAMP),]
+                      new = new[order(new[,which(colnames(new) == datetime_header)]),]
+
                       # append new raw data to old data if headers new and old are the same
                       df_toadd_raw = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
                       df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)] = as.POSIXct(format(df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
                       
                       new_raw = rbind(old_orig_data,df_toadd_raw)
+                      new_raw = new_raw[order(new_raw[,which(colnames(new_raw) == datetime_header)]),]
                       
                       new_deletes_duplcated <- deletes_duplcated_data(DATA = new,DATETIME_HEADER = datetime_header)        
                       new_mydata = new_deletes_duplcated [[1]]

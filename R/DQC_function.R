@@ -40,6 +40,10 @@ DQC_function = function(input_dir,
   flag_new_missing_dates = NA
   
   flag_missing_records_new = NA
+ 
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # PART 1 --> ANALYZE AND WRITE DATA
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
   # ..... Body ..........................................................................................................................................
   
@@ -99,8 +103,8 @@ DQC_function = function(input_dir,
             w_date = which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))
             
             if(length(w_date) != 0){
-              original = data[(w_date + 1):nrow(data),]      # possible issues in data subset!!! to check 
-              mydata = data[(w_date + 1):nrow(data),]
+              original = data[(w_date[1] + 1):nrow(data),]      # possible issues in data subset!!! to check 
+              mydata = data[(w_date[1] + 1):nrow(data),]
               
               flag_date = 0
               
@@ -535,6 +539,13 @@ DQC_function = function(input_dir,
     mydata= NULL
   }
   
-  output = list(mydata, flags_df,file_names)
+  output1 = list(mydata, flags_df,file_names)
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # PART 2 --> PREPARE STATISTICS AND REPORT INFORMATION
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  
+  return(output1)
 }
 

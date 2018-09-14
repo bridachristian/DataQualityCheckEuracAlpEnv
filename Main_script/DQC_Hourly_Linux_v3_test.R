@@ -43,7 +43,7 @@ main_dir = "/shared/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
-PROJECT = "MONALISA" # Possible project: "LTER"; "MONALISA";
+PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
@@ -143,7 +143,6 @@ for(PROJECT in project_type){
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
   
   ############################################
-  t = 1
   
   final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
   
@@ -159,7 +158,8 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  
+  t = 1
+
   for(t in  1: length(files_available_project)){
     gc(reset = T)
     
@@ -461,8 +461,8 @@ for(PROJECT in project_type){
   issue_counter$Already_analyzed_ALERT[ which(!(issue_counter$Station %in% already_analyzed) & issue_counter$Project %in% PROJECT)] = 0
   write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
   
-  SET_HOURS = 2 ##### Check how to do an alert every X hours! Now the script send an alert every hour when issue_counter > SET_HOURS !
-  
+  SET_HOURS = 12 ##### Check how to do an alert every X hours! Now the script send an alert every hour when issue_counter > SET_HOURS !
+
   if(any( issue_counter$Already_analyzed_ALERT >= SET_HOURS)){
     file_to_write = issue_counter$Station[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]
     hour_to_write = issue_counter$Already_analyzed_ALERT[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]

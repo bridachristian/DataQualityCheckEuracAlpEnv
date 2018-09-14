@@ -455,7 +455,7 @@ DQC_function = function(input_dir,
                           break
                         }
                       }
-                      file.rename(from = paste(output_dir_data,file_name_output,sep = ""),to = paste(output_dir_data,file_names_old,sep = ""))
+                      file.rename(from = paste(output_dir_data,file_names[k],sep = ""),to = paste(output_dir_data,file_names_old,sep = ""))
                       
                       # rename raw data
                       
@@ -467,7 +467,7 @@ DQC_function = function(input_dir,
                           break
                         }
                       }
-                      file.rename(from = paste(output_dir_raw,file_name_original,sep = ""),to = paste(output_dir_raw,file_names_original_old,sep = ""))
+                      file.rename(from = paste(output_dir_raw,file_names[k],sep = ""),to = paste(output_dir_raw,file_names_original_old,sep = ""))
                       
                       # ~~~~~~~~~
                       

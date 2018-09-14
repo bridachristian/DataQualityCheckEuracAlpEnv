@@ -40,7 +40,7 @@ DQC_function = function(input_dir,
   flag_new_missing_dates = NA
   
   flag_missing_records_new = NA
- 
+  
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # PART 1 --> ANALYZE AND WRITE DATA
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -253,6 +253,8 @@ DQC_function = function(input_dir,
                 flag_new_overlap_tmp = c()
                 flag_new_missing_dates_tmp = c()
                 flag_missing_records_new_tmp = c()
+                df_difference = as.data.frame(matrix(ncol = 4, nrow = 0))
+                colnames(df_difference) = c("Column", "Row", "Old", "New")
                 
                 for(k in 1: length(years)){
                   
@@ -440,16 +442,80 @@ DQC_function = function(input_dir,
                       
                     }else{
                       
+                      ######### new section ##########
+                      # ~~~~~~~~~
+                      
+                      # rename total file
+                      
+                      j=0
+                      repeat{
+                        j=j+1
+                        file_names_old = paste(substring(file_names[k],1, nchar(file_names[k])-4),"_old",j,".csv",sep = "")
+                        if(!file.exists(paste(output_dir_data,file_names_old,sep = ""))){
+                          break
+                        }
+                      }
+                      file.rename(from = paste(output_dir_data,file_name_output,sep = ""),to = paste(output_dir_data,file_names_old,sep = ""))
+                      
+                      # rename raw data
+                      
+                      j=0
+                      repeat{
+                        j=j+1
+                        file_names_original_old = paste(substring(file_names[k],1, nchar(file_names[k])-4),"_old",j,".dat",sep = "")
+                        if(!file.exists(paste(output_dir_raw,file_names_original_old,sep = ""))){
+                          break
+                        }
+                      }
+                      file.rename(from = paste(output_dir_raw,file_name_original,sep = ""),to = paste(output_dir_raw,file_names_original_old,sep = ""))
+                      
+                      # ~~~~~~~~~
+                      
+                      colnames(header) = header[1,]
+                      out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+                      colnames(out_my) = colnames(header)
+                      out_mydata=rbind(header[-1,],out_my)
+                      file_name_output = file_names[k]
+                      write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                      
+                      
+                      out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
+                      out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
+                      colnames(out_orig) = colnames(header)
+                      out_original=rbind(header[-1,],out_orig)
+                      file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
+                      write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
+                      
+                      ######### end new section ##########
+                      
                       flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 1)
                       
                       header_t = as.data.frame(t(header))
                       header_t = cbind(rep(NA, times = nrow(header_t)),header_t )
-                      colnames(header_t) = paste("row_",seq(1:ncol(header_t))-1,sep = "")
+                      colnames(header_t) = c("NA","Station_info", "Header","Units", "Sampling_method")
+                      # colnames(header_t) = paste("row_",seq(1:ncol(header_t))-1,sep = "")
+                      rownames(header_t) = paste("col_",seq(1:nrow(header_t))-1,sep = "")
+                      header_t = header_t[,-1]
                       
                       old_header_t = as.data.frame(t(old_header))
                       old_header_t = cbind(rep(NA, times = nrow(old_header_t)),old_header_t )
-                      colnames(old_header_t) = paste("row_",seq(1:ncol(old_header_t))-1,sep = "")
+                      colnames(old_header_t) = c("NA","Station_info", "Header","Units", "Sampling_method")
+                      # colnames(old_header_t) = paste("row_",seq(1:ncol(old_header_t))-1,sep = "")
+                      rownames(old_header_t) = paste("col_",seq(1:nrow(old_header_t))-1,sep = "")
+                      old_header_t = old_header_t[,-1]
                       
+                      # header_t[old_header_t != header_t]
+                      # old_header_t[old_header_t != header_t]
+                      
+                      w_df = as.data.frame(which(old_header_t != header_t,arr.ind = T))
+                      
+                      df_difference_tmp = data.frame(rownames(header_t)[w_df$row],
+                                                     colnames(header_t)[w_df$col],
+                                                     old_header_t[old_header_t != header_t],
+                                                     header_t[old_header_t != header_t])
+                      
+                      colnames(df_difference_tmp) = c("Column", "Row", "Old", "New")
+                      df_difference = rbind(df_difference,df_difference_tmp)
                     }
                     
                   }else{
@@ -540,11 +606,13 @@ DQC_function = function(input_dir,
   }
   
   output1 = list(mydata, flags_df,file_names)
-
+  
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # PART 2 --> PREPARE STATISTICS AND REPORT INFORMATION
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
+  # if(!exists("df_difference")){
+  #   df_difference= NULL
+  # }
   
   return(output1)
 }

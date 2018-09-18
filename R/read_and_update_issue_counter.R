@@ -51,7 +51,7 @@ read_and_update_issue_counter = function(ISSUE_COUNTER_DIR,FILES_AVAILABLE,DATET
       df_to_add = data.frame(station_to_add,
                              rep(PROJECT, times = length(station_to_add)),
                              rep(0, times = length(station_to_add)),
-                             rep(0, times = length(station_to_add))
+                             rep(0, times = length(station_to_add)),
                              rep(0, times = length(station_to_add)))
       
       # as.character(file.mtime(paste(input_dir,FILES_AVAILABLE[w],sep = ""))))

@@ -302,7 +302,7 @@ DQC_function = function(input_dir,
                       new = rbind(old_data,df_toadd)
                       new[order(new$TIMESTAMP),]
                       new = new[order(new[,which(colnames(new) == datetime_header)]),]
-
+                      
                       # append new raw data to old data if headers new and old are the same
                       df_toadd_raw = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
                       df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)] = as.POSIXct(format(df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
@@ -616,9 +616,9 @@ DQC_function = function(input_dir,
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # PART 2 --> PREPARE STATISTICS AND REPORT INFORMATION
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # if(!exists("df_difference")){
-  #   df_difference= NULL
-  # }
+  if(!is.na(flag_empty) & flag_empty != 0){
+    paste("Error!")
+  } 
   
   return(output1)
 }

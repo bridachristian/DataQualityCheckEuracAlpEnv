@@ -432,6 +432,7 @@ for(PROJECT in project_type){
         # reset counter if file is updated
         w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4)) 
         issue_counter$W_Update_station[w_1] = 0
+        
         write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
         
       } else {

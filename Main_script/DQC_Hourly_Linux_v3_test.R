@@ -134,7 +134,7 @@ for(PROJECT in project_type){
   # ..... download table section .....................................................................................................................................
   
   
-  download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_table_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format, PROJECT = PROJECT)
+  download_table = read_and_update_download_table_v2(DOWNLOAD_TABLE_DIR = download_table_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format, PROJECT = PROJECT)
   issue_counter = read_and_update_issue_counter(ISSUE_COUNTER_DIR = issue_counter_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format, PROJECT = PROJECT)
   
   download_table_proj = download_table$Station[which(download_table$Project == PROJECT)]
@@ -414,6 +414,12 @@ for(PROJECT in project_type){
         }
         
       } else {
+        # ~~~~~~~
+        if()
+        w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+        issue_counter$Already_analyzed_ALERT[w_1] = issue_counter$Already_analyzed_ALERT[w_1]+1
+        # ~~~~~~~
+        
         warning(paste(STATION_NAME, "already analyzed!"))
         # file_already_processed = c(file_already_processed,FILE)
         final_info = c(STATION_NAME, "Already analyzed",

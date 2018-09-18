@@ -294,7 +294,7 @@ DQC_function = function(input_dir,
                     
                     rm(old_original_list)
                     
-                    if(identical(old_header, header)){   # <-- delete  [-1,] when all station are updated. Substitute header new in old datatable. 
+                    if(identical(old_header[-1,], header[-1,])){   # <-- delete  [-1,] when all station are updated. Substitute header new in old datatable. 
                       
                       # append new data to old data if headers new and old are the same
                       df_toadd =  mydata[which(format(time_mydata, format = "%Y") == years[k]),]

@@ -617,12 +617,32 @@ DQC_function = function(input_dir,
   # PART 2 --> PREPARE STATISTICS AND REPORT INFORMATION
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   
+  # - - - -  Provide difference on logger numbers - - - - - - - - - - - - - 
+  
   if(flag_logger_number == 1){
     file_logger_numb = logger_number 
     old_logger_numb = logger_info[,2]
     logger_numbers=c(old_logger_numb,file_logger_numb)
     names(logger_numbers) = c("old", "new")
+  }else{
+    logger_numbers = NULL
   }
+  
+  # - - - -  Provide difference on data structure - - - - - - - - - - - - - 
+  
+  # if(flag_error_df == 1 |flag_error_df == -1){
+  #   structure_message = paste("Headers has",ncol(header), "columns while data has",ncol(data),"columns")
+  # }else{
+  #   if(flag_error_df == 0 & df_difference ){
+  #     
+  #   }
+  #   
+  # }
+  
+  
+  
+  
+  # - - - -  Provide difference on logger numbers - - - - - - - - - - - - -   
   
   output2 = list(mydata, flags_df,file_names, logger_numbers)
   

@@ -322,6 +322,7 @@ for(PROJECT in project_type){
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]
         file_names = DQC_results[[3]]
+        log_numbs = DQC_results[[4]]
         
         mylist <- split(flags_df$value, seq(nrow(flags_df)))
         names(mylist) = flags_df$flag_names
@@ -405,17 +406,41 @@ for(PROJECT in project_type){
           
           if(issue_counter$W_Logger_number[w_1] != 0){
             if(issue_counter$W_Logger_number[w_1] == 1 | issue_counter$W_Logger_number[w_1] %% MESSAGE_EVERY_TIMES == 0){
-              text_W_Logger_number = paste(FILE_NAME, "logger number doesn't match!",)
-              # warning(text_W_Empty_file)
+              text_W_Logger_number = paste(FILE_NAME, "logger number doesn't match! OLD logger number -->",log_numbs[1],";", "FILE logger number -->",log_numbs[2])
+              warning(text_W_Logger_number)
             }
           }
         }else{
-          if(mylist$flag_empty == 0){
+          if(mylist$flag_logger_number == 0){
             w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-            issue_counter$W_Empty_file[w_1] = 0
+            issue_counter$W_Logger_number[w_1] = 0
             write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
           }
         }
+        
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        # Check flag logger number and create a message if logger numbers doesn't match
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        
+        # if(mylist$flag_logger_number == 1){
+        #   w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+        #   issue_counter$W_Logger_number[w_1] = issue_counter$W_Logger_number[w_1]+1
+        #   write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+        #   
+        #   if(issue_counter$W_Logger_number[w_1] != 0){
+        #     if(issue_counter$W_Logger_number[w_1] == 1 | issue_counter$W_Logger_number[w_1] %% MESSAGE_EVERY_TIMES == 0){
+        #       text_W_Logger_number = paste(FILE_NAME, "logger number doesn't match! OLD logger number -->",log_numbs[1],";", "FILE logger number -->",log_numbs[2])
+        #       warning(text_W_Logger_number)
+        #     }
+        #   }
+        # }else{
+        #   if(mylist$flag_logger_number == 0){
+        #     w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+        #     issue_counter$W_Logger_number[w_1] = 0
+        #     write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+        #   }
+        # }
+        # 
         
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
@@ -530,6 +555,7 @@ for(PROJECT in project_type){
     # INSERIRE QUI CHE ERRORE DARE AD ICINGA
     text_W_Update_station
     text_W_Empty_file
+    text_W_Logger_number
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
   }

@@ -665,7 +665,7 @@ DQC_function = function(input_dir,
     colnames(table_missing_record) = c("Last Before", "First After", "Date Gap")
     
   }else{
-    table_missing_record = NULL
+    table_missing_record = data.frame()
     
     if(nrow(records_restart) != 0 | nrow(records_restart_new) != 0){
       
@@ -673,7 +673,7 @@ DQC_function = function(input_dir,
       colnames(table_restart_record) = c("Last Before", "First After", "Date Gap", "First Record")
     }else{
       
-      table_restart_record = NULL
+      table_restart_record = data.frame()
     }
     
   }

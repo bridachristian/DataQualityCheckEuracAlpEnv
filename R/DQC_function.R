@@ -630,10 +630,10 @@ DQC_function = function(input_dir,
   
   # - - - -  Provide difference on data structure - - - - - - - - - - - - - 
   
-  if(flag_error_df == 1 |flag_error_df == -1){
+  if(flag_error_df == 1 | flag_error_df == -1){
     structure_message = paste("Headers has",ncol(header), "columns while data has",ncol(data),"columns")
   }else{
-    if(flag_error_df == 0 & exists("df_difference") ){
+    if(flag_error_df == 0  & nrow(df_difference) != 0 ){
       structure_message = df_difference
     }else{
       structure_message = NULL

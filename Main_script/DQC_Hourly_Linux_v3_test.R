@@ -246,7 +246,7 @@ for(PROJECT in project_type){
       
       date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE_NAME,sep = "")),format = datetime_format))
       
-      if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
+        if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
         
         input_dir = input_dir
         output_dir_data = output_dir_data_new
@@ -271,7 +271,7 @@ for(PROJECT in project_type){
         
         output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
         
-        rm(dwnl_info)
+        # rm(dwnl_info)
         
         DQC_results = DQC_function(input_dir,
                                    output_dir_data,
@@ -423,6 +423,7 @@ for(PROJECT in project_type){
         # Check data structure issues: different column numbers and headers
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
+        # if(mylist$flag_error_df == 1 | mylist$flag_error_df == -1 | (mylist$flag_error_df == 0 & is.data.frame(structure_message))){ 
         if(mylist$flag_error_df == 1 | mylist$flag_error_df == -1 | (mylist$flag_error_df == 0 & is.data.frame(structure_message))){
           w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
           issue_counter$W_Structure_issues[w_1] = issue_counter$W_Structure_issues[w_1]+1
@@ -450,25 +451,47 @@ for(PROJECT in project_type){
         # Check date issues: most recent date preceding last download date --> no data to analyze
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
-        if(mylist$ == 1){
+        if(mylist$flag_date == 1){
           w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-          issue_counter$W_Logger_number[w_1] = issue_counter$W_Logger_number[w_1]+1
+          issue_counter$W_date_issue[w_1] = issue_counter$W_date_issue[w_1]+1
           write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
 
-          if(issue_counter$W_Logger_number[w_1] != 0){
-            if(issue_counter$W_Logger_number[w_1] == 1 | issue_counter$W_Logger_number[w_1] %% MESSAGE_EVERY_TIMES == 0){
-              text_W_Logger_number = paste(FILE_NAME, "logger number doesn't match! OLD logger number -->",log_numbs[1],";", "FILE logger number -->",log_numbs[2])
-              warning(text_W_Logger_number)
+          if(issue_counter$W_date_issue[w_1] != 0){
+            if(issue_counter$W_date_issue[w_1] == 1 | issue_counter$W_date_issue[w_1] %% MESSAGE_EVERY_TIMES == 0){
+              text_W_date_issue = paste(FILE_NAME, "has date issue. Possible overlaps or deleted rows! The last file modification was at",date_last_modif_file)
+              warning(text_W_date_issue)
             }
           }
         }else{
-          if(mylist$flag_logger_number == 0){
+          if(mylist$flag_date == 0){
             w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-            issue_counter$W_Logger_number[w_1] = 0
+            issue_counter$W_date_issue[w_1] = 0
             write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
           }
         }
         
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        # Check date issues: most recent date preceding last download date --> no data to analyze
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        
+        # if(mylist$flag_date == 1){
+        #   w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+        #   issue_counter$W_date_issue[w_1] = issue_counter$W_date_issue[w_1]+1
+        #   write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+        #   
+        #   if(issue_counter$W_date_issue[w_1] != 0){
+        #     if(issue_counter$W_date_issue[w_1] == 1 | issue_counter$W_date_issue[w_1] %% MESSAGE_EVERY_TIMES == 0){
+        #       text_W_date_issue = paste(FILE_NAME, "has date issue. Possible overlaps or deleted rows! The last file modification was at",date_last_modif_file)
+        #       warning(text_W_date_issue)
+        #     }
+        #   }
+        # }else{
+        #   if(mylist$flag_date == 0){
+        #     w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+        #     issue_counter$W_date_issue[w_1] = 0
+        #     write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+        #   }
+        # }
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
         if(!is.na(mylist$flag_missing_dates)){
@@ -549,7 +572,7 @@ for(PROJECT in project_type){
         # send message
         if(issue_counter$W_Update_station[w_1] %% MESSAGE_EVERY_TIMES == 0){
           text_W_Update_station = paste(FILE_NAME, "not updated since",dwnl_info$Last_Modification)
-          # warning(text_W_Update_station)
+          warning(text_W_Update_station)
         }
         
         # ~~~~~~~
@@ -584,6 +607,7 @@ for(PROJECT in project_type){
     # text_W_Empty_file
     # text_W_Logger_number
     # text_W_structure
+    # text_W_date_issue
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
   }

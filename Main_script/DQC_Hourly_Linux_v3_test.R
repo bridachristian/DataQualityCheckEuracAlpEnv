@@ -385,7 +385,7 @@ for(PROJECT in project_type){
           if(issue_counter$W_Empty_file[w_1] != 0){
             if(issue_counter$W_Empty_file[w_1] == 1 | issue_counter$W_Empty_file[w_1] %% MESSAGE_EVERY_TIMES == 0){
               text_W_Empty_file = paste(FILE_NAME, "is empty! Last data modification:",date_last_modif_file)
-              # warning(text_W_Empty_file)
+              warning(text_W_Empty_file)
             }
           }
         }else{
@@ -424,24 +424,28 @@ for(PROJECT in project_type){
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
         if(mylist$flag_error_df == 1 | mylist$flag_error_df == -1 | (mylist$flag_error_df == 0 & is.data.frame(structure_message))){
-          w_1 = which(issue_counter$ == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-          issue_counter$W_Logger_number[w_1] = issue_counter$W_Logger_number[w_1]+1
+          w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+          issue_counter$W_Structure_issues[w_1] = issue_counter$W_Structure_issues[w_1]+1
           write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
-
-          if(issue_counter$W_Logger_number[w_1] != 0){
-            if(issue_counter$W_Logger_number[w_1] == 1 | issue_counter$W_Logger_number[w_1] %% MESSAGE_EVERY_TIMES == 0){
-              text_W_Logger_number = paste(FILE_NAME, "logger number doesn't match! OLD logger number -->",log_numbs[1],";", "FILE logger number -->",log_numbs[2])
-              warning(text_W_Logger_number)
+          
+          if(issue_counter$W_Structure_issues[w_1] != 0){
+            if(issue_counter$W_Structure_issues[w_1] == 1 | issue_counter$W_Structure_issues[w_1] %% MESSAGE_EVERY_TIMES == 0){
+              if(is.data.frame(structure_message)){
+                text_W_structure = structure_message ####### <-- define better table structure to print
+              }else{
+                text_W_structure = paste(FILE_NAME, "has the following data structure issues.",structure_message)
+              }
+              warning(text_W_structure)
             }
           }
         }else{
-          if(mylist$flag_logger_number == 0){
+          if(mylist$flag_error_df == 0 & !exists("structure_message")){
             w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-            issue_counter$W_Logger_number[w_1] = 0
+            issue_counter$W_Structure_issues[w_1] = 0
             write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
           }
         }
-
+        
         
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
@@ -557,6 +561,7 @@ for(PROJECT in project_type){
     # text_W_Update_station
     # text_W_Empty_file
     # text_W_Logger_number
+    # text_W_structure
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
   }

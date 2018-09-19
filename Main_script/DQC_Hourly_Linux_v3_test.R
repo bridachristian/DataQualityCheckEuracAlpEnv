@@ -447,7 +447,7 @@ for(PROJECT in project_type){
         }
         
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-        # Check date issues: most recent date preceding last download date
+        # Check date issues: most recent date preceding last download date --> no data to analyze
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
         if(mylist$ == 1){

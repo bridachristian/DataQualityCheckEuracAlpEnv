@@ -56,7 +56,7 @@ main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
-PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
+PROJECT = "MONALISA" # Possible project: "LTER"; "MONALISA";
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
@@ -151,7 +151,7 @@ for(PROJECT in project_type){
   # ..... download table section .....................................................................................................................................
   
   
-  download_table = read_and_update_download_table_v2(DOWNLOAD_TABLE_DIR = download_table_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format, PROJECT = PROJECT)
+  download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_table_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format, PROJECT = PROJECT)
   issue_counter = read_and_update_issue_counter(ISSUE_COUNTER_DIR = issue_counter_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format, PROJECT = PROJECT)
   
   download_table_proj = download_table$Station[which(download_table$Project == PROJECT)]

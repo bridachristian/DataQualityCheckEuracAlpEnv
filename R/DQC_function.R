@@ -640,12 +640,22 @@ DQC_function = function(input_dir,
     }
   }
   
+  # - - - -  Provide overlaps - - - - - - - - - - - - - 
   
-  
+  if(flag_overlap == 1){
+    overlap_date = as.POSIXct(unique(overlap$TIMESTAMP), tz = "Etc/GMT-1")
+  }else{
+    if(flag_new_overlap == 1){
+      overlap_date = as.POSIXct(unique(new_overlap$TIMESTAMP), tz = "Etc/GMT-1")
+    }else{
+      overlap_date = NULL
+    }
+  }
+
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
   
-  output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message)
+  output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message, overlap_date )
   
   return(output2)
 }

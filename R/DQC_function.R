@@ -501,14 +501,14 @@ DQC_function = function(input_dir,
                       colnames(header_t) = c("NA","Station_info", "Header","Units", "Sampling_method")
                       # colnames(header_t) = paste("row_",seq(1:ncol(header_t))-1,sep = "")
                       rownames(header_t) = paste("col_",seq(1:nrow(header_t))-1,sep = "")
-                      header_t = header_t[,-1]
+                      header_t = header_t[,-c(1:2)]
                       
                       old_header_t = as.data.frame(t(old_header))
                       old_header_t = cbind(rep(NA, times = nrow(old_header_t)),old_header_t )
                       colnames(old_header_t) = c("NA","Station_info", "Header","Units", "Sampling_method")
                       # colnames(old_header_t) = paste("row_",seq(1:ncol(old_header_t))-1,sep = "")
                       rownames(old_header_t) = paste("col_",seq(1:nrow(old_header_t))-1,sep = "")
-                      old_header_t = old_header_t[,-1]
+                      old_header_t = old_header_t[,-c(1:2)]
                       
                       # header_t[old_header_t != header_t]
                       # old_header_t[old_header_t != header_t]
@@ -630,21 +630,20 @@ DQC_function = function(input_dir,
   
   # - - - -  Provide difference on data structure - - - - - - - - - - - - - 
   
-  # if(flag_error_df == 1 |flag_error_df == -1){
-  #   structure_message = paste("Headers has",ncol(header), "columns while data has",ncol(data),"columns")
-  # }else{
-  #   if(flag_error_df == 0 & df_difference ){
-  #     
-  #   }
-  #   
-  # }
+  if(flag_error_df == 1 |flag_error_df == -1){
+    structure_message = paste("Headers has",ncol(header), "columns while data has",ncol(data),"columns")
+  }else{
+    if(flag_error_df == 0 & exists("df_difference") ){
+      structure_message = df_difference
+    }
+  }
   
   
   
   
-  # - - - -  Provide difference on logger numbers - - - - - - - - - - - - -   
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
   
-  output2 = list(mydata, flags_df,file_names, logger_numbers)
+  output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message)
   
   return(output2)
 }

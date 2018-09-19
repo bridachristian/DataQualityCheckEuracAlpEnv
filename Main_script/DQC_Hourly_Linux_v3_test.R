@@ -553,9 +553,9 @@ for(PROJECT in project_type){
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # INSERIRE QUI CHE ERRORE DARE AD ICINGA
-    text_W_Update_station
-    text_W_Empty_file
-    text_W_Logger_number
+    # text_W_Update_station
+    # text_W_Empty_file
+    # text_W_Logger_number
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
   }

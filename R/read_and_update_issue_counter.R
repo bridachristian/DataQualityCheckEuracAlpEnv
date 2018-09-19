@@ -25,9 +25,10 @@ read_and_update_issue_counter = function(ISSUE_COUNTER_DIR,FILES_AVAILABLE,DATET
                                     rep(0, times = length(FILES_AVAILABLE)),
                                     rep(0, times = length(FILES_AVAILABLE)),
                                     rep(0, times = length(FILES_AVAILABLE)),
+                                    rep(0, times = length(FILES_AVAILABLE)),
                                     rep(0, times = length(FILES_AVAILABLE)))
     
-    colnames(first_issue_counter) = c("Station", "Project", "W_Update_station","W_Empty_file","W_Logger_number","W_Structure_issues")
+    colnames(first_issue_counter) = c("Station", "Project", "W_Update_station","W_Empty_file","W_Logger_number","W_Structure_issues","W_date_issue")
     
     issue_counter = first_issue_counter
     
@@ -54,10 +55,11 @@ read_and_update_issue_counter = function(ISSUE_COUNTER_DIR,FILES_AVAILABLE,DATET
                              rep(0, times = length(station_to_add)),
                              rep(0, times = length(station_to_add)),
                              rep(0, times = length(station_to_add)),
+                             rep(0, times = length(station_to_add)),
                              rep(0, times = length(station_to_add)))
       
       # as.character(file.mtime(paste(input_dir,FILES_AVAILABLE[w],sep = ""))))
-      colnames(df_to_add) = c("Station", "Project", "W_Update_station","W_Empty_file","W_Logger_number","W_Structure_issues")
+      colnames(df_to_add) = c("Station", "Project", "W_Update_station","W_Empty_file","W_Logger_number","W_Structure_issues","W_date_issue")
       
       issue_counter = rbind(issue_counter, df_to_add)
 

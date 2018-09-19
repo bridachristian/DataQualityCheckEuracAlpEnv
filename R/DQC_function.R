@@ -633,12 +633,17 @@ DQC_function = function(input_dir,
   if(flag_error_df == 1 | flag_error_df == -1){
     structure_message = paste("Headers has",ncol(header), "columns while data has",ncol(data),"columns")
   }else{
-    if(flag_error_df == 0  & nrow(df_difference) != 0 ){
-      structure_message = df_difference
+    if(exists("df_difference")){
+      if(flag_error_df == 0  &  nrow(df_difference) != 0 ){
+        structure_message = df_difference
+      }else{
+        structure_message = NULL
+      }
     }else{
       structure_message = NULL
     }
   }
+  
   
   # - - - -  Provide overlaps - - - - - - - - - - - - - 
   
@@ -651,7 +656,7 @@ DQC_function = function(input_dir,
       overlap_date = NULL
     }
   }
-
+  
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
   

@@ -302,7 +302,7 @@ DQC_function = function(input_dir,
                       new = rbind(old_data,df_toadd)
                       new[order(new$TIMESTAMP),]
                       new = new[order(new[,which(colnames(new) == datetime_header)]),]
-
+                      
                       # append new raw data to old data if headers new and old are the same
                       df_toadd_raw = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
                       df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)] = as.POSIXct(format(df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
@@ -501,14 +501,14 @@ DQC_function = function(input_dir,
                       colnames(header_t) = c("NA","Station_info", "Header","Units", "Sampling_method")
                       # colnames(header_t) = paste("row_",seq(1:ncol(header_t))-1,sep = "")
                       rownames(header_t) = paste("col_",seq(1:nrow(header_t))-1,sep = "")
-                      header_t = header_t[,-1]
+                      header_t = header_t[,-c(1:2)]
                       
                       old_header_t = as.data.frame(t(old_header))
                       old_header_t = cbind(rep(NA, times = nrow(old_header_t)),old_header_t )
                       colnames(old_header_t) = c("NA","Station_info", "Header","Units", "Sampling_method")
                       # colnames(old_header_t) = paste("row_",seq(1:ncol(old_header_t))-1,sep = "")
                       rownames(old_header_t) = paste("col_",seq(1:nrow(old_header_t))-1,sep = "")
-                      old_header_t = old_header_t[,-1]
+                      old_header_t = old_header_t[,-c(1:2)]
                       
                       # header_t[old_header_t != header_t]
                       # old_header_t[old_header_t != header_t]
@@ -616,10 +616,52 @@ DQC_function = function(input_dir,
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # PART 2 --> PREPARE STATISTICS AND REPORT INFORMATION
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # if(!exists("df_difference")){
-  #   df_difference= NULL
-  # }
   
-  return(output1)
+  # - - - -  Provide difference on logger numbers - - - - - - - - - - - - - 
+  
+  if(flag_logger_number == 1){
+    file_logger_numb = logger_number 
+    old_logger_numb = logger_info[,2]
+    logger_numbers=c(old_logger_numb,file_logger_numb)
+    names(logger_numbers) = c("old", "new")
+  }else{
+    logger_numbers = NULL
+  }
+  
+  # - - - -  Provide difference on data structure - - - - - - - - - - - - - 
+  
+  if(flag_error_df == 1 | flag_error_df == -1){
+    structure_message = paste("Headers has",ncol(header), "columns while data has",ncol(data),"columns")
+  }else{
+    if(exists("df_difference")){
+      if(flag_error_df == 0  &  nrow(df_difference) != 0 ){
+        structure_message = df_difference
+      }else{
+        structure_message = NULL
+      }
+    }else{
+      structure_message = NULL
+    }
+  }
+  
+  
+  # - - - -  Provide overlaps - - - - - - - - - - - - - 
+  
+  if(flag_overlap == 1){
+    overlap_date = as.POSIXct(unique(overlap$TIMESTAMP), tz = "Etc/GMT-1")
+  }else{
+    if(flag_new_overlap == 1){
+      overlap_date = as.POSIXct(unique(new_overlap$TIMESTAMP), tz = "Etc/GMT-1")
+    }else{
+      overlap_date = NULL
+    }
+  }
+  
+  
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+  
+  output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message, overlap_date )
+  
+  return(output2)
 }
 

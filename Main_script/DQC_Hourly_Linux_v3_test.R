@@ -14,41 +14,55 @@ print("-------------------------------------------------------------------------
 print(paste("Data Quality Check:",Sys.time()))
 
 # ..... Libraries .....................................................................................................................................
-library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/') 
+# library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/') 
+# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
+# library("DataQualityCheckEuracAlpEnv")
+# install_github("alexsanjoseph/compareDF")
+# library(compareDF)
+# 
+# library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+
+library(devtools) 
 install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 library("DataQualityCheckEuracAlpEnv")
 install_github("alexsanjoseph/compareDF")
 library(compareDF)
 
-library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# # library("mailR",lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# install.packages("sendmailR")
-# install.packages("mailR")
+library(zoo)
+library(knitr)
+library(ggplot2)
+library(reshape2)
+library(DT)
+library(htmltools)
+library(rmarkdown)
+library(yaml)
+library(highr)
 
-
-Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
+# Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
 
 # ..... Params section .....................................................................................................................................
 
-main_dir = "/shared/test_christian/"
+# main_dir = "/shared/test_christian/"
+main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
-PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
+PROJECT = "MONALISA" # Possible project: "LTER"; "MONALISA";
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
-project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+# project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
 DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
@@ -56,6 +70,8 @@ logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.c
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 download_table_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 issue_counter_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
+
+MESSAGE_EVERY_TIMES = 24
 
 # file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
@@ -74,6 +90,7 @@ for(PROJECT in project_type){
   
   write_output_files =  "TRUE"
   write_output_report =  "FALSE"
+  
   
   # file <- "M4s.dat"
   # start_date <- NA
@@ -159,7 +176,7 @@ for(PROJECT in project_type){
   report_start = Sys.time()
   
   t = 1
-
+  
   for(t in  1: length(files_available_project)){
     gc(reset = T)
     
@@ -167,13 +184,13 @@ for(PROJECT in project_type){
                                              "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
                                              "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
-                                             "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file")))
+                                             "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES")))
     
     
     FILE_NAME = files_available_project[t]
     
     u1 = gregexpr(FILE_NAME,pattern = "_")[[1]][1]      # <- here we find the first "[[1]][1]" underscore!!!!!
-    u2 = gregexpr(FILE_NAME,pattern = "_")[[1]][2]      # <- here we find the first "[[1]][1]" underscore!!!!!
+    u2 = gregexpr(FILE_NAME,pattern = "_")[[1]][2]      # <- here we find the second "[[1]][2]" underscore!!!!!
     
     if(PROJECT == "MONALISA"){
       STATION_NAME = substring(FILE_NAME,u1+1, u1+9)
@@ -229,7 +246,7 @@ for(PROJECT in project_type){
       
       date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE_NAME,sep = "")),format = datetime_format))
       
-      if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
+        if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
         
         input_dir = input_dir
         output_dir_data = output_dir_data_new
@@ -254,7 +271,7 @@ for(PROJECT in project_type){
         
         output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
         
-        rm(dwnl_info)
+        # rm(dwnl_info)
         
         DQC_results = DQC_function(input_dir,
                                    output_dir_data,
@@ -305,6 +322,9 @@ for(PROJECT in project_type){
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]
         file_names = DQC_results[[3]]
+        log_numbs = DQC_results[[4]]
+        structure_message = DQC_results[[5]]
+        overlap_date = DQC_results[[6]]
         
         mylist <- split(flags_df$value, seq(nrow(flags_df)))
         names(mylist) = flags_df$flag_names
@@ -354,6 +374,130 @@ for(PROJECT in project_type){
         # a qui!
         # Report su script esterno! Nella funzione DQC_Function prevedere il salvataggio e l' append degli errori!
         
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        # Check flag empty and create a message for empty files
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        
+        if(mylist$flag_empty == 1){
+          w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+          issue_counter$W_Empty_file[w_1] = issue_counter$W_Empty_file[w_1]+1
+          write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          
+          if(issue_counter$W_Empty_file[w_1] != 0){
+            if(issue_counter$W_Empty_file[w_1] == 1 | issue_counter$W_Empty_file[w_1] %% MESSAGE_EVERY_TIMES == 0){
+              text_W_Empty_file = paste(FILE_NAME, "is empty! Last data modification:",date_last_modif_file)
+              warning(text_W_Empty_file)
+            }
+          }
+        }else{
+          if(mylist$flag_empty == 0){
+            w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+            issue_counter$W_Empty_file[w_1] = 0
+            write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          }
+        }
+        
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        # Check flag logger number and create a message if logger numbers doesn't match
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        
+        if(mylist$flag_logger_number == 1){
+          w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+          issue_counter$W_Logger_number[w_1] = issue_counter$W_Logger_number[w_1]+1
+          write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          
+          if(issue_counter$W_Logger_number[w_1] != 0){
+            if(issue_counter$W_Logger_number[w_1] == 1 | issue_counter$W_Logger_number[w_1] %% MESSAGE_EVERY_TIMES == 0){
+              text_W_Logger_number = paste(FILE_NAME, "logger number doesn't match! OLD logger number -->",log_numbs[1],";", "FILE logger number -->",log_numbs[2])
+              warning(text_W_Logger_number)
+            }
+          }
+        }else{
+          if(mylist$flag_logger_number == 0){
+            w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+            issue_counter$W_Logger_number[w_1] = 0
+            write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          }
+        }
+        
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        # Check data structure issues: different column numbers and headers
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        
+        # if(mylist$flag_error_df == 1 | mylist$flag_error_df == -1 | (mylist$flag_error_df == 0 & is.data.frame(structure_message))){ 
+        if(mylist$flag_error_df == 1 | mylist$flag_error_df == -1 | (mylist$flag_error_df == 0 & is.data.frame(structure_message))){
+          w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+          issue_counter$W_Structure_issues[w_1] = issue_counter$W_Structure_issues[w_1]+1
+          write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          
+          if(issue_counter$W_Structure_issues[w_1] != 0){
+            if(issue_counter$W_Structure_issues[w_1] == 1 | issue_counter$W_Structure_issues[w_1] %% MESSAGE_EVERY_TIMES == 0){
+              if(is.data.frame(structure_message)){
+                text_W_structure = structure_message ####### <-- define better table structure to print
+              }else{
+                text_W_structure = paste(FILE_NAME, "has the following data structure issues.",structure_message)
+              }
+              warning(text_W_structure)
+            }
+          }
+        }else{
+          # if(mylist$flag_error_df == 0 & !exists("structure_message")){ 
+          if(mylist$flag_error_df == 0 & is.null(structure_message)){
+            w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+            issue_counter$W_Structure_issues[w_1] = 0
+            write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          }
+        }
+        
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        # Check date issues: most recent date preceding last download date --> no data to analyze
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        
+        if(mylist$flag_date == 1){
+          w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+          issue_counter$W_date_issue[w_1] = issue_counter$W_date_issue[w_1]+1
+          write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+
+          if(issue_counter$W_date_issue[w_1] != 0){
+            if(issue_counter$W_date_issue[w_1] == 1 | issue_counter$W_date_issue[w_1] %% MESSAGE_EVERY_TIMES == 0){
+              text_W_date_issue = paste(FILE_NAME, "has date issue. Possible overlaps or deleted rows! The last file modification was at",date_last_modif_file)
+              warning(text_W_date_issue)
+            }
+          }
+        }else{
+          if(mylist$flag_date == 0){
+            w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+            issue_counter$W_date_issue[w_1] = 0
+            write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          }
+        }
+        
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        # Check overlap: detect date overlap having the rest of row different
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+
+        if(mylist$flag_overlap == 1 | mylist$flag_overlap == 1 ){
+          w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+          issue_counter$W_overlap[w_1] = issue_counter$W_overlap[w_1]+1
+          write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+
+          if(issue_counter$W_overlap[w_1] != 0){
+            if(issue_counter$W_overlap[w_1] == 1 | issue_counter$W_overlap[w_1] %% MESSAGE_EVERY_TIMES == 0){
+              text_W_overlap = paste(FILE_NAME, "has the following overlap:",
+                                   paste(as.character(overlap_date),collapse = " ; "))
+              warning(text_W_overlap)
+            }
+          }
+        }else{
+          if(mylist$flag_overlap != 1 & mylist$flag_overlap != 1 ){
+            w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+            issue_counter$W_overlap[w_1] = 0
+            write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          }
+        }
+        
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        
         if(!is.na(mylist$flag_missing_dates)){
           if(mylist$flag_logger_number == 0){
             if(mylist$flag_new_overlap == 1){
@@ -397,6 +541,9 @@ for(PROJECT in project_type){
             }
           }
         }else{
+          
+          
+          
           # file_stopped = c(file_stopped, FILE)
           if(write_output_report == TRUE){
             final_info = c(STATION_NAME, "Analyzed with errors",
@@ -412,12 +559,26 @@ for(PROJECT in project_type){
           
           
         }
+        # reset counter if file is updated
+        w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4)) 
+        issue_counter$W_Update_station[w_1] = 0
+        write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
         
       } else {
+        
         # ~~~~~~~
-        if()
+        # update counter if file is not update
+        
         w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-        issue_counter$Already_analyzed_ALERT[w_1] = issue_counter$Already_analyzed_ALERT[w_1]+1
+        issue_counter$W_Update_station[w_1] = issue_counter$W_Update_station[w_1]+1
+        write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
+        
+        # send message
+        if(issue_counter$W_Update_station[w_1] %% MESSAGE_EVERY_TIMES == 0){
+          text_W_Update_station = paste(FILE_NAME, "not updated since",dwnl_info$Last_Modification)
+          warning(text_W_Update_station)
+        }
+        
         # ~~~~~~~
         
         warning(paste(STATION_NAME, "already analyzed!"))
@@ -443,52 +604,64 @@ for(PROJECT in project_type){
     final_dataframe[t,] = final_info
     
     gc(reset = T)
-  }
-  
-  
-  
-  
-  aaa = as.data.frame(final_dataframe)
-  
-  
-  
-  if(PROJECT == "MONALISA"){
-    FILE_NAME_recon = paste("MONALISA_",aaa$Station, "_MeteoVal",sep = "")
-  }else{
-    if(PROJECT == "LTER"){
-      FILE_NAME_recon = paste("LTER_",aaa$Station, "_",aaa$Station,sep = "")
-    }
-  }
-  aaa = cbind(FILE_NAME_recon, aaa)
-  colnames(aaa)[1] = "file_name_recon"
-  
-  
-  already_analyzed = aaa$file_name_recon[which(aaa$Status == "Already analyzed")]
-  
-  which(issue_counter$Station %in% already_analyzed & issue_counter$Project %in% PROJECT)
-  which(!(issue_counter$Station %in% already_analyzed) & issue_counter$Project %in% PROJECT)
-  
-  issue_counter$Already_analyzed_ALERT[which(issue_counter$Station %in% already_analyzed & issue_counter$Project %in% PROJECT)] = issue_counter$Already_analyzed_ALERT[which(issue_counter$Station %in% already_analyzed & issue_counter$Project %in% PROJECT)] +1
-  issue_counter$Already_analyzed_ALERT[ which(!(issue_counter$Station %in% already_analyzed) & issue_counter$Project %in% PROJECT)] = 0
-  write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
-  
-  SET_HOURS = 12 ##### Check how to do an alert every X hours! Now the script send an alert every hour when issue_counter > SET_HOURS !
-
-  if(any( issue_counter$Already_analyzed_ALERT >= SET_HOURS)){
-    file_to_write = issue_counter$Station[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]
-    hour_to_write = issue_counter$Already_analyzed_ALERT[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]
     
-    text_to_write = paste(file_to_write,".dat --> Last download: ",hour_to_write, "hours ago", sep = "")
-    body = cat("The following files .dat were not update for much than X hours.", text_to_write, sep = "\n")
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # INSERIRE QUI CHE ERRORE DARE AD ICINGA
+    # text_W_Update_station
+    # text_W_Empty_file
+    # text_W_Logger_number
+    # text_W_structure
+    # text_W_date_issue
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
-    # send.mail(from = "data.quality.check@gmail.com",
-    #           to = c("Christia.Brida@eurac.edu"),
-    #           subject = paste("DQC: test1: file dati non aggiornati"),
-    #           body = body,
-    #           smtp = list(host.name = "smtp.gmail.com", port = 465, user.name = "data.quality.check", passwd = "alpenv78", ssl = TRUE),
-    #           authenticate = TRUE,
-    #           send = TRUE)
   }
+  
+  
+  issue_counter_proj = issue_counter[issue_counter$Project == PROJECT,]
+  
+  
+  
+  # aaa = as.data.frame(final_dataframe)
+  # 
+  # 
+  # 
+  # if(PROJECT == "MONALISA"){
+  #   FILE_NAME_recon = paste("MONALISA_",aaa$Station, "_MeteoVal",sep = "")
+  # }else{
+  #   if(PROJECT == "LTER"){
+  #     FILE_NAME_recon = paste("LTER_",aaa$Station, "_",aaa$Station,sep = "")
+  #   }
+  # }
+  # aaa = cbind(FILE_NAME_recon, aaa)
+  # colnames(aaa)[1] = "file_name_recon"
+  # 
+  # 
+  # already_analyzed = aaa$file_name_recon[which(aaa$Status == "Already analyzed")]
+  # 
+  # which(issue_counter$Station %in% already_analyzed & issue_counter$Project %in% PROJECT)
+  # which(!(issue_counter$Station %in% already_analyzed) & issue_counter$Project %in% PROJECT)
+  # 
+  # issue_counter$W_Update_station[which(issue_counter$Station %in% already_analyzed & issue_counter$Project %in% PROJECT)] = issue_counter$Already_analyzed_ALERT[which(issue_counter$Station %in% already_analyzed & issue_counter$Project %in% PROJECT)] +1
+  # issue_counter$Already_analyzed_ALERT[ which(!(issue_counter$Station %in% already_analyzed) & issue_counter$Project %in% PROJECT)] = 0
+  # write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+  # 
+  # SET_HOURS = 12 ##### Check how to do an alert every X hours! Now the script send an alert every hour when issue_counter > SET_HOURS !
+  # 
+  # if(any( issue_counter$Already_analyzed_ALERT >= SET_HOURS)){
+  #   file_to_write = issue_counter$Station[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]
+  #   hour_to_write = issue_counter$Already_analyzed_ALERT[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]
+  #   
+  #   text_to_write = paste(file_to_write,".dat --> Last download: ",hour_to_write, "hours ago", sep = "")
+  #   body = cat("The following files .dat were not update for much than X hours.", text_to_write, sep = "\n")
+  #   
+  #   # send.mail(from = "data.quality.check@gmail.com",
+  #   #           to = c("Christia.Brida@eurac.edu"),
+  #   #           subject = paste("DQC: test1: file dati non aggiornati"),
+  #   #           body = body,
+  #   #           smtp = list(host.name = "smtp.gmail.com", port = 465, user.name = "data.quality.check", passwd = "alpenv78", ssl = TRUE),
+  #   #           authenticate = TRUE,
+  #   #           send = TRUE)
+  # }
   
   # ..... Final Report .....................................................................................................................................
   
@@ -514,4 +687,12 @@ for(PROJECT in project_type){
   print("--------------------------------------------------------------------------------------------------")
   
 }
+
+# check if loggernet stopped to dowload data --> all stations not updated
+text_W_loggernet_locked = check_loggernet_status(issue_counter_dir, issue_counter, input_dir, MESSAGE_EVERY_TIMES = 3)
+
+if(!is.null(text_W_loggernet_locked)){
+  warning(text_W_loggernet_locked)
+}
+
 # file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))

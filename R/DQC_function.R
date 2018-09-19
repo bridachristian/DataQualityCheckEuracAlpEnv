@@ -616,10 +616,16 @@ DQC_function = function(input_dir,
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # PART 2 --> PREPARE STATISTICS AND REPORT INFORMATION
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  if(!is.na(flag_empty) & flag_empty != 0){
-    paste("Error!")
-  } 
   
-  return(output1)
+  if(flag_logger_number == 1){
+    file_logger_numb = logger_number 
+    old_logger_numb = logger_info[,2]
+    logger_numbers=c(old_logger_numb,file_logger_numb)
+    names(logger_numbers) = c("old", "new")
+  }
+  
+  output2 = list(mydata, flags_df,file_names, logger_numbers)
+  
+  return(output2)
 }
 

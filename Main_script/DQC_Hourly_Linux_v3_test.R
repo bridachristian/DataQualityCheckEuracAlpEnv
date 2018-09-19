@@ -190,7 +190,7 @@ for(PROJECT in project_type){
     FILE_NAME = files_available_project[t]
     
     u1 = gregexpr(FILE_NAME,pattern = "_")[[1]][1]      # <- here we find the first "[[1]][1]" underscore!!!!!
-    u2 = gregexpr(FILE_NAME,pattern = "_")[[1]][2]      # <- here we find the first "[[1]][1]" underscore!!!!!
+    u2 = gregexpr(FILE_NAME,pattern = "_")[[1]][2]      # <- here we find the second "[[1]][2]" underscore!!!!!
     
     if(PROJECT == "MONALISA"){
       STATION_NAME = substring(FILE_NAME,u1+1, u1+9)
@@ -371,6 +371,54 @@ for(PROJECT in project_type){
         # a qui!
         # Report su script esterno! Nella funzione DQC_Function prevedere il salvataggio e l' append degli errori!
         
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        # Check flag empty and create a message for empty files
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        
+        if(mylist$flag_empty == 1){
+          w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+          issue_counter$W_Empty_file[w_1] = issue_counter$W_Empty_file[w_1]+1
+          write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          
+          if(issue_counter$W_Empty_file[w_1] != 0){
+            if(issue_counter$W_Empty_file[w_1] == 1 | issue_counter$W_Empty_file[w_1] %% MESSAGE_EVERY_TIMES == 0){
+              text_W_Empty_file = paste(FILE_NAME, "is empty! Last data modification:",date_last_modif_file)
+              # warning(text_W_Empty_file)
+            }
+          }
+        }else{
+          if(mylist$flag_empty == 0){
+            w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+            issue_counter$W_Empty_file[w_1] = 0
+            write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          }
+        }
+        
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        # Check flag logger number and create a message if logger numbers doesn't match
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        
+        if(mylist$flag_logger_number == 1){
+          w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+          issue_counter$W_Logger_number[w_1] = issue_counter$W_Logger_number[w_1]+1
+          write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          
+          if(issue_counter$W_Logger_number[w_1] != 0){
+            if(issue_counter$W_Logger_number[w_1] == 1 | issue_counter$W_Logger_number[w_1] %% MESSAGE_EVERY_TIMES == 0){
+              text_W_Logger_number = paste(FILE_NAME, "logger number doesn't match!",)
+              # warning(text_W_Empty_file)
+            }
+          }
+        }else{
+          if(mylist$flag_empty == 0){
+            w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+            issue_counter$W_Empty_file[w_1] = 0
+            write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          }
+        }
+        
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        
         if(!is.na(mylist$flag_missing_dates)){
           if(mylist$flag_logger_number == 0){
             if(mylist$flag_new_overlap == 1){
@@ -414,6 +462,9 @@ for(PROJECT in project_type){
             }
           }
         }else{
+          
+          
+          
           # file_stopped = c(file_stopped, FILE)
           if(write_output_report == TRUE){
             final_info = c(STATION_NAME, "Analyzed with errors",
@@ -432,7 +483,6 @@ for(PROJECT in project_type){
         # reset counter if file is updated
         w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4)) 
         issue_counter$W_Update_station[w_1] = 0
-        
         write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
         
       } else {
@@ -440,13 +490,11 @@ for(PROJECT in project_type){
         # ~~~~~~~
         # update counter if file is not update
         
-        
         w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
         issue_counter$W_Update_station[w_1] = issue_counter$W_Update_station[w_1]+1
         write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
         
         # send message
-        # if(flag_tacitazione)
         if(issue_counter$W_Update_station[w_1] %% MESSAGE_EVERY_TIMES == 0){
           text_W_Update_station = paste(FILE_NAME, "not updated since",dwnl_info$Last_Modification)
           # warning(text_W_Update_station)
@@ -477,6 +525,13 @@ for(PROJECT in project_type){
     final_dataframe[t,] = final_info
     
     gc(reset = T)
+    
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # INSERIRE QUI CHE ERRORE DARE AD ICINGA
+    text_W_Update_station
+    text_W_Empty_file
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
   }
   
   

@@ -635,9 +635,9 @@ DQC_function = function(input_dir,
   }else{
     if(flag_error_df == 0 & exists("df_difference") ){
       structure_message = df_difference
+    }else{
+      structure_message = NULL
     }
-  }else{
-    structure_message = NULL
   }
   
   

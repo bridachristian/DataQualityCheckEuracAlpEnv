@@ -657,10 +657,36 @@ DQC_function = function(input_dir,
     }
   }
   
+  # - - - -  Provide table of missing records - - - - - - - - - - - - - 
+  
+  if(nrow(records_missing) != 0 | nrow(records_missing_new) != 0){
+    
+    table_missing_record = rbind(records_missing[,c(1:3)],records_missing_new[,c(1:3)])
+    colnames(table_missing_record) = c("Last Before", "First After", "Date Gap")
+    
+  }else{
+    if(nrow(records_restart) != 0 | nrow(records_restart_new) != 0){
+      
+      table_restart_record = rbind(records_restart[,c(1:3,5)],records_restart_new[,c(1:3,5)])
+      colnames(table_restart_record) = c("Last Before", "First After", "Date Gap", "First Record")
+    }else{
+      table_missing_record = NULL
+      table_restart_record = NULL
+    }
+  }
+  
+  if(nrow(table_missing_record) == 0){
+    table_missing_record = NULL
+  }
+  
+  if(nrow(table_restart_record) == 0){
+    table_restart_record = NULL
+  }
+  
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
   
-  output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message, overlap_date )
+  output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message, overlap_date, table_missing_record, table_restart_record)
   
   return(output2)
 }

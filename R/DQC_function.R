@@ -665,14 +665,17 @@ DQC_function = function(input_dir,
     colnames(table_missing_record) = c("Last Before", "First After", "Date Gap")
     
   }else{
+    table_missing_record = NULL
+    
     if(nrow(records_restart) != 0 | nrow(records_restart_new) != 0){
       
       table_restart_record = rbind(records_restart[,c(1:3,5)],records_restart_new[,c(1:3,5)])
       colnames(table_restart_record) = c("Last Before", "First After", "Date Gap", "First Record")
     }else{
-      table_missing_record = NULL
+      
       table_restart_record = NULL
     }
+    
   }
   
   if(nrow(table_missing_record) == 0){
@@ -682,6 +685,7 @@ DQC_function = function(input_dir,
   if(nrow(table_restart_record) == 0){
     table_restart_record = NULL
   }
+  
   
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  

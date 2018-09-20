@@ -619,7 +619,7 @@ DQC_function = function(input_dir,
   
   # - - - -  Provide difference on logger numbers - - - - - - - - - - - - - 
   
-  if(flag_logger_number == 1){
+  if(!is.na(flag_logger_number) & flag_logger_number == 1){
     file_logger_numb = logger_number 
     old_logger_numb = logger_info[,2]
     logger_numbers=c(old_logger_numb,file_logger_numb)
@@ -630,11 +630,11 @@ DQC_function = function(input_dir,
   
   # - - - -  Provide difference on data structure - - - - - - - - - - - - - 
   
-  if(flag_error_df == 1 | flag_error_df == -1){
+  if(!is.na(flag_error_df) & (flag_error_df == 1 | flag_error_df == -1)){
     structure_message = paste("Headers has",ncol(header), "columns while data has",ncol(data),"columns")
   }else{
     if(exists("df_difference")){
-      if(flag_error_df == 0  &  nrow(df_difference) != 0 ){
+      if(!is.na(flag_error_df) & (flag_error_df == 0  &  nrow(df_difference) != 0 )){
         structure_message = df_difference
       }else{
         structure_message = NULL
@@ -647,10 +647,10 @@ DQC_function = function(input_dir,
   
   # - - - -  Provide overlaps - - - - - - - - - - - - - 
   
-  if(flag_overlap == 1){
+  if(!is.na(flag_overlap) & flag_overlap == 1){
     overlap_date = as.POSIXct(unique(overlap$TIMESTAMP), tz = "Etc/GMT-1")
   }else{
-    if(flag_new_overlap == 1){
+    if(!is.na(flag_new_overlap) & flag_new_overlap == 1){
       overlap_date = as.POSIXct(unique(new_overlap$TIMESTAMP), tz = "Etc/GMT-1")
     }else{
       overlap_date = NULL
@@ -659,19 +659,39 @@ DQC_function = function(input_dir,
   
   # - - - -  Provide table of missing records - - - - - - - - - - - - - 
   
+  if(!exists("records_missing")){
+    records_missing = as.data.frame(matrix(ncol = 6, nrow = 0))
+    colnames(records_missing) = c("Datetime_From","Datetime_To", "Datetime_Missing"," Record_From", "Record_To","Record_Missing")
+  }
+  if(!exists("records_missing_new")){
+    records_missing_new = as.data.frame(matrix(ncol = 6, nrow = 0))
+    colnames(records_missing_new) = c("Datetime_From","Datetime_To", "Datetime_Missing"," Record_From", "Record_To","Record_Missing")
+  }
+  
+  if(!exists("records_restart")){
+    records_restart = as.data.frame(matrix(ncol = 6, nrow = 0))
+    colnames(records_restart) = c("Datetime_From","Datetime_To", "Datetime_Missing"," Record_From", "Record_To","Record_Missing")
+  }
+  if(!exists("records_restart_new")){
+    records_restart_new = as.data.frame(matrix(ncol = 6, nrow = 0))
+    colnames(records_restart_new) = c("Datetime_From","Datetime_To", "Datetime_Missing"," Record_From", "Record_To","Record_Missing")
+  }
+  
   if(nrow(records_missing) != 0 | nrow(records_missing_new) != 0){
     table_missing_record = rbind(records_missing[,c(1:3)],records_missing_new[,c(1:3)])
     colnames(table_missing_record) = c("Last Before", "First After", "Date Gap")
   }else{
     table_missing_record = data.frame()
-    if(nrow(records_restart) != 0 | nrow(records_restart_new) != 0){
+  }
+  
+  if(nrow(records_restart) != 0 | nrow(records_restart_new) != 0){
       table_restart_record = rbind(records_restart[,c(1:3,5)],records_restart_new[,c(1:3,5)])
       colnames(table_restart_record) = c("Last Before", "First After", "Date Gap", "First Record")
       table_restart_record = table_restart_record[table_restart_record$`Date Gap` != 0]
     }else{
       table_restart_record = data.frame()
     }
-  }
+  
   if(nrow(table_missing_record) == 0){
     table_missing_record = NULL
   }

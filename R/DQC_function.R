@@ -231,7 +231,7 @@ DQC_function = function(input_dir,
   
   
   
-  
+  # missing_index_date
   
   # ..... Output ..........................................................................................................................................
   file_names = NULL
@@ -255,6 +255,8 @@ DQC_function = function(input_dir,
                 flag_missing_records_new_tmp = c()
                 df_difference = as.data.frame(matrix(ncol = 4, nrow = 0))
                 colnames(df_difference) = c("Column", "Row", "Old", "New")
+                
+                new_missing_index_date_tot = c()
                 
                 for(k in 1: length(years)){
                   
@@ -355,7 +357,7 @@ DQC_function = function(input_dir,
                           new_mydata = new_missing[[1]]
                           new_missing_index_date = new_missing[[2]]
                           
-                          
+                          new_missing_index_date_tot = rbind(new_missing_index_date_tot,new_missing_index_date)
                           # r = 0
                           # repeat{
                           #   r = r+1 
@@ -400,7 +402,7 @@ DQC_function = function(input_dir,
                               flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,1)      # YES missing dates
                             }
                             
-                            rm(missing)
+                            rm(new_missing)
                             
                             colnames(header) = header[1,]
                             out_my = new_mydata
@@ -597,6 +599,8 @@ DQC_function = function(input_dir,
     }
   }
   
+  # new_missing_index_date_tot
+  
   flags_names = c("flag_empty","flag_logger_number","flag_error_df","flag_date","flag_duplicates_rows","flag_overlap","flag_missing_records","flag_missing_dates","flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range", "flag_new_duplicates_rows", "flag_new_overlap", "flag_new_missing_dates" ,"flag_missing_records_new")
   flags_df = data.frame(flags_names, rep(NA,times = length(flags_names)))
   colnames(flags_df) = c("flag_names", "value")
@@ -700,22 +704,26 @@ DQC_function = function(input_dir,
     table_restart_record = NULL
   }
   
-  # - - - -  Provide overlaps - - - - - - - - - - - - - 
-  
-  # if(!is.na(flag_missing_dates) & flag_missing_dates == 1){
-  #   date_missing = 
-  # }else{
-  #   if(!is.na(flag_new_overlap) & flag_new_overlap == 1){
-  #     overlap_date = as.POSIXct(unique(new_overlap$TIMESTAMP), tz = "Etc/GMT-1")
-  #   }else{
-  #     overlap_date = NULL
-  #   }
-  # }
+  # - - - -  Provide missing dates - - - - - - - - - - - - - 
+  # missing_index_date
+  # new_missing_index_date_tot
+
+  if((!is.na(flag_missing_dates) & flag_missing_dates == 1)|(!is.na(flag_new_missing_dates) & flag_new_missing_dates == 1)){
+    date_missing = rbind(missing_index_date,new_missing_index_date_tot)
+  }else{
+    date_missing = NULL
+  }
+  if(!is.null(date_missing)){
+    if(nrow(date_missing) == 0){
+    date_missing = NULL
+    }
+  }
+
   
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
   
-  output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message, overlap_date, table_missing_record, table_restart_record)
+  output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message, overlap_date, table_missing_record, table_restart_record,date_missing)
   
   return(output2)
 }

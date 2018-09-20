@@ -32,7 +32,7 @@ read_and_update_issue_counter = function(ISSUE_COUNTER_DIR,FILES_AVAILABLE,DATET
                                     rep(0, times = length(FILES_AVAILABLE)))
     
     colnames(first_issue_counter) = c("Station", "Project", "W_Update_station","W_Empty_file","W_Logger_number","W_Structure_issues","W_date_issue",
-                                      "W_overlap", "W_missing_records",W_restart_records)
+                                      "W_overlap", "W_missing_records","W_restart_records")
     
     issue_counter = first_issue_counter
     

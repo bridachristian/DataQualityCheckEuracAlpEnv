@@ -246,7 +246,7 @@ for(PROJECT in project_type){
       
       date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE_NAME,sep = "")),format = datetime_format))
       
-        if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
+      if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
         
         input_dir = input_dir
         output_dir_data = output_dir_data_new
@@ -327,7 +327,7 @@ for(PROJECT in project_type){
         overlap_date = DQC_results[[6]]
         missing_record = DQC_results[[7]]
         restart_record = DQC_results[[8]]
-
+        
         mylist <- split(flags_df$value, seq(nrow(flags_df)))
         names(mylist) = flags_df$flag_names
         
@@ -392,7 +392,7 @@ for(PROJECT in project_type){
             }
           }
         }else{
-          if(!is.na(mylist$flag_empty) & mylist$flag_empty == 0){
+          if(is.na(mylist$flag_empty)|(!is.na(mylist$flag_empty) & mylist$flag_empty == 0)){
             w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
             issue_counter$W_Empty_file[w_1] = 0
             write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
@@ -415,7 +415,7 @@ for(PROJECT in project_type){
             }
           }
         }else{
-          if(!is.na(mylist$flag_logger_number) & mylist$flag_logger_number == 0){
+          if(is.na(mylist$flag_logger_number) | (!is.na(mylist$flag_logger_number) & mylist$flag_logger_number == 0)){
             w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
             issue_counter$W_Logger_number[w_1] = 0
             write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
@@ -426,7 +426,7 @@ for(PROJECT in project_type){
         # Check data structure issues: different column numbers and headers
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
-     
+        
         # if(mylist$flag_error_df == 1 | mylist$flag_error_df == -1 | (mylist$flag_error_df == 0 & is.data.frame(structure_message))){
         if((!is.na(mylist$flag_error_df) & mylist$flag_error_df == 1 )|(!is.na(mylist$flag_error_df) &  mylist$flag_error_df == -1) | ((!is.na(mylist$flag_error_df) & mylist$flag_error_df == 0) & is.data.frame(structure_message))){
           w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
@@ -445,7 +445,7 @@ for(PROJECT in project_type){
           }
         }else{
           # if(mylist$flag_error_df == 0 & !exists("structure_message")){ 
-          if((!is.na(mylist$flag_error_df) & mylist$flag_error_df == 0) & is.null(structure_message)){
+          if((is.na(mylist$flag_error_df) | (!is.na(mylist$flag_error_df) & mylist$flag_error_df == 0) & is.null(structure_message))){
             w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
             issue_counter$W_Structure_issues[w_1] = 0
             write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
@@ -460,7 +460,7 @@ for(PROJECT in project_type){
           w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
           issue_counter$W_date_issue[w_1] = issue_counter$W_date_issue[w_1]+1
           write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
-
+          
           if(issue_counter$W_date_issue[w_1] != 0){
             if(issue_counter$W_date_issue[w_1] == 1 | issue_counter$W_date_issue[w_1] %% MESSAGE_EVERY_TIMES == 0){
               text_W_date_issue = paste(FILE_NAME, "has date issue. Possible overlaps or deleted rows! The last file modification was at",date_last_modif_file)
@@ -468,7 +468,7 @@ for(PROJECT in project_type){
             }
           }
         }else{
-          if(!is.na(mylist$flag_date) & mylist$flag_date == 0){
+          if(is.na(mylist$flag_date) | (!is.na(mylist$flag_date) & mylist$flag_date == 0)){
             w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
             issue_counter$W_date_issue[w_1] = 0
             write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
@@ -478,21 +478,21 @@ for(PROJECT in project_type){
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         # Check overlap: detect date overlap having the rest of row different
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
+        
         if((!is.na(mylist$flag_overlap) & mylist$flag_overlap == 1) |(!is.na(mylist$flag_overlap) & mylist$flag_overlap == 1 )){
           w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
           issue_counter$W_overlap[w_1] = issue_counter$W_overlap[w_1]+1
           write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
-
+          
           if(issue_counter$W_overlap[w_1] != 0){
             if(issue_counter$W_overlap[w_1] == 1 | issue_counter$W_overlap[w_1] %% MESSAGE_EVERY_TIMES == 0){
               text_W_overlap = paste(FILE_NAME, "has the following overlap:",
-                                   paste(as.character(overlap_date),collapse = " ; "))
+                                     paste(as.character(overlap_date),collapse = " ; "))
               warning(text_W_overlap)
             }
           }
         }else{
-          if(!is.na(mylist$flag_overlap) & mylist$flag_overlap != 1 & mylist$flag_overlap != 1 ){
+          if(is.na(mylist$flag_overlap) | (!is.na(mylist$flag_overlap) & mylist$flag_overlap != 1 & mylist$flag_overlap != 1 )){
             w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
             issue_counter$W_overlap[w_1] = 0
             write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
@@ -505,46 +505,52 @@ for(PROJECT in project_type){
         
         # missing
         
-         if(!is.null(missing_record )){
-          w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-          issue_counter$W_missing_records[w_1] = issue_counter$W_Logger_number[w_1]+1
-          write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
-
-          if(issue_counter$W_missing_records[w_1] != 0){
-            if(issue_counter$W_missing_records[w_1] == 1 | issue_counter$W_missing_records[w_1] %% MESSAGE_EVERY_TIMES == 0){
-              text_W_missing_records = missing_record
-              warning(text_W_missing_records)
+        if((!is.na(mylist$flag_missing_records) & mylist$flag_missing_records == 1 )|((!is.na(mylist$flag_missing_records_new) & mylist$flag_missing_records_new == 1))){
+          if(!is.null(missing_record )){
+            w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+            issue_counter$W_missing_records[w_1] = issue_counter$W_Logger_number[w_1]+1
+            write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+            
+            if(issue_counter$W_missing_records[w_1] != 0){
+              if(issue_counter$W_missing_records[w_1] == 1 | issue_counter$W_missing_records[w_1] %% MESSAGE_EVERY_TIMES == 0){
+                text_W_missing_records = missing_record
+                warning(text_W_missing_records)
+              }
+            }
+          }else{
+            if(is.null(missing_record) ){
+              w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+              issue_counter$W_missing_records[w_1] = 0
+              write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
             }
           }
-        }else{
-          if(is.null(missing_record ) ){
-            w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-            issue_counter$W_missing_records[w_1] = 0
-            write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
-          }
-        }
-        
-        # missing with restart new software
-        
-        if(!is.null(restart_record )){
-          w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-          issue_counter$W_restart_records[w_1] = issue_counter$W_Logger_number[w_1]+1
-          write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
           
-          if(issue_counter$W_restart_records[w_1] != 0){
-            if(issue_counter$W_restart_records[w_1] == 1 | issue_counter$W_restart_records[w_1] %% MESSAGE_EVERY_TIMES == 0){
-              text_W_missing_records = restart_record
-              warning(text_W_missing_records)
+          # missing with restart new software
+          
+          if(!is.null(restart_record )){
+            w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+            issue_counter$W_restart_records[w_1] = issue_counter$W_Logger_number[w_1]+1
+            write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+            
+            if(issue_counter$W_restart_records[w_1] != 0){
+              if(issue_counter$W_restart_records[w_1] == 1 | issue_counter$W_restart_records[w_1] %% MESSAGE_EVERY_TIMES == 0){
+                text_W_restart_records = restart_record
+                warning(text_W_restart_records)
+              }
+            }
+          }else{
+            if(is.null(restart_record ) ){
+              w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+              issue_counter$W_restart_records[w_1] = 0
+              write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
             }
           }
         }else{
-          if(is.null(missing_record ) ){
-            w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-            issue_counter$W_restart_records[w_1] = 0
-            write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
-          }
+          w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+          issue_counter$W_missing_records[w_1] = 0
+          issue_counter$W_restart_records[w_1] = 0
+          write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
         }
-        
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
         if(!is.na(mylist$flag_missing_dates)){
@@ -661,6 +667,8 @@ for(PROJECT in project_type){
     # text_W_Logger_number
     # text_W_structure
     # text_W_date_issue
+    # text_W_missing_records
+    # text_W_restart_records
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
   }

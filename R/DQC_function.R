@@ -702,15 +702,15 @@ DQC_function = function(input_dir,
   
   # - - - -  Provide overlaps - - - - - - - - - - - - - 
   
-  if(!is.na(flag_missing_dates) & flag_missing_dates == 1){
-    date_missing = 
-  }else{
-    if(!is.na(flag_new_overlap) & flag_new_overlap == 1){
-      overlap_date = as.POSIXct(unique(new_overlap$TIMESTAMP), tz = "Etc/GMT-1")
-    }else{
-      overlap_date = NULL
-    }
-  }
+  # if(!is.na(flag_missing_dates) & flag_missing_dates == 1){
+  #   date_missing = 
+  # }else{
+  #   if(!is.na(flag_new_overlap) & flag_new_overlap == 1){
+  #     overlap_date = as.POSIXct(unique(new_overlap$TIMESTAMP), tz = "Etc/GMT-1")
+  #   }else{
+  #     overlap_date = NULL
+  #   }
+  # }
   
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  

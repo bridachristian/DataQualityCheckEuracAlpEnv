@@ -46,6 +46,7 @@ missing_record = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER
       dataframe_miss[i,5] = format(miss_record_end[i])
       dataframe_miss[i,6] = data_new[miss[i],which(colnames(data) == RECORD_HEADER)]-data_new[miss[i]-1,which(colnames(data) == RECORD_HEADER)]-1
     }
+    dataframe_miss = dataframe_miss[-(dataframe_miss$Record_From == -1),]
   }
   
   # restart record

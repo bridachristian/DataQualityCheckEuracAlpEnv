@@ -221,7 +221,7 @@ DQC_function = function(input_dir,
               }
               
               mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
-              
+              mydata_1 = mydata
             }
           }
         }
@@ -300,7 +300,7 @@ DQC_function = function(input_dir,
                       df_toadd =  mydata[which(format(time_mydata, format = "%Y") == years[k]),]
                       df_toadd[,which(colnames(df_toadd)== datetime_header)] = as.POSIXct(format(df_toadd[,which(colnames(df_toadd)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
                       new = rbind(old_data,df_toadd)
-                      new[order(new$TIMESTAMP),]
+                      # new[order(new$TIMESTAMP),]
                       new = new[order(new[,which(colnames(new) == datetime_header)]),]
                       
                       # append new raw data to old data if headers new and old are the same
@@ -609,6 +609,7 @@ DQC_function = function(input_dir,
   
   if(!exists("mydata")){
     mydata= NULL
+
   }
   
   output1 = list(mydata, flags_df,file_names)
@@ -699,6 +700,17 @@ DQC_function = function(input_dir,
     table_restart_record = NULL
   }
   
+  # - - - -  Provide overlaps - - - - - - - - - - - - - 
+  
+  if(!is.na(flag_missing_dates) & flag_missing_dates == 1){
+    date_missing = 
+  }else{
+    if(!is.na(flag_new_overlap) & flag_new_overlap == 1){
+      overlap_date = as.POSIXct(unique(new_overlap$TIMESTAMP), tz = "Etc/GMT-1")
+    }else{
+      overlap_date = NULL
+    }
+  }
   
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  

@@ -551,6 +551,31 @@ for(PROJECT in project_type){
           issue_counter$W_restart_records[w_1] = 0
           write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
         }
+        
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        # Check missing dates: detect date gaps (whithout gap between records)
+        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        
+        if((!is.na(mylist$flag_overlap) & mylist$flag_overlap == 1) |(!is.na(mylist$flag_overlap) & mylist$flag_overlap == 1 )){
+          w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+          issue_counter$W_overlap[w_1] = issue_counter$W_overlap[w_1]+1
+          write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          
+          if(issue_counter$W_overlap[w_1] != 0){
+            if(issue_counter$W_overlap[w_1] == 1 | issue_counter$W_overlap[w_1] %% MESSAGE_EVERY_TIMES == 0){
+              text_W_overlap = paste(FILE_NAME, "has the following overlap:",
+                                     paste(as.character(overlap_date),collapse = " ; "))
+              warning(text_W_overlap)
+            }
+          }
+        }else{
+          if(is.na(mylist$flag_overlap) | (!is.na(mylist$flag_overlap) & mylist$flag_overlap != 1 & mylist$flag_overlap != 1 )){
+            w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+            issue_counter$W_overlap[w_1] = 0
+            write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
+          }
+        }
+        
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
         if(!is.na(mylist$flag_missing_dates)){

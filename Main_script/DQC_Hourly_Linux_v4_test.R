@@ -322,12 +322,12 @@ for(PROJECT in project_type){
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]
         file_names = DQC_results[[3]]
-        log_numbs = DQC_results[[4]]
-        structure_message = DQC_results[[5]]
-        overlap_date = DQC_results[[6]]
-        missing_record = DQC_results[[7]]
-        restart_record = DQC_results[[8]]
-        date_missing =  DQC_results[[9]]
+        # log_numbs = DQC_results[[4]]
+        # structure_message = DQC_results[[5]]
+        # overlap_date = DQC_results[[6]]
+        # missing_record = DQC_results[[7]]
+        # restart_record = DQC_results[[8]]
+        # date_missing =  DQC_results[[9]]
         
         mylist <- split(flags_df$value, seq(nrow(flags_df)))
         names(mylist) = flags_df$flag_names

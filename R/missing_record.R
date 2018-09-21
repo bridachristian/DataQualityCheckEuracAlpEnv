@@ -46,7 +46,13 @@ missing_record = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER
       dataframe_miss[i,5] = format(miss_record_end[i])
       dataframe_miss[i,6] = data_new[miss[i],which(colnames(data) == RECORD_HEADER)]-data_new[miss[i]-1,which(colnames(data) == RECORD_HEADER)]-1
     }
-    dataframe_miss = dataframe_miss[-(dataframe_miss$Record_From == -1),]
+    w = which(dataframe_miss[,3] == 0)
+    
+    if(length(w) != 0){
+      dataframe_miss_new = dataframe_miss[-w,]
+    }else{
+      dataframe_miss_new = dataframe_miss
+    }
   }
   
   # restart record
@@ -85,13 +91,13 @@ missing_record = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER
     
   }
   
-  if(nrow(dataframe_miss) > 0 | nrow(dataframe_rest_new) > 0){
+  if(nrow(dataframe_miss_new) > 0 | nrow(dataframe_rest_new) > 0){
     flag_missing_records = 1
   }else{
     flag_missing_records = 0
   }
   
-  l = list(flag_missing_records,dataframe_miss, dataframe_rest_new)
+  l = list(flag_missing_records,dataframe_miss_new, dataframe_rest_new)
   names(l) = c("flag_missing_records", "data_table_missing_records","data_table_restarted_records")
   return(l)
 } 

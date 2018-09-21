@@ -621,6 +621,17 @@ DQC_function = function(input_dir,
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # PART 2 --> PREPARE STATISTICS AND REPORT INFORMATION
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+  # - - - -  Provide information of empty file - - - - - - - - - - - - - 
+  
+   if(!is.na(flag_empty) & flag_empty == 1){
+     
+     output_empty = list("Y", NA)
+     names(output_empty) =c("Status", "Values")
+   }else{
+     output_empty = list("N",NA)
+     names(output_empty) =c("Status", "Values")
+   }
   
   # - - - -  Provide difference on logger numbers - - - - - - - - - - - - - 
   
@@ -629,36 +640,66 @@ DQC_function = function(input_dir,
     old_logger_numb = logger_info[,2]
     logger_numbers=c(old_logger_numb,file_logger_numb)
     names(logger_numbers) = c("old", "new")
+    
+    output_logger_number = list("Y",logger_numbers)
+    names(output_logger_number) = c("Status", "Values")
+    
   }else{
-    logger_numbers = NULL
+    output_logger_number =list("N", NA)
+    names(output_logger_number) = c("Status", "Values")
   }
   
   # - - - -  Provide difference on data structure - - - - - - - - - - - - - 
   
   if(!is.na(flag_error_df) & (flag_error_df == 1 | flag_error_df == -1)){
-    structure_message = paste("Headers has",ncol(header), "columns while data has",ncol(data),"columns")
+     ncol_vect = c(ncol(header),ncol(data))
+     names(ncol_vect) = c("ncol_header", "ncol_data")
+     
+    output_structure = list("Y",ncol_vect)
+    names(output_structure) = c("Status", "Values")
   }else{
     if(exists("df_difference")){
       if(!is.na(flag_error_df) & (flag_error_df == 0  &  nrow(df_difference) != 0 )){
-        structure_message = df_difference
+        # structure_message = df_difference
+        output_structure = list("Y",df_difference)
+        names(output_structure) = c("Status", "Values")
       }else{
-        structure_message = NULL
+        output_structure = list("N",NA)
+        names(output_structure) = c("Status", "Values")
       }
     }else{
-      structure_message = NULL
+      output_structure = list("N",NA)
+      names(output_structure) = c("Status", "Values")
     }
+  }
+  
+  # - - - -  Provide date issue - - - - - - - - - - - - - 
+  
+  if(!is.na(flag_date) & flag_date == 1){
+    
+    output_date_issue = list("Y", NA)
+    names(output_date_issue) =c("Status", "Values")
+  }else{
+    output_date_issue = list("N",NA)
+    names(output_date_issue) =c("Status", "Values")
   }
   
   
   # - - - -  Provide overlaps - - - - - - - - - - - - - 
   
   if(!is.na(flag_overlap) & flag_overlap == 1){
-    overlap_date = as.POSIXct(unique(overlap$TIMESTAMP), tz = "Etc/GMT-1")
+    
+    overlap_date = as.character(as.POSIXct(unique(overlap$TIMESTAMP), tz = "Etc/GMT-1"))
+    output_overlap = list("Y", overlap_date)
+    names(output_overlap) =c("Status", "Values")
   }else{
     if(!is.na(flag_new_overlap) & flag_new_overlap == 1){
       overlap_date = as.POSIXct(unique(new_overlap$TIMESTAMP), tz = "Etc/GMT-1")
+      output_overlap = list("Y", overlap_date)
+      names(output_overlap) =c("Status", "Values")
     }else{
-      overlap_date = NULL
+      output_overlap = list("N", NA)
+      names(output_overlap) =c("Status", "Values")
     }
   }
   

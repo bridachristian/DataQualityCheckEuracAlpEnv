@@ -613,7 +613,7 @@ DQC_function = function(input_dir,
   
   if(!exists("mydata")){
     mydata= NULL
-
+    
   }
   
   output1 = list(mydata, flags_df,file_names)
@@ -621,17 +621,17 @@ DQC_function = function(input_dir,
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # PART 2 --> PREPARE STATISTICS AND REPORT INFORMATION
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
+  
   # - - - -  Provide information of empty file - - - - - - - - - - - - - 
   
-   if(!is.na(flag_empty) & flag_empty == 1){
-     
-     output_empty = list("Y", NA)
-     names(output_empty) =c("Status", "Values")
-   }else{
-     output_empty = list("N",NA)
-     names(output_empty) =c("Status", "Values")
-   }
+  if(!is.na(flag_empty) & flag_empty == 1){
+    
+    output_empty = list("Y", NA)
+    names(output_empty) =c("Status", "Values")
+  }else{
+    output_empty = list("N",NA)
+    names(output_empty) =c("Status", "Values")
+  }
   
   # - - - -  Provide difference on logger numbers - - - - - - - - - - - - - 
   
@@ -652,9 +652,9 @@ DQC_function = function(input_dir,
   # - - - -  Provide difference on data structure - - - - - - - - - - - - - 
   
   if(!is.na(flag_error_df) & (flag_error_df == 1 | flag_error_df == -1)){
-     ncol_vect = c(ncol(header),ncol(data))
-     names(ncol_vect) = c("ncol_header", "ncol_data")
-     
+    ncol_vect = c(ncol(header),ncol(data))
+    names(ncol_vect) = c("ncol_header", "ncol_data")
+    
     output_structure = list("Y",ncol_vect)
     names(output_structure) = c("Status", "Values")
   }else{
@@ -731,20 +731,20 @@ DQC_function = function(input_dir,
   }
   
   if(nrow(records_restart) != 0 | nrow(records_restart_new) != 0){
-      table_restart_record = rbind(records_restart[,c(1:5)],records_restart_new[,c(1:5)])
-      colnames(table_restart_record) =  c("Last.date.Before", "First.date.After", "Date.Gap","Last.record.Before","First.record.After")
-      table_restart_record = table_restart_record[table_restart_record$`Date Gap` != 0]
-    }else{
-      table_restart_record = data.frame()
-    }
+    table_restart_record = rbind(records_restart[,c(1:5)],records_restart_new[,c(1:5)])
+    colnames(table_restart_record) =  c("Last.date.Before", "First.date.After", "Date.Gap","Last.record.Before","First.record.After")
+    table_restart_record = table_restart_record[table_restart_record$`Date Gap` != 0]
+  }else{
+    table_restart_record = data.frame()
+  }
   
   if(nrow(table_missing_record) != 0){
     output_missing_record = list("Y", table_missing_record)
     names(output_missing_record) =c("Status", "Values")
-    }else{
-      output_missing_record = list("N", NA)
-      names(output_missing_record) =c("Status", "Values")
-    }
+  }else{
+    output_missing_record = list("N", NA)
+    names(output_missing_record) =c("Status", "Values")
+  }
   
   if(nrow(table_restart_record) != 0){
     output_restart_record = list("Y", table_restart_record)
@@ -759,24 +759,64 @@ DQC_function = function(input_dir,
   # - - - -  Provide missing dates - - - - - - - - - - - - - 
   # missing_index_date
   # new_missing_index_date_tot
-
+  
   if((!is.na(flag_missing_dates) & flag_missing_dates == 1)|(!is.na(flag_new_missing_dates) & flag_new_missing_dates == 1)){
     date_missing = rbind(missing_index_date,new_missing_index_date_tot)
-  }else{
-    date_missing = NULL
-  }
-  if(!is.null(date_missing)){
-    if(nrow(date_missing) == 0){
-    date_missing = NULL
+    
+    time_tot <- as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1' )
+    time_missing <- missing_index_date[,2]
+    
+    df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
+    colnames(df_missing) = c("time","Status")
+    df_missing[which(time_tot %in% time_missing ),2] = "Missing dates filled"
+    y = rep(1, times = length(time_tot))
+    
+    Status_num = rep(1,times = length(time_tot))
+    Status_num[which(time_tot %in% time_missing )] = 0
+    
+    df_missing = cbind(df_missing, y,Status_num)
+    Status_num_NA=df_missing
+    Status_num_NA = Status_num_NA[,-c(2,3)]
+    
+    differ = c(0,diff(Status_num_NA$Status_num))
+    start = which(differ == -1)
+    end  = which(differ == 1) - 1
+    gap_lenght = end - start + 1
+    
+    date_start = Status_num_NA$time[start]
+    date_end = Status_num_NA$time[end]
+    
+    if(length(date_end) != 0){
+      date_end_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
+      for(k in 1:length(date_end)){
+        
+        date_end_tmp[k] =  seq.POSIXt(date_end[k], by = datetime_sampling, length. =  2)[2]
+      }
+      gap_hour = difftime(time1 = date_end_tmp,time2 = date_start,units = "hours")
+    }else{
+      gap_hour = numeric(0)
     }
+    
+    statistic_missing = data.frame(date_start,date_end,gap_lenght,gap_hour)
+    colnames(statistic_missing) = c("From", "To", "Number of Record", "Hours")
+    statistic_missing[,1:2] = format(statistic_missing[,1:2], format = datetime_format)
+    
+    date_missing_period = statistic_missing
+    
+    output_date_missing = list("Y",date_missing_period )
+    # output_restart_record = list("N", NA)
+    names(output_date_missing) =c("Status", "Values")
+  }else{
+    # date_missing = NULL
+    output_date_missing = list("N", NA)
+    names(output_date_missing) =c("Status", "Values")
   }
-
   
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
   
-  output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message, overlap_date, table_missing_record, table_restart_record,date_missing)
+  # output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message, overlap_date, table_missing_record, table_restart_record,date_missing)
   
-  return(output2)
+  return(output1)
 }
 

@@ -178,7 +178,7 @@ DQC_function = function(input_dir,
               
               rm(missing)
               
-              range <- exclude_out_of_range(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
+              range <- exclude_out_of_range_v2(DATA = mydata,DATETIME_HEADER = datetime_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
               mydata = range[[1]]
               check_out_of_range = range[[2]]
               variable_new = range[[3]]

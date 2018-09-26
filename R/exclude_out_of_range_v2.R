@@ -17,12 +17,6 @@ exclude_out_of_range_v2 = function(DATA,DATETIME_HEADER = "TIMESTAMP", RANGE_DIR
   options(scipen = 999)
   range = read.csv(paste(RANGE_DIR, RANGE_FILE,sep = ""),stringsAsFactors = FALSE)          # <- import table that contains for each variable the permissible range
   
-  # to_set = range[which(range$min == "to set" | range$max == "to set"),]
-  # 
-  # if(nrow(to_set) != 0){
-  # range = range[-which(range$Variable == to_set$Variable),]
-  # }
-  
   range$min = as.numeric(range$min)
   range$max = as.numeric(range$max)
   
@@ -37,6 +31,11 @@ exclude_out_of_range_v2 = function(DATA,DATETIME_HEADER = "TIMESTAMP", RANGE_DIR
   # It could be a good index to see if there are issues in headers
   to_add = c()
   
+  df_upper = as.data.frame(matrix(ncol = 5, nrow = 0))
+  colnames(df_upper) = c("Variable", "From", "To", "Hours", "Mean_Value")
+  df_lower = as.data.frame(matrix(ncol = 5, nrow = 0))
+  colnames(df_lower) = c("Variable", "From", "To", "Hours", "Mean_Value")
+  
   for(k in 1:ncol(new)){
     if(colnames(new)[k] %in% range$Variable){
       w = which(range$Variable == colnames(new)[k])
@@ -47,20 +46,92 @@ exclude_out_of_range_v2 = function(DATA,DATETIME_HEADER = "TIMESTAMP", RANGE_DIR
       
       if(!is.na(lower_limit) & !is.na(upper_limit)){          # Exclude data without a range set
         
-        new_status[,k] = ifelse(new[,k] < lower_limit, -1, new_status[,k])
-        new_status[,k] = ifelse(new[,k] > upper_limit, 1, new_status[,k])
+        w_low = which(new[,k] < lower_limit)
+        w_high = which(new[,k] > upper_limit)
         
-        new_status[is.na(new_status[,k]),k] = 0
+        x = cumsum(c(1,diff(w_low)!=1))
+        sss = split(w_low,x)
         
-        new[,k] = ifelse(new[,k] < lower_limit, NA, new[,k])
-        new[,k] = ifelse(new[,k] > upper_limit, NA, new[,k])
+        if(length(sss) > 1){
+          for(s in 1:length(sss)){
+            sss[[s]]
+            
+            start_sss = as.POSIXct(new[ sss[[s]][1] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
+            end_sss = as.POSIXct( new[ sss[[s]][length(sss[[s]])] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
+            hour_diff = end_sss - start_sss
+            units(hour_diff) = "hours"
+            
+            num_hour_diff = as.numeric(hour_diff)
+            
+            
+            df_lower_tmp = data.frame(colnames(new)[k],
+                                      as.character(start_sss),
+                                      as.character(end_sss),
+                                      as.numeric(num_hour_diff),
+                                      mean(new[ sss[[s]] ,k],na.rm = T))
+            colnames(df_lower_tmp) = colnames(df_lower)
+            
+            
+            df_lower = rbind(df_lower,df_lower_tmp)
+          }
+        }else{
+          df_lower_tmp =  as.data.frame(matrix(ncol = 5, nrow = 0))
+        colnames(df_lower_tmp) = c("Variable", "From", "To", "Hours", "Mean_Value")
+        }
+        
+        y = cumsum(c(1,diff(w_high)!=1))
+        ttt = split(w_high,y)
+        
+        if(length(ttt) > 1){
+          for(t in 1:length(ttt)){
+            ttt[[t]]
+            
+            start_ttt = as.POSIXct(new[ ttt[[t]][1] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
+            end_ttt = as.POSIXct( new[ ttt[[t]][length(ttt[[t]])] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
+            hour_diff = end_ttt - start_ttt
+            units(hour_diff) = "hours"
+            
+            num_hour_diff = as.numeric(hour_diff)
+            
+            
+            df_upper_tmp = data.frame(colnames(new)[k],
+                                      start_ttt,
+                                      end_ttt,
+                                      num_hour_diff,
+                                      mean(new[ ttt[[t]] ,k],na.rm = T))
+            colnames(df_upper_tmp) = colnames(df_upper)
+            
+            
+            df_upper = rbind(df_upper,df_upper_tmp)
+          }
+        }else{
+          df_upper_tmp =  as.data.frame(matrix(ncol = 5, nrow = 0))
+          colnames(df_upper_tmp) = c("Variable", "From", "To", "Hours", "Mean_Value")
+        }
+        
       }
+      
+      
+      
+      
+      
+      # new_status[,k] = ifelse(new[,k] < lower_limit, -1, new_status[,k])
+      # new_status[,k] = ifelse(new[,k] > upper_limit, 1, new_status[,k])
+      
+      # new_status[is.na(new_status[,k]),k] = 0
+      
+      new[,k] = ifelse(new[,k] < lower_limit, NA, new[,k])
+      new[,k] = ifelse(new[,k] > upper_limit, NA, new[,k])
+      
+      ####
       
     }else{
       to_add = c(to_add, colnames(new)[k])
     }
   }
-  
+    df_lower
+  df_upper
+
   if(length(to_add) != 0){
     df_to_add = data.frame(to_add, 
                            rep(NA, times=length(to_add)),
@@ -81,7 +152,8 @@ exclude_out_of_range_v2 = function(DATA,DATETIME_HEADER = "TIMESTAMP", RANGE_DIR
   range$max = as.character(range$max)
   write.csv(range,paste(RANGE_DIR, RANGE_FILE,sep = ""),quote = F,row.names = F, na = "")
   
-  out = list(new, new_status, variable_new, variable_to_set)
+
+  out = list(new, new_status, variable_new, variable_to_set)     # no new_status
   
   return(out)
 }

@@ -180,9 +180,9 @@ DQC_function = function(input_dir,
               
               # ALERT OUT OF RANGE --> ANY MYDATA MODIFICATION
               alert_range <- alert_range_notify(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
-              out_of_range_table = range[[1]]
-              variable_new = range[[2]]
-              variable_to_set = range[[3]]
+              alert_out_of_range_table = alert_range[[1]]
+              alert_variable_new = alert_range[[2]]
+              alert_variable_to_set = alert_range[[3]]
               
               
               # OUT OF RANGE --> DELATE DATA OUT OF RANGE
@@ -198,16 +198,22 @@ DQC_function = function(input_dir,
               
               # ..... Flags .....................................................................................................................................
               
-              if(length(variable_to_set) != 0){
+              if(length(variable_to_set) != 0 | length(alert_variable_to_set) != 0){
                 flag_range_variable_to_set = 1
               }else{
                 flag_range_variable_to_set = 0
               }
               
-              if(length(variable_new) != 0){
+              if(length(variable_new) != 0 | length(alert_variable_new) != 0 ){
                 flag_range_variable_new = 1
               }else{
                 flag_range_variable_new = 0
+              }
+              
+              if(nrow(alert_out_of_range_table) == 0){
+                flag_out_of_range_ALERT = 0
+              }else{
+                flag_out_of_range_ALERT = 1
               }
               
               
@@ -829,9 +835,20 @@ DQC_function = function(input_dir,
     names(output_date_missing) =c("Status", "Values")
   }
   
+  # - - - -  Provide ALERT out of range - - - - - - - - - - - - -
+  
+  
+  if((!is.na(flag_out_of_range_ALERT) & flag_out_of_range_ALERT == 1)){
+    output_out_of_range_ALERT = list("Y", alert_out_of_range_table)
+    names(output_out_of_range_ALERT) =c("Status", "Values")
+  }else{
+    output_out_of_range_ALERT = list("N", NA)
+    names(output_out_of_range_ALERT) =c("Status", "Values")
+  }
+  
   # - - - -  Provide out of range - - - - - - - - - - - - -
-
-
+  
+  
   if((!is.na(flag_out_of_range) & flag_out_of_range == 1)){
     output_out_of_range = list("Y", out_of_range_table)
     names(output_out_of_range) =c("Status", "Values")
@@ -862,6 +879,7 @@ DQC_function = function(input_dir,
                     output_missing_record,
                     output_restart_record,
                     output_date_missing,
+                    output_out_of_range_ALERT,
                     output_out_of_range )
   
   names(errors_output) = c("err_empty",
@@ -872,6 +890,7 @@ DQC_function = function(input_dir,
                            "err_missing_record",
                            "err_restart_record",
                            "err_date_missing",
+                           "err_range_alert",
                            "err_out_of_range")
   
   
@@ -882,15 +901,7 @@ DQC_function = function(input_dir,
   # output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message, overlap_date, table_missing_record, table_restart_record,date_missing)
   output2 = list(mydata, flags_df, file_names, errors_output)
   
-  # # ~ ~ ~ ~ Issue Management (on/off message) ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-  # 
-  # issue_file = read.csv(issue_flags_file,stringsAsFactors = F)
-  # 
-  # issue_file$Date_error[which(issue_file$Errors == names(status)[[which(status == "Y")]])] = format(as.POSIXct(Sys.time(),tz = "Ect/GMT-1"),format = "%Y-%m-%d %H:%M")
-  # 
-  # if(names(status)[[which(status == "Y")]] == "err_out_of_range"){
-  #   out_of_range_table
-  # }
+  
   
     
   return(output2)

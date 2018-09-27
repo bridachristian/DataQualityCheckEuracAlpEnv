@@ -369,7 +369,7 @@ for(PROJECT in project_type){
           saveRDS(error_data,error_file)
         }
         
-        if(names(status)[[which(status == "Y")]] == "err_out_of_range"){
+        if(names(status)[[which(status == "Y")]] == "err_range_alert"){
           error_data = data_errors[[which(status == "Y")]]
           
         }

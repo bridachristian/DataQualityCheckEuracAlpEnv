@@ -623,7 +623,7 @@ DQC_function = function(input_dir,
     
   }
   
-  output1 = list(mydata, flags_df,file_names)
+  # output1 = list(mydata, flags_df,file_names)
   
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # PART 2 --> PREPARE STATISTICS AND REPORT INFORMATION
@@ -834,15 +834,15 @@ DQC_function = function(input_dir,
   
   
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-  output_empty
-  output_logger_number
-  output_structure
-  output_date_issue
-  output_overlap
-  output_missing_record
-  output_restart_record
-  output_date_missing
-  output_out_of_range
+  # output_empty
+  # output_logger_number
+  # output_structure
+  # output_date_issue
+  # output_overlap
+  # output_missing_record
+  # output_restart_record
+  # output_date_missing
+  # output_out_of_range
   
   errors_output = list(output_empty,
                     output_logger_number,
@@ -864,14 +864,25 @@ DQC_function = function(input_dir,
                            "err_date_missing",
                            "err_out_of_range")
   
-  # status = lapply(errors_output, function(x) x[[1]])
-  # 
-  # names(status)[[which(status == "Y")]]
   
+  status = lapply(errors_output, function(x) x[[1]])
+   
+   names(status)[[which(status == "Y")]]
   
   # output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message, overlap_date, table_missing_record, table_restart_record,date_missing)
-  output2 = list(mydata, flags_df,file_names, errors_output)
+  output2 = list(mydata, flags_df, file_names, errors_output)
   
-  return(output1)
+  # # ~ ~ ~ ~ Issue Management (on/off message) ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+  # 
+  # issue_file = read.csv(issue_flags_file,stringsAsFactors = F)
+  # 
+  # issue_file$Date_error[which(issue_file$Errors == names(status)[[which(status == "Y")]])] = format(as.POSIXct(Sys.time(),tz = "Ect/GMT-1"),format = "%Y-%m-%d %H:%M")
+  # 
+  # if(names(status)[[which(status == "Y")]] == "err_out_of_range"){
+  #   out_of_range_table
+  # }
+  
+    
+  return(output2)
 }
 

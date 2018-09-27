@@ -894,9 +894,9 @@ DQC_function = function(input_dir,
                            "err_out_of_range")
   
   
-  status = lapply(errors_output, function(x) x[[1]])
-   
-   names(status)[[which(status == "Y")]]
+  # status = lapply(errors_output, function(x) x[[1]])
+
+  
   
   # output2 = list(mydata, flags_df,file_names, logger_numbers, structure_message, overlap_date, table_missing_record, table_restart_record,date_missing)
   output2 = list(mydata, flags_df, file_names, errors_output)

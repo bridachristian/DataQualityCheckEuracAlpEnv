@@ -271,6 +271,7 @@ for(PROJECT in project_type){
         start_date = dwnl_info$Last_date
         logger_info_file = logger_info_file
         record_check = dwnl_info$record_check
+        
         issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
         output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
@@ -326,12 +327,7 @@ for(PROJECT in project_type){
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]
         file_names = DQC_results[[3]]
-        # log_numbs = DQC_results[[4]]
-        # structure_message = DQC_results[[5]]
-        # overlap_date = DQC_results[[6]]
-        # missing_record = DQC_results[[7]]
-        # restart_record = DQC_results[[8]]
-        # date_missing =  DQC_results[[9]]
+        errors = DQC_results[[4]]
         
         mylist <- split(flags_df$value, seq(nrow(flags_df)))
         names(mylist) = flags_df$flag_names
@@ -352,15 +348,31 @@ for(PROJECT in project_type){
         }
         
         
-        # # ~ ~ ~ ~ Issue Management (on/off message) ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-        # 
-        # issue_file = read.csv(issue_flags_file,stringsAsFactors = F)
-        # 
-        # issue_file$Date_error[which(issue_file$Errors == names(status)[[which(status == "Y")]])] = format(as.POSIXct(Sys.time(),tz = "Ect/GMT-1"),format = "%Y-%m-%d %H:%M")
-        # 
-        # if(names(status)[[which(status == "Y")]] == "err_out_of_range"){
-        #   out_of_range_table
-        # }
+        # ~ ~ ~ ~ Issue Management (on/off message) ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        
+        issue_file = read.csv(issue_flags_file,stringsAsFactors = F)
+        
+        date_DQC = as.POSIXct(Sys.time(),tz = "Ect/GMT-1")
+        date_to_print = paste(format(date_DQC,format = "%Y"),format(date_DQC,format = "%m"),format(date_DQC,format = "%d"),
+                                             format(date_DQC,format = "%H"),format(date_DQC,format = "%M"),sep = "")
+        
+        status = unlist(lapply(errors,function(x) x[[1]]))
+        data_errors = lapply(errors,function(x) x[[2]])
+        # which(status == "Y")
+        
+        if(is.na(issue_file$Date_error[which(issue_file$Errors == names(status)[which(status == "Y")])])){
+          issue_file$Date_error[which(issue_file$Errors == names(status)[which(status == "Y")])] = format(date_DQC,format = "%Y-%m-%d %H:%M")
+          
+          error_data = data_errors[[which(status == "Y")]]
+          
+          error_file = paste(issue_counter_dir,"errors_data/error_",STATION_NAME,"_",date_to_print,".rds",sep = "")
+          saveRDS(error_data,error_file)
+        }
+        
+        if(names(status)[[which(status == "Y")]] == "err_out_of_range"){
+          error_data = data_errors[[which(status == "Y")]]
+          
+        }
         
         # # ~ ~ ~ ~ xxxxxxxxxxxxx ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
@@ -394,7 +406,7 @@ for(PROJECT in project_type){
         # a qui!
         # Report su script esterno! Nella funzione DQC_Function prevedere il salvataggio e l' append degli errori!
         
-      
+        
         
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         

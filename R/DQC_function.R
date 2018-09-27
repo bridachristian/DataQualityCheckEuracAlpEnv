@@ -178,6 +178,14 @@ DQC_function = function(input_dir,
               
               rm(missing)
               
+              # ALERT OUT OF RANGE --> ANY MYDATA MODIFICATION
+              alert_range <- alert_range_notify(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
+              out_of_range_table = range[[1]]
+              variable_new = range[[2]]
+              variable_to_set = range[[3]]
+              
+              
+              # OUT OF RANGE --> DELATE DATA OUT OF RANGE
               range <- exclude_out_of_range_v2(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
               mydata = range[[1]]
               out_of_range_table = range[[2]]
@@ -186,6 +194,8 @@ DQC_function = function(input_dir,
               variable_to_set = range[[4]]
               
               rm(range)
+              
+              
               # ..... Flags .....................................................................................................................................
               
               if(length(variable_to_set) != 0){

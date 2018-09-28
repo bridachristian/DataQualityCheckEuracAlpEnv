@@ -76,6 +76,8 @@ issue_flags_dir <- paste(DQC_setting_dir,"/Process/issue_flags", sep = "")
 
 MESSAGE_EVERY_TIMES = 24
 
+date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
+
 # file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
 for(PROJECT in project_type){
@@ -183,7 +185,7 @@ for(PROJECT in project_type){
   for(t in  1: length(files_available_project)){
     gc(reset = T)
     
-    rm(list = setdiff(ls(all.names = TRUE),c("main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling",
+    rm(list = setdiff(ls(all.names = TRUE),c("date_DQC","main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling",
                                              "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
                                              "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
@@ -350,29 +352,95 @@ for(PROJECT in project_type){
         
         # ~ ~ ~ ~ Issue Management (on/off message) ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
-        issue_file = read.csv(issue_flags_file,stringsAsFactors = F)
-        
-        date_DQC = as.POSIXct(Sys.time(),tz = "Ect/GMT-1")
-        date_to_print = paste(format(date_DQC,format = "%Y"),format(date_DQC,format = "%m"),format(date_DQC,format = "%d"),
-                                             format(date_DQC,format = "%H"),format(date_DQC,format = "%M"),sep = "")
+        # date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
         
         status = unlist(lapply(errors,function(x) x[[1]]))
         data_errors = lapply(errors,function(x) x[[2]])
-        # which(status == "Y")
+        w_yes = which(status == "Y")
         
-        if(is.na(issue_file$Date_error[which(issue_file$Errors == names(status)[which(status == "Y")])])){
-          issue_file$Date_error[which(issue_file$Errors == names(status)[which(status == "Y")])] = format(date_DQC,format = "%Y-%m-%d %H:%M")
-          
-          error_data = data_errors[[which(status == "Y")]]
-          
-          error_file = paste(issue_counter_dir,"errors_data/error_",STATION_NAME,"_",date_to_print,".rds",sep = "")
-          saveRDS(error_data,error_file)
+        critical_errors = c("err_empty","err_logger_number","err_structure","err_date_issue","err_overlap","err_missing_record","err_restart_record")
+        warning_errors = c("err_date_missing","err_range_alert")
+        
+        
+        if(any(status[critical_errors] == "Y")){
+          icinga_station = STATION_NAME
+          icinga_status = 2
+          icinga_text = critical_errors[which(status[critical_errors] == "Y")] # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
+        }else{
+          if(any(status[warning_errors] == "Y")){
+            icinga_station = STATION_NAME
+            icinga_status = 1
+            icinga_text = warning_errors[which(status[warning_errors] == "Y")] # Possibile solo stringa: --> non funziona se piu errori! (se sono rilevati entrambi i problemi)
+          }else{
+            icinga_station = STATION_NAME
+            icinga_status = 0
+            icinga_text = "OK"
+          }
         }
         
-        if(names(status)[[which(status == "Y")]] == "err_range_alert"){
-          error_data = data_errors[[which(status == "Y")]]
+        if(any(status[c(critical_errors,warning_errors)] == "Y")){
+          
+          dqc_date = date_DQC
+          station_name = STATION_NAME
+          errors_list_critical = errors[critical_errors]
+          errors_list_warning = errors[warning_errors]
+          
+          output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
+          
+          rm(dwnl_info)
+          input =  "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/Rmd/DQC_Warning_Reports.Rmd"
+          output_file= paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
+          output_dir= "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/Stations_Data/DQC/Process/errors_data/"
+          
+          rmarkdown::render(input = "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/Rmd/DQC_Warning_Reports.Rmd",
+                            output_file = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = ""),
+                            output_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/Stations_Data/DQC/Process/errors_data/",
+                            params = list(dqc_date,
+                                          station_name,
+                                          errors_list_critical,
+                                          errors_list_warning))
+         
+        
+
+        
+        issue_file = read.csv(issue_flags_file,stringsAsFactors = F)
+        
+        w_iss = which(issue_file$Errors %in% names(status)[w_yes])
+        
+        if(is.na(issue_file$Date_error[w_iss])){
+          issue_file$Date_error[w_iss] = format(date_DQC, format = "%Y-%m-%d %H:%M")
+          issue_file$Message[w_iss] = "OFF"
+          
+        }else{
+          
+          
+          
           
         }
+        
+        
+        
+        # date_DQC = as.POSIXct(Sys.time(),tz = "Ect/GMT-1")
+        # date_to_print = paste(format(date_DQC,format = "%Y"),format(date_DQC,format = "%m"),format(date_DQC,format = "%d"),
+        #                                      format(date_DQC,format = "%H"),format(date_DQC,format = "%M"),sep = "")
+        # 
+        # status = unlist(lapply(errors,function(x) x[[1]]))
+        # data_errors = lapply(errors,function(x) x[[2]])
+        # # which(status == "Y")
+        # 
+        # if(is.na(issue_file$Date_error[which(issue_file$Errors == names(status)[which(status == "Y")])])){
+        #   issue_file$Date_error[which(issue_file$Errors == names(status)[which(status == "Y")])] = format(date_DQC,format = "%Y-%m-%d %H:%M")
+        #   
+        #   error_data = data_errors[[which(status == "Y")]]
+        #   
+        #   error_file = paste(issue_counter_dir,"errors_data/error_",STATION_NAME,"_",date_to_print,".rds",sep = "")
+        #   saveRDS(error_data,error_file)
+        # }
+        # 
+        # if(names(status)[[which(status == "Y")]] == "err_range_alert"){
+        #   error_data = data_errors[[which(status == "Y")]]
+        #   
+        # }
         
         # # ~ ~ ~ ~ xxxxxxxxxxxxx ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         

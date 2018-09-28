@@ -1,0 +1,35 @@
+---
+---
+title: "Data Quality Check Warning Report"
+author: "Insitute for Alpine Environment, Eurac Research"
+output: html_document
+params:
+    station_name:           # chr:  name of station where to put input files.
+    errors_list_critical:   # list:  list containing status and eventually errors information
+    errors_list_warning:    # list:  list containing status and eventually errors information
+    dqc_date:               # date: date DQC
+---
+
+Report start at **`r Sys.time()`**
+
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
+station_name <- params$station_name
+errors_list_critical <- params$errors_list_critical
+errors_list_warning <- params$errors_list_warning
+dqc_date <- params$dqc_date
+```
+
+### INPUT info:
+
+Station: **`r  station_name`**
+
+Data Quality Check : **`r  dqc_date`**
+
+
+<!-- Empty file check -->
+
+##`r if(errors_list_critical$err_empty$Status == "Y"){ paste("CRITICAL ERROR!")}`
+`r if(errors_list_critical$err_empty$Status == "Y"){ paste("The file of station",station_name, "is empty.")}`
+
+
+

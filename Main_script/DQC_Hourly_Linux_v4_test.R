@@ -392,16 +392,19 @@ for(PROJECT in project_type){
           output_file= paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
           output_dir= "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/Stations_Data/DQC/Process/errors_data/"
           
+          params_list = list(dqc_date,
+                             station_name,
+                             errors_list_critical,
+                             errors_list_warning)
+          names(params_list) = c("dqc_date","station_name","errors_list_critical","errors_list_warning")
+          
           rmarkdown::render(input = "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/Rmd/DQC_Warning_Reports.Rmd",
                             output_file = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = ""),
                             output_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/Stations_Data/DQC/Process/errors_data/",
-                            params = list(dqc_date,
-                                          station_name,
-                                          errors_list_critical,
-                                          errors_list_warning))
-         
-        
-
+                            params = params_list)
+          
+          
+        }
         
         issue_file = read.csv(issue_flags_file,stringsAsFactors = F)
         

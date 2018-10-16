@@ -28,7 +28,8 @@ library(xtable)
 
 # ..... Params section .....................................................................................................................................
 
-main_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/"
+# main_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/"
+main_dir = "C:/Users/CBrida/Desktop/myDQC/"
 
 input_dir <- paste(main_dir, "/DataQualityCheck_results/Input/",sep = "")               # where input files are
 data_output_dir <- paste(main_dir, "/DataQualityCheck_results/Output/Data/",sep = "")   # where to put output files
@@ -74,9 +75,9 @@ for(PROJECT in project_type){
 
   files_available_raw = files_available_raw[!grepl(pattern = "backup",x = files_available_raw)]          # REMOVE FILES WITH WRONG NAMES (.dat.backup not admitted)
 
-  if(PROJECT != "MONALISA"){
-    files_available_raw = files_available_raw[!grepl(pattern = "IP",x = files_available_raw)]          # <- for MONALISA  IP in name is admitted
-  }
+  # if(PROJECT != "MONALISA"){
+  #   files_available_raw = files_available_raw[!grepl(pattern = "IP",x = files_available_raw)]          # <- OLD! for MONALISA  IP in name is admitted (NO!!!!!!)
+  # }
 
   files_available = files_available_raw[grepl(pattern = paste("^",PROJECT,sep = ""),x = files_available_raw)]
 
@@ -101,7 +102,7 @@ for(PROJECT in project_type){
     }
 
     if(PROJECT == "MONALISA"){                                                                        # <--Filter files based on Project (diffent if is MONALISA or LTER)
-      files_available = df_files$Files
+      files_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
     }
   } else{
     files_available = files_no_project
@@ -147,12 +148,14 @@ for(PROJECT in project_type){
     u1 = gregexpr(FILE_NAME,pattern = "_")[[1]][1]      # <- here we find the first "[[1]][1]" underscore!!!!!
     u2 = gregexpr(FILE_NAME,pattern = "_")[[1]][2]      # <- here we find the first "[[1]][1]" underscore!!!!!
 
-    if(PROJECT == "MONALISA"){
-      STATION_NAME = substring(FILE_NAME,u1+1, u1+9)
-    }else{
-      STATION_NAME = substring(FILE_NAME,u1+1, u2-1)
-    }
+    # if(PROJECT == "MONALISA"){                             # <- this section was used when in monalisa station name finished by "_MeteoVal"
+    #   STATION_NAME = substring(FILE_NAME,u1+1, u1+9)
+    # }else{
+    #   STATION_NAME = substring(FILE_NAME,u1+1, u2-1)
+    # }
 
+    STATION_NAME = substring(FILE_NAME,u1+1, u2-1)            # station name is the first string between the 2 underscores
+    
     cat(paste("********* a. File to process:", FILE_NAME, "*********"),sep = "\n")
 
     w_dwnl = which(download_table$Station == substring(FILE_NAME, 1, nchar(FILE_NAME) - 4))

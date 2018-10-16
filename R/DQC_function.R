@@ -73,6 +73,7 @@ DQC_function = function(input_dir,
     if(length(w_logger) == 0){
       logger_info_csv = rbind(logger_info_csv, c(station_name, logger_number, software_version))
       write.csv(logger_info_csv,logger_info_file,row.names = F,col.names = F )
+      flag_logger_number = 0
     }else{
       logger_info = logger_info_csv[w_logger,]
       if(logger_number != logger_info[,2]){

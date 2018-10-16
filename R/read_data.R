@@ -30,7 +30,7 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
     w <- which(colnames(data) == DATETIME_HEADER)
 
     date_chr = data[,w]
-    time <- as.POSIXct( strptime(x = date_chr, format = DATETIME_FORMAT), tz = 'Etc/GMT-1')
+    time <- as.POSIXct( strptime(x = date_chr, format = DATETIME_FORMAT), tz = 'Etc/GMT-1') # Error in strptime(x = as.character(date_chr), format = DATETIME_FORMAT):input string is too long
 
     data[,w] <- time
 

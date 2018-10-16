@@ -85,6 +85,11 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file_name) == TRUE){
   data_import <- read_data(INPUT_DATA_DIR = input_dir, FILE_NAME = file_name,                             # read and import data well formatted
                            DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format,
                            DATA_FROM_ROW = data_from_row, HEADER_ROW_NUMBER = header_row_number)  
+  
+  
+  
+  
+  
   header = data_import [[1]]
   header_colnames = data_import [[2]]
   data = data_import [[3]]
@@ -100,6 +105,7 @@ if(check_empty_file(INPUT_DATA_DIR = input_dir, FILE_NAME = file_name) == TRUE){
   if(length(w_logger) == 0){
     logger_info_csv = rbind(logger_info_csv, c(station_name, logger_number, software_version))
     write.csv(logger_info_csv,logger_info_file,row.names = F,col.names = F )
+    flag_logger_number = 0
   }else{
     logger_info = logger_info_csv[w_logger,]
     if(logger_number != logger_info[,2]){

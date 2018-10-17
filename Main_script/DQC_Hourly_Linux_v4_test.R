@@ -56,7 +56,7 @@ main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
-PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
+PROJECT = "MONALISA" # Possible project: "LTER"; "MONALISA";
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
@@ -116,9 +116,9 @@ for(PROJECT in project_type){
   
   files_available_raw = files_available_raw[!grepl(pattern = "backup",x = files_available_raw)]          # REMOVE FILES WITH WRONG NAMES (.dat.backup not admitted) 
   
-  if(PROJECT != "MONALISA"){
-    files_available_raw = files_available_raw[!grepl(pattern = "IP",x = files_available_raw)]          # <- for MONALISA  IP in name is admitted 
-  }
+  # if(PROJECT != "MONALISA"){
+  #   files_available_raw = files_available_raw[!grepl(pattern = "IP",x = files_available_raw)]          # <- for MONALISA  IP in name is admitted 
+  # }
   
   files_available = files_available_raw[grepl(pattern = paste("^",PROJECT,sep = ""),x = files_available_raw)]          
   
@@ -137,15 +137,15 @@ for(PROJECT in project_type){
     df_files = data.frame(files_available, logg_data_NAME, table_data_NAME)
     colnames(df_files) = c("Files", "LoggerNet_name", "Datatable_name")
     
-    if(PROJECT == "LTER"){                                                                        # <--Filter files based on Project (diffent if is MONALISA or LTER)
-      files_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
-    }
-    
-    if(PROJECT == "MONALISA"){                                                                        # <--Filter files based on Project (diffent if is MONALISA or LTER)
-      # files_available = df_files$Files
-      files_available = df_files$Files[which(df_files$Datatable_name == "MeteoVal")]
-      
-    }
+    # if(PROJECT == "LTER"){                                                                        # <--Filter files based on Project (diffent if is MONALISA or LTER)
+    #   files_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
+    # }
+    # 
+    # if(PROJECT == "MONALISA"){                                                                        # <--Filter files based on Project (diffent if is MONALISA or LTER)
+    #   # files_available = df_files$Files
+    #   files_available = df_files$Files[which(df_files$Datatable_name == "MeteoVal")]
+    #   
+    # }
   } else{
     files_available = files_no_project
   }
@@ -163,7 +163,11 @@ for(PROJECT in project_type){
   issue_counter_proj = issue_counter$Station[which(issue_counter$Project == PROJECT)]
   
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
-  
+  # ~ ~ ~ temporary solution to avoid issue with Vimes1500 station ---> remove this if when data file will fix! ~ ~ ~
+  if("MONALISA_Vimes1500_Vimes1500.dat" %in% files_available_project){
+    files_available_project = files_available_project[-which(files_available_project == "MONALISA_Vimes1500_Vimes1500.dat")]
+  }
+  # ~ ~ ~ ~ ~ ~ 
   ############################################
   
   final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
@@ -197,11 +201,13 @@ for(PROJECT in project_type){
     u1 = gregexpr(FILE_NAME,pattern = "_")[[1]][1]      # <- here we find the first "[[1]][1]" underscore!!!!!
     u2 = gregexpr(FILE_NAME,pattern = "_")[[1]][2]      # <- here we find the second "[[1]][2]" underscore!!!!!
     
-    if(PROJECT == "MONALISA"){
-      STATION_NAME = substring(FILE_NAME,u1+1, u1+9)
-    }else{
-      STATION_NAME = substring(FILE_NAME,u1+1, u2-1)
-    }
+    # if(PROJECT == "MONALISA"){
+    #   STATION_NAME = substring(FILE_NAME,u1+1, u1+9)
+    # }else{
+    #   STATION_NAME = substring(FILE_NAME,u1+1, u2-1)
+    # }
+
+    STATION_NAME = substring(FILE_NAME,u1+1, u2-1)
     
     w_dwnl = which(download_table$Station == substring(FILE_NAME, 1, nchar(FILE_NAME) - 4))
     dwnl_info = download_table[w_dwnl,]

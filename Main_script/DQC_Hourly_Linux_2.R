@@ -137,6 +137,12 @@ for(PROJECT in project_type){
   
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
   
+  
+  # ~ ~ ~ temporary solution to avoid issue with Vimes1500 station ---> remove this if when data file will fix! ~ ~ ~
+  if("MONALISA_Vimes1500_Vimes1500.dat" %in% files_available_project){
+    files_available_project = files_available_project[-which(files_available_project == "MONALISA_Vimes1500_Vimes1500.dat")]
+  }
+  # ~ ~ ~ ~ ~ ~ 
   ############################################
   t = 1
   

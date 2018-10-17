@@ -21,16 +21,23 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
   header <- read.csv(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), nrows = DATA_FROM_ROW - 1,header = F,stringsAsFactors = F,na.strings = c(NA, "NaN", "NAN"))
   header_colnames <- header[HEADER_ROW_NUMBER,]
   data <- read.csv(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), skip = DATA_FROM_ROW - 1,header = F,stringsAsFactors = F,na.strings = c(NA, "NaN", "NAN"))
-
+  
   if(ncol(data) == ncol(header_colnames)){
-
 
     colnames(data) = header_colnames
 
     w <- which(colnames(data) == DATETIME_HEADER)
 
     date_chr = data[,w]
-    time <- as.POSIXct( strptime(x = date_chr, format = DATETIME_FORMAT), tz = 'Etc/GMT-1') # Error in strptime(x = as.character(date_chr), format = DATETIME_FORMAT):input string is too long
+    
+    # data2= data[57646:85019,]
+    # data2= data[85020:96056,]
+    # date_chr = data2[,w]
+    # data$RECORD[85018]
+    # data$TIMESTAMP[85018]
+    # strptime(x = date_chr, format = DATETIME_FORMAT,tz = "Etc/GMT-1")
+    
+    time <- as.POSIXct(strptime(x = date_chr, format = DATETIME_FORMAT), tz = 'Etc/GMT-1') # Error in strptime(x = as.character(date_chr), format = DATETIME_FORMAT):input string is too long
 
     data[,w] <- time
 

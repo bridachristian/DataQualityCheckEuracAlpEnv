@@ -152,7 +152,7 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEADER, 
         }
         else{
           df_NA_tmp =  as.data.frame(matrix(ncol = 5, nrow = 0))
-          colnames(df_lower_tmp) = c("Variable", "From", "To", "Hours", "Mean_Value")
+          colnames(df_NA_tmp) = c("Variable", "From", "To", "Hours", "Mean_Value")
         }
         
         # new_status[,k] = ifelse(new[,k] < lower_limit, -1, new_status[,k])

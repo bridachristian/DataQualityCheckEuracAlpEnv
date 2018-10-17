@@ -22,9 +22,12 @@ dqc_date <- params$dqc_date
 
 ### Data Quality Check : **`r  dqc_date`**
 
-```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=FALSE}
 names(errors_list_warning)
 errors_list_critical$err_logger_number$Values
+
+names(errors_list_critical)
+
 ```
 
 <!-- err_empty -->
@@ -45,13 +48,34 @@ if(errors_list_critical$err_structure$Status == "Y"){
 DT::datatable(errors_list_critical$err_structure$Values)
 }
 ```
+<!-- err_date_issue -->
 
-<!-- add -->
-<!-- add -->
-<!-- add -->
-<!-- add -->
-<!-- add -->
-<!-- add -->
+##`r if(errors_list_critical$err_date_issue$Status == "Y"){ paste("CRITICAL ERROR!")}`
+`r if(errors_list_critical$err_date_issue$Status == "Y"){paste("Date issue! Date in download table is successive of the last date in .dat file")}`
+
+<!-- err_overlap -->
+
+##`r if(errors_list_critical$err_overlap$Status == "Y"){ paste("CRITICAL ERROR!")}`
+`r if(errors_list_critical$err_overlap$Status == "Y"){paste("Overlap at",errors_list_critical$err_overlap$Values)}`
+
+
+<!-- err_missing_record -->
+
+##`r if(errors_list_critical$err_missing_record$Status == "Y"){ paste("CRITICAL ERROR!")}`
+```{r echo=FALSE}
+if(errors_list_critical$err_missing_record$Status == "Y"){ 
+DT::datatable(errors_list_critical$err_missing_record$Values)
+}
+```
+
+<!-- err_restart_record -->
+
+##`r if(errors_list_critical$err_restart_record$Status == "Y"){ paste("CRITICAL ERROR!")}`
+```{r echo=FALSE}
+if(errors_list_critical$err_restart_record$Status == "Y"){ 
+DT::datatable(errors_list_critical$err_restart_record$Values)
+}
+```
 
 
 <!-- err_range_alert -->

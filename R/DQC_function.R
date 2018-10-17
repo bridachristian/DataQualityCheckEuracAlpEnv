@@ -714,13 +714,13 @@ DQC_function = function(input_dir,
   # - - - -  Provide overlaps - - - - - - - - - - - - - 
   
   if(!is.na(flag_overlap) & flag_overlap == 1){
-    
-    overlap_date = as.character(as.POSIXct(unique(overlap$TIMESTAMP), tz = "Etc/GMT-1"))
+    # overlap[,which(colnames(overlap) == datetime_header)]
+    overlap_date = as.character(as.POSIXct(unique(overlap[,which(colnames(overlap) == datetime_header)]), tz = "Etc/GMT-1"))
     output_overlap = list("Y", overlap_date)
     names(output_overlap) =c("Status", "Values")
   }else{
     if(!is.na(flag_new_overlap) & flag_new_overlap == 1){
-      overlap_date = as.POSIXct(unique(new_overlap$TIMESTAMP), tz = "Etc/GMT-1")
+      overlap_date = as.POSIXct(unique(overlap[,which(colnames(overlap) == datetime_header)]), tz = "Etc/GMT-1")
       output_overlap = list("Y", overlap_date)
       names(output_overlap) =c("Status", "Values")
     }else{

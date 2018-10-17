@@ -56,7 +56,7 @@ main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
-PROJECT = "MONALISA" # Possible project: "LTER"; "MONALISA";
+PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
@@ -280,7 +280,7 @@ for(PROJECT in project_type){
         logger_info_file = logger_info_file
         record_check = dwnl_info$record_check
         
-        issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
+        # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
         output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
         
@@ -412,20 +412,20 @@ for(PROJECT in project_type){
           
         }
         
-        issue_file = read.csv(issue_flags_file,stringsAsFactors = F)
-        
-        w_iss = which(issue_file$Errors %in% names(status)[w_yes])
-        
-        if(is.na(issue_file$Date_error[w_iss])){
-          issue_file$Date_error[w_iss] = format(date_DQC, format = "%Y-%m-%d %H:%M")
-          issue_file$Message[w_iss] = "OFF"
-          
-        }else{
-          
-          
-          
-          
-        }
+        # issue_file = read.csv(issue_flags_file,stringsAsFactors = F)
+        # 
+        # w_iss = which(issue_file$Errors %in% names(status)[w_yes])
+        # 
+        # if(is.na(issue_file$Date_error[w_iss])){
+        #   issue_file$Date_error[w_iss] = format(date_DQC, format = "%Y-%m-%d %H:%M")
+        #   issue_file$Message[w_iss] = "OFF"
+        #   
+        # }else{
+        #   
+        #   
+        #   
+        #   
+        # }
         
         
         

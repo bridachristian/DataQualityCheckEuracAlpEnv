@@ -554,26 +554,27 @@ for(PROJECT in project_type){
           
           
         }
+        
         # reset counter if file is updated
-        w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4)) 
-        issue_counter$W_Update_station[w_1] = 0
-        write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
+        # w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4)) 
+        # issue_counter$W_Update_station[w_1] = 0
+        # write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
         
       } else {
         
         # ~~~~~~~
         # update counter if file is not update
-        
-        w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-        issue_counter$W_Update_station[w_1] = issue_counter$W_Update_station[w_1]+1
-        write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
-        
-        # send message
-        if(issue_counter$W_Update_station[w_1] %% MESSAGE_EVERY_TIMES == 0){
-          text_W_Update_station = paste(FILE_NAME, "not updated since",dwnl_info$Last_Modification)
-          warning(text_W_Update_station)
-        }
-        
+        # 
+        # w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
+        # issue_counter$W_Update_station[w_1] = issue_counter$W_Update_station[w_1]+1
+        # write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
+        # 
+        # # send message
+        # if(issue_counter$W_Update_station[w_1] %% MESSAGE_EVERY_TIMES == 0){
+        #   text_W_Update_station = paste(FILE_NAME, "not updated since",dwnl_info$Last_Modification)
+        #   warning(text_W_Update_station)
+        # }
+        # 
         # ~~~~~~~
         
         warning(paste(STATION_NAME, "already analyzed!"))
@@ -618,7 +619,7 @@ for(PROJECT in project_type){
   }
   
   
-  issue_counter_proj = issue_counter[issue_counter$Project == PROJECT,]
+  # issue_counter_proj = issue_counter[issue_counter$Project == PROJECT,]
   
   
   
@@ -690,11 +691,11 @@ for(PROJECT in project_type){
 }
 
 # check if loggernet stopped to dowload data --> all stations not updated
-text_W_loggernet_locked = check_loggernet_status(issue_counter_dir, issue_counter, input_dir, MESSAGE_EVERY_TIMES = 3)
-
-if(!is.null(text_W_loggernet_locked)){
-  warning(text_W_loggernet_locked)
-}
+# text_W_loggernet_locked = check_loggernet_status(issue_counter_dir, issue_counter, input_dir, MESSAGE_EVERY_TIMES = 3)
+# 
+# if(!is.null(text_W_loggernet_locked)){
+#   warning(text_W_loggernet_locked)
+# }
 
 # file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 

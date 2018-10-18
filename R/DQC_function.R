@@ -787,11 +787,22 @@ DQC_function = function(input_dir,
 
   
   if((!is.na(flag_missing_dates) & flag_missing_dates == 1)|(!is.na(flag_new_missing_dates) & flag_new_missing_dates == 1)){
+    
     date_missing = rbind(missing_index_date,new_missing_index_date_tot)
     
-    time_tot <- as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1' )
-    time_missing <- missing_index_date[,2]
     
+    # #####
+    # seq.POSIXt(from = date_missing$Date[1],to = date_missing$Date[length(date_missing$Date)], by = datetime_sampling)
+    # 
+    # #####
+    
+    time_tot <- as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1' )
+    time_tot <- c(new_missing_index_date$Date, time_tot)
+
+    time_missing <- missing_index_date[,2]
+    time_missing <- date_missing[,2]
+    
+
     df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
     colnames(df_missing) = c("time","Status")
     df_missing[which(time_tot %in% time_missing ),2] = "Missing dates filled"
@@ -805,6 +816,11 @@ DQC_function = function(input_dir,
     Status_num_NA = Status_num_NA[,-c(2,3)]
     
     differ = c(0,diff(Status_num_NA$Status_num))
+    
+    if(Status_num_NA$Status_num[1] == 0){
+      differ[1] = -1
+    }
+    
     start = which(differ == -1)
     end  = which(differ == 1) - 1
     gap_lenght = end - start + 1

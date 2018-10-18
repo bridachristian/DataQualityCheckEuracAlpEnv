@@ -70,11 +70,11 @@ logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.c
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 download_table_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 
-issue_counter_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
-
-issue_flags_dir <- paste(DQC_setting_dir,"/Process/issue_flags", sep = "")
-
-MESSAGE_EVERY_TIMES = 24
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  TO REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# issue_counter_dir <- paste(DQC_setting_dir,"/Process/", sep = "")# 
+# issue_flags_dir <- paste(DQC_setting_dir,"/Process/issue_flags", sep = "")
+# MESSAGE_EVERY_TIMES = 24
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
 
@@ -102,11 +102,15 @@ for(PROJECT in project_type){
   
   # ~~~ Default directory ~~~~
   
-  if(write_output_report == TRUE){
-    Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
-  }else{
-    Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Calculator_2.Rmd",sep = "")
-  }
+  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  TO REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  #
+  # if(write_output_report == TRUE){
+  #   Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Report_Generator.Rmd",sep = "")
+  # }else{
+  #   Rmd_report_generator <- paste(project_dir, "Rmd/DQC_Calculator_2.Rmd",sep = "")
+  # }
+  #
+  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   
   # ..........................................................................................................................................................
   
@@ -157,17 +161,19 @@ for(PROJECT in project_type){
   
   
   download_table = read_and_update_download_table(DOWNLOAD_TABLE_DIR = download_table_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format, PROJECT = PROJECT)
-  issue_counter = read_and_update_issue_counter(ISSUE_COUNTER_DIR = issue_counter_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format, PROJECT = PROJECT)
+  # issue_counter = read_and_update_issue_counter(ISSUE_COUNTER_DIR = issue_counter_dir, FILES_AVAILABLE = files_available, DATETIME_FORMAT = datetime_format, PROJECT = PROJECT)
   
   download_table_proj = download_table$Station[which(download_table$Project == PROJECT)]
-  issue_counter_proj = issue_counter$Station[which(issue_counter$Project == PROJECT)]
+  # issue_counter_proj = issue_counter$Station[which(issue_counter$Project == PROJECT)]
   
   files_available_project = files_available[which(substring(files_available,1, nchar(files_available)-4) %in% download_table_proj)]
+  
   # ~ ~ ~ temporary solution to avoid issue with Vimes1500 station ---> remove this if when data file will fix! ~ ~ ~
   if("MONALISA_Vimes1500_Vimes1500.dat" %in% files_available_project){
     files_available_project = files_available_project[-which(files_available_project == "MONALISA_Vimes1500_Vimes1500.dat")]
   }
   # ~ ~ ~ ~ ~ ~ 
+  
   ############################################
   
   final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
@@ -282,7 +288,7 @@ for(PROJECT in project_type){
         
         # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
-        output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
+        # output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
         
         # rm(dwnl_info)
         

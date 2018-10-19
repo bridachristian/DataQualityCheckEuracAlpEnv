@@ -85,6 +85,9 @@ for(PROJECT in project_type){
   report_output_dir <- paste(main_dir,"/Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/DQC_Reports/",sep = "")  # where to put output reports
   database_file_dir <- paste(main_dir,"/Stations_Data/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
   
+  warning_file_dir <- paste(main_dir,"/Stations_Data/Data/DQC_Warnings/",PROJECT,"/", sep = "")  # where to put warnings html files
+  
+  
   data_from_row =  5                                             # <-- Row number of first data
   header_row_number =  2                                         # <-- Row number of header
   datetime_header =  "TIMESTAMP"                                 # <-- header corresponding to TIMESTAMP
@@ -199,7 +202,7 @@ for(PROJECT in project_type){
                                              "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
                                              "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
-                                             "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir")))
+                                             "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir","warning_file_dir")))
     
     
     FILE_NAME = files_available_project[t]
@@ -212,7 +215,7 @@ for(PROJECT in project_type){
     # }else{
     #   STATION_NAME = substring(FILE_NAME,u1+1, u2-1)
     # }
-
+    
     STATION_NAME = substring(FILE_NAME,u1+1, u2-1)
     
     w_dwnl = which(download_table$Station == substring(FILE_NAME, 1, nchar(FILE_NAME) - 4))
@@ -257,6 +260,13 @@ for(PROJECT in project_type){
       dir.create(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))
       dir.create(paste(database_file_dir,STATION_NAME,"/Pics/", sep = ""))
       database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
+    }
+    
+    if(dir.exists(paste(warning_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store WARNINGS files 
+      warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
+    }else{
+      dir.create(paste(warning_file_dir,STATION_NAME,"/", sep = "")) 
+      warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
     }
     
     if(dwnl_info$Stop_DQC == 0){
@@ -374,21 +384,6 @@ for(PROJECT in project_type){
         warning_errors = c("err_date_missing","err_range_alert")
         
         
-        if(any(status[critical_errors] == "Y")){
-          icinga_station = STATION_NAME
-          icinga_status = 2
-          icinga_text = critical_errors[which(status[critical_errors] == "Y")] # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
-        }else{
-          if(any(status[warning_errors] == "Y")){
-            icinga_station = STATION_NAME
-            icinga_status = 1
-            icinga_text = warning_errors[which(status[warning_errors] == "Y")] # Possibile solo stringa: --> non funziona se piu errori! (se sono rilevati entrambi i problemi)
-          }else{
-            icinga_station = STATION_NAME
-            icinga_status = 0
-            icinga_text = "OK"
-          }
-        }
         
         if(any(status[c(critical_errors,warning_errors)] == "Y")){
           
@@ -397,12 +392,33 @@ for(PROJECT in project_type){
           errors_list_critical = errors[critical_errors]
           errors_list_warning = errors[warning_errors]
           
-          output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
+          dqc_date_write = paste(format(dqc_date,"%Y"),format(dqc_date,"%m"),format(dqc_date,"%d"),format(dqc_date,"%H"),format(dqc_date,"%M"),sep = "")
           
-          rm(dwnl_info)
+          if(any(status[critical_errors] == "Y")){
+           
+            error_write = substring(critical_errors[which(status[critical_errors] == "Y")],5,nchar(critical_errors[which(status[critical_errors] == "Y")])) # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
+          }
+          
+          if(any(status[warning_errors] == "Y")){
+              
+              err_vect = substring(warning_errors[which(status[warning_errors] == "Y")],5,nchar(warning_errors[which(status[warning_errors] == "Y")]))
+              if(length(err_vect) > 1){
+               error_write =  paste(err_vect,collapse = "+")
+              }else{
+                error_write = err_vect
+              }
+              
+          }
+          
+         
+          
+          
+          
+          output_file_report = paste(STATION_NAME,"_",dqc_date_write,"_",error_write,".html",sep = "")
+          
           input =  "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/Rmd/DQC_Warning_Reports.Rmd"
-          output_file= paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
-          output_dir= "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/Stations_Data/DQC/Process/errors_data/"
+          output_file=  output_file_report
+          output_dir= warning_file_dir_station
           
           params_list = list(dqc_date,
                              station_name,
@@ -410,28 +426,31 @@ for(PROJECT in project_type){
                              errors_list_warning)
           names(params_list) = c("dqc_date","station_name","errors_list_critical","errors_list_warning")
           
-          rmarkdown::render(input = "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/Rmd/DQC_Warning_Reports.Rmd",
-                            output_file = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = ""),
-                            output_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/Stations_Data/DQC/Process/errors_data/",
+          rmarkdown::render(input = input,
+                            output_file = output_file,
+                            output_dir = output_dir,
                             params = params_list)
+          
+          if(any(status[critical_errors] == "Y")){
+            icinga_station = STATION_NAME
+            icinga_status = 2
+            icinga_text = paste(output_dir,output_file,sep = "")
+          }else{
+            if(any(status[warning_errors] == "Y")){
+              icinga_station = STATION_NAME
+              icinga_status = 1
+              icinga_text = paste(output_dir,output_file,sep = "")
+            }else{
+              icinga_station = STATION_NAME
+              icinga_status = 0
+              icinga_text = "OK"
+            }
+          }
           
           
         }
         
-        # issue_file = read.csv(issue_flags_file,stringsAsFactors = F)
-        # 
-        # w_iss = which(issue_file$Errors %in% names(status)[w_yes])
-        # 
-        # if(is.na(issue_file$Date_error[w_iss])){
-        #   issue_file$Date_error[w_iss] = format(date_DQC, format = "%Y-%m-%d %H:%M")
-        #   issue_file$Message[w_iss] = "OFF"
-        #   
-        # }else{
-        #   
-        #   
-        #   
-        #   
-        # }
+        
         
         
         
@@ -668,19 +687,19 @@ for(PROJECT in project_type){
   # ..... Final Report .....................................................................................................................................
   
   
-  input_final = paste(project_dir,"Rmd/DQC_Final_Report_Hourly_2.Rmd",sep = "")
-  output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
-                             substring(report_start,6,7),
-                             substring(report_start,9,10),
-                             substring(report_start,12,13),
-                             substring(report_start,15,16),".html", sep = "")
-  output_dir_final = output_dir_report
-  
-  rmarkdown::render(input = input_final,
-                    output_file = output_file_final ,
-                    output_dir = output_dir_final,
-                    params = list(report_start = report_start ,
-                                  final_dataframe = final_dataframe))
+  # input_final = paste(project_dir,"Rmd/DQC_Final_Report_Hourly_2.Rmd",sep = "")
+  # output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
+  #                            substring(report_start,6,7),
+  #                            substring(report_start,9,10),
+  #                            substring(report_start,12,13),
+  #                            substring(report_start,15,16),".html", sep = "")
+  # output_dir_final = output_dir_report
+  # 
+  # rmarkdown::render(input = input_final,
+  #                   output_file = output_file_final ,
+  #                   output_dir = output_dir_final,
+  #                   params = list(report_start = report_start ,
+  #                                 final_dataframe = final_dataframe))
   
   
   # ..... Data preparation for Database .....................................................................................................................................

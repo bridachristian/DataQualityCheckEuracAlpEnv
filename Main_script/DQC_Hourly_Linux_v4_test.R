@@ -70,6 +70,8 @@ logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.c
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 download_table_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 
+warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
+
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  TO REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # issue_counter_dir <- paste(DQC_setting_dir,"/Process/", sep = "")# 
 # issue_flags_dir <- paste(DQC_setting_dir,"/Process/issue_flags", sep = "")
@@ -77,6 +79,8 @@ download_table_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
+
+loggernet_status = c()
 
 # file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
@@ -198,11 +202,11 @@ for(PROJECT in project_type){
   for(t in  1: length(files_available_project)){
     gc(reset = T)
     
-    rm(list = setdiff(ls(all.names = TRUE),c("date_DQC","main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling",
+    rm(list = setdiff(ls(all.names = TRUE),c("date_DQC","main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","loggernet_status",
                                              "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
                                              "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
-                                             "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir","warning_file_dir")))
+                                             "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir","warning_file_dir","warning_report_RMD")))
     
     
     FILE_NAME = files_available_project[t]
@@ -416,7 +420,7 @@ for(PROJECT in project_type){
           
           output_file_report = paste(STATION_NAME,"_",dqc_date_write,"_",error_write,".html",sep = "")
           
-          input =  "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/Rmd/DQC_Warning_Reports.Rmd"
+          input =  warning_report_RMD 
           output_file=  output_file_report
           output_dir= warning_file_dir_station
           
@@ -618,6 +622,7 @@ for(PROJECT in project_type){
     # final_dataframe = rbind(final_dataframe,final_info)
     final_dataframe[t,] = final_info
     
+    loggernet_status = rbind(loggernet_status,final_dataframe[,1:2])
     gc(reset = T)
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -708,6 +713,21 @@ for(PROJECT in project_type){
   print("--------------------------------------------------------------------------------------------------")
   
 }
+
+df_loggernet_status =as.data.frame(loggernet_status)
+
+if(all(df_loggernet_status$Status== "Already analyzed")){
+  icinga_station = "Loggernet"
+  icinga_status = 3 #???????? controllare livelli icinga
+  icinga_text = "Loggernet doesn't download any station!"
+}else{
+    icinga_station = "Loggernet"
+    icinga_status = 0
+    icinga_text = "OK"
+}
+
+
+
 
 # check if loggernet stopped to dowload data --> all stations not updated
 # text_W_loggernet_locked = check_loggernet_status(issue_counter_dir, issue_counter, input_dir, MESSAGE_EVERY_TIMES = 3)

@@ -26,7 +26,7 @@ dqc_date <- params$dqc_date
 names(errors_list_warning)
 
 names(errors_list_critical)
-errors_list_critical$err_restart_record
+errors_list_critical$err_overlap
 
 ```
 
@@ -58,7 +58,14 @@ DT::datatable(errors_list_critical$err_structure$Values)
 <!-- err_overlap -->
 
 ##`r if(errors_list_critical$err_overlap$Status == "Y"){ paste("CRITICAL ERROR! Overlap!")}`
-`r if(errors_list_critical$err_overlap$Status == "Y"){cat("Overlap at:",errors_list_critical$err_overlap$Values, sep = "\n")}`
+```{r echo=FALSE}
+if(errors_list_critical$err_overlap$Status == "Y"){ 
+  df_overlap  = data.frame("overlap:",errors_list_critical$err_overlap$Values)
+  colnames(df_overlap) = c("", "Date")
+DT::datatable(df_overlap,rownames = F)
+}
+```
+<!-- `r if(errors_list_critical$err_overlap$Status == "Y"){cat("Overlap at:",errors_list_critical$err_overlap$Values, sep = "\n")}` -->
 
 
 <!-- err_missing_record -->

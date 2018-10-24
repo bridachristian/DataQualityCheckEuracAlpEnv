@@ -69,7 +69,7 @@ input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep =
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
-DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
+DQC_setting_dir <- paste(main_dir,"Stations_Data/DQC/",sep = "")
 
 logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.csv", sep = "")
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
@@ -86,8 +86,17 @@ warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
 
 loggernet_status = c()
+ 
+mail_file = paste(DQC_setting_dir,"Process/email_status/mail_status.csv",sep = "")
 
+# --- read mail configuration ---
+library(XML)
 
+mail_config_file = paste(DQC_setting_dir,"Process/email_status/mail_config.xml",sep = "")
+mail_config = xmlParse(mail_config_file, useInternalNodes = F)
+
+mail_config_info = mail_config_parsing(mail_config)
+# -------------------------------
 
 # file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
@@ -334,30 +343,6 @@ for(PROJECT in project_type){
                                    record_check,
                                    output_dir_raw)
         
-        # rmarkdown::render(input = Rmd_report_generator ,
-        #                   output_file = output_file_report,
-        #                   output_dir = output_dir_report,
-        #                   params = list(input_dir = input_dir ,
-        #                                 output_dir_data = output_dir_data ,
-        #                                 output_dir_raw = output_dir_raw,
-        #                                 output_dir_report = output_dir_report ,
-        #                                 project_dir = project_dir ,
-        #                                 data_from_row = data_from_row ,
-        #                                 header_row_number = header_row_number ,
-        #                                 datetime_header = datetime_header ,
-        #                                 datetime_format = datetime_format ,
-        #                                 datetime_sampling = datetime_sampling ,
-        #                                 record_header = record_header ,
-        #                                 range_file = range_file ,
-        #                                 write_output_files = write_output_files ,
-        #                                 write_output_report = write_output_report ,
-        #                                 database_dir = database_dir,
-        #                                 file_name = file_name ,
-        #                                 station_name = station_name,
-        #                                 start_date = start_date,
-        #                                 logger_info_file = logger_info_file,
-        #                                 record_check = record_check))
-        # 
         
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]
@@ -395,10 +380,10 @@ for(PROJECT in project_type){
         warning_errors = c("err_date_missing","err_range_alert")
         
         
+        dqc_date = date_DQC
         
         if(any(status[c(critical_errors,warning_errors)] == "Y")){
           
-          dqc_date = date_DQC
           station_name = STATION_NAME
           errors_list_critical = errors[critical_errors]
           errors_list_warning = errors[warning_errors]
@@ -421,9 +406,7 @@ for(PROJECT in project_type){
             
           }
           
-          
-          
-          
+          # generate a report of warnings
           
           output_file_report = paste(STATION_NAME,"_",dqc_date_write,"_",error_write,".html",sep = "")
           
@@ -442,26 +425,59 @@ for(PROJECT in project_type){
                             output_dir = output_dir,
                             params = params_list)
           
+          # generate a report of warnings
+          
+          
           if(any(status[critical_errors] == "Y")){
             icinga_station = STATION_NAME
             icinga_status = 2
+            # icinga_error = critical_errors[status[critical_errors] == "Y"]
             icinga_text = paste(output_dir,output_file,sep = "")
           }else{
             if(any(status[warning_errors] == "Y")){
               icinga_station = STATION_NAME
               icinga_status = 1
+              # icinga_error = paste(warning_errors[status[warning_errors] == "Y"],collapse = " - ")
               icinga_text = paste(output_dir,output_file,sep = "")
             }
           }
         }else{
           icinga_station = STATION_NAME
           icinga_status = 0
+          # icinga_error = "None"
           icinga_text = "OK"
         }
         
         
         
+        # ------- inseririre qui controllo sul file mail status -------
         
+        mail_table = read.csv(mail_file,stringsAsFactors = F)
+        
+        mail_status = mail_table$Status[which(mail_table$Station == icinga_station)]
+        sender = "data.quality.check@gmail.com"
+        reciver = c("Christian.Brida@eurac.edu")    # ,"alessandro.zandonai@eurac.edu")
+        my_smtp = list(host.name = "smtp.gmail.com", port = 465, user.name = "data.quality.check", passwd = "alpenv78", ssl = TRUE)
+        
+        if(icinga_status != mail_status ){
+          if(icinga_status != 0){
+            
+            my_subject = paste("Station:",icinga_station,"- Errors:",error_write,"- DQC runs:", date_DQC)
+            
+            my_body = paste("Error/Warning report:",icinga_text)
+            
+            send.mail(from = sender,
+                      to = reciver,
+                      subject = my_subject,
+                      body = my_body,
+                      smtp = my_smtp,
+                      authenticate = TRUE,
+                      send = TRUE)
+          }
+          mail_table$Status[which(mail_table$Station == icinga_station)] = icinga_status
+          write.csv(mail_table, mail_file,quote = F,row.names = F)
+        }
+        # -------------------------------------------------------------
         
         # date_DQC = as.POSIXct(Sys.time(),tz = "Ect/GMT-1")
         # date_to_print = paste(format(date_DQC,format = "%Y"),format(date_DQC,format = "%m"),format(date_DQC,format = "%d"),

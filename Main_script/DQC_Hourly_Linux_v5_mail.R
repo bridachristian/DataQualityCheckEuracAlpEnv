@@ -101,11 +101,11 @@ mail_config_info = mail_config_parsing(mail_config)
 # file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
 for(PROJECT in project_type){
-  data_output_dir <- paste(main_dir,"/Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
-  report_output_dir <- paste(main_dir,"/Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/DQC_Reports/",sep = "")  # where to put output reports
-  database_file_dir <- paste(main_dir,"/Stations_Data/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
+  data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
+  report_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/DQC_Reports/",sep = "")  # where to put output reports
+  database_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
   
-  warning_file_dir <- paste(main_dir,"/Stations_Data/Data/DQC_Warnings/",PROJECT,"/", sep = "")  # where to put warnings html files
+  warning_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_Warnings/",PROJECT,"/", sep = "")  # where to put warnings html files
   
   
   data_from_row =  5                                             # <-- Row number of first data
@@ -218,12 +218,12 @@ for(PROJECT in project_type){
   for(t in  1: length(files_available_project)){
     gc(reset = T)
     
-    rm(list = setdiff(ls(all.names = TRUE),c("date_DQC","main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","loggernet_status",
-                                             "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
-                                             "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
-                                             "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
-                                             "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir","warning_file_dir","warning_report_RMD")))
-    
+    # rm(list = setdiff(ls(all.names = TRUE),c("date_DQC","main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","loggernet_status",
+    #                                          "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
+    #                                          "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
+    #                                          "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
+    #                                          "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir","warning_file_dir","warning_report_RMD")))
+    # 
     
     FILE_NAME = files_available_project[t]
     
@@ -452,15 +452,17 @@ for(PROJECT in project_type){
         
         # ------- inseririre qui controllo sul file mail status -------
         
-        mail_table = read.csv(mail_file,stringsAsFactors = F)
         
+        mail_table = read.csv(mail_file,stringsAsFactors = F)
         mail_status = mail_table$Status[which(mail_table$Station == icinga_station)]
-        sender = "data.quality.check@gmail.com"
-        reciver = c("Christian.Brida@eurac.edu")    # ,"alessandro.zandonai@eurac.edu")
-        my_smtp = list(host.name = "smtp.gmail.com", port = 465, user.name = "data.quality.check", passwd = "alpenv78", ssl = TRUE)
+            
+        sender = mail_config_info$sender
+        reciver = mail_config_info$reciver   
+        my_smtp = mail_config_info$my_smtp
         
         if(icinga_status != mail_status ){
           if(icinga_status != 0){
+            
             
             my_subject = paste("Station:",icinga_station,"- Errors:",error_write,"- DQC runs:", date_DQC)
             

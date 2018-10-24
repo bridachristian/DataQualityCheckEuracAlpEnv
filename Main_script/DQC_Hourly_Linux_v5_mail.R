@@ -30,6 +30,9 @@ print(paste("Data Quality Check:",Sys.time()))
 # library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 # library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 
+# library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+
+
 library(devtools) 
 install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 library("DataQualityCheckEuracAlpEnv")
@@ -45,6 +48,8 @@ library(htmltools)
 library(rmarkdown)
 library(yaml)
 library(highr)
+
+library(mailR)
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
@@ -81,6 +86,8 @@ warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
 
 loggernet_status = c()
+
+
 
 # file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
@@ -399,22 +406,22 @@ for(PROJECT in project_type){
           dqc_date_write = paste(format(dqc_date,"%Y"),format(dqc_date,"%m"),format(dqc_date,"%d"),format(dqc_date,"%H"),format(dqc_date,"%M"),sep = "")
           
           if(any(status[critical_errors] == "Y")){
-           
+            
             error_write = substring(critical_errors[which(status[critical_errors] == "Y")],5,nchar(critical_errors[which(status[critical_errors] == "Y")])) # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
           }
           
           if(any(status[warning_errors] == "Y")){
-              
-              err_vect = substring(warning_errors[which(status[warning_errors] == "Y")],5,nchar(warning_errors[which(status[warning_errors] == "Y")]))
-              if(length(err_vect) > 1){
-               error_write =  paste(err_vect,collapse = "+")
-              }else{
-                error_write = err_vect
-              }
-              
+            
+            err_vect = substring(warning_errors[which(status[warning_errors] == "Y")],5,nchar(warning_errors[which(status[warning_errors] == "Y")]))
+            if(length(err_vect) > 1){
+              error_write =  paste(err_vect,collapse = "+")
+            }else{
+              error_write = err_vect
+            }
+            
           }
           
-         
+          
           
           
           
@@ -444,14 +451,12 @@ for(PROJECT in project_type){
               icinga_station = STATION_NAME
               icinga_status = 1
               icinga_text = paste(output_dir,output_file,sep = "")
-            }else{
-              icinga_station = STATION_NAME
-              icinga_status = 0
-              icinga_text = "OK"
             }
           }
-          
-          
+        }else{
+          icinga_station = STATION_NAME
+          icinga_status = 0
+          icinga_text = "OK"
         }
         
         
@@ -721,9 +726,9 @@ if(all(df_loggernet_status$Status== "Already analyzed")){
   icinga_status = 3 #???????? controllare livelli icinga
   icinga_text = "Loggernet doesn't download any station!"
 }else{
-    icinga_station = "Loggernet"
-    icinga_status = 0
-    icinga_text = "OK"
+  icinga_station = "Loggernet"
+  icinga_status = 0
+  icinga_text = "OK"
 }
 
 

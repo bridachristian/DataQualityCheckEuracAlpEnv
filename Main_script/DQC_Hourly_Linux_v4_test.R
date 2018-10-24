@@ -444,15 +444,13 @@ for(PROJECT in project_type){
               icinga_station = STATION_NAME
               icinga_status = 1
               icinga_text = paste(output_dir,output_file,sep = "")
-            }else{
+            }
+          }
+        }else{
               icinga_station = STATION_NAME
               icinga_status = 0
               icinga_text = "OK"
             }
-          }
-          
-          
-        }
         
         
         

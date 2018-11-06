@@ -759,7 +759,7 @@ DQC_function = function(input_dir,
   if(nrow(records_restart) != 0 | nrow(records_restart_new) != 0){
     table_restart_record = rbind(records_restart[,c(1:5)],records_restart_new[,c(1:5)])
     colnames(table_restart_record) =  c("Last.date.Before", "First.date.After", "Date.Gap","Last.record.Before","First.record.After")
-    table_restart_record = table_restart_record[table_restart_record$Date.Gap != 0]
+    table_restart_record = table_restart_record[table_restart_record$Date.Gap != 0,]
   }else{
     table_restart_record = data.frame()
   }

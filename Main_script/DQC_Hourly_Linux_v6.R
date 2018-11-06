@@ -218,8 +218,8 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 1
-  
+  t = 2 
+    
   for(t in  1: length(files_available_project)){
     gc(reset = T)
     
@@ -418,8 +418,8 @@ for(PROJECT in project_type){
           output_file_report = paste(STATION_NAME,"_",dqc_date_write,"_",error_write,".html",sep = "")
           
           input =  warning_report_RMD 
-          output_file=  output_file_report
-          output_dir= warning_file_dir_station
+          output_file = output_file_report
+          output_dir = warning_file_dir_station
           
           params_list = list(dqc_date,
                              station_name,

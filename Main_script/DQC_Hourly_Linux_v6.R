@@ -89,7 +89,7 @@ warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
 
 loggernet_status = c()
- 
+
 mail_file = paste(DQC_setting_dir,"Process/email_status/mail_status.csv",sep = "")
 
 # --- read mail configuration ---
@@ -219,7 +219,7 @@ for(PROJECT in project_type){
   report_start = Sys.time()
   
   t = 2 
-    
+  
   for(t in  1: length(files_available_project)){
     gc(reset = T)
     
@@ -229,9 +229,9 @@ for(PROJECT in project_type){
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file")))
-
-
-
+    
+    
+    
     FILE_NAME = files_available_project[t]
     
     u1 = gregexpr(FILE_NAME,pattern = "_")[[1]][1]      # <- here we find the first "[[1]][1]" underscore!!!!!
@@ -399,7 +399,12 @@ for(PROJECT in project_type){
           
           if(any(status[critical_errors] == "Y")){
             
-            error_write = substring(critical_errors[which(status[critical_errors] == "Y")],5,nchar(critical_errors[which(status[critical_errors] == "Y")])) # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
+            err_vect = substring(critical_errors[which(status[critical_errors] == "Y")],5,nchar(critical_errors[which(status[critical_errors] == "Y")])) # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
+            if(length(err_vect) > 1){
+              error_write =  paste(err_vect,collapse = "+")
+            }else{
+              error_write = err_vect
+            }
           }
           
           if(any(status[warning_errors] == "Y")){
@@ -462,7 +467,7 @@ for(PROJECT in project_type){
         
         mail_table = read.csv(mail_file,stringsAsFactors = F)
         mail_status = mail_table$Status[which(mail_table$Station == icinga_station)]
-            
+        
         sender = mail_config_info$sender
         reciver = mail_config_info$reciver   
         my_smtp = mail_config_info$my_smtp

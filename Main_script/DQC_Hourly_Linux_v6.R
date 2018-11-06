@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
-# File Title:   DQC_Multi_Files.R
+# File Title:   DQC_Hourly_Linux_v6.R
 # TITLE:        Data quality check LTER on different files in scheduling folder
 # Author:       Brida Christian, Genova Giulio, Zandonai Alessandro
 #               Institute for Alpine Environment
@@ -14,50 +14,53 @@ print("-------------------------------------------------------------------------
 print(paste("Data Quality Check:",Sys.time()))
 
 # ..... Libraries .....................................................................................................................................
-# library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/') 
-# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-# library("DataQualityCheckEuracAlpEnv")
-# install_github("alexsanjoseph/compareDF")
-# library(compareDF)
-# 
-# library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-
-# library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-
-
-library(devtools) 
+library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 library("DataQualityCheckEuracAlpEnv")
 install_github("alexsanjoseph/compareDF")
 library(compareDF)
 
-library(zoo)
-library(knitr)
-library(ggplot2)
-library(reshape2)
-library(DT)
-library(htmltools)
-library(rmarkdown)
-library(yaml)
-library(highr)
+library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 
-library(mailR)
+library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+
+library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+
+
+# library(devtools) 
+# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
+# library("DataQualityCheckEuracAlpEnv")
+# install_github("alexsanjoseph/compareDF")
+# library(compareDF)
+# 
+# library(zoo)
+# library(knitr)
+# library(ggplot2)
+# library(reshape2)
+# library(DT)
+# library(htmltools)
+# library(rmarkdown)
+# library(yaml)
+# library(highr)
+# 
+# library(mailR)
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
 
 # ..... Params section .....................................................................................................................................
 
+main_dir = "/shared/"
 # main_dir = "/shared/test_christian/"
-main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
+# main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
@@ -66,10 +69,10 @@ PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
-# project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+# project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
-DQC_setting_dir <- paste(main_dir,"Stations_Data/DQC/",sep = "")
+DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
 logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.csv", sep = "")
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
@@ -90,7 +93,6 @@ loggernet_status = c()
 mail_file = paste(DQC_setting_dir,"Process/email_status/mail_status.csv",sep = "")
 
 # --- read mail configuration ---
-library(XML)
 
 mail_config_file = paste(DQC_setting_dir,"Process/email_status/mail_config.xml",sep = "")
 mail_config = xmlParse(mail_config_file, useInternalNodes = F)
@@ -140,6 +142,7 @@ for(PROJECT in project_type){
   # ..... files selection .....................................................................................................................................
   
   files_available_raw = dir(input_dir,pattern = ".dat")                  # <-- Admitted pattern:  ".dat" or ".csv"
+  files_available_raw = files_available_raw[grepl(pattern = ".dat$",x = files_available_raw)]      
   
   files_available_raw = files_available_raw[!grepl(pattern = "backup",x = files_available_raw)]          # REMOVE FILES WITH WRONG NAMES (.dat.backup not admitted) 
   
@@ -163,6 +166,8 @@ for(PROJECT in project_type){
     }  
     df_files = data.frame(files_available, logg_data_NAME, table_data_NAME)
     colnames(df_files) = c("Files", "LoggerNet_name", "Datatable_name")
+    
+    files_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
     
     # if(PROJECT == "LTER"){                                                                        # <--Filter files based on Project (diffent if is MONALISA or LTER)
     #   files_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
@@ -218,13 +223,15 @@ for(PROJECT in project_type){
   for(t in  1: length(files_available_project)){
     gc(reset = T)
     
-    # rm(list = setdiff(ls(all.names = TRUE),c("date_DQC","main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","loggernet_status",
-    #                                          "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
-    #                                          "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
-    #                                          "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
-    #                                          "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir","warning_file_dir","warning_report_RMD")))
-    # 
-    
+    rm(list = setdiff(ls(all.names = TRUE),c("date_DQC","main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","loggernet_status",
+                                             "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
+                                             "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
+                                             "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
+                                             "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
+                                             "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file")))
+
+
+
     FILE_NAME = files_available_project[t]
     
     u1 = gregexpr(FILE_NAME,pattern = "_")[[1]][1]      # <- here we find the first "[[1]][1]" underscore!!!!!
@@ -759,6 +766,6 @@ if(all(df_loggernet_status$Status== "Already analyzed")){
 #   warning(text_W_loggernet_locked)
 # }
 
-# file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
+file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
 

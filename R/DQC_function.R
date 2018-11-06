@@ -247,7 +247,7 @@ DQC_function = function(input_dir,
               }
               
               mydata <- time_to_char(DATA = mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
-              mydata_1 = mydata
+              # mydata_1 = mydata
             }
           }
         }

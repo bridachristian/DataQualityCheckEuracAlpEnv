@@ -797,8 +797,9 @@ DQC_function = function(input_dir,
     # #####
     
     time_tot <- as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1' )
-    time_tot <- c(new_missing_index_date$Date, time_tot)
-
+    # time_tot <- c(new_missing_index_date$Date, time_tot)
+    time_tot <- unique(c(date_missing$Date, time_tot))
+    
     time_missing <- missing_index_date[,2]
     time_missing <- date_missing[,2]
     

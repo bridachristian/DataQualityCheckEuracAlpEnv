@@ -218,7 +218,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 2 
+  t = 4
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)
@@ -770,7 +770,7 @@ if(all(df_loggernet_status$Status== "Already analyzed")){
 # if(!is.null(text_W_loggernet_locked)){
 #   warning(text_W_loggernet_locked)
 # }
-
-file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
+# 
+# file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
 

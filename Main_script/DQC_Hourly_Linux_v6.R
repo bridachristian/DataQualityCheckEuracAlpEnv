@@ -100,7 +100,7 @@ mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 mail_config_info = mail_config_parsing(mail_config)
 # -------------------------------
 
-# file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
+ file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
 for(PROJECT in project_type){
   data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
@@ -771,6 +771,7 @@ if(all(df_loggernet_status$Status== "Already analyzed")){
 #   warning(text_W_loggernet_locked)
 # }
 # 
-# file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
+
+file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
 

@@ -218,7 +218,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 4
+  t = 1
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)
@@ -657,7 +657,7 @@ for(PROJECT in project_type){
     # final_dataframe = rbind(final_dataframe,final_info)
     final_dataframe[t,] = final_info
     
-    loggernet_status = rbind(loggernet_status,final_dataframe[,1:2])
+    loggernet_status_prj = final_dataframe[,1:2]
     gc(reset = T)
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -676,7 +676,7 @@ for(PROJECT in project_type){
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
   }
-  
+  loggernet_status = rbind(loggernet_status,loggernet_status_prj)
   
   # issue_counter_proj = issue_counter[issue_counter$Project == PROJECT,]
   

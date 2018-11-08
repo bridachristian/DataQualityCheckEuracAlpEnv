@@ -116,7 +116,7 @@ for(PROJECT in project_type){
   datetime_format =  "%Y-%m-%d %H:%M"                          # <-- datetime format. Use only: Y -> year, m -> month, d -> day, H -> hour, M -> minute
   datetime_sampling =  "15 min"
   record_header =  "RECORD"
-  range_file =  "Range_v2.csv"
+  range_file =  "Range.csv"
   
   write_output_files =  "TRUE"
   write_output_report =  "FALSE"

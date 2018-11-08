@@ -780,11 +780,11 @@ for(PROJECT in project_type){
 df_loggernet_status =as.data.frame(loggernet_status)
 
 if(all(df_loggernet_status$Status== "Already analyzed")){
-  icinga_station = "Loggernet"
+  icinga_station = "LOGGERNET"
   icinga_status = 3
   icinga_text = "Loggernet doesn't download any station!"
 }else{
-  icinga_station = "Loggernet"
+  icinga_station = "LOGGERNET"
   icinga_status = 0
   icinga_text = "OK"
 }
@@ -798,7 +798,6 @@ if(icinga_status != mail_status ){
   if(icinga_status != 0){
     
     my_subject = paste("LOGGERNET doesn't work. All stations were already downloaded!")
-    
     my_body = paste("Error: any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
     
     send.mail(from = sender,
@@ -809,34 +808,11 @@ if(icinga_status != mail_status ){
               authenticate = TRUE,
               send = TRUE)
   }
-  mail_table$Status[which(mail_table$Station == icinga_station)] = icinga_status
+  mail_table$Status[which(mail_table$Station == "LOGGERNET")] = icinga_status
   write.csv(mail_table, mail_file,quote = F,row.names = F)
 }
-if(all(df_loggernet_status$Status == "Already analyzed")){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE
-  
-  my_subject = paste("Loggernet issue. Error: All stations are OFFLINE!")
-  my_body = paste("Loggernet issue. Error: All stations are OFFLINE!")
-  
-  send.mail(from = sender,
-            to = reciver,
-            subject = my_subject,
-            body = my_body,
-            smtp = my_smtp,
-            authenticate = TRUE,
-            send = TRUE)
-  
-}
-# -----------------
 
 
-
-# check if loggernet stopped to dowload data --> all stations not updated
-# text_W_loggernet_locked = check_loggernet_status(issue_counter_dir, issue_counter, input_dir, MESSAGE_EVERY_TIMES = 3)
-# 
-# if(!is.null(text_W_loggernet_locked)){
-#   warning(text_W_loggernet_locked)
-# }
-# 
 
 file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 

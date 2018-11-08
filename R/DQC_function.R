@@ -711,7 +711,7 @@ DQC_function = function(input_dir,
   }
   
   
-  # - - - -  Provide overlaps - - - - - - - - - - - - - 
+  # - - - -  Provide overlaps - - - - - - - - - - - - -   # da modificare! --> no lista date ma periodo (inizio/fine)
   
   if(!is.na(flag_overlap) & flag_overlap == 1){
     # overlap[,which(colnames(overlap) == datetime_header)]

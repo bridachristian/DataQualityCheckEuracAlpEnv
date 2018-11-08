@@ -50,6 +50,7 @@ if(errors_list_critical$err_structure$Status == "Y"){
 DT::datatable(errors_list_critical$err_structure$Values)
 }
 ```
+
 <!-- err_date_issue -->
 
 ##`r if(errors_list_critical$err_date_issue$Status == "Y"){ paste("CRITICAL ERROR! Date issues!")}`
@@ -65,8 +66,6 @@ if(errors_list_critical$err_overlap$Status == "Y"){
 DT::datatable(df_overlap,rownames = F)
 }
 ```
-<!-- `r if(errors_list_critical$err_overlap$Status == "Y"){cat("Overlap at:",errors_list_critical$err_overlap$Values, sep = "\n")}` -->
-
 
 <!-- err_missing_record -->
 

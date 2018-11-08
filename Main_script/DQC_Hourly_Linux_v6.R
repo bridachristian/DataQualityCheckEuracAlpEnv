@@ -218,7 +218,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 1
+  t = 17
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)

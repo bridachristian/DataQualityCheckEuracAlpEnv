@@ -58,7 +58,7 @@ library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 
 # ..... Params section .....................................................................................................................................
 
-main_dir = "/shared/"
+main_dir = "/shared/test_christian/"
 # main_dir = "/shared/test_christian/"
 # main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 

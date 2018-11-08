@@ -777,41 +777,42 @@ for(PROJECT in project_type){
   
 }
 
-df_loggernet_status =as.data.frame(loggernet_status)
-
-if(all(df_loggernet_status$Status== "Already analyzed")){
-  icinga_station = "LOGGERNET"
-  icinga_status = 3
-  icinga_text = "Loggernet doesn't download any station!"
-}else{
-  icinga_station = "LOGGERNET"
-  icinga_status = 0
-  icinga_text = "OK"
-}
-
-# ----- LOGGERNET DOESN'T WORK  ------
-
-mail_table = read.csv(mail_file,stringsAsFactors = F)
-mail_status = mail_table$Status[which(mail_table$Station == "LOGGERNET")]
-
-if(icinga_status != mail_status ){
-  if(icinga_status != 0){
-    
-    my_subject = paste("LOGGERNET doesn't work. All stations were already downloaded!")
-    my_body = paste("Error: any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
-    
-    send.mail(from = sender,
-              to = reciver,
-              subject = my_subject,
-              body = my_body,
-              smtp = my_smtp,
-              authenticate = TRUE,
-              send = TRUE)
-  }
-  mail_table$Status[which(mail_table$Station == "LOGGERNET")] = icinga_status
-  write.csv(mail_table, mail_file,quote = F,row.names = F)
-}
-
+# # non funziona!!!!!
+# df_loggernet_status =as.data.frame(loggernet_status)
+# 
+# if(all(df_loggernet_status$Status== "Already analyzed")){
+#   icinga_station = "LOGGERNET"
+#   icinga_status = 3
+#   icinga_text = "Loggernet doesn't download any station!"
+# }else{
+#   icinga_station = "LOGGERNET"
+#   icinga_status = 0
+#   icinga_text = "OK"
+# }
+# 
+# # ----- LOGGERNET DOESN'T WORK  ------
+# 
+# mail_table = read.csv(mail_file,stringsAsFactors = F)
+# mail_status = mail_table$Status[which(mail_table$Station == "LOGGERNET")]
+# 
+# if(icinga_status != mail_status ){
+#   if(icinga_status != 0){
+#     
+#     my_subject = paste("LOGGERNET doesn't work. All stations were already downloaded!")
+#     my_body = paste("Error: any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
+#     
+#     send.mail(from = sender,
+#               to = reciver,
+#               subject = my_subject,
+#               body = my_body,
+#               smtp = my_smtp,
+#               authenticate = TRUE,
+#               send = TRUE)
+#   }
+#   mail_table$Status[which(mail_table$Station == "LOGGERNET")] = icinga_status
+#   write.csv(mail_table, mail_file,quote = F,row.names = F)
+# }
+# 
 
 
 file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))

@@ -86,6 +86,8 @@ warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 # MESSAGE_EVERY_TIMES = 24
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+HOURS_OFFLINE = 24
+
 date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
 
 loggernet_status = c()
@@ -98,9 +100,14 @@ mail_config_file = paste(DQC_setting_dir,"Process/email_status/mail_config.xml",
 mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 
 mail_config_info = mail_config_parsing(mail_config)
+
+sender = mail_config_info$sender
+reciver = mail_config_info$reciver   
+my_smtp = mail_config_info$my_smtp
 # -------------------------------
 
- file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
+
+file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
 for(PROJECT in project_type){
   data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
@@ -218,7 +225,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 17
+  t = 9
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)
@@ -228,7 +235,8 @@ for(PROJECT in project_type){
                                              "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
-                                             "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file")))
+                                             "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE",
+                                             "sender", "reciver" ,"my_smtp")))
     
     
     
@@ -299,6 +307,29 @@ for(PROJECT in project_type){
     if(dwnl_info$Stop_DQC == 0){
       
       date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE_NAME,sep = "")),format = datetime_format))
+      
+      # ----- station offline  ------
+      
+      h_last_modif_file = trunc(as.POSIXct(date_last_modif_file, tz = "Etc/GMT-1"),units = "hours")
+      h_DQC = trunc(date_DQC,units = "hours")
+      
+      hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_last_modif_file, tz = "Etc/GMT-1",units = "hours"))
+      
+      if(hours_diff >= HOURS_OFFLINE & hours_diff%%HOURS_OFFLINE == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
+        
+        my_subject = paste("Station:",STATION_NAME,"- Error: Station Offline!")
+        my_body = paste("Error: Last data download:", date_last_modif_file)
+        
+        send.mail(from = sender,
+                  to = reciver,
+                  subject = my_subject,
+                  body = my_body,
+                  smtp = my_smtp,
+                  authenticate = TRUE,
+                  send = TRUE)
+        
+      }
+      # -----------------
       
       if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
         
@@ -468,9 +499,6 @@ for(PROJECT in project_type){
         mail_table = read.csv(mail_file,stringsAsFactors = F)
         mail_status = mail_table$Status[which(mail_table$Station == icinga_station)]
         
-        sender = mail_config_info$sender
-        reciver = mail_config_info$reciver   
-        my_smtp = mail_config_info$my_smtp
         
         if(icinga_status != mail_status ){
           if(icinga_status != 0){
@@ -753,7 +781,7 @@ df_loggernet_status =as.data.frame(loggernet_status)
 
 if(all(df_loggernet_status$Status== "Already analyzed")){
   icinga_station = "Loggernet"
-  icinga_status = 3 #???????? controllare livelli icinga
+  icinga_status = 3
   icinga_text = "Loggernet doesn't download any station!"
 }else{
   icinga_station = "Loggernet"
@@ -761,6 +789,44 @@ if(all(df_loggernet_status$Status== "Already analyzed")){
   icinga_text = "OK"
 }
 
+# ----- LOGGERNET DOESN'T WORK  ------
+
+mail_table = read.csv(mail_file,stringsAsFactors = F)
+mail_status = mail_table$Status[which(mail_table$Station == "LOGGERNET")]
+
+if(icinga_status != mail_status ){
+  if(icinga_status != 0){
+    
+    my_subject = paste("LOGGERNET doesn't work. All stations were already downloaded!")
+    
+    my_body = paste("Error: any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
+    
+    send.mail(from = sender,
+              to = reciver,
+              subject = my_subject,
+              body = my_body,
+              smtp = my_smtp,
+              authenticate = TRUE,
+              send = TRUE)
+  }
+  mail_table$Status[which(mail_table$Station == icinga_station)] = icinga_status
+  write.csv(mail_table, mail_file,quote = F,row.names = F)
+}
+if(all(df_loggernet_status$Status == "Already analyzed")){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE
+  
+  my_subject = paste("Loggernet issue. Error: All stations are OFFLINE!")
+  my_body = paste("Loggernet issue. Error: All stations are OFFLINE!")
+  
+  send.mail(from = sender,
+            to = reciver,
+            subject = my_subject,
+            body = my_body,
+            smtp = my_smtp,
+            authenticate = TRUE,
+            send = TRUE)
+  
+}
+# -----------------
 
 
 

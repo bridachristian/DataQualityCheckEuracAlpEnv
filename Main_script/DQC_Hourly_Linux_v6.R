@@ -91,6 +91,8 @@ HOURS_OFFLINE = 24
 date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
 
 loggernet_status = c()
+loggernet_status_prj = as.data.frame(matrix(ncol = 3))
+colnames(loggernet_status_prj) = c("Station", "Status", "Last_modification")
 
 mail_file = paste(DQC_setting_dir,"Process/email_status/mail_status.csv",sep = "")
 
@@ -225,7 +227,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 9
+  t = 2
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)
@@ -236,7 +238,7 @@ for(PROJECT in project_type){
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE",
-                                             "sender", "reciver" ,"my_smtp")))
+                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status")))
     
     
     
@@ -685,7 +687,11 @@ for(PROJECT in project_type){
     # final_dataframe = rbind(final_dataframe,final_info)
     final_dataframe[t,] = final_info
     
-    loggernet_status_prj = final_dataframe[,1:2]
+    loggernet_status_prj[t,1] = final_info[1]
+    loggernet_status_prj[t,2] = final_info[2]
+    loggernet_status_prj[t,3] = date_last_modif_file
+    
+   
     gc(reset = T)
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -706,52 +712,7 @@ for(PROJECT in project_type){
   }
   loggernet_status = rbind(loggernet_status,loggernet_status_prj)
   
-  # issue_counter_proj = issue_counter[issue_counter$Project == PROJECT,]
-  
-  
-  
-  # aaa = as.data.frame(final_dataframe)
-  # 
-  # 
-  # 
-  # if(PROJECT == "MONALISA"){
-  #   FILE_NAME_recon = paste("MONALISA_",aaa$Station, "_MeteoVal",sep = "")
-  # }else{
-  #   if(PROJECT == "LTER"){
-  #     FILE_NAME_recon = paste("LTER_",aaa$Station, "_",aaa$Station,sep = "")
-  #   }
-  # }
-  # aaa = cbind(FILE_NAME_recon, aaa)
-  # colnames(aaa)[1] = "file_name_recon"
-  # 
-  # 
-  # already_analyzed = aaa$file_name_recon[which(aaa$Status == "Already analyzed")]
-  # 
-  # which(issue_counter$Station %in% already_analyzed & issue_counter$Project %in% PROJECT)
-  # which(!(issue_counter$Station %in% already_analyzed) & issue_counter$Project %in% PROJECT)
-  # 
-  # issue_counter$W_Update_station[which(issue_counter$Station %in% already_analyzed & issue_counter$Project %in% PROJECT)] = issue_counter$Already_analyzed_ALERT[which(issue_counter$Station %in% already_analyzed & issue_counter$Project %in% PROJECT)] +1
-  # issue_counter$Already_analyzed_ALERT[ which(!(issue_counter$Station %in% already_analyzed) & issue_counter$Project %in% PROJECT)] = 0
-  # write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F)
-  # 
-  # SET_HOURS = 12 ##### Check how to do an alert every X hours! Now the script send an alert every hour when issue_counter > SET_HOURS !
-  # 
-  # if(any( issue_counter$Already_analyzed_ALERT >= SET_HOURS)){
-  #   file_to_write = issue_counter$Station[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]
-  #   hour_to_write = issue_counter$Already_analyzed_ALERT[which(issue_counter$Already_analyzed_ALERT >= SET_HOURS)]
-  #   
-  #   text_to_write = paste(file_to_write,".dat --> Last download: ",hour_to_write, "hours ago", sep = "")
-  #   body = cat("The following files .dat were not update for much than X hours.", text_to_write, sep = "\n")
-  #   
-  #   # send.mail(from = "data.quality.check@gmail.com",
-  #   #           to = c("Christia.Brida@eurac.edu"),
-  #   #           subject = paste("DQC: test1: file dati non aggiornati"),
-  #   #           body = body,
-  #   #           smtp = list(host.name = "smtp.gmail.com", port = 465, user.name = "data.quality.check", passwd = "alpenv78", ssl = TRUE),
-  #   #           authenticate = TRUE,
-  #   #           send = TRUE)
-  # }
-  
+
   # ..... Final Report .....................................................................................................................................
   
   
@@ -777,8 +738,9 @@ for(PROJECT in project_type){
   
 }
 
+
 # # non funziona!!!!!
-# df_loggernet_status =as.data.frame(loggernet_status)
+ df_loggernet_status =as.data.frame(loggernet_status)
 # 
 # if(all(df_loggernet_status$Status== "Already analyzed")){
 #   icinga_station = "LOGGERNET"

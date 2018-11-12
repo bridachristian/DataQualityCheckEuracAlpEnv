@@ -35,6 +35,7 @@ library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 
 
+
 # library(devtools) 
 # install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 # library("DataQualityCheckEuracAlpEnv")

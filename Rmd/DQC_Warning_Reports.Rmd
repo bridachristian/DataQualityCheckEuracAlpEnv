@@ -47,7 +47,8 @@ dqc_date <- params$dqc_date
 ##`r if(errors_list_critical$err_structure$Status == "Y"){ paste("CRITICAL ERROR! Datatable structure issues!")}`
 ```{r echo=FALSE}
 if(errors_list_critical$err_structure$Status == "Y"){ 
-DT::datatable(errors_list_critical$err_structure$Values)
+# DT::datatable(errors_list_critical$err_structure$Values)
+kable(errors_list_critical$err_structure$Values)
 }
 ```
 
@@ -63,7 +64,8 @@ DT::datatable(errors_list_critical$err_structure$Values)
 if(errors_list_critical$err_overlap$Status == "Y"){ 
   df_overlap  = data.frame("overlap:",errors_list_critical$err_overlap$Values)
   colnames(df_overlap) = c("", "Date")
-DT::datatable(df_overlap,rownames = F)
+# DT::datatable(df_overlap,rownames = F)
+kable(df_overlap,rownames = F)
 }
 ```
 
@@ -72,7 +74,8 @@ DT::datatable(df_overlap,rownames = F)
 ##`r if(errors_list_critical$err_missing_record$Status == "Y"){ paste("CRITICAL ERROR! Missing record!")}`
 ```{r echo=FALSE}
 if(errors_list_critical$err_missing_record$Status == "Y"){ 
-DT::datatable(errors_list_critical$err_missing_record$Values)
+# DT::datatable(errors_list_critical$err_missing_record$Values)
+kable(errors_list_critical$err_missing_record$Values)
 }
 ```
 
@@ -81,7 +84,8 @@ DT::datatable(errors_list_critical$err_missing_record$Values)
 ##`r if(errors_list_critical$err_restart_record$Status == "Y"){ paste("CRITICAL ERROR! Missing record before a restart!")}`
 ```{r echo=FALSE}
 if(errors_list_critical$err_restart_record$Status == "Y"){ 
-DT::datatable(errors_list_critical$err_restart_record$Values)
+# DT::datatable(errors_list_critical$err_restart_record$Values)
+kable(errors_list_critical$err_restart_record$Values)
 }
 ```
 
@@ -94,7 +98,8 @@ DT::datatable(errors_list_critical$err_restart_record$Values)
 ##`r if(errors_list_warning$err_date_missing$Status == "Y"){ paste("WARNING ERROR! Missing dates!")}`
 ```{r echo=FALSE}
 if(errors_list_warning$err_date_missing$Status == "Y"){ 
-DT::datatable(errors_list_warning$err_date_missing$Values)
+# DT::datatable(errors_list_warning$err_date_missing$Values)
+kable(errors_list_warning$err_date_missing$Values)
 }
 ```
 
@@ -104,7 +109,8 @@ DT::datatable(errors_list_warning$err_date_missing$Values)
 ##`r if(errors_list_warning$err_range_alert$Status == "Y"){ paste("WARNING ERROR! Values out of range!")}`
 ```{r echo=FALSE}
 if(errors_list_warning$err_range_alert$Status == "Y"){ 
-DT::datatable(errors_list_warning$err_range_alert$Values)
+# DT::datatable(errors_list_warning$err_range_alert$Values)
+kable(errors_list_warning$err_range_alert$Values)
 }
 ```
 

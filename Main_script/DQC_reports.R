@@ -20,40 +20,40 @@ library("DataQualityCheckEuracAlpEnv")
 install_github("alexsanjoseph/compareDF")
 library(compareDF)
 
-# library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+
+library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+
+library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+
+
+
+# library(devtools)
+# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
+# library("DataQualityCheckEuracAlpEnv")
+# install_github("alexsanjoseph/compareDF")
+# library(compareDF)
 # 
-# library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(zoo)
+# library(knitr)
+# library(ggplot2)
+# library(reshape2)
+# library(DT)
+# library(htmltools)
+# library(rmarkdown)
+# library(yaml)
+# library(highr)
 # 
-# library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-
-
-
-library(devtools)
-install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-library("DataQualityCheckEuracAlpEnv")
-install_github("alexsanjoseph/compareDF")
-library(compareDF)
-
-library(zoo)
-library(knitr)
-library(ggplot2)
-library(reshape2)
-library(DT)
-library(htmltools)
-library(rmarkdown)
-library(yaml)
-library(highr)
-
-library(mailR)
-library(XML)
+# library(mailR)
+# library(XML)
 
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
@@ -62,7 +62,7 @@ library(XML)
 # ..... Params section .....................................................................................................................................
 
 # main_dir = "/shared/"
-main_dir = "Z:/test_christian/"
+main_dir = "/shared/test_christian/"
 # main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 
 project_type = c("LTER","MONALISA")
@@ -72,8 +72,8 @@ PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
-# project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+# project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
 DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
@@ -129,7 +129,8 @@ for(PROJECT in project_type){
   record_header =  "RECORD"
   range_file =  "Range.csv"
   
-  write_output_files =  "TRUE"
+  write_output_files =  "FALSE"
+  # write_output_files =  "TRUE"
   write_output_report =  "FALSE"
   
   # general stations status --> loggernent doesn't work properly!
@@ -322,20 +323,20 @@ for(PROJECT in project_type){
       
       hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_last_modif_file, tz = "Etc/GMT-1",units = "hours"))
       
-      if(hours_diff >= HOURS_OFFLINE & hours_diff%%HOURS_OFFLINE == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
-        
-        my_subject = paste("Station:",STATION_NAME,"- Error: Station Offline!")
-        my_body = paste("Error: Last data download:", date_last_modif_file)
-        
-        send.mail(from = sender,
-                  to = reciver,
-                  subject = my_subject,
-                  body = my_body,
-                  smtp = my_smtp,
-                  authenticate = TRUE,
-                  send = TRUE)
-        
-      }
+      # if(hours_diff >= HOURS_OFFLINE & hours_diff%%HOURS_OFFLINE == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
+      #   
+      #   my_subject = paste("Station:",STATION_NAME,"- Error: Station Offline!")
+      #   my_body = paste("Error: Last data download:", date_last_modif_file)
+      #   
+      #   send.mail(from = sender,
+      #             to = reciver,
+      #             subject = my_subject,
+      #             body = my_body,
+      #             smtp = my_smtp,
+      #             authenticate = TRUE,
+      #             send = TRUE)
+      #   
+      # }
       # -----------------
       
       if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
@@ -366,27 +367,28 @@ for(PROJECT in project_type){
         # output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
         
         # rm(dwnl_info)
-        
-        DQC_results = DQC_function(input_dir,
-                                   output_dir_data,
-                                   output_dir_report,
-                                   project_dir,
-                                   data_from_row,
-                                   header_row_number,
-                                   datetime_header,
-                                   datetime_format,
-                                   datetime_sampling,
-                                   record_header,
-                                   range_file,
-                                   write_output_files,
-                                   write_output_report,
-                                   file_name,
-                                   station_name,
-                                   start_date,
-                                   database_dir,
-                                   logger_info_file,
-                                   record_check,
-                                   output_dir_raw)
+        write_output_files = "TRUE"
+        # DQC_results = DQC_function(input_dir,
+        DQC_results = DQC_function_test2(input_dir,
+                                         output_dir_data,
+                                         output_dir_report,
+                                         project_dir,
+                                         data_from_row,
+                                         header_row_number,
+                                         datetime_header,
+                                         datetime_format,
+                                         datetime_sampling,
+                                         record_header,
+                                         range_file,
+                                         write_output_files,
+                                         write_output_report,
+                                         file_name,
+                                         station_name,
+                                         start_date,
+                                         database_dir,
+                                         logger_info_file,
+                                         record_check,
+                                         output_dir_raw)
         
         
         mydata = DQC_results[[1]]
@@ -696,7 +698,7 @@ for(PROJECT in project_type){
     loggernet_status_prj[t,2] = final_info[2]
     loggernet_status_prj[t,3] = date_last_modif_file
     
-   
+    
     gc(reset = T)
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -717,7 +719,7 @@ for(PROJECT in project_type){
   }
   loggernet_status = rbind(loggernet_status,loggernet_status_prj)
   
-
+  
   # ..... Final Report .....................................................................................................................................
   
   
@@ -745,15 +747,15 @@ for(PROJECT in project_type){
 
 
 # # non funziona!!!!!
- df_loggernet_status =as.data.frame(loggernet_status)
- df_loggernet_status$Last_modification = as.POSIXct(df_loggernet_status$Last_modification,tz = "Etc/GMT-1")
- 
- h_loggernet_last_modif = trunc(max(df_loggernet_status$Last_modification,na.rm = T),units = "hours")
- h_DQC = trunc(date_DQC,units = "hours")
- 
- hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_loggernet_last_modif, tz = "Etc/GMT-1",units = "hours"))
- 
- 
+df_loggernet_status =as.data.frame(loggernet_status)
+df_loggernet_status$Last_modification = as.POSIXct(df_loggernet_status$Last_modification,tz = "Etc/GMT-1")
+
+h_loggernet_last_modif = trunc(max(df_loggernet_status$Last_modification,na.rm = T),units = "hours")
+h_DQC = trunc(date_DQC,units = "hours")
+
+hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_loggernet_last_modif, tz = "Etc/GMT-1",units = "hours"))
+
+
 if( hours_diff >= LOGGERNET_OFFLINE){
   icinga_station = "LOGGERNET"
   icinga_status = 3
@@ -771,10 +773,10 @@ mail_status = mail_table$Status[which(mail_table$Station == "LOGGERNET")]
 
 if(icinga_status != mail_status ){
   if(icinga_status != 0){
-
+    
     my_subject = paste("LOGGERNET doesn't work. All stations were already downloaded!")
     my_body = paste("Error: any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
-
+    
     send.mail(from = sender,
               to = reciver,
               subject = my_subject,

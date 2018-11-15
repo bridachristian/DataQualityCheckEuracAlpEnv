@@ -737,6 +737,21 @@ DQC_function_test2 = function(input_dir,
     }
   }
   
+  # - - - -  Provide duplicated rows - - - - - - - - - - - - -   # da modificare! --> no lista date ma periodo (inizio/fine)
+  
+  
+  if(!is.na(flag_duplicates_rows) & flag_duplicates_rows == 1){
+    output_duplicates_rows = list("Y", NA)
+    names(output_duplicates_rows) =c("Status", "Values")
+  }else{
+    if(!is.na(flag_new_duplicates_rows) & flag_new_duplicates_rows == 1){
+      output_duplicates_rows = list("Y", NA)
+      names(output_duplicates_rows) =c("Status", "Values")
+    }else{
+      output_duplicates_rows = list("N", NA)
+      names(output_duplicates_rows) =c("Status", "Values")
+    }
+  }
   # - - - -  Provide table of missing records - - - - - - - - - - - - - 
   
   if(!exists("records_missing")){
@@ -904,6 +919,7 @@ DQC_function_test2 = function(input_dir,
                        output_structure,
                        output_date_issue,
                        output_overlap,
+                       output_duplicates_rows,
                        output_missing_record,
                        output_restart_record,
                        output_date_missing,
@@ -915,6 +931,7 @@ DQC_function_test2 = function(input_dir,
                            "err_structure",
                            "err_date_issue",
                            "err_overlap",
+                           "output_duplicates_rows",
                            "err_missing_record",
                            "err_restart_record",
                            "err_date_missing",

@@ -79,7 +79,7 @@ DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
 logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.csv", sep = "")
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
-download_table_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
+download_table_dir <- paste(DQC_setting_dir,"/Process/Download_tables/Weekly/", sep = "")
 
 warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 
@@ -367,7 +367,6 @@ for(PROJECT in project_type){
         # output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
         
         # rm(dwnl_info)
-        write_output_files = "TRUE"
         # DQC_results = DQC_function(input_dir,
         DQC_results = DQC_function_test2(input_dir,
                                          output_dir_data,
@@ -425,52 +424,57 @@ for(PROJECT in project_type){
         
         critical_errors = c("err_empty","err_logger_number","err_structure","err_date_issue","err_overlap","err_missing_record","err_restart_record")
         warning_errors = c("err_date_missing","err_range_alert")
-        
+        report_errors = c("err_out_of_range")
         
         dqc_date = date_DQC
         
-        if(any(status[c(critical_errors,warning_errors)] == "Y")){
+        if(any(status == "Y")){
           
           station_name = STATION_NAME
           errors_list_critical = errors[critical_errors]
           errors_list_warning = errors[warning_errors]
+          errors_report_errors = errors[report_errors]
           
-          dqc_date_write = paste(format(dqc_date,"%Y"),format(dqc_date,"%m"),format(dqc_date,"%d"),format(dqc_date,"%H"),format(dqc_date,"%M"),sep = "")
+          dqc_date_write = paste(format(dqc_date,"%Y"),format(dqc_date,"%m"),format(dqc_date,"%d"),sep = "")
           
-          if(any(status[critical_errors] == "Y")){
-            
-            err_vect = substring(critical_errors[which(status[critical_errors] == "Y")],5,nchar(critical_errors[which(status[critical_errors] == "Y")])) # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
-            if(length(err_vect) > 1){
-              error_write =  paste(err_vect,collapse = "+")
-            }else{
-              error_write = err_vect
-            }
-          }
+          # if(any(status[critical_errors] == "Y")){
+          #   
+          #   err_vect = substring(critical_errors[which(status[critical_errors] == "Y")],5,nchar(critical_errors[which(status[critical_errors] == "Y")])) # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
+          #   if(length(err_vect) > 1){
+          #     error_write =  paste(err_vect,collapse = "+")
+          #   }else{
+          #     error_write = err_vect
+          #   }
+          # }
           
-          if(any(status[warning_errors] == "Y")){
-            
-            err_vect = substring(warning_errors[which(status[warning_errors] == "Y")],5,nchar(warning_errors[which(status[warning_errors] == "Y")]))
-            if(length(err_vect) > 1){
-              error_write =  paste(err_vect,collapse = "+")
-            }else{
-              error_write = err_vect
-            }
+          # if(any(status[warning_errors] == "Y")){
+          #   
+          #   err_vect = substring(warning_errors[which(status[warning_errors] == "Y")],5,nchar(warning_errors[which(status[warning_errors] == "Y")]))
+          #   if(length(err_vect) > 1){
+          #     error_write =  paste(err_vect,collapse = "+")
+          #   }else{
+          #     error_write = err_vect
+          #   }
             
           }
           
           # generate a report of warnings
           
-          output_file_report = paste(STATION_NAME,"_",dqc_date_write,"_",error_write,".html",sep = "")
+          output_file_report = paste(STATION_NAME,"_",dqc_date_write,"_",".html",sep = "")
           
-          input =  warning_report_RMD 
+          issue_report_RMD = "DQC_Reports.Rmd" # dxadssa
+          issue_file_dir_station = "/shared/test_christian/Stations_Data/DQC/report_test/" # dxadssa
+          
+          input =  issue_report_RMD 
           output_file = output_file_report
-          output_dir = warning_file_dir_station
+          output_dir = issue_file_dir_station
           
           params_list = list(dqc_date,
                              station_name,
                              errors_list_critical,
-                             errors_list_warning)
-          names(params_list) = c("dqc_date","station_name","errors_list_critical","errors_list_warning")
+                             errors_list_warning,
+                             errors_report_errors)
+          names(params_list) = c("dqc_date","station_name","errors_list_critical","errors_list_warning","errors_report_errors")
           
           rmarkdown::render(input = input,
                             output_file = output_file,

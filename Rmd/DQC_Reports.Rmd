@@ -1,0 +1,119 @@
+---
+title: "Data Quality Check Report"
+author: "Insitute for Alpine Environment, Eurac Research"
+output: html_document
+params:
+    station_name:           # chr:  name of station where to put input files.
+    errors_list_critical:   # list:  list containing status and eventually errors information
+    errors_list_warning:    # list:  list containing status and eventually errors information
+    errors_report_errors:   # list:  list containing status and eventually errors information
+    dqc_date:               # date: date DQC
+---
+
+
+
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
+station_name <- params$station_name
+errors_list_critical <- params$errors_list_critical
+errors_list_warning <- params$errors_list_warning
+errors_report_errors <- params$errors_report_errors
+dqc_date <- params$dqc_date
+```
+
+### Station: **`r  station_name`**
+
+### Data Quality Check : **`r  dqc_date`**
+
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=FALSE}
+# names(errors_list_warning)
+
+# names(errors_list_critical)
+
+
+```
+
+<!-- ............... CRITICAL STATUS ICINGA ............... -->
+
+<!-- err_empty -->
+
+##`r if(errors_list_critical$err_empty$Status == "Y"){ paste("CRITICAL ERROR! Empty file!")}`
+`r if(errors_list_critical$err_empty$Status == "Y"){ paste("The file of station",station_name, "is empty.")}`
+
+<!-- err_logger_number -->
+
+##`r if(errors_list_critical$err_logger_number$Status == "Y"){ paste("CRITICAL ERROR! Logger number doesn't match")}`
+`r if(errors_list_critical$err_logger_number$Status == "Y"){ paste("Logger numbers doesn't match. Old:",errors_list_critical$err_logger_number$Values[1], "New:",errors_list_critical$err_logger_number$Values[2])}`
+
+<!-- err_structure -->
+
+##`r if(errors_list_critical$err_structure$Status == "Y"){ paste("CRITICAL ERROR! Datatable structure issues!")}`
+```{r echo=FALSE}
+if(errors_list_critical$err_structure$Status == "Y"){ 
+# DT::datatable(errors_list_critical$err_structure$Values)
+kable(errors_list_critical$err_structure$Values)
+}
+```
+
+<!-- err_date_issue -->
+
+##`r if(errors_list_critical$err_date_issue$Status == "Y"){ paste("CRITICAL ERROR! Date issues!")}`
+`r if(errors_list_critical$err_date_issue$Status == "Y"){paste("Date issue! Date in download table is successive of the last date in .dat file")}`
+
+<!-- err_overlap -->
+
+##`r if(errors_list_critical$err_overlap$Status == "Y"){ paste("CRITICAL ERROR! Overlap!")}`
+```{r echo=FALSE}
+if(errors_list_critical$err_overlap$Status == "Y"){ 
+  df_overlap  = data.frame("overlap:",errors_list_critical$err_overlap$Values)
+  colnames(df_overlap) = c("", "Date")
+# DT::datatable(df_overlap,rownames = F)
+kable(df_overlap,rownames = F)
+}
+```
+
+<!-- err_missing_record -->
+
+##`r if(errors_list_critical$err_missing_record$Status == "Y"){ paste("CRITICAL ERROR! Missing record!")}`
+```{r echo=FALSE}
+if(errors_list_critical$err_missing_record$Status == "Y"){ 
+# DT::datatable(errors_list_critical$err_missing_record$Values)
+kable(errors_list_critical$err_missing_record$Values)
+}
+```
+
+<!-- err_restart_record -->
+
+##`r if(errors_list_critical$err_restart_record$Status == "Y"){ paste("CRITICAL ERROR! Missing record before a restart!")}`
+```{r echo=FALSE}
+if(errors_list_critical$err_restart_record$Status == "Y"){ 
+# DT::datatable(errors_list_critical$err_restart_record$Values)
+kable(errors_list_critical$err_restart_record$Values)
+}
+```
+
+
+<!-- ............... WARNINGS STATUS ICINGA ............... -->
+
+
+<!-- err_date_missing -->
+
+##`r if(errors_list_warning$err_date_missing$Status == "Y"){ paste("WARNING ERROR! Missing dates!")}`
+```{r echo=FALSE}
+if(errors_list_warning$err_date_missing$Status == "Y"){ 
+# DT::datatable(errors_list_warning$err_date_missing$Values)
+kable(errors_list_warning$err_date_missing$Values)
+}
+```
+
+
+<!-- err_range_alert -->
+
+##`r if(errors_list_warning$err_range_alert$Status == "Y"){ paste("WARNING ERROR! Values out of range!")}`
+```{r echo=FALSE}
+if(errors_list_warning$err_range_alert$Status == "Y"){ 
+# DT::datatable(errors_list_warning$err_range_alert$Values)
+kable(errors_list_warning$err_range_alert$Values)
+}
+```
+
+

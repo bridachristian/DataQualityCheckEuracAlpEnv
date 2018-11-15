@@ -11,6 +11,7 @@ params:
 ---
 
 
+# **TEST 1**
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
 station_name <- params$station_name
@@ -28,6 +29,8 @@ dqc_date <- params$dqc_date
 # names(errors_list_warning)
 
 # names(errors_list_critical)
+
+str(errors_list_critical)
 
 
 ```

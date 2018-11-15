@@ -424,7 +424,7 @@ for(PROJECT in project_type){
         
         critical_errors = c("err_empty","err_logger_number","err_structure","err_date_issue","err_overlap","err_missing_record","err_restart_record")
         warning_errors = c("err_date_missing","err_range_alert")
-        report_errors = c("err_out_of_range")
+        report_errors = c("err_out_of_range","err_duplicates_rows")
         
         dqc_date = date_DQC
         
@@ -460,9 +460,10 @@ for(PROJECT in project_type){
           
           # generate a report of warnings
           
-          output_file_report = paste(STATION_NAME,"_",dqc_date_write,"_",".html",sep = "")
+          output_file_report = paste(STATION_NAME,"_",dqc_date_write,".html",sep = "")
           
-          issue_report_RMD = "DQC_Reports.Rmd" # dxadssa
+          issue_report_RMD = paste(project_dir,"/Rmd/DQC_Reports.Rmd",sep = "")
+          
           issue_file_dir_station = "/shared/test_christian/Stations_Data/DQC/report_test/" # dxadssa
           
           input =  issue_report_RMD 

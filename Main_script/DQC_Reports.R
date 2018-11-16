@@ -233,7 +233,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 14
+  t = 1
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)
@@ -433,7 +433,7 @@ for(PROJECT in project_type){
           station_name = STATION_NAME
           errors_list_critical = errors[critical_errors]
           errors_list_warning = errors[warning_errors]
-          errors_report_errors = errors[report_errors]
+          errors_list_report_errors = errors[report_errors]
           
           dqc_date_write = paste(format(dqc_date,"%Y"),format(dqc_date,"%m"),format(dqc_date,"%d"),sep = "")
           
@@ -474,8 +474,8 @@ for(PROJECT in project_type){
                              station_name,
                              errors_list_critical,
                              errors_list_warning,
-                             errors_report_errors)
-          names(params_list) = c("dqc_date","station_name","errors_list_critical","errors_list_warning","errors_report_errors")
+                             errors_list_report_errors)
+          names(params_list) = c("dqc_date","station_name","errors_list_critical","errors_list_warning","errors_list_report_errors")
           
           rmarkdown::render(input = input,
                             output_file = output_file,

@@ -101,7 +101,7 @@ DQC_function_test2 = function(input_dir,
           rm(data)
           
         }else{
-          
+          recent_date = format(time_data[length(time_data)], format = datetime_format)
           if(as.POSIXct(start_date,tz = 'Etc/GMT-1') < time_data[length(time_data)]){
             w_date = which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))
             
@@ -710,8 +710,9 @@ DQC_function_test2 = function(input_dir,
   # - - - -  Provide date issue - - - - - - - - - - - - - 
   
   if(!is.na(flag_date) & flag_date == 1){
-    
-    output_date_issue = list("Y", NA)
+    dates_flag_date = c(start_date, recent_date)
+    names(dates_flag_date) = c("Download_table_date", "Last_file_date")
+    output_date_issue = list("Y", dates_flag_date)
     names(output_date_issue) =c("Status", "Values")
   }else{
     output_date_issue = list("N",NA)

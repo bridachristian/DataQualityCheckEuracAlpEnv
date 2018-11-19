@@ -33,8 +33,10 @@ library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 
 library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-
-
+library(xtable, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+library(dygraphs, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+library(xts, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+# install.packages("xts", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
 
 # library(devtools)
 # install_github("bridachristian/DataQualityCheckEuracAlpEnv")
@@ -470,12 +472,13 @@ for(PROJECT in project_type){
           output_file = output_file_report
           output_dir = issue_file_dir_station
           
-          params_list = list(dqc_date,
+          params_list = list(mydata,
+                             dqc_date,
                              station_name,
                              errors_list_critical,
                              errors_list_warning,
                              errors_list_report_errors)
-          names(params_list) = c("dqc_date","station_name","errors_list_critical","errors_list_warning","errors_list_report_errors")
+          names(params_list) = c("mydata", "dqc_date","station_name","errors_list_critical","errors_list_warning","errors_list_report_errors")
           
           rmarkdown::render(input = input,
                             output_file = output_file,

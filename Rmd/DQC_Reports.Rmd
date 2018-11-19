@@ -3,6 +3,7 @@ title: "Data Quality Check Report"
 author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
 params:
+    mydata:                 # dataframe of data processed
     station_name:           # chr:  name of station where to put input files.
     errors_list_critical:   # list:  list containing status and eventually errors information
     errors_list_warning:    # list:  list containing status and eventually errors information
@@ -10,10 +11,8 @@ params:
     dqc_date:               # date: date DQC
 ---
 
-
-# **TEST 1**
-
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
+mydata <- params$mydata
 station_name <- params$station_name
 errors_list_critical <- params$errors_list_critical
 errors_list_warning <- params$errors_list_warning
@@ -112,7 +111,7 @@ kable(errors_list_warning$err_date_missing$Values)
 ```
 
 
-<!-- <!-- err_range_alert --> -->
+<!-- <!-- err_range_alert  -->
 
 <!-- ##`r if(errors_list_warning$err_range_alert$Status == "Y"){ paste("WARNING ERROR! Values out of range!")}` -->
 <!-- ```{r echo=FALSE} -->
@@ -123,10 +122,35 @@ kable(errors_list_warning$err_date_missing$Values)
 <!-- ``` -->
 
 <!-- ............... REPORT STATUS ............... -->
-#### Da finere! ristrutturare!
+#### Da finire! ristrutturare!
 ##`r if(errors_list_report_errors$err_out_of_range$Status == "Y"){ paste("ERROR! Values out of phisical range!")}`
-```{r echo=FALSE}
+```{r echo=FALSE, results='asis'}
   if(errors_list_report_errors$err_out_of_range$Status == "Y"){ 
-    kable(errors_list_report_errors$err_out_of_range$Values)
+    table = errors_list_report_errors$err_out_of_range$Values
+    # table$Variable = as.factor(table$Variable)
+    vars = unique(table$Variable)
+    
+    time_mydata = as.POSIXct(mydata[, which(colnames(mydata) == "TIMESTAMP")], tz = "Etc/GMT-1")
+    
+    
+    
+    for(i in 1:length(vars)){
+
+    
+     tab_var = table[which(table$Variable == vars[i]),]
+
+     print(kable(tab_var[order(tab_var$From),],caption = vars[i]))
+
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # kable(errors_list_report_errors$err_out_of_range$Values)
 }
 ```

@@ -3,7 +3,7 @@ title: "Data Quality Check Report"
 author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
 params:
-    mydata:                 # dataframe of data processed
+    report_mydata:                 # dataframe of data processed
     station_name:           # chr:  name of station where to put input files.
     errors_list_critical:   # list:  list containing status and eventually errors information
     errors_list_warning:    # list:  list containing status and eventually errors information
@@ -12,7 +12,7 @@ params:
 ---
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
-mydata <- params$mydata
+mydata <- params$report_mydata
 station_name <- params$station_name
 errors_list_critical <- params$errors_list_critical
 errors_list_warning <- params$errors_list_warning
@@ -53,8 +53,8 @@ str(errors_list_report_errors)
 ##`r if(errors_list_critical$err_structure$Status == "Y"){ paste("CRITICAL ERROR! Datatable structure issues!")}`
 ```{r echo=FALSE}
 if(errors_list_critical$err_structure$Status == "Y"){ 
-# DT::datatable(errors_list_critical$err_structure$Values)
-kable(errors_list_critical$err_structure$Values)
+  # DT::datatable(errors_list_critical$err_structure$Values)
+  kable(errors_list_critical$err_structure$Values)
 }
 ```
 
@@ -71,8 +71,8 @@ kable(errors_list_critical$err_structure$Values)
 if(errors_list_critical$err_overlap$Status == "Y"){ 
   df_overlap  = data.frame("overlap:",errors_list_critical$err_overlap$Values)
   colnames(df_overlap) = c("", "Date")
-# DT::datatable(df_overlap,rownames = F)
-kable(df_overlap,rownames = F)
+  # DT::datatable(df_overlap,rownames = F)
+  kable(df_overlap,rownames = F)
 }
 ```
 
@@ -81,8 +81,8 @@ kable(df_overlap,rownames = F)
 ##`r if(errors_list_critical$err_missing_record$Status == "Y"){ paste("CRITICAL ERROR! Missing record!")}`
 ```{r echo=FALSE}
 if(errors_list_critical$err_missing_record$Status == "Y"){ 
-# DT::datatable(errors_list_critical$err_missing_record$Values)
-kable(errors_list_critical$err_missing_record$Values)
+  # DT::datatable(errors_list_critical$err_missing_record$Values)
+  kable(errors_list_critical$err_missing_record$Values)
 }
 ```
 
@@ -91,8 +91,8 @@ kable(errors_list_critical$err_missing_record$Values)
 ##`r if(errors_list_critical$err_restart_record$Status == "Y"){ paste("CRITICAL ERROR! Missing record before a restart!")}`
 ```{r echo=FALSE}
 if(errors_list_critical$err_restart_record$Status == "Y"){ 
-# DT::datatable(errors_list_critical$err_restart_record$Values)
-kable(errors_list_critical$err_restart_record$Values)
+  # DT::datatable(errors_list_critical$err_restart_record$Values)
+  kable(errors_list_critical$err_restart_record$Values)
 }
 ```
 
@@ -102,55 +102,99 @@ kable(errors_list_critical$err_restart_record$Values)
 
 <!-- err_date_missing -->
 
-##`r if(errors_list_warning$err_date_missing$Status == "Y"){ paste("WARNING ERROR! Missing dates!")}`
-```{r echo=FALSE}
+##`r if(errors_list_warning$err_date_missing$Status == "Y"){ paste("ERROR! Missing dates!")}`
+```{r echo=FALSE, warning=FALSE, results='asis'}
 if(errors_list_warning$err_date_missing$Status == "Y"){ 
-# DT::datatable(errors_list_warning$err_date_missing$Values)
-kable(errors_list_warning$err_date_missing$Values)
+  
+  time_mydata = as.POSIXct(mydata[, which(colnames(mydata) == "TIMESTAMP")], tz = "Etc/GMT-1")
+  
+  mydata_df = mydata
+  date_filled = ifelse(mydata_df$RECORD != -1,F,T)
+  
+  date_classification = data.frame(time_mydata, date_filled)
+  colnames(date_classification) = c("TIMESTAMP","Classification")
+  melt_date_classification = melt(date_classification,id.var = "TIMESTAMP")
+  melt_date_classification$variable = rep(0,length(melt_date_classification$variable))
+  melt_date_classification$value = as.factor(melt_date_classification$value)
+  
+  table = errors_list_warning$err_date_missing$Values
+  
+  table$From = as.POSIXct(as.character(table$From),tz = "Etc/GMT-1")
+  table$To = as.POSIXct(as.character(table$To),tz = "Etc/GMT-1")
+  
+  
+  
+  
+  
+  
+  g1 = ggplot()+
+    geom_rect(data = table,aes(xmin = From, xmax = To, ymin = -Inf, ymax = Inf),alpha = 0.25)+
+    geom_point(data = melt_date_classification, aes(x = TIMESTAMP, y = variable, colour = value))+
+    scale_colour_manual(values = c("green", "red"))
+  # +
+  #   scale_fill_manual(name = "",values = c("grey20","blue", "red"), labels = c("NaN_value","Too_low","Too_high"),drop = F)+
+  #   ggtitle(paste("Variable:", vars[i]),subtitle = paste("From:",min(melt_mydata$TIMESTAMP), "to", max(melt_mydata$TIMESTAMP)))+
+  #   scale_x_datetime(date_labels = "%b %d",date_minor_breaks = "1 day") +
+  #   theme_bw()
+  
+  # DT::datatable(errors_list_warning$err_date_missing$Values)
+  kable(errors_list_warning$err_date_missing$Values)
 }
 ```
 
 
-<!-- <!-- err_range_alert  -->
-
-<!-- ##`r if(errors_list_warning$err_range_alert$Status == "Y"){ paste("WARNING ERROR! Values out of range!")}` -->
-<!-- ```{r echo=FALSE} -->
-<!-- if(errors_list_warning$err_range_alert$Status == "Y"){  -->
-<!-- # DT::datatable(errors_list_warning$err_range_alert$Values) -->
-<!-- kable(errors_list_warning$err_range_alert$Values) -->
-<!-- } -->
-<!-- ``` -->
-
 <!-- ............... REPORT STATUS ............... -->
 #### Da finire! ristrutturare!
-##`r if(errors_list_report_errors$err_out_of_range$Status == "Y"){ paste("ERROR! Values out of phisical range!")}`
-```{r echo=FALSE, results='asis'}
-  if(errors_list_report_errors$err_out_of_range$Status == "Y"){ 
-    table = errors_list_report_errors$err_out_of_range$Values
-    # table$Variable = as.factor(table$Variable)
-    vars = unique(table$Variable)
+##`r if(errors_list_report_errors$err_out_of_range$Status == "Y"){ paste("ERROR! Values out of physical range!")}`
+```{r echo=FALSE, warning=FALSE, results='asis'}
+if(errors_list_report_errors$err_out_of_range$Status == "Y"){ 
+  table = errors_list_report_errors$err_out_of_range$Values
+  # table$Variable = as.factor(table$Variable)
+  vars = unique(table$Variable)
+  
+  time_mydata = as.POSIXct(mydata[, which(colnames(mydata) == "TIMESTAMP")], tz = "Etc/GMT-1")
+  
+  for(i in 1:length(vars)){
     
-    time_mydata = as.POSIXct(mydata[, which(colnames(mydata) == "TIMESTAMP")], tz = "Etc/GMT-1")
+    tab_var_v0 = table[which(table$Variable == vars[i]),]
     
+    tab_var = tab_var_v0
+    tab_var$From =  as.POSIXct(tab_var$From,tz = "Etc/GMT-1")
+    tab_var$To =  as.POSIXct(tab_var$To,tz = "Etc/GMT-1")
+    # tab_var$Error =  as.factor(tab_var$Error)
     
+    tab_var$Error = factor(tab_var$Error,levels = c("NaN_value","Too_low","Too_high"))
     
-    for(i in 1:length(vars)){
-
+    mydata_var = mydata[,vars[i]]
+    mydata_df = data.frame(time_mydata, mydata_var)
+    colnames(mydata_df) = c("TIMESTAMP",vars[i])
     
-     tab_var = table[which(table$Variable == vars[i]),]
-
-     print(kable(tab_var[order(tab_var$From),],caption = vars[i]))
-
-    }
+    melt_mydata = melt(mydata_df,id.var = "TIMESTAMP")
     
+    g1 = ggplot()+
+      geom_rect(data = tab_var,aes(xmin = From, xmax = To, ymin = -Inf, ymax = Inf, fill = Error),alpha = 0.25)+
+      geom_line(data = melt_mydata, aes(x = TIMESTAMP, y = value))+
+      scale_fill_manual(name = "",values = c("grey20","blue", "red"), labels = c("NaN_value","Too_low","Too_high"),drop = F)+
+      ggtitle(paste("Variable:", vars[i]),subtitle = paste("From:",min(melt_mydata$TIMESTAMP), "to", max(melt_mydata$TIMESTAMP)))+
+      scale_x_datetime(date_labels = "%b %d",date_minor_breaks = "1 day") +
+      theme_bw()
     
+    # d1 = data.frame(c(1,2),c(2,5))
+    # colnames(d1) = c("x","y")
+    # g1 = ggplot(data = d1, aes(x,y))+geom_point()+geom_line()+ggtitle(vars[i])
+    print(g1)
     
+    print(kable(tab_var[order(tab_var$From),]),type = "html",include.rownames=FALSE)
+    # print(xtable(tab_var_v0[order(tab_var_v0$From),]),type = "html",include.rownames=FALSE)
     
-    
-    
-    
-    
-    
-    # kable(errors_list_report_errors$err_out_of_range$Values)
+  }
+  
+  
+  
+  
+  
+  
+  
+  # kable(errors_list_report_errors$err_out_of_range$Values)
 }
 ```

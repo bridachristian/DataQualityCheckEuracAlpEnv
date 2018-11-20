@@ -32,7 +32,7 @@ missing_dates = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER 
 
   zoo_NEW = zoo(all_dates_df,order.by = time_new)
 
-  merge = merge(zoo_DATA,zoo_NEW)
+  merge = merge(zoo_DATA,zoo_NEW) # problema cambio data!!!! perche????
   options(stringsAsFactors = F)
 
   merge = merge[,1:ncol(DATA)]

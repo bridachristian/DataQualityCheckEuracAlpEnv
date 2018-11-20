@@ -33,7 +33,7 @@ missing_dates = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER 
   zoo_NEW = zoo(all_dates_df,order.by = time_new)
 
   merge = merge(zoo_DATA,zoo_NEW) # problema cambio data!!!! perche????
-  index(merge) = as.POSIXct(time_new,tz = "Etc/GMT-1")
+  index(merge) = as.POSIXct(time_new,tz = "Etc/GMT-1")    # add new --> force index to the proper datetime conversion!
   options(stringsAsFactors = F)
 
   merge = merge[,1:ncol(DATA)]

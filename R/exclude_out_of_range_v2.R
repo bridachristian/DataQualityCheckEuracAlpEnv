@@ -42,7 +42,7 @@ exclude_out_of_range_v2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEA
     if(colnames(new)[k] %in% range$Variable){
       w = which(range$Variable == colnames(new)[k])
       
-      range$Variable[w]
+      # range$Variable[w]
       lower_limit = range$min[w]
       upper_limit = range$max[w]
       
@@ -57,14 +57,14 @@ exclude_out_of_range_v2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEA
         
         if(length(sss[[1]]) >= 1){
           for(s in 1:length(sss)){
-            sss[[s]]
+            # sss[[s]]
             
             start_sss = as.POSIXct(new[ sss[[s]][1] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
             end_sss = as.POSIXct( new[ sss[[s]][length(sss[[s]])] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
             hour_diff = end_sss - start_sss
             units(hour_diff) = "hours"
             
-            num_hour_diff = as.numeric(hour_diff)
+            num_hour_diff = as.numeric(hour_diff)+0.25 # add 0.25 (1/4 h) --> 15 miin to have 1 sample out of range == 15 min out of range
             
             
             df_lower_tmp = data.frame(colnames(new)[k],
@@ -92,14 +92,14 @@ exclude_out_of_range_v2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEA
         
         if(length(ttt[[1]]) >= 1){
           for(t in 1:length(ttt)){
-            ttt[[t]]
+            # ttt[[t]]
             
             start_ttt = as.POSIXct(new[ ttt[[t]][1] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
             end_ttt = as.POSIXct( new[ ttt[[t]][length(ttt[[t]])] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
             hour_diff = end_ttt - start_ttt
             units(hour_diff) = "hours"
             
-            num_hour_diff = as.numeric(hour_diff)
+            num_hour_diff = as.numeric(hour_diff)+0.25 # add 0.25 (1/4 h) --> 15 miin to have 1 sample out of range == 15 min out of range
             
             
             df_upper_tmp = data.frame(colnames(new)[k],
@@ -129,14 +129,14 @@ exclude_out_of_range_v2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEA
         
         if(length(nnn[[1]]) >= 1){
           for(n in 1:length(nnn)){
-            nnn[[n]]
+            # nnn[[n]]
             
             start_nnn = as.POSIXct(new[ nnn[[n]][1] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
             end_nnn = as.POSIXct( new[ nnn[[n]][length(nnn[[n]])] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
             hour_diff = end_nnn - start_nnn
             units(hour_diff) = "hours"
             
-            num_hour_diff = as.numeric(hour_diff)
+            num_hour_diff = as.numeric(hour_diff)+0.25 # add 0.25 (1/4 h) --> 15 miin to have 1 sample out of range == 15 min out of range
             
             
             df_NA_tmp = data.frame(colnames(new)[k],

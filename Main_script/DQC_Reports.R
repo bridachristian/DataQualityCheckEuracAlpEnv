@@ -396,6 +396,7 @@ for(PROJECT in project_type){
         flags_df = DQC_results[[2]]
         file_names = DQC_results[[3]]
         errors = DQC_results[[4]]
+        mydata_out_of_range = DQC_results[[5]]
         
         mylist <- split(flags_df$value, seq(nrow(flags_df)))
         names(mylist) = flags_df$flag_names
@@ -438,7 +439,7 @@ for(PROJECT in project_type){
           errors_list_report_errors = errors[report_errors]
           
           dqc_date_write = paste(format(dqc_date,"%Y"),format(dqc_date,"%m"),format(dqc_date,"%d"),sep = "")
-        }
+       
         
         # generate a report of warnings
         
@@ -452,7 +453,7 @@ for(PROJECT in project_type){
         output_file = output_file_report
         output_dir = issue_file_dir_station
         
-        report_mydata = mydata
+        report_mydata = mydata_out_of_range
         report_mydata[,which(colnames(report_mydata) == datetime_header)] = as.POSIXct(report_mydata[,which(colnames(report_mydata) == datetime_header)] ,tz = "Etc/GMT-1")
         
         params_list = list(report_mydata,
@@ -467,7 +468,7 @@ for(PROJECT in project_type){
                           output_file = output_file,
                           output_dir = output_dir,
                           params = params_list)
-        
+        }
         # generate a report of warnings
         
         

@@ -190,7 +190,7 @@ DQC_function_test2 = function(input_dir,
               
               # OUT OF RANGE --> DELATE DATA OUT OF RANGE
               range <- exclude_out_of_range_v2(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
-              mydata = range[[1]]
+              # mydata = range[[1]]               # don't subsitute out of range data with NaN 
               out_of_range_table = range[[2]]
               # check_out_of_range = range[[2]]
               variable_new = range[[3]]

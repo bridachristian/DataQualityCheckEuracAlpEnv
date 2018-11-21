@@ -650,6 +650,11 @@ DQC_function_test2 = function(input_dir,
     
   }
   
+  if(!exists("mydata_out_of_range")){
+    mydata_out_of_range= NULL
+    
+  }
+  
   # output1 = list(mydata, flags_df,file_names)
   
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

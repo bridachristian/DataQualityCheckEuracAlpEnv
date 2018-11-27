@@ -480,13 +480,14 @@ for(PROJECT in project_type){
             icinga_station = STATION_NAME
             icinga_status = 2
             # icinga_error = critical_errors[status[critical_errors] == "Y"]
-            icinga_text = paste(output_dir,output_file,sep = "")
+            icinga_text = paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
           }else{
             if(any(status[warning_errors] == "Y")){
               icinga_station = STATION_NAME
               icinga_status = 1
               # icinga_error = paste(warning_errors[status[warning_errors] == "Y"],collapse = " - ")
-              icinga_text = paste(output_dir,output_file,sep = "")
+              icinga_text = paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
+              
             }
           }
         }else{
@@ -509,9 +510,12 @@ for(PROJECT in project_type){
           if(icinga_status != 0){
             
             
-            my_subject = paste("Station:",icinga_station,"- Errors:",error_write,"- DQC runs:", date_DQC)
+            my_subject = paste(icinga_station,"-",error_write)
             
-            my_body = paste("Error/Warning report:",icinga_text)
+           
+            # my_body = paste("\\smb.scientificnet.org\alpenv",,sep = "")
+            
+            my_body = paste("\\\\smb.scientificnet.org\\alpenv",icinga_text,sep = "")
             
             send.mail(from = sender,
                       to = reciver,

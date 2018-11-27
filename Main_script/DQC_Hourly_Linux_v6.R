@@ -419,7 +419,7 @@ for(PROJECT in project_type){
         data_errors = lapply(errors,function(x) x[[2]])
         w_yes = which(status == "Y")
         
-        critical_errors = c("err_empty","err_logger_number","err_structure","err_date_issue","err_overlap","err_missing_record","err_restart_record")
+        critical_errors = c("err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record")
         warning_errors = c("err_date_missing","err_range_alert")
         
         

@@ -52,10 +52,10 @@ if(errors_list_critical$err_structure$Status == "Y"){
 }
 ```
 
-<!-- err_date_issue -->
+<!-- err_no_new_data -->
 
-##`r if(errors_list_critical$err_date_issue$Status == "Y"){ paste("No new data! (C)")}`
-`r if(errors_list_critical$err_date_issue$Status == "Y"){paste("No new data! Date in download table is successive of the last date in .dat file")}`
+##`r if(errors_list_critical$err_no_new_data$Status == "Y"){ paste("No new data! (C)")}`
+`r if(errors_list_critical$err_no_new_data$Status == "Y"){paste("No new data! Date in download table is successive of the last date in .dat file")}`
 
 <!-- err_overlap -->
 

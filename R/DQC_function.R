@@ -717,11 +717,11 @@ DQC_function= function(input_dir,
   if(!is.na(flag_date) & flag_date == 1){
     dates_flag_date = c(start_date, recent_date)
     names(dates_flag_date) = c("Download_table_date", "Last_file_date")
-    output_date_issue = list("Y", dates_flag_date)
-    names(output_date_issue) =c("Status", "Values")
+    output_no_new_data = list("Y", dates_flag_date)
+    names(output_no_new_data) =c("Status", "Values")
   }else{
-    output_date_issue = list("N",NA)
-    names(output_date_issue) =c("Status", "Values")
+    output_no_new_data = list("N",NA)
+    names(output_no_new_data) =c("Status", "Values")
   }
   
   
@@ -914,7 +914,7 @@ DQC_function= function(input_dir,
   # output_empty
   # output_logger_number
   # output_structure
-  # output_date_issue
+  # output_no_new_data
   # output_overlap
   # output_missing_record
   # output_restart_record
@@ -924,7 +924,7 @@ DQC_function= function(input_dir,
   errors_output = list(output_empty,
                        output_logger_number,
                        output_structure,
-                       output_date_issue,
+                       output_no_new_data,
                        output_overlap,
                        output_duplicates_rows,
                        output_missing_record,
@@ -936,7 +936,7 @@ DQC_function= function(input_dir,
   names(errors_output) = c("err_empty",
                            "err_logger_number",
                            "err_structure",
-                           "err_no_new_data",# "err_date_issue",
+                           "err_no_new_data",    # "err_date_issue",
                            "err_overlap",
                            "err_duplicates_rows",
                            "err_missing_record",

@@ -322,8 +322,8 @@ for(PROJECT in project_type){
       
       if(hours_diff >= HOURS_OFFLINE & hours_diff%%HOURS_OFFLINE == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
         
-        my_subject = paste("Station:",STATION_NAME,"- Error: Station Offline!")
-        my_body = paste("Error: Last data download:", date_last_modif_file)
+        my_subject = paste(STATION_NAME,"- Station Offline!")
+        my_body = paste("Last data download:", date_last_modif_file)
         
         send.mail(from = sender,
                   to = reciver,
@@ -775,7 +775,7 @@ if(icinga_status != mail_status ){
   if(icinga_status != 0){
 
     my_subject = paste("LOGGERNET doesn't work. All stations were already downloaded!")
-    my_body = paste("Error: any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
+    my_body = paste("Any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
 
     send.mail(from = sender,
               to = reciver,

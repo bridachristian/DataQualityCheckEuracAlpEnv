@@ -830,7 +830,9 @@ DQC_function= function(input_dir,
     # time_tot <- unique(c(date_missing$Date,time_tot)) # don't work! issues whith datatime --> unexpected timezone conversion! Why? 
     time_tot <- as.POSIXct(unique(c(as.character(date_missing$Date), as.character(time_tot))),tz = "Etc/GMT-1") 
     
-    time_missing <- missing_index_date[,2]
+    time_tot = time_tot[order(time_tot)]
+    
+    # time_missing <- missing_index_date[,2]
     time_missing <- date_missing[,2]
     
     

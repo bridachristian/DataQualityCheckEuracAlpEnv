@@ -235,7 +235,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 2
+  t = 1
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)
@@ -370,7 +370,7 @@ for(PROJECT in project_type){
         
         # rm(dwnl_info)
         # DQC_results = DQC_function(input_dir,
-        DQC_results = DQC_function_test2(input_dir,
+        DQC_results = DQC_function(input_dir,
                                          output_dir_data,
                                          output_dir_report,
                                          project_dir,
@@ -425,7 +425,7 @@ for(PROJECT in project_type){
         data_errors = lapply(errors,function(x) x[[2]])
         w_yes = which(status == "Y")
         
-        critical_errors = c("err_empty","err_logger_number","err_structure","err_date_issue","err_overlap","err_missing_record","err_restart_record")
+        critical_errors = c("err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record")
         warning_errors = c("err_date_missing","err_range_alert")
         report_errors = c("err_out_of_range","err_duplicates_rows")
         

@@ -1,6 +1,6 @@
 ---
-title: "Data Quality Check Report"
-author: "Insitute for Alpine Environment, Eurac Research"
+# title: "Data Quality Check Report"
+# author: "Insitute for Alpine Environment, Eurac Research"
 output: html_document
 params:
     report_mydata:                 # dataframe of data processed
@@ -20,9 +20,9 @@ errors_list_report_errors <- params$errors_list_report_errors
 dqc_date <- params$dqc_date
 ```
 
-### Station: **`r  station_name`**
+## Station: **`r  station_name`**
 
-### Data Quality Check : **`r  dqc_date`**
+#### Data Quality Check : **`r  dqc_date`**
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=FALSE}
 # names(errors_list_warning)
@@ -58,11 +58,11 @@ if(errors_list_critical$err_structure$Status == "Y"){
 }
 ```
 
-<!-- err_date_issue -->
+<!-- err_no_new_data -->
 
-##`r if(errors_list_critical$err_date_issue$Status == "Y"){ paste("CRITICAL ERROR! Date issues!")}`
-<!-- `r if(errors_list_critical$err_date_issue$Status == "Y"){paste("Date issue! Date in download table is successive of the last date in .dat file")}` -->
-`r if(errors_list_critical$err_date_issue$Status == "Y"){paste("Date issue! Date download table (DT): ",as.character(errors_list_critical$err_date_issue$Values[1]),". Last date in data file (LT): ",as.character(errors_list_critical$err_date_issue$Values[2]),". Suggestion: LT should be later than BT", sep="")}`
+##`r if(errors_list_critical$err_no_new_data$Status == "Y"){ paste("CRITICAL ERROR! Date issues!")}`
+<!-- `r if(errors_list_critical$err_no_new_data$Status == "Y"){paste("Date issue! Date in download table is successive of the last date in .dat file")}` -->
+`r if(errors_list_critical$err_no_new_data$Status == "Y"){paste("Date issue! Date download table (DT): ",as.character(errors_list_critical$err_no_new_data$Values[1]),". Last date in data file (LT): ",as.character(errors_list_critical$err_no_new_data$Values[2]),". Suggestion: LT should be later than BT", sep="")}`
 
 <!-- err_overlap -->
 
@@ -103,7 +103,7 @@ if(errors_list_critical$err_restart_record$Status == "Y"){
 <!-- err_date_missing -->
 
 ##`r if(errors_list_warning$err_date_missing$Status == "Y"){ paste("WARNING! Missing dates!")}`
-```{r echo=FALSE, warning=FALSE, results='asis'}
+```{r echo=FALSE, warning=FALSE, results='asis',fig.width= 12,fig.height= 6 }
 if(errors_list_warning$err_date_missing$Status == "Y"){ 
   
   time_mydata = as.POSIXct(mydata[, which(colnames(mydata) == "TIMESTAMP")], tz = "Etc/GMT-1")
@@ -155,33 +155,33 @@ if(errors_list_warning$err_date_missing$Status == "Y"){
 <!-- err_out_of_range -->
 
 ##`r if(errors_list_report_errors$err_out_of_range$Status == "Y"){ paste("WARNING! Values out of physical range!")}`
-```{r echo=FALSE, warning=FALSE, results='asis'}
-if(errors_list_report_errors$err_out_of_range$Status == "Y"){ 
+```{r echo=FALSE, warning=FALSE, results='asis',fig.width= 12,fig.height= 6 }
+if(errors_list_report_errors$err_out_of_range$Status == "Y"){
   table = errors_list_report_errors$err_out_of_range$Values
   # table$Variable = as.factor(table$Variable)
   vars = unique(table$Variable)
-  
+
   time_mydata = as.POSIXct(mydata[, which(colnames(mydata) == "TIMESTAMP")], tz = "Etc/GMT-1")
-  
+
   for(i in 1:length(vars)){
-    
+
     tab_var_v0 = table[which(table$Variable == vars[i]),]
-    
+
     tab_var = tab_var_v0
-    tab_var$From =  as.POSIXct(tab_var$From,tz = "Etc/GMT-1")
-    tab_var$To =  as.POSIXct(tab_var$To,tz = "Etc/GMT-1")
+    tab_var$From =  as.POSIXct(tab_var$From,tz = "Etc/GMT-1")-15*60/2
+    tab_var$To =  as.POSIXct(tab_var$To,tz = "Etc/GMT-1")+15*60/2
     tab_var$Hours =  as.numeric(tab_var$Hours)
-    
+
     tab_var$Error = factor(tab_var$Error,levels = c("NaN_value","Too_low","Too_high"))
-    
+
     mydata_var = mydata[,vars[i]]
     mydata_df = data.frame(time_mydata, mydata_var)
     colnames(mydata_df) = c("TIMESTAMP",vars[i])
-    
+
     melt_mydata = melt(mydata_df,id.var = "TIMESTAMP")
-    
+
     g1 = ggplot()+
-      geom_rect(data = tab_var,aes(xmin = From, xmax = To, ymin = -Inf, ymax = Inf, fill = Error),alpha = 0.25)+
+      geom_rect(data = tab_var,aes(xmin = From, xmax = To, ymin = -Inf, ymax = Inf, fill = Error),alpha = 0.5)+
       geom_line(data = melt_mydata, aes(x = TIMESTAMP, y = value))+
       scale_fill_manual(name = "",values = c("grey20","blue", "red"), labels = c("NaN_value","Too_low","Too_high"),drop = F)+
       ggtitle(paste("Variable:", vars[i]),subtitle = paste(paste("From:",min(melt_mydata$TIMESTAMP), "to", max(melt_mydata$TIMESTAMP)),
@@ -193,23 +193,24 @@ if(errors_list_report_errors$err_out_of_range$Status == "Y"){
       theme_bw()+
       theme(panel.grid.major = element_blank(),
             panel.grid.minor = element_blank())
-    
+
     # d1 = data.frame(c(1,2),c(2,5))
     # colnames(d1) = c("x","y")
     # g1 = ggplot(data = d1, aes(x,y))+geom_point()+geom_line()+ggtitle(vars[i])
     print(g1)
-    
-    # print(kable(tab_var[order(tab_var$From),],row.names = F),type = "html")
-    print(xtable(tab_var_v0[order(tab_var_v0$From),],row.names = F),type = "html",include.rownames=FALSE)
-    
+
+    print(kable(tab_var_v0[order(tab_var_v0$From),],row.names = F),type = "html")
+    # print(datatable(tab_var_v0[order(tab_var_v0$From),]),type = "html",include.rownames=FALSE)
+
   }
-  
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
+
   # kable(errors_list_report_errors$err_out_of_range$Values)
 }
 ```
+

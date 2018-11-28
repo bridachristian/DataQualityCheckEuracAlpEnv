@@ -602,11 +602,11 @@ for(PROJECT in project_type){
 
      if(any(status == "Y")){
        paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
-        link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar(main_dir)), output_file_report,sep = "")
+        link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
      }else{
        link = NULL
      }
-        report_info = c(STATION_NAME,2,status_final, link)
+        report_info = c(STATION_NAME,0,status_final, link)
         names(report_info) = c("Station",
                               "Offline",
                               "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
@@ -708,7 +708,7 @@ for(PROJECT in project_type){
                               "report_link")
         
         warning(paste(STATION_NAME, "already analyzed!"))
-        file_already_processed = c(file_already_processed,FILE)
+        # file_already_processed = c(file_already_processed,FILE)
         final_info = c(STATION_NAME, "Already analyzed",
                        NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                        NA,
@@ -761,7 +761,7 @@ for(PROJECT in project_type){
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
   }
-  
+  report_dataframe = as.data.frame(report_dataframe)
   loggernet_status = rbind(loggernet_status,loggernet_status_prj)
   
   
@@ -769,7 +769,7 @@ for(PROJECT in project_type){
   
   
    input_final = paste(project_dir,"Rmd/DQC_Report_overview.Rmd",sep = "")
-   date_DQC 
+   # date_DQC 
    output_file_final =  paste(PROJECT,"_Report_",
                               format(date_DQC,format = "%Y"),
                               format(date_DQC,format = "%m"),
@@ -777,11 +777,11 @@ for(PROJECT in project_type){
    
    output_dir_final = output_dir_report
   # 
-  # rmarkdown::render(input = input_final,
-  #                   output_file = output_file_final ,
-  #                   output_dir = output_dir_final,
-  #                   params = list(report_start = date_DQC ,
-  #                                 report_dataframe = report_dataframe))
+  rmarkdown::render(input = input_final,
+                    output_file = output_file_final ,
+                    output_dir = output_dir_final,
+                    params = list(date_DQC = date_DQC ,
+                                  report_dataframe = report_dataframe))
   
   
   # ..... Data preparation for Database .....................................................................................................................................

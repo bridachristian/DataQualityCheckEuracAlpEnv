@@ -480,13 +480,13 @@ for(PROJECT in project_type){
             icinga_station = STATION_NAME
             icinga_status = 2
             # icinga_error = critical_errors[status[critical_errors] == "Y"]
-            icinga_text = paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
+            icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")        # path --> external definition
           }else{
             if(any(status[warning_errors] == "Y")){
               icinga_station = STATION_NAME
               icinga_status = 1
               # icinga_error = paste(warning_errors[status[warning_errors] == "Y"],collapse = " - ")
-              icinga_text = paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
+              icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")      # path --> external definition
               
             }
           }

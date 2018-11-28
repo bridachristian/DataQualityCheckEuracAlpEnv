@@ -167,8 +167,8 @@ if(errors_list_report_errors$err_out_of_range$Status == "Y"){
     tab_var_v0 = table[which(table$Variable == vars[i]),]
 
     tab_var = tab_var_v0
-    tab_var$From =  as.POSIXct(tab_var$From,tz = "Etc/GMT-1")
-    tab_var$To =  as.POSIXct(tab_var$To,tz = "Etc/GMT-1")
+    tab_var$From =  as.POSIXct(tab_var$From,tz = "Etc/GMT-1")-15*60/2
+    tab_var$To =  as.POSIXct(tab_var$To,tz = "Etc/GMT-1")+15*60/2
     tab_var$Hours =  as.numeric(tab_var$Hours)
 
     tab_var$Error = factor(tab_var$Error,levels = c("NaN_value","Too_low","Too_high"))
@@ -179,6 +179,7 @@ if(errors_list_report_errors$err_out_of_range$Status == "Y"){
 
     melt_mydata = melt(mydata_df,id.var = "TIMESTAMP")
     melt_mydata$value = as.numeric(melt_mydata$value)
+    
     
     g1 = ggplot()+
       geom_rect(data = tab_var,aes(xmin = From, xmax = To, ymin = -Inf, ymax = Inf, fill = Error),alpha = 0.5)+

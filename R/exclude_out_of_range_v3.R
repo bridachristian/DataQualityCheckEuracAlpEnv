@@ -14,7 +14,7 @@
 #' exclude_out_of_range(DATA = mydata, RANGE_DIR = RANGE_DIR, RANGE_FILE = "Range.csv")
 #'
 
-exclude_out_of_range_v2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT = "%Y-%m-%d %H:%M",RECORD_HEADER, RANGE_DIR, RANGE_FILE){
+exclude_out_of_range_v3 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT = "%Y-%m-%d %H:%M",RECORD_HEADER, RANGE_DIR, RANGE_FILE){
   options(scipen = 999)
   range = read.csv(paste(RANGE_DIR, RANGE_FILE,sep = ""),stringsAsFactors = FALSE)          # <- import table that contains for each variable the permissible range
   

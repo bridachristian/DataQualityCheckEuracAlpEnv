@@ -222,7 +222,6 @@ for(PROJECT in project_type){
   ############################################
   
   final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
-  
   colnames(final_dataframe) = c("Station", "Status",
                                 "flag_empty","flag_logger_number", "flag_error_df","flag_date",
                                 "flag_duplicates_rows","flag_overlap","flag_missing_records","flag_missing_dates",
@@ -230,10 +229,17 @@ for(PROJECT in project_type){
                                 "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates", "flag_missing_records_new",   
                                 "Report_link", "Data_folder", "File_name")
   
+  report_dataframe = matrix(ncol = 14, nrow = length(files_available_project))
+  colnames(report_dataframe) = c("Station",
+                         "Offline",
+                         "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                         "err_date_missing","err_range_alert",
+                         "err_out_of_range","err_duplicates_rows",
+                         "report_link")
   
   
   
-  report_start = Sys.time()
+  # report_start = Sys.time()
   
   t = 1
   
@@ -246,7 +252,8 @@ for(PROJECT in project_type){
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
-                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type")))
+                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type",
+                                             "report_info", "report_dataframe")))
     
     
     
@@ -270,6 +277,8 @@ for(PROJECT in project_type){
       if(dir.exists(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))){
         output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
         output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
+        output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/", sep = "")
+        
       }else{
         dir.create(paste(data_output_dir,STATION_NAME,"/Reports/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
@@ -278,7 +287,7 @@ for(PROJECT in project_type){
         dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
         output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
         output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
-        
+        output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/", sep = "")
       }
     }else{
       dir.create(paste(data_output_dir,STATION_NAME,"/", sep = ""))
@@ -289,6 +298,8 @@ for(PROJECT in project_type){
       dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
       output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
       output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
+      output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/", sep = "")
+      
     }
     
     if(dir.exists(paste(database_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store mini files for database organized by station name 
@@ -431,6 +442,8 @@ for(PROJECT in project_type){
         
         dqc_date = date_DQC
         
+        df_status = data.frame(STATION_NAME,t(status))
+        
         if(any(status == "Y")){
           
           station_name = STATION_NAME
@@ -447,7 +460,7 @@ for(PROJECT in project_type){
           
           issue_report_RMD = paste(project_dir,"/Rmd/DQC_Reports.Rmd",sep = "")
           
-          issue_file_dir_station = "/shared/test_christian/Stations_Data/DQC/report_test/" # dxadssa
+          issue_file_dir_station = output_dir_report_new
           
           input =  issue_report_RMD 
           output_file = output_file_report
@@ -581,7 +594,25 @@ for(PROJECT in project_type){
         # a qui!
         # Report su script esterno! Nella funzione DQC_Function prevedere il salvataggio e l' append degli errori!
         
+        status_final = status
+        status_final[which(status_final == "Y")] = 1
+        status_final[which(status_final == "N")] = 0
+        status_final = status_final[c(critical_errors,warning_errors, report_errors)]
         
+
+     if(any(status == "Y")){
+       paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
+        link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar(main_dir)), output_file_report,sep = "")
+     }else{
+       link = NULL
+     }
+        report_info = c(STATION_NAME,2,status_final, link)
+        names(report_info) = c("Station",
+                              "Offline",
+                              "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                              "err_date_missing","err_range_alert",
+                              "err_out_of_range","err_duplicates_rows",
+                              "report_link")
         
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
@@ -668,9 +699,16 @@ for(PROJECT in project_type){
         # }
         # 
         # ~~~~~~~
+        report_info = c(STATION_NAME,1,rep(NA,11), NA)
+        names(report_info) = c("Station",
+                              "Offline",
+                              "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                              "err_date_missing","err_range_alert",
+                              "err_out_of_range","err_duplicates_rows",
+                              "report_link")
         
         warning(paste(STATION_NAME, "already analyzed!"))
-        # file_already_processed = c(file_already_processed,FILE)
+        file_already_processed = c(file_already_processed,FILE)
         final_info = c(STATION_NAME, "Already analyzed",
                        NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                        NA,
@@ -680,6 +718,13 @@ for(PROJECT in project_type){
       }
       
     }else{
+      report_info = c(STATION_NAME,2,rep(NA,11), NA)
+      names(report_info) = c("Station",
+                            "Offline",
+                            "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                            "err_date_missing","err_range_alert",
+                            "err_out_of_range","err_duplicates_rows",
+                            "report_link")
       final_info = c(STATION_NAME, "Not analyzed",
                      NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                      NA,
@@ -690,6 +735,8 @@ for(PROJECT in project_type){
     
     # final_dataframe = rbind(final_dataframe,final_info)
     final_dataframe[t,] = final_info
+    
+    report_dataframe[t,] = report_info
     
     loggernet_status_prj[t,1] = final_info[1]
     loggernet_status_prj[t,2] = final_info[2]
@@ -714,30 +761,32 @@ for(PROJECT in project_type){
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
   }
+  
   loggernet_status = rbind(loggernet_status,loggernet_status_prj)
   
   
   # ..... Final Report .....................................................................................................................................
   
   
-  # input_final = paste(project_dir,"Rmd/DQC_Final_Report_Hourly_2.Rmd",sep = "")
-  # output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
-  #                            substring(report_start,6,7),
-  #                            substring(report_start,9,10),
-  #                            substring(report_start,12,13),
-  #                            substring(report_start,15,16),".html", sep = "")
-  # output_dir_final = output_dir_report
+   input_final = paste(project_dir,"Rmd/DQC_Report_overview.Rmd",sep = "")
+   date_DQC 
+   output_file_final =  paste(PROJECT,"_Report_",
+                              format(date_DQC,format = "%Y"),
+                              format(date_DQC,format = "%m"),
+                              format(date_DQC,format = "%d"),".html", sep = "")
+   
+   output_dir_final = output_dir_report
   # 
   # rmarkdown::render(input = input_final,
   #                   output_file = output_file_final ,
   #                   output_dir = output_dir_final,
-  #                   params = list(report_start = report_start ,
-  #                                 final_dataframe = final_dataframe))
+  #                   params = list(report_start = date_DQC ,
+  #                                 report_dataframe = report_dataframe))
   
   
   # ..... Data preparation for Database .....................................................................................................................................
   
-  
+  # MANDARE MAIL !!!!
   print("--------------------------------------------------------------------------------------------------")
   
 }

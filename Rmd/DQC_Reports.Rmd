@@ -138,9 +138,9 @@ if(errors_list_warning$err_date_missing$Status == "Y"){
             panel.grid.minor = element_blank())
   
     
-  print(g0)
+  knit_print(g0)
 
-  # DT::datatable(errors_list_warning$err_date_missing$Values)
+  # print(datatable(errors_list_warning$err_date_missing$Values))
   kable(errors_list_warning$err_date_missing$Values)
 }
 ```
@@ -155,7 +155,7 @@ if(errors_list_warning$err_date_missing$Status == "Y"){
 <!-- err_out_of_range -->
 
 ##`r if(errors_list_report_errors$err_out_of_range$Status == "Y"){ paste("WARNING! Values out of physical range!")}`
-```{r echo=FALSE, warning=FALSE, results='asis',fig.width= 12,fig.height= 6 }
+```{r echo=FALSE, warning=FALSE, results='asis',fig.width= 12,fig.height= 6}
 if(errors_list_report_errors$err_out_of_range$Status == "Y"){
   table = errors_list_report_errors$err_out_of_range$Values
   # table$Variable = as.factor(table$Variable)
@@ -164,12 +164,11 @@ if(errors_list_report_errors$err_out_of_range$Status == "Y"){
   time_mydata = as.POSIXct(mydata[, which(colnames(mydata) == "TIMESTAMP")], tz = "Etc/GMT-1")
 
   for(i in 1:length(vars)){
-
     tab_var_v0 = table[which(table$Variable == vars[i]),]
 
     tab_var = tab_var_v0
-    tab_var$From =  as.POSIXct(tab_var$From,tz = "Etc/GMT-1")-15*60/2
-    tab_var$To =  as.POSIXct(tab_var$To,tz = "Etc/GMT-1")+15*60/2
+    tab_var$From =  as.POSIXct(tab_var$From,tz = "Etc/GMT-1")
+    tab_var$To =  as.POSIXct(tab_var$To,tz = "Etc/GMT-1")
     tab_var$Hours =  as.numeric(tab_var$Hours)
 
     tab_var$Error = factor(tab_var$Error,levels = c("NaN_value","Too_low","Too_high"))
@@ -179,7 +178,8 @@ if(errors_list_report_errors$err_out_of_range$Status == "Y"){
     colnames(mydata_df) = c("TIMESTAMP",vars[i])
 
     melt_mydata = melt(mydata_df,id.var = "TIMESTAMP")
-
+    melt_mydata$value = as.numeric(melt_mydata$value)
+    
     g1 = ggplot()+
       geom_rect(data = tab_var,aes(xmin = From, xmax = To, ymin = -Inf, ymax = Inf, fill = Error),alpha = 0.5)+
       geom_line(data = melt_mydata, aes(x = TIMESTAMP, y = value))+
@@ -199,10 +199,12 @@ if(errors_list_report_errors$err_out_of_range$Status == "Y"){
     # g1 = ggplot(data = d1, aes(x,y))+geom_point()+geom_line()+ggtitle(vars[i])
     print(g1)
 
-    print(kable(tab_var_v0[order(tab_var_v0$From),],row.names = F),type = "html")
-    # print(datatable(tab_var_v0[order(tab_var_v0$From),]),type = "html",include.rownames=FALSE)
-
-  }
+    # print(xtable(tab_var_v0[order(tab_var_v0$From),]),type = "html")
+    cat(hwrite(tab_var_v0[order(tab_var_v0$From),], border=0, center=TRUE,  width='1000px', row.names=FALSE, row.style=list('font-weight:bold')))
+    # print(kable(tab_var_v0[order(tab_var_v0$From),],row.names = F),type = "html")
+    # print( htmltools::tagList(datatable(tab_var_v0[order(tab_var_v0$From),])))
+    cat (c("------------------------------------------------------------------------"),sep = "\n")
+}
 
 
 

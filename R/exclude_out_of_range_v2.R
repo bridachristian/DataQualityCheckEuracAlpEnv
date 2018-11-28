@@ -188,6 +188,7 @@ exclude_out_of_range_v2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEA
   df_out_of_range = rbind(df_lower_merge,df_upper_merge,df_NA_merge)
   df_out_of_range = df_out_of_range[order(df_out_of_range$From),]
   df_out_of_range = df_out_of_range[,c(2,1,3:ncol(df_out_of_range))]
+  df_out_of_range[,3:4] = format(df_out_of_range[,3:4],format = "%Y-%m-%d %H:%M" )
   
   if(length(to_add) != 0){
     df_to_add = data.frame(to_add, 

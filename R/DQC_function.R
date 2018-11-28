@@ -902,7 +902,7 @@ DQC_function= function(input_dir,
   
   
   if((!is.na(flag_out_of_range) & flag_out_of_range == 1)){
-    out_of_range_table[,3:4] = format(out_of_range_table[,3:4], format = datetime_format)
+    # out_of_range_table[,3:4] = format(out_of_range_table[,3:4], format = datetime_format)
     output_out_of_range = list("Y", out_of_range_table)
     names(output_out_of_range) =c("Status", "Values")
   }else{

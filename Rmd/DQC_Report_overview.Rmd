@@ -20,6 +20,9 @@ Report start at **`r date_DQC`**
 mydf = report_dataframe[,-ncol(report_dataframe)]
 orig_mydf = mydf
 
+# colnames(mydf)  ######
+# mydf[1,8] = 1   ######
+
 for(i in 2:(ncol(mydf))){
   mydf[,i] = as.numeric(mydf[,i])
   orig_mydf[,i] = as.numeric(orig_mydf[,i])
@@ -27,8 +30,27 @@ for(i in 2:(ncol(mydf))){
 
 sum_col = apply(mydf[,c(2:ncol(mydf))],1,sum)
 
+# -----------------------
 
-# apply(mydf[,2:8],1,function(x) any(x == 1)) 
+j=1
+for(j in 1:nrow(mydf)){ 
+  
+  if(mydf[j,2] == 2){
+    mydf[j,3:ncol(mydf)] = NA
+  }else{
+    w = which(mydf[j,] == 1)
+    if(w < 7 ){
+      mydf[j,(w+1):ncol(mydf)] = NA
+    }else{
+      if (w %in% c(8,9)){
+        mydf[j,10:ncol(mydf)] = NA
+      }
+    }
+  }
+}
+# -----------------------
+
+mydf[is.na(mydf)] = "white"
 
 mydf$Offline[mydf$Offline == 1] = "firebrick1"
 mydf$Offline[mydf$Offline == 2] = "grey"
@@ -85,8 +107,8 @@ colnames(mydf) = c("Station",
 
 
 
-mycolors = c("grey","firebrick1", "forestgreen", "gold", "white")
-mycolors_value = c("Not evaluated!", "Critical!", "OK!","Warnings!", "---")
+mycolors = c("grey","firebrick1",  "gold","forestgreen", "white")
+mycolors_value = c("Not evaluated!", "Critical!", "Warnings!","OK!", "---")
 
 melt_final = melt(mydf,id.vars = "Station")
 melt_final$value = factor(melt_final$value,levels = mycolors)

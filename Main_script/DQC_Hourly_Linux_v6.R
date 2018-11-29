@@ -65,7 +65,7 @@ main_dir = "/shared/"
 
 project_type = c("LTER","MONALISA")
 
-PROJECT = "MONALISA" # Possible project: "LTER"; "MONALISA";
+PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are

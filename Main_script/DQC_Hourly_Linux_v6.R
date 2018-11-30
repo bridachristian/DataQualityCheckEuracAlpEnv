@@ -108,8 +108,9 @@ reciver = mail_config_info$reciver
 my_smtp = mail_config_info$my_smtp
 # -------------------------------
 
-
-file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
+if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
+  file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
+}
 
 for(PROJECT in project_type){
   data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files

@@ -87,6 +87,7 @@ warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 HOURS_OFFLINE = 24       # <- no data update since 24h --> station broken?
+# HOURS_OFFLINE = 1       # <- no data update since 24h --> station broken?
 LOGGERNET_OFFLINE = 1    # <. all station offline since 1h --> loggernet doesn't work!
 
 date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
@@ -107,8 +108,9 @@ reciver = mail_config_info$reciver
 my_smtp = mail_config_info$my_smtp
 # -------------------------------
 
-
-file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
+if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
+  file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
+}
 
 for(PROJECT in project_type){
   data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files

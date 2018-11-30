@@ -119,8 +119,8 @@ if(errors_list_warning$err_date_missing$Status == "Y"){
   
   table = errors_list_warning$err_date_missing$Values
   
-  table$From = as.POSIXct(as.character(table$From),tz = "Etc/GMT-1")
-  table$To = as.POSIXct(as.character(table$To),tz = "Etc/GMT-1")
+  table$From = as.POSIXct(as.character(table$From),tz = "Etc/GMT-1")-15*60/2
+  table$To = as.POSIXct(as.character(table$To),tz = "Etc/GMT-1")+15*60/2
   
   g0 = ggplot()+
     geom_rect(data = table,aes(xmin = From, xmax = To, ymin = -Inf, ymax = Inf),alpha = 0.25)+

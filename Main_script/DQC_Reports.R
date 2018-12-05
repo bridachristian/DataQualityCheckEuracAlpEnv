@@ -814,8 +814,8 @@ for(PROJECT in project_type){
   my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
   
   send.mail(from = sender,
-            # to = reciver,
-            to = "Christian.Brida@eurac.edu",
+            to = reciver,
+            # to = "Christian.Brida@eurac.edu",
             subject = my_subject,
             body = my_body,
             smtp = my_smtp,

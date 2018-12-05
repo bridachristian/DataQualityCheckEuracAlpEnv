@@ -14,56 +14,56 @@ print("-------------------------------------------------------------------------
 print(paste("Data Quality Check:",Sys.time()))
 
 # ..... Libraries .....................................................................................................................................
-library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-library("DataQualityCheckEuracAlpEnv")
-install_github("alexsanjoseph/compareDF")
-library(compareDF)
-
-library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-
-library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-
-library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(xtable, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-library(dygraphs, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-library(xts, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-
-# install.packages("hwriter", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
-
-# install.packages("hwriter" )
-# 
-# library(devtools)
+# library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 # install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 # library("DataQualityCheckEuracAlpEnv")
 # install_github("alexsanjoseph/compareDF")
 # library(compareDF)
 # 
-# library(zoo)
-# library(knitr)
-# library(ggplot2)
-# library(reshape2)
-# library(DT)
-# library(htmltools)
-# library(rmarkdown)
-# library(yaml)
-# library(highr)
+# library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 # 
-# library(mailR)
-# library(XML)
-# library(xtable)
-# library(dygraphs)
-# library(xts)
-# library(hwriter)
+# library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# 
+# library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(xtable, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+# library(dygraphs, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+# library(xts, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+# library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+
+# install.packages("hwriter", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
+
+# install.packages("hwriter" )
+# 
+library(devtools)
+install_github("bridachristian/DataQualityCheckEuracAlpEnv")
+library("DataQualityCheckEuracAlpEnv")
+install_github("alexsanjoseph/compareDF")
+library(compareDF)
+
+library(zoo)
+library(knitr)
+library(ggplot2)
+library(reshape2)
+library(DT)
+library(htmltools)
+library(rmarkdown)
+library(yaml)
+library(highr)
+
+library(mailR)
+library(XML)
+library(xtable)
+library(dygraphs)
+library(xts)
+library(hwriter)
 
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
@@ -71,10 +71,14 @@ library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/"
 
 # ..... Params section .....................................................................................................................................
 
+# main_dir = "Z:/"
 main_dir = "/shared/"
+
+main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
+main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
+
 # main_dir = "/shared/test_christian/"
 # main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
-
 
 project_type = c("LTER","MONALISA")
 
@@ -264,7 +268,7 @@ for(PROJECT in project_type){
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
                                              "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type",
-                                             "report_info", "report_dataframe")))
+                                             "report_info", "report_dataframe","main_dir_mapping_in","main_dir_mapping_out")))
     
     
     
@@ -614,7 +618,8 @@ for(PROJECT in project_type){
 
      if(any(status == "Y")){
        paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
-        link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
+       link = paste(main_dir_mapping_out, substring(output_dir_report_new,nchar(main_dir_mapping_in)), output_file_report,sep = "")
+       # link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
      }else{
        link = NULL
      }
@@ -801,11 +806,13 @@ for(PROJECT in project_type){
   # MANDARE MAIL !!!!
   print("--------------------------------------------------------------------------------------------------")
   
-  my_subject = paste(PROJECT,"weekly report.")
-  my_body = paste(output_dir_final,output_file_final)
-     
+  my_subject = paste(PROJECT,"report")
+  my_body = paste(output_dir_final,output_file_final,sep="")
+  # my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
+  
     send.mail(from = sender,
-              to = reciver,
+              # to = reciver,
+              to = "Christian.Brida@eurac.edu",
               subject = my_subject,
               body = my_body,
               smtp = my_smtp,

@@ -69,8 +69,9 @@ if(errors_list_critical$err_structure$Status == "Y"){
 ##`r if(errors_list_critical$err_overlap$Status == "Y"){ paste("CRITICAL ERROR! Overlap!")}`
 ```{r echo=FALSE}
 if(errors_list_critical$err_overlap$Status == "Y"){ 
-  df_overlap  = data.frame("overlap:",errors_list_critical$err_overlap$Values)
-  colnames(df_overlap) = c("", "Date")
+  # df_overlap  = data.frame("overlap:",errors_list_critical$err_overlap$Values)
+  # colnames(df_overlap) = c("", "Date")
+  df_overlap = errors_list_critical$err_overlap$Values
   # DT::datatable(df_overlap,rownames = F)
   kable(df_overlap,rownames = F)
 }

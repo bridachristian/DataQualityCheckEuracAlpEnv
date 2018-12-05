@@ -247,11 +247,11 @@ for(PROJECT in project_type){
   
   report_dataframe = matrix(ncol = 14, nrow = length(files_available_project))
   colnames(report_dataframe) = c("Station",
-                         "Offline",
-                         "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
-                         "err_date_missing","err_range_alert",
-                         "err_out_of_range","err_duplicates_rows",
-                         "report_link")
+                                 "Offline",
+                                 "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                                 "err_date_missing","err_range_alert",
+                                 "err_out_of_range","err_duplicates_rows",
+                                 "report_link")
   
   
   
@@ -398,25 +398,25 @@ for(PROJECT in project_type){
         # rm(dwnl_info)
         # DQC_results = DQC_function(input_dir,
         DQC_results = DQC_function(input_dir,
-                                         output_dir_data,
-                                         output_dir_report,
-                                         project_dir,
-                                         data_from_row,
-                                         header_row_number,
-                                         datetime_header,
-                                         datetime_format,
-                                         datetime_sampling,
-                                         record_header,
-                                         range_file,
-                                         write_output_files,
-                                         write_output_report,
-                                         file_name,
-                                         station_name,
-                                         start_date,
-                                         database_dir,
-                                         logger_info_file,
-                                         record_check,
-                                         output_dir_raw)
+                                   output_dir_data,
+                                   output_dir_report,
+                                   project_dir,
+                                   data_from_row,
+                                   header_row_number,
+                                   datetime_header,
+                                   datetime_format,
+                                   datetime_sampling,
+                                   record_header,
+                                   range_file,
+                                   write_output_files,
+                                   write_output_report,
+                                   file_name,
+                                   station_name,
+                                   start_date,
+                                   database_dir,
+                                   logger_info_file,
+                                   record_check,
+                                   output_dir_raw)
         
         
         mydata = DQC_results[[1]]
@@ -616,21 +616,22 @@ for(PROJECT in project_type){
         status_final[which(status_final == "N")] = 0
         status_final = status_final[c(critical_errors,warning_errors, report_errors)]
         
-
-     if(any(status == "Y")){
-       paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
-       link = paste(main_dir_mapping_out, substring(output_dir_report_new,nchar(main_dir_mapping_in)), output_file_report,sep = "")
-       # link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
-     }else{
-       link = NULL
-     }
+        
+        if(any(status == "Y")){
+          # paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
+          link = paste(main_dir_mapping_out, substring(output_dir_report_new,nchar(main_dir_mapping_in)), output_file_report,sep = "")
+          # link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
+        }else{
+          # link = NULL
+          link = "---"
+        }
         report_info = c(STATION_NAME,0,status_final, link)
         names(report_info) = c("Station",
-                              "Offline",
-                              "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
-                              "err_date_missing","err_range_alert",
-                              "err_out_of_range","err_duplicates_rows",
-                              "report_link")
+                               "Offline",
+                               "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                               "err_date_missing","err_range_alert",
+                               "err_out_of_range","err_duplicates_rows",
+                               "report_link")
         
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
@@ -719,11 +720,11 @@ for(PROJECT in project_type){
         # ~~~~~~~
         report_info = c(STATION_NAME,1,rep(NA,11), NA)
         names(report_info) = c("Station",
-                              "Offline",
-                              "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
-                              "err_date_missing","err_range_alert",
-                              "err_out_of_range","err_duplicates_rows",
-                              "report_link")
+                               "Offline",
+                               "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                               "err_date_missing","err_range_alert",
+                               "err_out_of_range","err_duplicates_rows",
+                               "report_link")
         
         warning(paste(STATION_NAME, "already analyzed!"))
         # file_already_processed = c(file_already_processed,FILE)
@@ -738,11 +739,11 @@ for(PROJECT in project_type){
     }else{
       report_info = c(STATION_NAME,2,rep(NA,11), NA)
       names(report_info) = c("Station",
-                            "Offline",
-                            "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
-                            "err_date_missing","err_range_alert",
-                            "err_out_of_range","err_duplicates_rows",
-                            "report_link")
+                             "Offline",
+                             "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                             "err_date_missing","err_range_alert",
+                             "err_out_of_range","err_duplicates_rows",
+                             "report_link")
       final_info = c(STATION_NAME, "Not analyzed",
                      NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                      NA,
@@ -786,19 +787,20 @@ for(PROJECT in project_type){
   # ..... Final Report .....................................................................................................................................
   
   
-   input_final = paste(project_dir,"Rmd/DQC_Report_overview.Rmd",sep = "")
-   # date_DQC 
-   output_file_final =  paste(PROJECT,"_Report_",
-                              format(date_DQC,format = "%Y"),
-                              format(date_DQC,format = "%m"),
-                              format(date_DQC,format = "%d"),".html", sep = "")
-   
-   output_dir_final = output_dir_report
+  input_final = paste(project_dir,"Rmd/DQC_Report_overview.Rmd",sep = "")
+  # date_DQC 
+  output_file_final =  paste(PROJECT,"_Report_",
+                             format(date_DQC,format = "%Y"),
+                             format(date_DQC,format = "%m"),
+                             format(date_DQC,format = "%d"),".html", sep = "")
+  
+  output_dir_final = output_dir_report
   # 
   rmarkdown::render(input = input_final,
                     output_file = output_file_final ,
                     output_dir = output_dir_final,
-                    params = list(date_DQC = date_DQC ,
+                    params = list(PROJECT = PROJECT,
+                                  date_DQC = date_DQC ,
                                   report_dataframe = report_dataframe))
   
   
@@ -808,17 +810,17 @@ for(PROJECT in project_type){
   print("--------------------------------------------------------------------------------------------------")
   
   my_subject = paste(PROJECT,"report")
-  my_body = paste(output_dir_final,output_file_final,sep="")
-  # my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
+  # my_body = paste(output_dir_final,output_file_final,sep="")
+  my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
   
-    send.mail(from = sender,
-              # to = reciver,
-              to = "Christian.Brida@eurac.edu",
-              subject = my_subject,
-              body = my_body,
-              smtp = my_smtp,
-              authenticate = TRUE,
-              send = TRUE)
+  send.mail(from = sender,
+            # to = reciver,
+            to = "Christian.Brida@eurac.edu",
+            subject = my_subject,
+            body = my_body,
+            smtp = my_smtp,
+            authenticate = TRUE,
+            send = TRUE)
 }
 
 

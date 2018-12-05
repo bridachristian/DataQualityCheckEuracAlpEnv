@@ -726,15 +726,62 @@ DQC_function= function(input_dir,
   
   
   # - - - -  Provide overlaps - - - - - - - - - - - - -   # da modificare! --> no lista date ma periodo (inizio/fine)
+ 
   
   if(!is.na(flag_overlap) & flag_overlap == 1){
-    overlap_date = as.character(as.POSIXct(unique(overlap[,which(colnames(overlap) == datetime_header)]), tz = "Etc/GMT-1"))
-    output_overlap = list("Y", overlap_date)
+    # overlap_date = as.character(as.POSIXct(unique(overlap[,which(colnames(overlap) == datetime_header)]), tz = "Etc/GMT-1"))
+    overlap_date = as.POSIXct(unique(overlap[,which(colnames(overlap) == datetime_header)]), tz = "Etc/GMT-1")
+    
+    min_date = min(overlap_date)
+    max_date = max(overlap_date)
+    
+    seq_date = seq(min_date, max_date, by = datetime_sampling)
+    seq_date = seq(as.POSIXct("2018-11-25 19:15", tz = "Etc/GMT-1"), as.POSIXct("2018-11-28 19:15", tz = "Etc/GMT-1"), by = datetime_sampling)
+    
+    
+    stat = rep(0, times = length(seq_date))
+    stat[which(seq_date %in% overlap_date )] = 1
+    stat = c(0,stat,0)
+    diff = diff(stat)
+    
+    start_overlap = seq_date[which(diff == 1)]
+    end_overlap = seq_date[which(diff == -1)-1]
+    
+    n_record = which(diff == -1)-which(diff == 1)
+    
+    hour_overlap =  difftime(time1 = end_overlap,time2 = start_overlap,units = "hours")
+    
+    overl_table = data.frame(start_overlap, end_overlap, n_record, hour_overlap)
+    colnames(overl_table) = c("From", "To", "Number of Record", "Hours")
+     
+    output_overlap = list("Y", overl_table)
     names(output_overlap) =c("Status", "Values")
   }else{
-    if(!is.na(flag_new_overlap) & flag_new_overlap == 1){
+    if(!is.na(flag_new_overlap) & flag_new_overlap == 1){                                   #  possibile errore su new overlap --> testare se prende gli overlap corretti!
       overlap_date = as.POSIXct(unique(overlap[,which(colnames(overlap) == datetime_header)]), tz = "Etc/GMT-1")
-      output_overlap = list("Y", overlap_date)
+      min_date = min(overlap_date)
+      max_date = max(overlap_date)
+      
+      seq_date = seq(min_date, max_date, by = datetime_sampling)
+      seq_date = seq(as.POSIXct("2018-11-25 19:15", tz = "Etc/GMT-1"), as.POSIXct("2018-11-28 19:15", tz = "Etc/GMT-1"), by = datetime_sampling)
+      
+      
+      stat = rep(0, times = length(seq_date))
+      stat[which(seq_date %in% overlap_date )] = 1
+      stat = c(0,stat,0)
+      diff = diff(stat)
+      
+      start_overlap = seq_date[which(diff == 1)]
+      end_overlap = seq_date[which(diff == -1)-1]
+      
+      n_record = which(diff == -1)-which(diff == 1)
+      
+      hour_overlap =  difftime(time1 = end_overlap,time2 = start_overlap,units = "hours")
+      
+      overl_table = data.frame(start_overlap, end_overlap, n_record, hour_overlap)
+      colnames(overl_table) = c("From", "To", "Number of Record", "Hours")
+      
+      output_overlap = list("Y", overl_table)
       names(output_overlap) =c("Status", "Values")
     }else{
       output_overlap = list("N", NA)

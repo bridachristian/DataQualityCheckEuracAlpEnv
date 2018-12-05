@@ -41,7 +41,6 @@ library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/"
 # install.packages("hwriter", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
 
 # install.packages("hwriter" )
-# 
 # library(devtools)
 # install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 # library("DataQualityCheckEuracAlpEnv")
@@ -71,10 +70,14 @@ library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/"
 
 # ..... Params section .....................................................................................................................................
 
+# main_dir = "Z:/"
 main_dir = "/shared/"
+
+main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
+main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
+
 # main_dir = "/shared/test_christian/"
 # main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
-
 
 project_type = c("LTER","MONALISA")
 
@@ -125,6 +128,8 @@ my_smtp = mail_config_info$my_smtp
 if(!file.exists(paste(DQC_setting_dir,"lock_report.lock",sep = ""))){
   file.create(paste(DQC_setting_dir,"lock_report.lock",sep = ""))
 }
+
+# -------------------------------# -------------------------------# -------------------------------# -------------------------------# -------------------------------
 
 for(PROJECT in project_type){
   data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
@@ -264,7 +269,7 @@ for(PROJECT in project_type){
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
                                              "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type",
-                                             "report_info", "report_dataframe")))
+                                             "report_info", "report_dataframe","main_dir_mapping_in","main_dir_mapping_out")))
     
     
     
@@ -614,7 +619,8 @@ for(PROJECT in project_type){
 
      if(any(status == "Y")){
        paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
-        link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
+       link = paste(main_dir_mapping_out, substring(output_dir_report_new,nchar(main_dir_mapping_in)), output_file_report,sep = "")
+       # link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
      }else{
        link = NULL
      }
@@ -801,11 +807,13 @@ for(PROJECT in project_type){
   # MANDARE MAIL !!!!
   print("--------------------------------------------------------------------------------------------------")
   
-  my_subject = paste(PROJECT,"weekly report.")
-  my_body = paste(output_dir_final,output_file_final)
-     
+  my_subject = paste(PROJECT,"report")
+  my_body = paste(output_dir_final,output_file_final,sep="")
+  # my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
+  
     send.mail(from = sender,
-              to = reciver,
+              # to = reciver,
+              to = "Christian.Brida@eurac.edu",
               subject = my_subject,
               body = my_body,
               smtp = my_smtp,

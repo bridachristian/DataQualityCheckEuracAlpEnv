@@ -37,8 +37,9 @@ library(xtable, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 library(dygraphs, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 library(xts, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 
-# install.packages("hwriter", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
+# install.packages("labeling", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
 
 # install.packages("hwriter" )
 # library(devtools)

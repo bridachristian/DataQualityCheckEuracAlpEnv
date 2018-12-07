@@ -1,25 +1,25 @@
 
 
-DQC_function= function(input_dir,
-                        output_dir_data,
-                        output_dir_report,
-                        project_dir,
-                        data_from_row,
-                        header_row_number,
-                        datetime_header,
-                        datetime_format,
-                        datetime_sampling,
-                        record_header,
-                        range_file,
-                        write_output_files,
-                        write_output_report,
-                        file_name,
-                        station_name,
-                        start_date,
-                        database_dir,
-                        logger_info_file,
-                        record_check,
-                        output_dir_raw){
+DQC_function_test= function(input_dir,
+                            output_dir_data,
+                            output_dir_report,
+                            project_dir,
+                            data_from_row,
+                            header_row_number,
+                            datetime_header,
+                            datetime_format,
+                            datetime_sampling,
+                            record_header,
+                            range_file,
+                            write_output_files,
+                            write_output_report,
+                            file_name,
+                            station_name,
+                            start_date,
+                            database_dir,
+                            logger_info_file,
+                            record_check,
+                            output_dir_raw){
   
   # ..... Define flags ..................................................................................................................................
   
@@ -283,7 +283,7 @@ DQC_function= function(input_dir,
               colnames(df_difference) = c("Column", "Row", "Old", "New")
               
               new_missing_index_date_tot = c()
-              
+              new_overlap_tot = c()
               for(k in 1: length(years)){
                 
                 if(file.exists(paste(output_dir_data,file_names[k],sep = ""))){
@@ -360,7 +360,7 @@ DQC_function= function(input_dir,
                     raw_new_duplicated_data = time_to_char(DATA = raw_new_duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
                     
                     new_overlap <- detect_overlap(DATA = new_mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header) 
-                    
+                    new_overlap_tot = rbind(new_overlap_tot, new_overlap)
                     if(length(new_overlap) == 0){
                       
                       flag_new_overlap_tmp = c(flag_new_overlap_tmp,0)
@@ -625,6 +625,7 @@ DQC_function= function(input_dir,
                   flag_missing_records_new = 50
                 }
               }
+              
             }
             
           }
@@ -726,7 +727,7 @@ DQC_function= function(input_dir,
   
   
   # - - - -  Provide overlaps - - - - - - - - - - - - -   # da modificare! --> no lista date ma periodo (inizio/fine)
- 
+  
   
   if(!is.na(flag_overlap) & flag_overlap == 1){
     # overlap_date = as.character(as.POSIXct(unique(overlap[,which(colnames(overlap) == datetime_header)]), tz = "Etc/GMT-1"))
@@ -754,36 +755,36 @@ DQC_function= function(input_dir,
     
     overl_table = data.frame(start_overlap, end_overlap, n_record, hour_overlap)
     colnames(overl_table) = c("From", "To", "Number of Record", "Hours")
-     
+    
     output_overlap = list("Y", overl_table)
     names(output_overlap) =c("Status", "Values")
-  # }else{
-  #   if(!is.na(flag_new_overlap) & flag_new_overlap == 1){                                   #  possibile errore su new overlap --> testare se prende gli overlap corretti!
-  #     overlap_date = as.POSIXct(unique(overlap[,which(colnames(overlap) == datetime_header)]), tz = "Etc/GMT-1")
-  #     min_date = min(overlap_date)
-  #     max_date = max(overlap_date)
-  #     
-  #     seq_date = seq(min_date, max_date, by = datetime_sampling)
-  #     seq_date = seq(as.POSIXct("2018-11-25 19:15", tz = "Etc/GMT-1"), as.POSIXct("2018-11-28 19:15", tz = "Etc/GMT-1"), by = datetime_sampling)
-  #     
-  #     
-  #     stat = rep(0, times = length(seq_date))
-  #     stat[which(seq_date %in% overlap_date )] = 1
-  #     stat = c(0,stat,0)
-  #     diff = diff(stat)
-  #     
-  #     start_overlap = seq_date[which(diff == 1)]
-  #     end_overlap = seq_date[which(diff == -1)-1]
-  #     
-  #     n_record = which(diff == -1)-which(diff == 1)
-  #     
-  #     hour_overlap =  difftime(time1 = end_overlap,time2 = start_overlap,units = "hours")+
-  #     
-  #     overl_table = data.frame(start_overlap, end_overlap, n_record, hour_overlap)
-  #     colnames(overl_table) = c("From", "To", "Number of Record", "Hours")
-  #     
-  #     output_overlap = list("Y", overl_table)
-  #     names(output_overlap) =c("Status", "Values")
+  }else{
+    if(!is.na(flag_new_overlap) & flag_new_overlap == 1){                                   #  possibile errore su new overlap --> testare se prende gli overlap corretti!
+      overlap_date = as.POSIXct(unique(new_overlap_tot[,which(colnames(new_overlap_tot) == datetime_header)]), tz = "Etc/GMT-1")
+      min_date = min(overlap_date)
+      max_date = max(overlap_date)
+      
+      seq_date = seq(min_date, max_date, by = datetime_sampling)
+      seq_date = seq(as.POSIXct("2018-11-25 19:15", tz = "Etc/GMT-1"), as.POSIXct("2018-11-28 19:15", tz = "Etc/GMT-1"), by = datetime_sampling)
+      
+      
+      stat = rep(0, times = length(seq_date))
+      stat[which(seq_date %in% overlap_date )] = 1
+      stat = c(0,stat,0)
+      diff = diff(stat)
+      
+      start_overlap = seq_date[which(diff == 1)]
+      end_overlap = seq_date[which(diff == -1)-1]
+      
+      n_record = which(diff == -1)-which(diff == 1)
+      
+      hour_overlap =  difftime(time1 = end_overlap,time2 = start_overlap,units = "hours")
+        
+      overl_table = data.frame(start_overlap, end_overlap, n_record, hour_overlap)
+      colnames(overl_table) = c("From", "To", "Number of Record", "Hours")
+      
+      output_overlap = list("Y", overl_table)
+      names(output_overlap) =c("Status", "Values")
     }else{
       output_overlap = list("N", NA)
       names(output_overlap) =c("Status", "Values")

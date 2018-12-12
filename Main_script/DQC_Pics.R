@@ -97,8 +97,12 @@ project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is d
 DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
 date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
+dqc_date_write = paste(format(date_DQC,"%Y"),format(date_DQC,"%m"),format(date_DQC,"%d"),format(date_DQC,"%H"),format(date_DQC,"%M"),sep = "")
 
 datetime_pics_format = "%y%m%d%H%M"
+
+warning_pics_RMD = paste(project_dir,"/Rmd/DQC_Warning_Pics.Rmd",sep = "")
+
 mail_file = paste(DQC_setting_dir,"Process/email_status/mail_status.csv",sep = "")
 
 # --- read mail configuration ---
@@ -140,8 +144,10 @@ for(PROJECT in project_type){
     
     STATION_NAME = substring(FOLDER_NAME,u1+1)
     
-    inpur_dir_pics = paste(input_dir,"/", FOLDER_NAME,sep = "")
     
+    #  ---- define path and folders ----
+    
+    inpur_dir_pics = paste(input_dir,"/", FOLDER_NAME,sep = "")
     
     if(dir.exists(paste(data_output_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store data organized by station name
       if(dir.exists(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))){
@@ -184,24 +190,32 @@ for(PROJECT in project_type){
       }
     }
     
+    
+    #  ---- import files and folders ----
+    
     # inpur_dir_pics
     # backup_dir_pics
     # output_dir_pics_new
     # corrupt_dir_pics
+    # warning_file_dir_station
     
     file_raw = list.files(inpur_dir_pics )
     file_raw = file_raw[!grepl(pattern = "Thumbs.db",x = file_raw)] 
     file = list.files(inpur_dir_pics, full.names = T)
     file = file[!grepl(pattern = "Thumbs.db",x = file)] 
     
-    if(length(file) > 0 ){           # 
-      file.copy(from = file,to = paste(backup_dir_pics,"/", file_raw,sep = ""))
+    
+    if(length(file) > 0 ){   
+      output_no_pics = list("N", NA)
+      names(output_no_pics) =c("Status", "Values")
       
+      
+      file.copy(from = file,to = paste(backup_dir_pics,"/", file_raw,sep = ""))
       
       w = which(file.size(file) > 10000)  # move to a specific folder pics corrupted. The treshold on file size is 10 KB (= 10000 B)
       pics_ok = file_raw[w]
       pics_corrupted = file_raw[-w]
-
+      
       if(length(pics_ok) > 0 ){
         file.rename(from = paste(inpur_dir_pics,"/", pics_ok,sep = "") , to = paste(output_dir_pics_new,"/", pics_ok, sep = ""))
       }
@@ -209,22 +223,38 @@ for(PROJECT in project_type){
       if(length(pics_corrupted) > 0 ){
         file.rename(from = paste(inpur_dir_pics,"/", pics_corrupted,sep = ""), to = paste(output_dir_pics_new,"/", pics_corrupted, sep = ""))
         
-        color = substring(pics_corrupted,1,1)
-        d_pics = paste(substring(pics_corrupted,2,nchar(pics_corrupted)-4),"0",sep = "")
-        datetime = as.POSIXct(d_pics,format = datetime_pics_format, tz= "Etc/GMT-1")
+        pics_link = paste(main_dir_mapping_out,"/" ,substring(output_dir_pics_new, nchar(main_dir_mapping_in)+1),"/",pics_corrupted,sep = "")
+        df = data.frame(pics_corrupted, pics_link)
         
-        df = data.frame(pics_corrupted, color, datetime)
-        df = df[order(df$datetime),]
+        ### ordinare df per data immagini! 
+        
+        output_corrupted = list("Y", df)
+        names(output_corrupted) =c("Status", "Values")
+        
+        errors_output = list(output_no_pics,
+                             output_corrupted)
+        names(errors_output) = c("err_no_pics",
+                                 "err_corrupted")
+        
+        
+        input = warning_pics_RMD
+        output_file = paste(STATION_NAME,"_",dqc_date_write,"_pics_corrupted.html",sep = "")
+        output_dir = warning_file_dir_station
+        params_list = list(station_name = STATION_NAME,
+                           errors_output = errors_output,
+                           dqc_date = date_DQC)
+        
+        rmarkdown::render(input = input,
+                          output_file = output_file,
+                          output_dir = output_dir,
+                          params = params_list)
+        
         
         
         
         my_subject = paste(STATION_NAME,"- pics corrupted")
+        my_body = paste(main_dir_mapping_out,"/",substring(output_dir,nchar(main_dir_mapping_in)+1),"/", output_file,sep = "")
         
-        
-        text_body = paste(main_dir_mapping_out,"/" ,substring(output_dir_pics_new, nchar(main_dir_mapping_in)+1),"/",pics_corrupted,sep = "")
-        my_body = paste(text_body,sep = "")
-        # my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
-        # 
         send.mail(from = sender,
                   # to = reciver,
                   to = "Christian.Brida@eurac.edu",
@@ -234,19 +264,41 @@ for(PROJECT in project_type){
                   authenticate = TRUE,
                   send = TRUE)
         
+      }else{
+        output_corrupted = list("N", NA)
+        names(output_corrupted) =c("Status", "Values")
+        
       }
       
-      color = substring(file_raw,1,1)
-      d_pics = paste(substring(file_raw,2,nchar(file_raw)-4),"0",sep = "")
-      datetime = as.POSIXct(d_pics,format = datetime_pics_format, tz= "Etc/GMT-1")
-      corrup = rep(1, times = length(file_raw))
-      corrup[w] = 0
+      # color = substring(file_raw,1,1)
+      # d_pics = paste(substring(file_raw,2,nchar(file_raw)-4),"0",sep = "")
+      # datetime = as.POSIXct(d_pics,format = datetime_pics_format, tz= "Etc/GMT-1")
+      # corrup = rep(1, times = length(file_raw))
+      # corrup[w] = 0
+      # 
+      # df = data.frame(file_raw, color, datetime, corrup)
+      # df = df[order(df$datetime),]
       
-      df = data.frame(file_raw, color, datetime, corrup)
-      df = df[order(df$datetime),]
+      
+    }      
+    output_no_pics = list("Y", NA)
+    names(output_no_pics) =c("Status", "Values")
+    
+    output_corrupted = list("N", NA)
+    names(output_corrupted) =c("Status", "Values")
+    
+    errors_output = list(output_no_pics,
+                         output_corrupted)
+    names(errors_output) = c("err_no_pics",
+                             "err_corrupted")
+    
+    # completare con   verifica ultimo downlaoad --> controllare nella cartella di output quale e`  il file piu aggiornato!
+    
+    
+    
+    
 
-      
-    }
+    
   }
   
   # MANDARE MAIL !!!!

@@ -1,0 +1,66 @@
+---
+output: html_document
+params:
+  station_name: # sasdad
+  errors_output: # sasdad
+  dqc_date: # sasdad
+
+---
+
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
+
+station_name <- params$station_name
+errors_output <- params$errors_output
+dqc_date <- params$dqc_date
+
+```
+
+
+## Station: **`r  station_name`**
+
+##### Data Quality Check : **`r  dqc_date`**
+
+```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=FALSE}
+# names(errors_output )[[1]]
+# 
+# 
+# errors_output$err_corrupted
+
+```
+
+<!-- pics_corrupted -->
+
+##`r if(errors_output$err_corrupted$Status == "Y"){ paste("The following pics are corrupted!")}`
+
+```{r echo=FALSE, warning=FALSE}
+if(errors_output$err_corrupted$Status == "Y"){
+  # knitr::kable(errors_output$info,row.names = FALSE)
+  ff = as.data.frame(errors_output$err_corrupted$Values,stringsAsFactors = F)
+  
+  r_link = ff$pics_link
+  r_link_text =  ff$pics_corrupted
+    
+  # r_link_text =  gsub(pattern = "/",replacement = "\\\\",r_link)
+  #   w1 = which(is.na(r_link_text))
+  # w2 = which(!is.na(r_link_text))
+  
+  
+  
+  ff$pics_link <- paste0("[", r_link_text, "](\\", r_link, ")")
+  
+  # ff$report_link[w2]<- paste(r_link[w2],sep = "")
+  
+  new_ff = as.data.frame(ff$pics_link)
+  colnames(new_ff) = c( "Pics")
+  
+  
+  knitr::kable(new_ff,row.names = FALSE)
+  
+}
+
+
+```
+
+
+
+

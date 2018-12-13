@@ -38,8 +38,9 @@ library(dygraphs, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/
 library(xts, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+library(stringr,lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 
-# install.packages("labeling", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
+install.packages("stringr", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
 
 # install.packages("hwriter" )
 # library(devtools)
@@ -100,6 +101,7 @@ date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GM
 dqc_date_write = paste(format(date_DQC,"%Y"),format(date_DQC,"%m"),format(date_DQC,"%d"),format(date_DQC,"%H"),format(date_DQC,"%M"),sep = "")
 
 datetime_pics_format = "%y%m%d%H%M"
+datetime_pics_format_new = "%Y%m%d%H%M"
 
 warning_pics_RMD = paste(project_dir,"/Rmd/DQC_Warning_Pics.Rmd",sep = "")
 
@@ -203,6 +205,21 @@ for(PROJECT in project_type){
     file_raw = file_raw[!grepl(pattern = "Thumbs.db",x = file_raw)] 
     file = list.files(inpur_dir_pics, full.names = T)
     file = file[!grepl(pattern = "Thumbs.db",x = file)] 
+    
+    # create new_names
+    color = substring(file_raw,1,1)
+    d_pics = paste(substring(file_raw,2,nchar(file_raw)-4),"0",sep = "")
+    datetime = as.POSIXct(d_pics,format = datetime_pics_format, tz= "Etc/GMT-1")
+    
+    d_to_write = format(datetime,format = datetime_pics_format_new)
+    
+    color_new = color
+    color_new[which(color == "I")] = "IR" 
+    color_new[which(color == "R")] = "RGB" 
+
+    file_new_names = paste(STATION_NAME, "_", color_new, "_", d_to_write,".jpg",sep = "")
+    df = data.frame(file_raw, file_new_names, datetime)
+    df = df[order(df$datetime),]
     
     
     if(length(file) > 0 ){   

@@ -211,17 +211,24 @@ for(PROJECT in project_type){
       
       
       file.copy(from = file,to = paste(backup_dir_pics,"/", file_raw,sep = ""))
+      # NB --> file.copy NON sovrascrive !!!!
       
       w = which(file.size(file) > 10000)  # move to a specific folder pics corrupted. The treshold on file size is 10 KB (= 10000 B)
       pics_ok = file_raw[w]
       pics_corrupted = file_raw[-w]
       
       if(length(pics_ok) > 0 ){
-        file.rename(from = paste(inpur_dir_pics,"/", pics_ok,sep = "") , to = paste(output_dir_pics_new,"/", pics_ok, sep = ""))
+        files_old = list.files(output_dir_pics_new)
+       # files_
+          
+        file.rename(from = paste(inpur_dir_pics,"/", pics_ok,sep = "") , to = paste(output_dir_pics_new,"/", pics_ok, sep = "")) 
+        # NB --> file.rename sovrascrive !!!! --> assicurarsi di copiare nella cartella di ouput solo i file diversi!
       }
       
       if(length(pics_corrupted) > 0 ){
         file.rename(from = paste(inpur_dir_pics,"/", pics_corrupted,sep = ""), to = paste(output_dir_pics_new,"/", pics_corrupted, sep = ""))
+        # NB --> file.rename sovrascrive !!!! --> assicurarsi di copiare nella cartella di ouput solo i file diversi!
+        
         
         pics_link = paste(main_dir_mapping_out,"/" ,substring(output_dir_pics_new, nchar(main_dir_mapping_in)+1),"/",pics_corrupted,sep = "")
         df = data.frame(pics_corrupted, pics_link)

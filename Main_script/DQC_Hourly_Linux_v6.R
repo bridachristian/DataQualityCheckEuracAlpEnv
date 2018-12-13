@@ -423,8 +423,8 @@ for(PROJECT in project_type){
         data_errors = lapply(errors,function(x) x[[2]])
         w_yes = which(status == "Y")
         
-        critical_errors = c("err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record")
-        warning_errors = c("err_date_missing","err_range_alert")
+        critical_errors = c("err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing")
+        warning_errors = c("err_range_alert")
         
         
         dqc_date = date_DQC

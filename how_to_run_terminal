@@ -1,8 +1,43 @@
+#### old
 R < DQC_Multi_Files_Linux.R  --no-save
 
-sudo crontab -e
-30 * * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Hourly_Linux.R'  >> '/shared/loggernet/data_quality_check_test/log/DQC_Hourly_Linux.log' 2>&1
+#### 2018-12-13 12:30
+sudo crontab -e                                                                                                            
 
-59 * * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Split_Database_Linux.R'  >> '/shared/loggernet/data_quality_check_test/log/DQC_Split_Database_Linux.log' 2>&1
+JAR = /usr/lib/jvm/java-1.9.0-openjdk-amd64//bin/jar
+JAVA = /usr/lib/jvm/java-1.9.0-openjdk-amd64//bin/java
+JAVAC = /usr/lib/jvm/java-1.9.0-openjdk-amd64//bin/javac
+JAVAH = /usr/lib/jvm/java-1.9.0-openjdk-amd64//bin/javah
+## JAVA_HOME might be used in the next three.
+## They are for packages 'JavaGD' and 'rJava'
+JAVA_HOME = /usr/lib/jvm/java-1.9.0-openjdk-amd64/
+JAVA_CPPFLAGS = -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
+JAVA_LIBS = -L$(JAVA_HOME)/lib/amd64/server -ljvm
+JAVA_LD_LIBRARY_PATH = $(JAVA_HOME)/lib/amd64/server
+RSTUDIO_PANDOC=/usr/lib/rstudio/bin/pandoc/
+
+#-- Feed DB: run script to split data in DB format and send in a specific folder
+#0 * * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/FeedDB.R'  >> '/shared/Stations_Data/DQC/log/FeedDB.log' 2>&1
+
+#-- Hourly DQC: run script to process data --> total files + alarms
+30 * * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Hourly_Linux_v6.R'  >> '/shared/Stations_Data/DQC/log/DQC_Hourly_Linux_v6.log' 2>&1
+
+#-- Script to check if some scripts are locked --> send mail
+01 * * * * /usr/lib/R/bin/Rscript '/home/cbrida/myscript/check_DQC_locked.R' >> '/home/cbrida/myscript/christian_lock.log' 2>&1
+
+#-- "Weekly" Report: run script that produce reports
+# alle 00:30, 03:30, 06:30 tutti i giorni --> TEST (STOP)
+#30 0,3,6,9,12,15,18,21 * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Reports.R'  >> '/shared/Stations_Data/DQC/log/DQC_Reports.log' 2>&1
+
+#-- alle 23:40 di ogni giorno --> test
+#40 23 * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Reports.R'  >> '/shared/Stations_Data/DQC/log/DQC_Reports.log' 2>&1
+
+#-- alle 00:30 di ogni lunedi --> Weekly report!
+30 0 * * 1 /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Reports.R'  >> '/shared/Stations_Data/DQC/log/DQC_Reports.log' 2>&1
+
+#- -alle 00:01 di ogni giorno -->reset file mail_status --> allow updates on stations issues!
+01 00 * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Reset_Mail_Status.R'  >> '/shared/Stations_Data/DQC/log/DQC_Reset_Mail_Status.log' 2>&1
+
+
 
 

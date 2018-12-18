@@ -62,7 +62,7 @@ if(errors_list_critical$err_structure$Status == "Y"){
 
 ##`r if(errors_list_critical$err_no_new_data$Status == "Y"){ paste("CRITICAL ERROR! Date issues!")}`
 <!-- `r if(errors_list_critical$err_no_new_data$Status == "Y"){paste("Date issue! Date in download table is successive of the last date in .dat file")}` -->
-`r if(errors_list_critical$err_no_new_data$Status == "Y"){paste("Date issue! Date download table (DT): ",as.character(errors_list_critical$err_no_new_data$Values[1]),". Last date in data file (LT): ",as.character(errors_list_critical$err_no_new_data$Values[2]),". Suggestion: LT should be later than BT", sep="")}`
+`r if(errors_list_critical$err_no_new_data$Status == "Y"){paste("Date issue! Date download table (DT): ",as.character(errors_list_critical$err_no_new_data$Values[1]),". Last date in data file (LT): ",as.character(errors_list_critical$err_no_new_data$Values[2]),". Suggestion: LT should be later than DT", sep="")}`
 
 <!-- err_overlap -->
 
@@ -149,9 +149,9 @@ if(errors_list_critical$err_date_missing$Status == "Y"){
 
 <!-- ............... REPORT STATUS ............... -->
 
-<!-- err_out_of_range -->
+<!-- err_duplicates_rows -->
 
-##`r if(errors_list_report_errors$err_duplicates_rows$Status == "Y"){ paste("WARNING! Station", station_name, "has duplicated rows in .dat file")}`
+<!-- ##`r if(errors_list_report_errors$err_duplicates_rows$Status == "Y"){ paste("WARNING! Station", station_name, "has duplicated rows in .dat file")}` -->
 
 <!-- err_out_of_range -->
 

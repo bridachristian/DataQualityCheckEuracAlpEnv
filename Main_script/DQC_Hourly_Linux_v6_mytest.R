@@ -104,7 +104,8 @@ mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 mail_config_info = mail_config_parsing(mail_config)
 
 sender = mail_config_info$sender
-reciver = mail_config_info$reciver   
+# reciver = mail_config_info$reciver
+reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 # -------------------------------
 
@@ -327,8 +328,7 @@ for(PROJECT in project_type){
         my_body = paste("Last data download:", date_last_modif_file)
         
         send.mail(from = sender,
-                  # to = reciver,
-                  to = "Christian.Brida@eurac.edu",
+                  to = reciver,
                   subject = my_subject,
                   body = my_body,
                   smtp = my_smtp,
@@ -523,8 +523,7 @@ for(PROJECT in project_type){
             my_body = paste("\\\\smb.scientificnet.org\\alpenv",icinga_text,sep = "")
             
             send.mail(from = sender,
-                      # to = reciver,
-                      to = "Christian.Brida@eurac.edu",
+                      to = reciver,
                       subject = my_subject,
                       body = my_body,
                       smtp = my_smtp,
@@ -784,8 +783,7 @@ if(icinga_status != mail_status ){
     my_body = paste("Any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
     
     send.mail(from = sender,
-              # to = reciver,
-              to = "Christian.Brida@eurac.edu",
+              to = reciver,
               subject = my_subject,
               body = my_body,
               smtp = my_smtp,

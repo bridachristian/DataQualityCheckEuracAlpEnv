@@ -83,7 +83,7 @@ main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/s
 
 project_type = c("LTER","MONALISA")
 
-PROJECT = "MONALISA" # Possible project: "LTER"; "MONALISA";
+PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
@@ -260,7 +260,7 @@ for(PROJECT in project_type){
   
   # report_start = Sys.time()
   
-  t = 3
+  t = 1
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)

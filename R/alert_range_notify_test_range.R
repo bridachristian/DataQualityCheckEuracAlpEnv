@@ -17,9 +17,9 @@
 alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEADER, RANGE_DIR, RANGE_FILE, STATION){
   
   ######
-  DATA = cbind(DATA,rep(1000, times = nrow(DATA)))
-  # DATA = DATA[,-18]
-  colnames(DATA)[ncol(DATA)] = "pippo"
+  # DATA = cbind(DATA,rep(1000, times = nrow(DATA)))
+  # # DATA = DATA[,-18]
+  # colnames(DATA)[ncol(DATA)] = "pippo"
   ######
   
   options(scipen = 999)
@@ -58,6 +58,7 @@ alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEAD
   to_add = c()
   df_to_add = as.data.frame(matrix(ncol = ncol(range)))
   colnames(df_to_add)  = colnames(range)
+  df_to_add = df_to_add[-1,]
   
   df_upper = as.data.frame(matrix(ncol = 5, nrow = 0))
   colnames(df_upper) = c("Variable", "From", "To", "Hours", "Mean_Value")

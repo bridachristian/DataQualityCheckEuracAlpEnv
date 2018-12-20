@@ -1,6 +1,6 @@
 
 
-DQC_function= function(input_dir,
+DQC_function_NEW= function(input_dir,
                             output_dir_data,
                             output_dir_report,
                             project_dir,

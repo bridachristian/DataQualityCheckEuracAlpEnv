@@ -104,7 +104,7 @@ mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 mail_config_info = mail_config_parsing(mail_config)
 
 sender = mail_config_info$sender
-# reciver = mail_config_info$reciver
+# reciver = mail_config_info$reciver   
 reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 # -------------------------------
@@ -232,7 +232,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 3
+  t = 1
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)
@@ -370,7 +370,7 @@ for(PROJECT in project_type){
         
         # rm(dwnl_info)
         
-        DQC_results = DQC_function(input_dir,
+        DQC_results = DQC_function_NEW(input_dir,
                                    output_dir_data,
                                    output_dir_report,
                                    project_dir,
@@ -517,7 +517,7 @@ for(PROJECT in project_type){
             
             my_subject = paste(icinga_station,"-",error_write)
             
-            
+           
             # my_body = paste("\\smb.scientificnet.org\alpenv",,sep = "")
             
             my_body = paste("\\\\smb.scientificnet.org\\alpenv",icinga_text,sep = "")
@@ -703,7 +703,7 @@ for(PROJECT in project_type){
     loggernet_status_prj[t,2] = final_info[2]
     loggernet_status_prj[t,3] = date_last_modif_file
     
-    
+   
     gc(reset = T)
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -724,7 +724,7 @@ for(PROJECT in project_type){
   }
   loggernet_status = rbind(loggernet_status,loggernet_status_prj)
   
-  
+
   # ..... Final Report .....................................................................................................................................
   
   
@@ -752,15 +752,15 @@ for(PROJECT in project_type){
 
 
 # # non funziona!!!!!
-df_loggernet_status =as.data.frame(loggernet_status)
-df_loggernet_status$Last_modification = as.POSIXct(df_loggernet_status$Last_modification,tz = "Etc/GMT-1")
-
-h_loggernet_last_modif = trunc(max(df_loggernet_status$Last_modification,na.rm = T),units = "hours")
-h_DQC = trunc(date_DQC,units = "hours")
-
-hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_loggernet_last_modif, tz = "Etc/GMT-1",units = "hours"))
-
-
+ df_loggernet_status =as.data.frame(loggernet_status)
+ df_loggernet_status$Last_modification = as.POSIXct(df_loggernet_status$Last_modification,tz = "Etc/GMT-1")
+ 
+ h_loggernet_last_modif = trunc(max(df_loggernet_status$Last_modification,na.rm = T),units = "hours")
+ h_DQC = trunc(date_DQC,units = "hours")
+ 
+ hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_loggernet_last_modif, tz = "Etc/GMT-1",units = "hours"))
+ 
+ 
 if( hours_diff >= LOGGERNET_OFFLINE){
   icinga_station = "LOGGERNET"
   icinga_status = 3
@@ -778,10 +778,10 @@ mail_status = mail_table$Status[which(mail_table$Station == "LOGGERNET")]
 
 if(icinga_status != mail_status ){
   if(icinga_status != 0){
-    
+
     my_subject = paste("LOGGERNET doesn't work. All stations were already downloaded!")
     my_body = paste("Any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
-    
+
     send.mail(from = sender,
               to = reciver,
               subject = my_subject,

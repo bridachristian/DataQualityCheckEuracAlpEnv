@@ -58,7 +58,7 @@ alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEAD
   to_add = c()
   df_to_add = as.data.frame(matrix(ncol = ncol(range)))
   colnames(df_to_add)  = colnames(range)
-  df_to_add = df_to_add[-1,]
+  # df_to_add = df_to_add[-1,]
   
   df_upper = as.data.frame(matrix(ncol = 5, nrow = 0))
   colnames(df_upper) = c("Variable", "From", "To", "Hours", "Mean_Value")
@@ -203,13 +203,15 @@ alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEAD
       
     }else{
       to_add = c(to_add, colnames(new)[k])
-      df_to_add$Variable = colnames(new)[k]
-      df_to_add$min = NA
-      df_to_add$max = NA
-      df_to_add$to_set = 1
-      df_to_add$Alert_min = NA
-      df_to_add$Alert_Max = NA
-      df_to_add[,which(colnames(df_to_add) == STATION)] = 1
+      df_to_add = rbind(df_to_add,rep(NA,times = nrow(df_to_add)))
+      
+      df_to_add$Variable[nrow(df_to_add)] = colnames(new)[k]
+      df_to_add$min[nrow(df_to_add)] = NA
+      df_to_add$max [nrow(df_to_add)]= NA
+      df_to_add$to_set[nrow(df_to_add)] = 1
+      df_to_add$Alert_min[nrow(df_to_add)] = NA
+      df_to_add$Alert_Max [nrow(df_to_add)]= NA
+      df_to_add[nrow(df_to_add),which(colnames(df_to_add) == STATION)] = 1
     }
   }
   
@@ -240,7 +242,7 @@ alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEAD
     #                        rep(NA, times=length(to_add)))
     # colnames(df_to_add) = colnames(range)
     
-    range = rbind(range,df_to_add)
+    range = rbind(range,df_to_add[-1,])
   }
   
   variable_new = to_add

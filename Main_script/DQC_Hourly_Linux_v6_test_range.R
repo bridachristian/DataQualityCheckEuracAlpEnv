@@ -67,8 +67,8 @@ project_type = c("LTER","MONALISA")
 
 PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
-input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
-# input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+# input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are    # TEST!!!!
 
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 # project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
@@ -324,7 +324,7 @@ for(PROJECT in project_type){
       
       if(hours_diff >= HOURS_OFFLINE & hours_diff%%HOURS_OFFLINE == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
         
-        my_subject = paste(STATION_NAME,"- Station Offline!")
+        my_subject = paste("TEST",STATION_NAME,"- Station Offline!")
         my_body = paste("Last data download:", date_last_modif_file)
         
         send.mail(from = sender,
@@ -371,25 +371,25 @@ for(PROJECT in project_type){
         # rm(dwnl_info)
         
         DQC_results = DQC_function_NEW(input_dir,
-                                   output_dir_data,
-                                   output_dir_report,
-                                   project_dir,
-                                   data_from_row,
-                                   header_row_number,
-                                   datetime_header,
-                                   datetime_format,
-                                   datetime_sampling,
-                                   record_header,
-                                   range_file,
-                                   write_output_files,
-                                   write_output_report,
-                                   file_name,
-                                   station_name,
-                                   start_date,
-                                   database_dir,
-                                   logger_info_file,
-                                   record_check,
-                                   output_dir_raw)
+                                       output_dir_data,
+                                       output_dir_report,
+                                       project_dir,
+                                       data_from_row,
+                                       header_row_number,
+                                       datetime_header,
+                                       datetime_format,
+                                       datetime_sampling,
+                                       record_header,
+                                       range_file,
+                                       write_output_files,
+                                       write_output_report,
+                                       file_name,
+                                       station_name,
+                                       start_date,
+                                       database_dir,
+                                       logger_info_file,
+                                       record_check,
+                                       output_dir_raw)
         
         
         mydata = DQC_results[[1]]
@@ -427,6 +427,8 @@ for(PROJECT in project_type){
         critical_errors = c("err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing")
         warning_errors = c("err_range_alert")
         
+        critical_number = seq(1,8,1)
+        warning_number = 9
         
         dqc_date = date_DQC
         
@@ -480,16 +482,22 @@ for(PROJECT in project_type){
           
           # generate a report of warnings
           
+          # icinga_station = STATION_NAME
+          # icinga_status = status_number[] 
+          # # icinga_error = critical_errors[status[critical_errors] == "Y"]
+          # icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")        # path --> external definition
           
           if(any(status[critical_errors] == "Y")){
             icinga_station = STATION_NAME
-            icinga_status = 2
+            # icinga_status = 2 
+            icinga_status = paste("C",critical_number[which(status[critical_errors] == "Y")][1],sep = "")
             # icinga_error = critical_errors[status[critical_errors] == "Y"]
             icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")        # path --> external definition
           }else{
             if(any(status[warning_errors] == "Y")){
               icinga_station = STATION_NAME
-              icinga_status = 1
+              # icinga_status = 1
+              icinga_status = paste("W",warning_number[which(status[warning_errors] == "Y")][1],sep = "")
               # icinga_error = paste(warning_errors[status[warning_errors] == "Y"],collapse = " - ")
               icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")      # path --> external definition
               
@@ -498,6 +506,7 @@ for(PROJECT in project_type){
         }else{
           icinga_station = STATION_NAME
           icinga_status = 0
+          # icinga_status = paste("0",0,sep = "")
           # icinga_error = "None"
           icinga_text = "OK"
         }
@@ -515,9 +524,9 @@ for(PROJECT in project_type){
           if(icinga_status != 0){
             
             
-            my_subject = paste(icinga_station,"-",error_write)
+            my_subject = paste("TEST", icinga_station,"-",error_write)
             
-           
+            
             # my_body = paste("\\smb.scientificnet.org\alpenv",,sep = "")
             
             my_body = paste("\\\\smb.scientificnet.org\\alpenv",icinga_text,sep = "")
@@ -703,7 +712,7 @@ for(PROJECT in project_type){
     loggernet_status_prj[t,2] = final_info[2]
     loggernet_status_prj[t,3] = date_last_modif_file
     
-   
+    
     gc(reset = T)
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -724,7 +733,7 @@ for(PROJECT in project_type){
   }
   loggernet_status = rbind(loggernet_status,loggernet_status_prj)
   
-
+  
   # ..... Final Report .....................................................................................................................................
   
   
@@ -752,18 +761,19 @@ for(PROJECT in project_type){
 
 
 # # non funziona!!!!!
- df_loggernet_status =as.data.frame(loggernet_status)
- df_loggernet_status$Last_modification = as.POSIXct(df_loggernet_status$Last_modification,tz = "Etc/GMT-1")
- 
- h_loggernet_last_modif = trunc(max(df_loggernet_status$Last_modification,na.rm = T),units = "hours")
- h_DQC = trunc(date_DQC,units = "hours")
- 
- hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_loggernet_last_modif, tz = "Etc/GMT-1",units = "hours"))
- 
- 
+df_loggernet_status =as.data.frame(loggernet_status)
+df_loggernet_status$Last_modification = as.POSIXct(df_loggernet_status$Last_modification,tz = "Etc/GMT-1")
+
+h_loggernet_last_modif = trunc(max(df_loggernet_status$Last_modification,na.rm = T),units = "hours")
+h_DQC = trunc(date_DQC,units = "hours")
+
+hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_loggernet_last_modif, tz = "Etc/GMT-1",units = "hours"))
+
+
 if( hours_diff >= LOGGERNET_OFFLINE){
   icinga_station = "LOGGERNET"
-  icinga_status = 3
+  # icinga_status = 3
+  icinga_status = "L10"
   icinga_text = "Loggernet doesn't download any station!"
 }else{
   icinga_station = "LOGGERNET"
@@ -778,10 +788,10 @@ mail_status = mail_table$Status[which(mail_table$Station == "LOGGERNET")]
 
 if(icinga_status != mail_status ){
   if(icinga_status != 0){
-
-    my_subject = paste("LOGGERNET doesn't work. All stations were already downloaded!")
+    
+    my_subject = paste("TEST","LOGGERNET doesn't work. All stations were already downloaded!")
     my_body = paste("Any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
-
+    
     send.mail(from = sender,
               to = reciver,
               subject = my_subject,

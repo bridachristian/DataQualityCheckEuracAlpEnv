@@ -79,7 +79,7 @@ logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.c
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
 download_table_dir <- paste(DQC_setting_dir,"/Process/Download_tables/Hourly/", sep = "")
 
-warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports_test_range.Rmd",sep = "")
+warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  TO REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # issue_counter_dir <- paste(DQC_setting_dir,"/Process/", sep = "")# 
@@ -232,7 +232,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 2
+  t = 10
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)

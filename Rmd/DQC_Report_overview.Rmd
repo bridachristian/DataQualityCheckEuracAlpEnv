@@ -36,9 +36,9 @@ sum_col = apply(mydf[,c(2:ncol(mydf))],1,sum)
 
 # -----------------------
 
-j=19
+j=10
 for(j in 1:nrow(mydf)){ 
-  if(any(mydf[j,] == 1)){
+  if(any(mydf[j,] == 1,na.rm = T)){
     if(mydf[j,2] == 2){
       mydf[j,3:ncol(mydf)] = NA
     }else{

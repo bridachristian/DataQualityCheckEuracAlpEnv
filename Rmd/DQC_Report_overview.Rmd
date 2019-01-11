@@ -100,17 +100,17 @@ mydf[is.na(mydf)] = "white"
 
 colnames(mydf) = c("Station",
                    "Station Offline",
-                   "File is empty",
-                   "Logger number",
-                   "Structure issues",
+                   "File empty",
+                   "Logger wrong number",
+                   "File wrong structure",
                    "No new data",
-                   "Overlap",
-                   "Missing records",
-                   "Missing records before restart",
-                   "Missing dates",
-                   "Warnings Out of range",
-                   "Out of range",
-                   "Duplicated rows")
+                   "Data overlap",
+                   "Data gap, no record",
+                   "Data gap, restart record",
+                   "Data gap",
+                   "Data overrange",
+                   "Data overrange physical",
+                   "Rows duplicated")
 
 
 

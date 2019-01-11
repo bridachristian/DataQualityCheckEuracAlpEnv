@@ -393,7 +393,8 @@ for(PROJECT in project_type){
                                        database_dir,
                                        logger_info_file,
                                        record_check,
-                                       output_dir_raw)
+                                       output_dir_raw,
+                                       use_alert_station_flag)
         
         
         mydata = DQC_results[[1]]

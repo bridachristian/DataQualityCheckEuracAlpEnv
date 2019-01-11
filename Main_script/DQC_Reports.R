@@ -356,7 +356,7 @@ for(PROJECT in project_type){
       
       hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_last_modif_file, tz = "Etc/GMT-1",units = "hours"))
       
-     
+      
       if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
         
         input_dir = input_dir
@@ -389,26 +389,26 @@ for(PROJECT in project_type){
         # rm(dwnl_info)
         # DQC_results = DQC_function(input_dir,
         DQC_results = DQC_function_NEW(input_dir,
-                                   output_dir_data,
-                                   output_dir_report,
-                                   project_dir,
-                                   data_from_row,
-                                   header_row_number,
-                                   datetime_header,
-                                   datetime_format,
-                                   datetime_sampling,
-                                   record_header,
-                                   range_file,
-                                   write_output_files,
-                                   write_output_report,
-                                   file_name,
-                                   station_name,
-                                   start_date,
-                                   database_dir,
-                                   logger_info_file,
-                                   record_check,
-                                   output_dir_raw)
-        
+                                       output_dir_data,
+                                       output_dir_report,
+                                       project_dir,
+                                       data_from_row,
+                                       header_row_number,
+                                       datetime_header,
+                                       datetime_format,
+                                       datetime_sampling,
+                                       record_header,
+                                       range_file,
+                                       write_output_files,
+                                       write_output_report,
+                                       file_name,
+                                       station_name,
+                                       start_date,
+                                       database_dir,
+                                       logger_info_file,
+                                       record_check,
+                                       output_dir_raw,
+                                       use_alert_station_flag)
         
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]
@@ -478,8 +478,6 @@ for(PROJECT in project_type){
           }else{
             report_mydata = NULL
           }
-          
-          report_mydata =  mydata
           
           params_list = list(report_mydata,
                              dqc_date,

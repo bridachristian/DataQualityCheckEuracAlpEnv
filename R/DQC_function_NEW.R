@@ -20,7 +20,7 @@ DQC_function_NEW= function(input_dir,
                             logger_info_file,
                             record_check,
                             output_dir_raw,
-                           use_alert_station_flag){
+                            use_alert_station_flag){
   
   # ..... Define flags ..................................................................................................................................
   

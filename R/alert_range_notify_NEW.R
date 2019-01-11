@@ -5,7 +5,8 @@
 #' @param RANGE_DIR directory where support files are stored
 #' @param RANGE_FILE name of filr where min/max thresholds are defined for each variable. Thi file is in RANGE_DIR
 #' @param STATION name of station
-#'
+#' @param USE_FLAG true/false --> decide to use or not the station flags in range file
+#' 
 #' @return A data.frame with all values in its physical range
 #'
 #' @export
@@ -14,7 +15,7 @@
 #' exclude_out_of_range(DATA = mydata, RANGE_DIR = RANGE_DIR, RANGE_FILE = "Range.csv")
 #'
 
-alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEADER, RANGE_DIR, RANGE_FILE, STATION){
+alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEADER, RANGE_DIR, RANGE_FILE, STATION, USE_FLAG){
   
   ######
   # DATA = cbind(DATA,rep(1000, times = nrow(DATA)))
@@ -74,11 +75,12 @@ alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEAD
       range$Variable[w]
       lower_limit = range$Alert_min[w]
       upper_limit = range$Alert_Max[w]
-     
       
-      if(range[w,which(colnames(range) == STATION)] == 0){
-        lower_limit = NA
-        upper_limit = NA
+      if(USE_FLAG == TRUE){
+        if(range[w,which(colnames(range) == STATION)] == 0){
+          lower_limit = NA
+          upper_limit = NA
+        }
       }
       
       if(!is.na(lower_limit) & !is.na(upper_limit)) {         # Exclude data without a range set

@@ -109,6 +109,7 @@ reciver = mail_config_info$reciver
 my_smtp = mail_config_info$my_smtp
 # -------------------------------
 
+
 if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
   file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 }
@@ -128,6 +129,8 @@ for(PROJECT in project_type){
   datetime_sampling =  "15 min"
   record_header =  "RECORD"
   range_file =  "Range.csv"
+  use_alert_station_flag = TRUE
+  
   
   write_output_files =  "TRUE"
   write_output_report =  "FALSE"
@@ -243,7 +246,7 @@ for(PROJECT in project_type){
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
-                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type")))
+                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type","use_alert_station_flag")))
     
     
     
@@ -363,6 +366,7 @@ for(PROJECT in project_type){
         start_date = dwnl_info$Last_date
         logger_info_file = logger_info_file
         record_check = dwnl_info$record_check
+        use_alert_station_flag = use_alert_station_flag
         
         # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         

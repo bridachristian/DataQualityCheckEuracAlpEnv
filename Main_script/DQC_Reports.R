@@ -149,6 +149,7 @@ for(PROJECT in project_type){
   datetime_sampling =  "15 min"
   record_header =  "RECORD"
   range_file =  "Range.csv"
+  use_alert_station_flag = FALSE
   
   write_output_files =  "FALSE"
   # write_output_files =  "TRUE"
@@ -272,7 +273,7 @@ for(PROJECT in project_type){
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
                                              "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type",
-                                             "report_info", "report_dataframe","main_dir_mapping_in","main_dir_mapping_out")))
+                                             "report_info", "report_dataframe","main_dir_mapping_in","main_dir_mapping_out","use_alert_station_flag")))
     
     
     
@@ -355,22 +356,7 @@ for(PROJECT in project_type){
       
       hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_last_modif_file, tz = "Etc/GMT-1",units = "hours"))
       
-      # if(hours_diff >= HOURS_OFFLINE & hours_diff%%HOURS_OFFLINE == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
-      #   
-      #   my_subject = paste("Station:",STATION_NAME,"- Error: Station Offline!")
-      #   my_body = paste("Error: Last data download:", date_last_modif_file)
-      #   
-      #   send.mail(from = sender,
-      #             to = reciver,
-      #             subject = my_subject,
-      #             body = my_body,
-      #             smtp = my_smtp,
-      #             authenticate = TRUE,
-      #             send = TRUE)
-      #   
-      # }
-      # -----------------
-      
+     
       if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
         
         input_dir = input_dir
@@ -393,6 +379,8 @@ for(PROJECT in project_type){
         start_date = dwnl_info$Last_date
         logger_info_file = logger_info_file
         record_check = dwnl_info$record_check
+        use_alert_station_flag = use_alert_station_flag
+        
         
         # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
@@ -490,6 +478,8 @@ for(PROJECT in project_type){
           }else{
             report_mydata = NULL
           }
+          
+          report_mydata =  mydata
           
           params_list = list(report_mydata,
                              dqc_date,

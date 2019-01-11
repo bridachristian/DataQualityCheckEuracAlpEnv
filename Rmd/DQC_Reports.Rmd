@@ -146,65 +146,7 @@ if(errors_list_critical$err_date_missing$Status == "Y"){
 ```
 
 <!-- ............... WARNINGS STATUS ICINGA ............... -->
-<!-- err_range_alert -->
 
-##`r if(errors_list_warning$err_range_alert$Status == "Y"){ paste("Data out of range (warnings)!")}`
-```{r echo=FALSE, warning=FALSE, results='asis',fig.width= 12,fig.height= 6}
-if(errors_list_warning$err_range_alert$Status == "Y"){
-  table = errors_list_warning$err_range_alert$Values
-  # table$Variable = as.factor(table$Variable)
-  vars = unique(table$Variable)
-
-  time_mydata = as.POSIXct(mydata[, which(colnames(mydata) == "TIMESTAMP")], tz = "Etc/GMT-1")
-
-  for(i in 1:length(vars)){
-    tab_var_v0 = table[which(table$Variable == vars[i]),]
-
-    tab_var = tab_var_v0
-    tab_var$From =  as.POSIXct(tab_var$From,tz = "Etc/GMT-1")-15*60/2
-    tab_var$To =  as.POSIXct(tab_var$To,tz = "Etc/GMT-1")+15*60/2
-    tab_var$Hours =  as.numeric(tab_var$Hours)
-
-    tab_var$Error = factor(tab_var$Error,levels = c("NaN_value","Too_low","Too_high"))
-
-    mydata_var = mydata[,vars[i]]
-    mydata_df = data.frame(time_mydata, mydata_var)
-    colnames(mydata_df) = c("TIMESTAMP",vars[i])
-
-    melt_mydata = melt(mydata_df,id.var = "TIMESTAMP")
-    melt_mydata$value = as.numeric(melt_mydata$value)
-    
-    
-    g1 = ggplot()+
-      geom_rect(data = tab_var,aes(xmin = From, xmax = To, ymin = -Inf, ymax = Inf, fill = Error),alpha = 0.5)+
-      geom_line(data = melt_mydata, aes(x = TIMESTAMP, y = value))+
-      scale_fill_manual(name = "",values = c("grey20","blue", "red"), labels = c("NaN_value","Too_low","Too_high"),drop = F)+
-      ggtitle(paste("Variable:", vars[i]),subtitle = paste(paste("From:",min(melt_mydata$TIMESTAMP), "to", max(melt_mydata$TIMESTAMP)),
-                                                           paste("Total NaN:",sum(tab_var$Hours[which(tab_var$Error == "NaN_value")], na.rm = T),"hours"),   # cambiare modo sommare
-                                                           paste("Total low data:",sum(tab_var$Hours[which(tab_var$Error == "Too_low")], na.rm = T),"hours"),
-                                                           paste("Total high data:",sum(tab_var$Hours[which(tab_var$Error == "Too_high")], na.rm = T),"hours"),sep = "\n"))+
-      scale_x_datetime(date_labels = "%b %d",date_minor_breaks = "1 day") +
-      scale_y_continuous(name = vars[i])+
-      theme_bw()+
-      theme(panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank())
-
-    # d1 = data.frame(c(1,2),c(2,5))
-    # colnames(d1) = c("x","y")
-    # g1 = ggplot(data = d1, aes(x,y))+geom_point()+geom_line()+ggtitle(vars[i])
-    print(g1)
-
-    # print(xtable(tab_var_v0[order(tab_var_v0$From),]),type = "html")
-    cat(hwrite(tab_var_v0[order(tab_var_v0$From),], border=0, center=TRUE,  width='1000px', row.names=FALSE, row.style=list('font-weight:bold')))
-    # print(kable(tab_var_v0[order(tab_var_v0$From),],row.names = F),type = "html")
-    # print( htmltools::tagList(datatable(tab_var_v0[order(tab_var_v0$From),])))
-    cat (c("------------------------------------------------------------------------"),sep = "\n")
-}
-
-
-  # kable(errors_list_report_errors$err_out_of_range$Values)
-}
-```
 
 
 <!-- ............... REPORT STATUS ............... -->
@@ -214,6 +156,7 @@ if(errors_list_warning$err_range_alert$Status == "Y"){
 <!-- ##`r if(errors_list_report_errors$err_duplicates_rows$Status == "Y"){ paste("WARNING! Station", station_name, "has duplicated rows in .dat file")}` -->
 
 <!-- err_out_of_range -->
+
 
 ##`r if(errors_list_report_errors$err_out_of_range$Status == "Y"){ paste("Data out of physical range!")}`
 ```{r echo=FALSE, warning=FALSE, results='asis',fig.width= 12,fig.height= 6}

@@ -25,15 +25,8 @@ RSTUDIO_PANDOC=/usr/lib/rstudio/bin/pandoc/
 #-- Script to check if some scripts are locked --> send mail
 01 * * * * /usr/lib/R/bin/Rscript '/home/cbrida/myscript/check_DQC_locked.R' >> '/home/cbrida/myscript/christian_lock.log' 2>&1
 
-#-- "Weekly" Report: run script that produce reports
-# alle 00:30, 03:30, 06:30 tutti i giorni --> TEST (STOP)
-#30 0,3,6,9,12,15,18,21 * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Reports.R'  >> '/shared/Stations_Data/DQC/log/DQC_Reports.log' 2>&1
-
-#-- alle 23:40 di ogni giorno --> test
-#40 23 * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Reports.R'  >> '/shared/Stations_Data/DQC/log/DQC_Reports.log' 2>&1
-
 #-- alle 00:30 di ogni lunedi --> Weekly report!
-30 0 * * 1 /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Reports.R'  >> '/shared/Stations_Data/DQC/log/DQC_Reports.log' 2>&1
+#30 0 * * 1 /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Reports.R'  >> '/shared/Stations_Data/DQC/log/DQC_Reports.log' 2>&1
 
 #- -alle 00:01 di ogni giorno -->reset file mail_status --> allow updates on stations issues!
 01 00 * * * /usr/lib/R/bin/Rscript '/home/cbrida/DataQualityCheckEuracAlpEnv/Main_script/DQC_Reset_Mail_Status.R'  >> '/shared/Stations_Data/DQC/log/DQC_Reset_Mail_Status.log' 2>&1

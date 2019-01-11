@@ -19,7 +19,8 @@ DQC_function_NEW= function(input_dir,
                             database_dir,
                             logger_info_file,
                             record_check,
-                            output_dir_raw){
+                            output_dir_raw,
+                           use_alert_station_flag){
   
   # ..... Define flags ..................................................................................................................................
   
@@ -182,7 +183,8 @@ DQC_function_NEW= function(input_dir,
               rm(missing)
               
               # ALERT OUT OF RANGE --> ANY MYDATA MODIFICATION
-              alert_range <- alert_range_notify_NEW(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, RANGE_DIR = range_dir, RANGE_FILE = range_file, STATION = STATION_NAME) # <- Substitute with NA data out of phisical range
+              alert_range <- alert_range_notify_NEW(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header,
+                                                    RANGE_DIR = range_dir, RANGE_FILE = range_file, STATION = STATION_NAME, USE_FLAG = use_alert_station_flag) # <- Substitute with NA data out of phisical range
               alert_out_of_range_table = alert_range[[1]]
               alert_variable_new = alert_range[[2]]
               alert_variable_to_set = alert_range[[3]]

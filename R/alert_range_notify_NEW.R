@@ -105,8 +105,8 @@ alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FO
             
             
             df_lower_tmp = data.frame(colnames(new)[k],
-                                      as.character(start_sss),
-                                      as.character(end_sss),
+                                      format(start_sss,format = DATETIME_FORMAT),
+                                      format(end_sss,format = DATETIME_FORMAT),
                                       as.numeric(num_hour_diff),
                                       mean(new[ sss[[s]] ,k],na.rm = T))
             colnames(df_lower_tmp) = colnames(df_lower)
@@ -140,8 +140,10 @@ alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FO
             
             
             df_upper_tmp = data.frame(colnames(new)[k],
-                                      as.character(start_ttt),
-                                      as.character(end_ttt),
+                                      format(start_ttt,format = DATETIME_FORMAT),
+                                      format(end_ttt,format = DATETIME_FORMAT),
+                                      # as.character(start_ttt),
+                                      # as.character(end_ttt),
                                       as.character(num_hour_diff),
                                       mean(new[ ttt[[t]] ,k],na.rm = T))
             colnames(df_upper_tmp) = colnames(df_upper)
@@ -177,8 +179,10 @@ alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FO
             
             
             df_NA_tmp = data.frame(colnames(new)[k],
-                                   as.character(start_nnn),
-                                   as.character(end_nnn),
+                                   format(start_nnn,format = DATETIME_FORMAT),
+                                   format(end_nnn,format = DATETIME_FORMAT),
+                                   # as.character(start_nnn),
+                                   # as.character(end_nnn),
                                    as.numeric(num_hour_diff),
                                    "NaN")
             colnames(df_NA_tmp) = colnames(df_NA)

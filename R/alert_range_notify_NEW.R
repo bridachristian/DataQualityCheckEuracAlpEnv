@@ -6,7 +6,7 @@
 #' @param RANGE_FILE name of filr where min/max thresholds are defined for each variable. Thi file is in RANGE_DIR
 #' @param STATION name of station
 #' @param USE_FLAG true/false --> decide to use or not the station flags in range file
-#' 
+#' @param DATETIME_FORMAT kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
 #' @return A data.frame with all values in its physical range
 #'
 #' @export
@@ -15,7 +15,7 @@
 #' exclude_out_of_range(DATA = mydata, RANGE_DIR = RANGE_DIR, RANGE_FILE = "Range.csv")
 #'
 
-alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEADER, RANGE_DIR, RANGE_FILE, STATION, USE_FLAG){
+alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT = "%Y-%m-%d %H:%M",RECORD_HEADER, RANGE_DIR, RANGE_FILE, STATION, USE_FLAG){
   
   ######
   # DATA = cbind(DATA,rep(1000, times = nrow(DATA)))
@@ -94,14 +94,14 @@ alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEAD
         
         if(length(sss[[1]]) >= 1){
           for(s in 1:length(sss)){
-            sss[[s]]
+            # sss[[s]]
             
             start_sss = as.POSIXct(new[ sss[[s]][1] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
             end_sss = as.POSIXct( new[ sss[[s]][length(sss[[s]])] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
             hour_diff = end_sss - start_sss
             units(hour_diff) = "hours"
             
-            num_hour_diff = as.numeric(hour_diff)
+            num_hour_diff = as.numeric(hour_diff)+0.25
             
             
             df_lower_tmp = data.frame(colnames(new)[k],
@@ -129,14 +129,14 @@ alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEAD
         
         if(length(ttt[[1]]) >= 1){
           for(t in 1:length(ttt)){
-            ttt[[t]]
+            # ttt[[t]]
             
             start_ttt = as.POSIXct(new[ ttt[[t]][1] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
             end_ttt = as.POSIXct( new[ ttt[[t]][length(ttt[[t]])] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
             hour_diff = end_ttt - start_ttt
             units(hour_diff) = "hours"
             
-            num_hour_diff = as.numeric(hour_diff)
+            num_hour_diff = as.numeric(hour_diff)+0.25
             
             
             df_upper_tmp = data.frame(colnames(new)[k],
@@ -166,14 +166,14 @@ alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",RECORD_HEAD
         
         if(length(nnn[[1]]) >= 1){
           for(n in 1:length(nnn)){
-            nnn[[n]]
+            # nnn[[n]]
             
             start_nnn = as.POSIXct(new[ nnn[[n]][1] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
             end_nnn = as.POSIXct( new[ nnn[[n]][length(nnn[[n]])] ,which(colnames(new) == DATETIME_HEADER)],tz = "Etc/GMT-1")
             hour_diff = end_nnn - start_nnn
             units(hour_diff) = "hours"
             
-            num_hour_diff = as.numeric(hour_diff)
+            num_hour_diff = as.numeric(hour_diff)+0.25
             
             
             df_NA_tmp = data.frame(colnames(new)[k],

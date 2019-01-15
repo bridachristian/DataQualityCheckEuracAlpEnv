@@ -503,9 +503,9 @@ for(PROJECT in project_type){
           # if(any(status[critical_errors] == "Y")){
           icinga_station = STATION_NAME
           icinga_status = paste("E",critical_number[which(status[critical_errors] == "Y")][1],sep = "")
-          # icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")        # path --> external definition
-          icinga_text = paste(substring(output_dir,nchar(data_output_dir)),output_file,sep = "")        # path --> external definition
-          
+          icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")               # to disactivate when webservice is ready!
+          # icinga_text = paste(substring(output_dir,nchar(data_output_dir)),output_file,sep = "")        # to activate when webservice is ready!
+
           # }
           
         }else{

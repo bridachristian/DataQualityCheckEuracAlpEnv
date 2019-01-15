@@ -8,7 +8,7 @@ params:
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
 
-PROJECT = params$PROJECT
+PROJECT <- params$PROJECT
 date_DQC <- params$date_DQC
 report_dataframe <- params$report_dataframe
 

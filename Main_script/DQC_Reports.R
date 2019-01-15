@@ -136,10 +136,11 @@ if(!file.exists(paste(DQC_setting_dir,"lock_report.lock",sep = ""))){
 
 for(PROJECT in project_type){
   data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
+  # report_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/00_DQC_Reports/",sep = "")  # where to put output reports
   report_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/DQC_Reports/",sep = "")  # where to put output reports
   database_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
   
-  warning_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_Warnings/",PROJECT,"/", sep = "")  # where to put warnings html files
+  # warning_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_Warnings/",PROJECT,"/", sep = "")  # where to put warnings html files
   
   
   data_from_row =  5                                             # <-- Row number of first data
@@ -298,7 +299,7 @@ for(PROJECT in project_type){
         output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
         output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
         output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/", sep = "")
-        
+        # warning_file_dir = paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = "")
       }else{
         dir.create(paste(data_output_dir,STATION_NAME,"/Reports/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
@@ -308,6 +309,8 @@ for(PROJECT in project_type){
         output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
         output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
         output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/", sep = "")
+        # warning_file_dir = paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = "")
+        
       }
     }else{
       dir.create(paste(data_output_dir,STATION_NAME,"/", sep = ""))
@@ -319,6 +322,7 @@ for(PROJECT in project_type){
       output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
       output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
       output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/", sep = "")
+      # warning_file_dir = paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = "")
       
     }
     
@@ -338,10 +342,10 @@ for(PROJECT in project_type){
       database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
     }
     
-    if(dir.exists(paste(warning_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store WARNINGS files 
+    if(dir.exists(paste(warning_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store WARNINGS files
       warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
     }else{
-      dir.create(paste(warning_file_dir,STATION_NAME,"/", sep = "")) 
+      dir.create(paste(warning_file_dir,STATION_NAME,"/", sep = ""))
       warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
     }
     

@@ -323,12 +323,7 @@ for(PROJECT in project_type){
       database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
     }
     
-    # if(dir.exists(paste(warning_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store WARNINGS files 
-    #   warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
-    # }else{
-    #   dir.create(paste(warning_file_dir,STATION_NAME,"/", sep = "")) 
-    #   warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
-    # }
+    
     
     if(dwnl_info$Stop_DQC == 0){
       

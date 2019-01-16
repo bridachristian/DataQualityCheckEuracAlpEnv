@@ -72,8 +72,8 @@ library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv
 # ..... Params section .....................................................................................................................................
 
 # main_dir = "Z:/"
-# main_dir = "/shared/"
-main_dir = "/shared/test_christian/"
+main_dir = "/shared/"
+# main_dir = "/shared/test_christian/"
 
 main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
 main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
@@ -85,8 +85,8 @@ project_type = c("LTER","MONALISA")
 
 PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
-# input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
-input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+# input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 # project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
@@ -123,8 +123,8 @@ mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 mail_config_info = mail_config_parsing(mail_config)
 
 sender = mail_config_info$sender
-# reciver = mail_config_info$reciver
-reciver = "Christian.Brida@eurac.edu"
+reciver = mail_config_info$reciver
+# reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 # -------------------------------
 
@@ -136,7 +136,7 @@ if(!file.exists(paste(DQC_setting_dir,"lock_report.lock",sep = ""))){
 
 for(PROJECT in project_type){
   data_output_dir   <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
-  report_output_dir <- paste(data_output_dir,"/00_DQC_Reports/",sep = "")  # where to put output reports
+  report_output_dir <- paste(data_output_dir,"00_DQC_Reports/",sep = "")  # where to put output reports
   # report_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/00_DQC_Reports/",sep = "")  # where to put output reports
   database_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
   
@@ -810,7 +810,12 @@ for(PROJECT in project_type){
   
   my_subject = paste(PROJECT,"report")
   # my_body = paste(output_dir_final,output_file_final,sep="")
-  my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
+  # my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
+  my_body = paste("http://report.alpenv.eurac.edu",substring(output_dir_final, nchar(data_output_dir)),output_file_final,sep="")
+  
+  # my_body = paste("http://report.alpenv.eurac.edu",icinga_text,sep = "")
+  # icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")               # to disactivate when webservice is ready!
+  # icinga_text = paste(substring(output_dir,nchar(data_output_dir)),output_file,sep = "")        # to activate when webservice is ready!
   
   send.mail(from = sender,
             to = reciver,

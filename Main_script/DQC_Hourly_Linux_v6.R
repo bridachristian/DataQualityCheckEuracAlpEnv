@@ -338,7 +338,7 @@ for(PROJECT in project_type){
       
       if(hours_diff >= HOURS_OFFLINE & hours_diff%%HOURS_OFFLINE == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
         
-        my_subject = paste(STATION_NAME,"- Station Offline!")
+        my_subject = paste(PROJECT,"-",STATION_NAME,"- Station Offline!")
         my_body = paste("Last data download:", date_last_modif_file)
         
         send.mail(from = sender,
@@ -524,7 +524,7 @@ for(PROJECT in project_type){
           if(icinga_status != 0){
             
             
-            my_subject = paste(icinga_station,"-",error_write)
+            my_subject = paste(PROJECT,"-",icinga_station,"-",error_write)
             
             
             # my_body = paste("\\smb.scientificnet.org\alpenv",,sep = "")

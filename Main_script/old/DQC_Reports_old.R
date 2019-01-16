@@ -37,11 +37,11 @@ library(xtable, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 library(dygraphs, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 library(xts, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 
-# install.packages("hwriter", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
+# install.packages("labeling", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
 
 # install.packages("hwriter" )
-# 
 # library(devtools)
 # install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 # library("DataQualityCheckEuracAlpEnv")
@@ -71,10 +71,15 @@ library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/"
 
 # ..... Params section .....................................................................................................................................
 
+# main_dir = "Z:/"
 main_dir = "/shared/"
 # main_dir = "/shared/test_christian/"
-# main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 
+main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
+main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
+
+# main_dir = "/shared/test_christian/"
+# main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
@@ -118,7 +123,8 @@ mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 mail_config_info = mail_config_parsing(mail_config)
 
 sender = mail_config_info$sender
-reciver = mail_config_info$reciver   
+reciver = mail_config_info$reciver
+# reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 # -------------------------------
 
@@ -126,8 +132,11 @@ if(!file.exists(paste(DQC_setting_dir,"lock_report.lock",sep = ""))){
   file.create(paste(DQC_setting_dir,"lock_report.lock",sep = ""))
 }
 
+# -------------------------------# -------------------------------# -------------------------------# -------------------------------# -------------------------------
+
 for(PROJECT in project_type){
   data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
+  # report_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/00_DQC_Reports/",sep = "")  # where to put output reports
   report_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/DQC_Reports/",sep = "")  # where to put output reports
   database_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
   
@@ -141,6 +150,7 @@ for(PROJECT in project_type){
   datetime_sampling =  "15 min"
   record_header =  "RECORD"
   range_file =  "Range.csv"
+  use_alert_station_flag = FALSE
   
   write_output_files =  "FALSE"
   # write_output_files =  "TRUE"
@@ -242,11 +252,11 @@ for(PROJECT in project_type){
   
   report_dataframe = matrix(ncol = 14, nrow = length(files_available_project))
   colnames(report_dataframe) = c("Station",
-                         "Offline",
-                         "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
-                         "err_date_missing","err_range_alert",
-                         "err_out_of_range","err_duplicates_rows",
-                         "report_link")
+                                 "Offline",
+                                 "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                                 "err_date_missing","err_range_alert",
+                                 "err_out_of_range","err_duplicates_rows",
+                                 "report_link")
   
   
   
@@ -264,7 +274,7 @@ for(PROJECT in project_type){
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
                                              "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type",
-                                             "report_info", "report_dataframe")))
+                                             "report_info", "report_dataframe","main_dir_mapping_in","main_dir_mapping_out","use_alert_station_flag")))
     
     
     
@@ -289,7 +299,7 @@ for(PROJECT in project_type){
         output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
         output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
         output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/", sep = "")
-        
+        # warning_file_dir = paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = "")
       }else{
         dir.create(paste(data_output_dir,STATION_NAME,"/Reports/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
@@ -299,6 +309,8 @@ for(PROJECT in project_type){
         output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
         output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
         output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/", sep = "")
+        # warning_file_dir = paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = "")
+        
       }
     }else{
       dir.create(paste(data_output_dir,STATION_NAME,"/", sep = ""))
@@ -310,6 +322,7 @@ for(PROJECT in project_type){
       output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
       output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
       output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/", sep = "")
+      # warning_file_dir = paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = "")
       
     }
     
@@ -329,10 +342,10 @@ for(PROJECT in project_type){
       database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
     }
     
-    if(dir.exists(paste(warning_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store WARNINGS files 
+    if(dir.exists(paste(warning_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store WARNINGS files
       warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
     }else{
-      dir.create(paste(warning_file_dir,STATION_NAME,"/", sep = "")) 
+      dir.create(paste(warning_file_dir,STATION_NAME,"/", sep = ""))
       warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
     }
     
@@ -347,21 +360,6 @@ for(PROJECT in project_type){
       
       hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_last_modif_file, tz = "Etc/GMT-1",units = "hours"))
       
-      # if(hours_diff >= HOURS_OFFLINE & hours_diff%%HOURS_OFFLINE == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
-      #   
-      #   my_subject = paste("Station:",STATION_NAME,"- Error: Station Offline!")
-      #   my_body = paste("Error: Last data download:", date_last_modif_file)
-      #   
-      #   send.mail(from = sender,
-      #             to = reciver,
-      #             subject = my_subject,
-      #             body = my_body,
-      #             smtp = my_smtp,
-      #             authenticate = TRUE,
-      #             send = TRUE)
-      #   
-      # }
-      # -----------------
       
       if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
         
@@ -385,6 +383,8 @@ for(PROJECT in project_type){
         start_date = dwnl_info$Last_date
         logger_info_file = logger_info_file
         record_check = dwnl_info$record_check
+        use_alert_station_flag = use_alert_station_flag
+        
         
         # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
@@ -392,27 +392,27 @@ for(PROJECT in project_type){
         
         # rm(dwnl_info)
         # DQC_results = DQC_function(input_dir,
-        DQC_results = DQC_function(input_dir,
-                                         output_dir_data,
-                                         output_dir_report,
-                                         project_dir,
-                                         data_from_row,
-                                         header_row_number,
-                                         datetime_header,
-                                         datetime_format,
-                                         datetime_sampling,
-                                         record_header,
-                                         range_file,
-                                         write_output_files,
-                                         write_output_report,
-                                         file_name,
-                                         station_name,
-                                         start_date,
-                                         database_dir,
-                                         logger_info_file,
-                                         record_check,
-                                         output_dir_raw)
-        
+        DQC_results = DQC_function_NEW(input_dir,
+                                       output_dir_data,
+                                       output_dir_report,
+                                       project_dir,
+                                       data_from_row,
+                                       header_row_number,
+                                       datetime_header,
+                                       datetime_format,
+                                       datetime_sampling,
+                                       record_header,
+                                       range_file,
+                                       write_output_files,
+                                       write_output_report,
+                                       file_name,
+                                       station_name,
+                                       start_date,
+                                       database_dir,
+                                       logger_info_file,
+                                       record_check,
+                                       output_dir_raw,
+                                       use_alert_station_flag)
         
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]
@@ -447,15 +447,14 @@ for(PROJECT in project_type){
         data_errors = lapply(errors,function(x) x[[2]])
         w_yes = which(status == "Y")
         
-        critical_errors = c("err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record")
-        warning_errors = c("err_date_missing","err_range_alert")
+        critical_errors = c("err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing")
+        warning_errors = c("err_range_alert")
         report_errors = c("err_out_of_range","err_duplicates_rows")
         
         dqc_date = date_DQC
         
         df_status = data.frame(STATION_NAME,t(status))
-        
-        if(any(status == "Y")){
+        if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
           
           station_name = STATION_NAME
           errors_list_critical = errors[critical_errors]
@@ -611,20 +610,22 @@ for(PROJECT in project_type){
         status_final[which(status_final == "N")] = 0
         status_final = status_final[c(critical_errors,warning_errors, report_errors)]
         
-
-     if(any(status == "Y")){
-       paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
-        link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
-     }else{
-       link = NULL
-     }
+        
+        if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
+          # paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
+          link = paste(main_dir_mapping_out, substring(output_dir_report_new,nchar(main_dir_mapping_in)), output_file_report,sep = "")
+          # link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
+        }else{
+          link = NA
+          # link = "---"
+        }
         report_info = c(STATION_NAME,0,status_final, link)
         names(report_info) = c("Station",
-                              "Offline",
-                              "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
-                              "err_date_missing","err_range_alert",
-                              "err_out_of_range","err_duplicates_rows",
-                              "report_link")
+                               "Offline",
+                               "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                               "err_date_missing","err_range_alert",
+                               "err_out_of_range","err_duplicates_rows",
+                               "report_link")
         
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
@@ -713,11 +714,11 @@ for(PROJECT in project_type){
         # ~~~~~~~
         report_info = c(STATION_NAME,1,rep(NA,11), NA)
         names(report_info) = c("Station",
-                              "Offline",
-                              "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
-                              "err_date_missing","err_range_alert",
-                              "err_out_of_range","err_duplicates_rows",
-                              "report_link")
+                               "Offline",
+                               "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                               "err_date_missing","err_range_alert",
+                               "err_out_of_range","err_duplicates_rows",
+                               "report_link")
         
         warning(paste(STATION_NAME, "already analyzed!"))
         # file_already_processed = c(file_already_processed,FILE)
@@ -732,11 +733,11 @@ for(PROJECT in project_type){
     }else{
       report_info = c(STATION_NAME,2,rep(NA,11), NA)
       names(report_info) = c("Station",
-                            "Offline",
-                            "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
-                            "err_date_missing","err_range_alert",
-                            "err_out_of_range","err_duplicates_rows",
-                            "report_link")
+                             "Offline",
+                             "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                             "err_date_missing","err_range_alert",
+                             "err_out_of_range","err_duplicates_rows",
+                             "report_link")
       final_info = c(STATION_NAME, "Not analyzed",
                      NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
                      NA,
@@ -780,19 +781,20 @@ for(PROJECT in project_type){
   # ..... Final Report .....................................................................................................................................
   
   
-   input_final = paste(project_dir,"Rmd/DQC_Report_overview.Rmd",sep = "")
-   # date_DQC 
-   output_file_final =  paste(PROJECT,"_Report_",
-                              format(date_DQC,format = "%Y"),
-                              format(date_DQC,format = "%m"),
-                              format(date_DQC,format = "%d"),".html", sep = "")
-   
-   output_dir_final = output_dir_report
+  input_final = paste(project_dir,"Rmd/DQC_Report_overview.Rmd",sep = "")
+  # date_DQC 
+  output_file_final =  paste(PROJECT,"_Report_",
+                             format(date_DQC,format = "%Y"),
+                             format(date_DQC,format = "%m"),
+                             format(date_DQC,format = "%d"),".html", sep = "")
+  
+  output_dir_final = output_dir_report
   # 
   rmarkdown::render(input = input_final,
                     output_file = output_file_final ,
                     output_dir = output_dir_final,
-                    params = list(date_DQC = date_DQC ,
+                    params = list(PROJECT = PROJECT,
+                                  date_DQC = date_DQC ,
                                   report_dataframe = report_dataframe))
   
   
@@ -801,16 +803,17 @@ for(PROJECT in project_type){
   # MANDARE MAIL !!!!
   print("--------------------------------------------------------------------------------------------------")
   
-  my_subject = paste(PROJECT,"weekly report.")
-  my_body = paste(output_dir_final,output_file_final)
-     
-    send.mail(from = sender,
-              to = reciver,
-              subject = my_subject,
-              body = my_body,
-              smtp = my_smtp,
-              authenticate = TRUE,
-              send = TRUE)
+  my_subject = paste(PROJECT,"report")
+  # my_body = paste(output_dir_final,output_file_final,sep="")
+  my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
+  
+  send.mail(from = sender,
+            to = reciver,
+            subject = my_subject,
+            body = my_body,
+            smtp = my_smtp,
+            authenticate = TRUE,
+            send = TRUE)
 }
 
 

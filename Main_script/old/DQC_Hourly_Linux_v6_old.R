@@ -68,7 +68,7 @@ project_type = c("LTER","MONALISA")
 PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
-# input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+# input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are    # TEST!!!!
 
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 # project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
@@ -104,9 +104,11 @@ mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 mail_config_info = mail_config_parsing(mail_config)
 
 sender = mail_config_info$sender
-reciver = mail_config_info$reciver   
+reciver = mail_config_info$reciver
+# reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 # -------------------------------
+
 
 if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
   file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
@@ -127,6 +129,8 @@ for(PROJECT in project_type){
   datetime_sampling =  "15 min"
   record_header =  "RECORD"
   range_file =  "Range.csv"
+  use_alert_station_flag = TRUE
+  
   
   write_output_files =  "TRUE"
   write_output_report =  "FALSE"
@@ -231,7 +235,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 1
+  t = 10
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)
@@ -242,7 +246,7 @@ for(PROJECT in project_type){
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
-                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type")))
+                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type","use_alert_station_flag")))
     
     
     
@@ -362,6 +366,7 @@ for(PROJECT in project_type){
         start_date = dwnl_info$Last_date
         logger_info_file = logger_info_file
         record_check = dwnl_info$record_check
+        use_alert_station_flag = use_alert_station_flag
         
         # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
@@ -369,26 +374,27 @@ for(PROJECT in project_type){
         
         # rm(dwnl_info)
         
-        DQC_results = DQC_function(input_dir,
-                                   output_dir_data,
-                                   output_dir_report,
-                                   project_dir,
-                                   data_from_row,
-                                   header_row_number,
-                                   datetime_header,
-                                   datetime_format,
-                                   datetime_sampling,
-                                   record_header,
-                                   range_file,
-                                   write_output_files,
-                                   write_output_report,
-                                   file_name,
-                                   station_name,
-                                   start_date,
-                                   database_dir,
-                                   logger_info_file,
-                                   record_check,
-                                   output_dir_raw)
+        DQC_results = DQC_function_NEW(input_dir,
+                                       output_dir_data,
+                                       output_dir_report,
+                                       project_dir,
+                                       data_from_row,
+                                       header_row_number,
+                                       datetime_header,
+                                       datetime_format,
+                                       datetime_sampling,
+                                       record_header,
+                                       range_file,
+                                       write_output_files,
+                                       write_output_report,
+                                       file_name,
+                                       station_name,
+                                       start_date,
+                                       database_dir,
+                                       logger_info_file,
+                                       record_check,
+                                       output_dir_raw,
+                                       use_alert_station_flag)
         
         
         mydata = DQC_results[[1]]
@@ -423,39 +429,40 @@ for(PROJECT in project_type){
         data_errors = lapply(errors,function(x) x[[2]])
         w_yes = which(status == "Y")
         
-        critical_errors = c("err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing")
-        warning_errors = c("err_range_alert")
+        critical_errors = c("err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing","err_range_alert")
+        
+        total_errors = names(status)
+        total_number = seq(1,length(total_errors),1)
+        names(total_number) = total_errors
+        total_string = c("File_empty", "Logger_wrong_number","File_wrong_structure",
+                         "No_new_data","Data_overlap","Rows_duplicated",
+                         "Data_gap_no_record", "Data_gap_restart_record","Data_gap",
+                         "Data_overrange","Data_overrange_physical")
+        # names(total_string) = total_errors
+        
+        critical_number = total_number[which(total_errors %in% critical_errors)]
+        critical_string = total_string[which(total_errors %in% critical_errors)]
         
         
         dqc_date = date_DQC
         
-        if(any(status[c(critical_errors,warning_errors)] == "Y")){
+        if(any(status[c(critical_errors)] == "Y")){
           
           station_name = STATION_NAME
           errors_list_critical = errors[critical_errors]
-          errors_list_warning = errors[warning_errors]
+          # errors_list_warning = errors[warning_errors]
           
           dqc_date_write = paste(format(dqc_date,"%Y"),format(dqc_date,"%m"),format(dqc_date,"%d"),format(dqc_date,"%H"),format(dqc_date,"%M"),sep = "")
           
           if(any(status[critical_errors] == "Y")){
             
-            err_vect = substring(critical_errors[which(status[critical_errors] == "Y")],5,nchar(critical_errors[which(status[critical_errors] == "Y")])) # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
+            # err_vect = substring(critical_errors[which(status[critical_errors] == "Y")],5,nchar(critical_errors[which(status[critical_errors] == "Y")])) # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
+            err_vect = critical_string[which(status[critical_errors] == "Y")] # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
             if(length(err_vect) > 1){
               error_write =  paste(err_vect,collapse = "+")
             }else{
               error_write = err_vect
             }
-          }
-          
-          if(any(status[warning_errors] == "Y")){
-            
-            err_vect = substring(warning_errors[which(status[warning_errors] == "Y")],5,nchar(warning_errors[which(status[warning_errors] == "Y")]))
-            if(length(err_vect) > 1){
-              error_write =  paste(err_vect,collapse = "+")
-            }else{
-              error_write = err_vect
-            }
-            
           }
           
           # generate a report of warnings
@@ -468,35 +475,24 @@ for(PROJECT in project_type){
           
           params_list = list(dqc_date,
                              station_name,
-                             errors_list_critical,
-                             errors_list_warning)
-          names(params_list) = c("dqc_date","station_name","errors_list_critical","errors_list_warning")
+                             errors_list_critical)
+          names(params_list) = c("dqc_date","station_name","errors_list_critical")
           
           rmarkdown::render(input = input,
                             output_file = output_file,
                             output_dir = output_dir,
-                            params = params_list)
+                            params = params_list)          # generate a report of warnings
           
-          # generate a report of warnings
+          # if(any(status[critical_errors] == "Y")){
+          icinga_station = STATION_NAME
+          icinga_status = paste("E",critical_number[which(status[critical_errors] == "Y")][1],sep = "")
+          icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")        # path --> external definition
+          # }
           
-          
-          if(any(status[critical_errors] == "Y")){
-            icinga_station = STATION_NAME
-            icinga_status = 2
-            # icinga_error = critical_errors[status[critical_errors] == "Y"]
-            icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")        # path --> external definition
-          }else{
-            if(any(status[warning_errors] == "Y")){
-              icinga_station = STATION_NAME
-              icinga_status = 1
-              # icinga_error = paste(warning_errors[status[warning_errors] == "Y"],collapse = " - ")
-              icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")      # path --> external definition
-              
-            }
-          }
         }else{
           icinga_station = STATION_NAME
           icinga_status = 0
+          # icinga_status = paste("0",0,sep = "")
           # icinga_error = "None"
           icinga_text = "OK"
         }
@@ -516,7 +512,7 @@ for(PROJECT in project_type){
             
             my_subject = paste(icinga_station,"-",error_write)
             
-           
+            
             # my_body = paste("\\smb.scientificnet.org\alpenv",,sep = "")
             
             my_body = paste("\\\\smb.scientificnet.org\\alpenv",icinga_text,sep = "")
@@ -702,7 +698,7 @@ for(PROJECT in project_type){
     loggernet_status_prj[t,2] = final_info[2]
     loggernet_status_prj[t,3] = date_last_modif_file
     
-   
+    
     gc(reset = T)
     
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -723,7 +719,7 @@ for(PROJECT in project_type){
   }
   loggernet_status = rbind(loggernet_status,loggernet_status_prj)
   
-
+  
   # ..... Final Report .....................................................................................................................................
   
   
@@ -751,18 +747,19 @@ for(PROJECT in project_type){
 
 
 # # non funziona!!!!!
- df_loggernet_status =as.data.frame(loggernet_status)
- df_loggernet_status$Last_modification = as.POSIXct(df_loggernet_status$Last_modification,tz = "Etc/GMT-1")
- 
- h_loggernet_last_modif = trunc(max(df_loggernet_status$Last_modification,na.rm = T),units = "hours")
- h_DQC = trunc(date_DQC,units = "hours")
- 
- hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_loggernet_last_modif, tz = "Etc/GMT-1",units = "hours"))
- 
- 
+df_loggernet_status =as.data.frame(loggernet_status)
+df_loggernet_status$Last_modification = as.POSIXct(df_loggernet_status$Last_modification,tz = "Etc/GMT-1")
+
+h_loggernet_last_modif = trunc(max(df_loggernet_status$Last_modification,na.rm = T),units = "hours")
+h_DQC = trunc(date_DQC,units = "hours")
+
+hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_loggernet_last_modif, tz = "Etc/GMT-1",units = "hours"))
+
+
 if( hours_diff >= LOGGERNET_OFFLINE){
   icinga_station = "LOGGERNET"
-  icinga_status = 3
+  # icinga_status = 3
+  icinga_status = "L30"
   icinga_text = "Loggernet doesn't download any station!"
 }else{
   icinga_station = "LOGGERNET"
@@ -777,10 +774,10 @@ mail_status = mail_table$Status[which(mail_table$Station == "LOGGERNET")]
 
 if(icinga_status != mail_status ){
   if(icinga_status != 0){
-
+    
     my_subject = paste("LOGGERNET doesn't work. All stations were already downloaded!")
     my_body = paste("Any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
-
+    
     send.mail(from = sender,
               to = reciver,
               subject = my_subject,

@@ -103,10 +103,10 @@ mail_file = paste(mail_dir,"mail_status.csv",sep = "")
 
 # --- read mail configuration ---
 
-mail_config_file = paste(mail_dir,"mail_config_new.xml",sep = "")
+mail_config_file = paste(mail_dir,"mail_config_v2.xml",sep = "")
 mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 
-mail_config_info = mail_config_parsing(mail_config)
+mail_config_info = mail_config_parsing_new(mail_config)
 
 sender = mail_config_info$sender
 # reciver = mail_config_info$reciver
@@ -242,7 +242,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 19
+  t = 1
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)
@@ -253,7 +253,7 @@ for(PROJECT in project_type){
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
-                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type","use_alert_station_flag","mail_dir")))
+                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type","use_alert_station_flag","mail_dir","url_webservice")))
     
     
     
@@ -671,7 +671,6 @@ h_DQC = trunc(date_DQC,units = "hours")
 
 hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_loggernet_last_modif, tz = "Etc/GMT-1",units = "hours"))
 
-hours_diff = 1
 if(hours_diff >= LOGGERNET_OFFLINE){
   icinga_station = "LOGGERNET"
   # icinga_status = 3

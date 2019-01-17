@@ -98,11 +98,12 @@ date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GM
 
 loggernet_status = c()
 
-mail_file = paste(DQC_setting_dir,"Process/email_status/mail_status.csv",sep = "")
+mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
+mail_file = paste(mail_dir,"mail_status.csv",sep = "")
 
 # --- read mail configuration ---
 
-mail_config_file = paste(DQC_setting_dir,"Process/email_status/mail_config.xml",sep = "")
+mail_config_file = paste(mail_dir,"mail_config_new.xml",sep = "")
 mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 
 mail_config_info = mail_config_parsing(mail_config)
@@ -111,6 +112,7 @@ sender = mail_config_info$sender
 # reciver = mail_config_info$reciver
 reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
+url_webservice = mail_config_info$url_webservice
 # -------------------------------
 
 
@@ -240,7 +242,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 1
+  t = 19
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)
@@ -251,7 +253,7 @@ for(PROJECT in project_type){
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
-                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type","use_alert_station_flag")))
+                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type","use_alert_station_flag","mail_dir")))
     
     
     
@@ -338,7 +340,7 @@ for(PROJECT in project_type){
       
       if(hours_diff >= HOURS_OFFLINE & hours_diff%%HOURS_OFFLINE == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
         
-        my_subject = paste(STATION_NAME,"- Station Offline!")
+        my_subject = paste("TEST -",PROJECT,"-",STATION_NAME,"- Station Offline!")
         my_body = paste("Last data download:", date_last_modif_file)
         
         send.mail(from = sender,
@@ -457,6 +459,16 @@ for(PROJECT in project_type){
         
         dqc_date = date_DQC
         
+        
+        ####################################################################
+        
+        mail_table = read.csv(mail_file,stringsAsFactors = F)
+        
+        mail_station = mail_table[,c(1,2,which(colnames(mail_table) == station_name))]
+        colnames(mail_station)[3] = "mail_active"
+        
+        ####################################################################
+        
         if(any(status[c(critical_errors)] == "Y")){
           
           station_name = STATION_NAME
@@ -476,9 +488,7 @@ for(PROJECT in project_type){
             }
           }
           
-          # generate a report of warnings
-          
-          output_file_report = paste(STATION_NAME,"_",dqc_date_write,"_",error_write,".html",sep = "")
+          output_file_report = paste(station_name,"_",dqc_date_write,"_",error_write,".html",sep = "")
           
           input =  warning_report_RMD 
           output_file = output_file_report
@@ -489,47 +499,30 @@ for(PROJECT in project_type){
                              errors_list_critical)
           names(params_list) = c("dqc_date","station_name","errors_list_critical")
           
-          # input = "/home/cbrida/DataQualityCheckEuracAlpEnv//Rmd/DQC_Warning_Reports_test.Rmd"
-          rmarkdown::render(input = input,
-                            output_file = output_file,
-                            output_dir = output_dir,
-                            params = params_list)          # generate a report of warnings
           
-          # if(any(status[critical_errors] == "Y")){
           icinga_station = STATION_NAME
-          icinga_status = paste("E",critical_number[which(status[critical_errors] == "Y")][1],sep = "")
-          # icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")               # to disactivate when webservice is ready!
+          icinga_status = paste("E",critical_number[which(status[critical_errors] == "Y")],sep = "")
           icinga_text = paste(substring(output_dir,nchar(data_output_dir)),output_file,sep = "")        # to activate when webservice is ready!
-
-          # }
           
-        }else{
-          icinga_station = STATION_NAME
-          icinga_status = 0
-          # icinga_status = paste("0",0,sep = "")
-          # icinga_error = "None"
-          icinga_text = "OK"
-        }
-        
-        
-        
-        # ------- inseririre qui controllo sul file mail status -------
-        
-        
-        mail_table = read.csv(mail_file,stringsAsFactors = F)
-        mail_status = mail_table$Status[which(mail_table$Station == icinga_station)]
-        
-        
-        if(icinga_status != mail_status ){
-          if(icinga_status != 0){
+          ########################################################################
+          nnn = names(which(status[critical_errors] == "Y"))
+          
+          
+          mail_info = mail_station$mail_active[which(mail_station$Err_name %in% nnn)]
+          # generate a report of warnings
+          if(any(mail_info == 1)){
             
             
-            my_subject = paste(icinga_station,"-",error_write)
+            
+            # input = "/home/cbrida/DataQualityCheckEuracAlpEnv//Rmd/DQC_Warning_Reports_test.Rmd"
+            rmarkdown::render(input = input,
+                              output_file = output_file,
+                              output_dir = output_dir,
+                              params = params_list)          # generate a report of warnings
             
             
-            # my_body = paste("\\smb.scientificnet.org\alpenv",,sep = "")
-            
-            my_body = paste("http://report.alpenv.eurac.edu",icinga_text,sep = "")
+            my_subject = paste("TEST -", PROJECT,"-",icinga_station,"-",error_write)
+            my_body = paste(url_webservice,icinga_text,sep = "")
             
             send.mail(from = sender,
                       to = reciver,
@@ -539,65 +532,29 @@ for(PROJECT in project_type){
                       authenticate = TRUE,
                       send = TRUE)
           }
-          mail_table$Status[which(mail_table$Station == icinga_station)] = icinga_status
-          write.csv(mail_table, mail_file,quote = F,row.names = F)
+          
+          mail_table[which(mail_table$Err_name %in% nnn) , which(colnames(mail_table) == station_name)] = 0
+          
+          ########################################################################
+          
+        }else{
+          icinga_station = STATION_NAME
+          icinga_status = 0
+          # icinga_status = paste("0",0,sep = "")
+          # icinga_error = "None"
+          icinga_text = "OK"
         }
-        # -------------------------------------------------------------
         
-        # date_DQC = as.POSIXct(Sys.time(),tz = "Ect/GMT-1")
-        # date_to_print = paste(format(date_DQC,format = "%Y"),format(date_DQC,format = "%m"),format(date_DQC,format = "%d"),
-        #                                      format(date_DQC,format = "%H"),format(date_DQC,format = "%M"),sep = "")
-        # 
-        # status = unlist(lapply(errors,function(x) x[[1]]))
-        # data_errors = lapply(errors,function(x) x[[2]])
-        # # which(status == "Y")
-        # 
-        # if(is.na(issue_file$Date_error[which(issue_file$Errors == names(status)[which(status == "Y")])])){
-        #   issue_file$Date_error[which(issue_file$Errors == names(status)[which(status == "Y")])] = format(date_DQC,format = "%Y-%m-%d %H:%M")
-        #   
-        #   error_data = data_errors[[which(status == "Y")]]
-        #   
-        #   error_file = paste(issue_counter_dir,"errors_data/error_",STATION_NAME,"_",date_to_print,".rds",sep = "")
-        #   saveRDS(error_data,error_file)
-        # }
-        # 
-        # if(names(status)[[which(status == "Y")]] == "err_range_alert"){
-        #   error_data = data_errors[[which(status == "Y")]]
-        #   
-        # }
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
-        # # ~ ~ ~ ~ xxxxxxxxxxxxx ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        #  Forzo alcuni errori a valori predefiniti: err_range_alert (1), err_out_of_range (0), err_duplicates_rows (0)
         
-        # non serve?  
-        # Verificare che si puo togliere da qui: 
-        # out_filename_report = paste("DQC_Report_",STATION_NAME,"_",out_filename_date,".html",sep = "")
-        # 
-        # if(file.exists(paste(output_dir_report,out_filename_report,sep = ""))){
-        #   
-        #   j=0
-        #   repeat{
-        #     j=j+1
-        #     out_filename_report_new = paste(substring(out_filename_report,1, nchar(out_filename_report)-5),"_vers",j,".html",sep = "")
-        #     if(!file.exists(paste(output_dir_report,out_filename_report_new,sep = ""))){
-        #       break
-        #     }
-        #   }
-        # } else {
-        #   out_filename_report_new = out_filename_report
-        # }
-        # 
-        # out_filename_report = out_filename_report_new
-        # 
-        # if(write_output_report == TRUE){
-        #   output_file_report = file.rename(from = paste(output_dir_report,output_file_report,sep = ""),
-        #                                    to = paste(output_dir_report,out_filename_report,sep = ""))
-        # }else{
-        #   file.remove(paste(output_dir_report,output_file_report,sep = ""))
-        # }
+        mail_table[which(mail_table$Err_name %in% c("err_out_of_range","err_duplicates_rows")) , which(colnames(mail_table) == station_name)] = 0
+        mail_table[which(mail_table$Err_name %in% c("err_range_alert")) , which(colnames(mail_table) == station_name)] = 1
         
-        # a qui!
-        # Report su script esterno! Nella funzione DQC_Function prevedere il salvataggio e l' append degli errori!
+        write.csv(mail_table, mail_file,quote = F,row.names = F)
         
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
         
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -664,27 +621,9 @@ for(PROJECT in project_type){
           
         }
         
-        # reset counter if file is updated
-        # w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4)) 
-        # issue_counter$W_Update_station[w_1] = 0
-        # write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
+        
         
       } else {
-        
-        # ~~~~~~~
-        # update counter if file is not update
-        # 
-        # w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-        # issue_counter$W_Update_station[w_1] = issue_counter$W_Update_station[w_1]+1
-        # write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
-        # 
-        # # send message
-        # if(issue_counter$W_Update_station[w_1] %% MESSAGE_EVERY_TIMES == 0){
-        #   text_W_Update_station = paste(FILE_NAME, "not updated since",dwnl_info$Last_Modification)
-        #   warning(text_W_Update_station)
-        # }
-        # 
-        # ~~~~~~~
         
         warning(paste(STATION_NAME, "already analyzed!"))
         # file_already_processed = c(file_already_processed,FILE)
@@ -715,52 +654,15 @@ for(PROJECT in project_type){
     
     gc(reset = T)
     
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # INSERIRE QUI CHE ERRORE DARE AD ICINGA
-    # if(exists(text_W_Update_station))
-    # text_W_Update_station
-    # text_W_Empty_file
-    # text_W_Logger_number
-    # text_W_structure
-    # text_W_date_issue
-    # text_W_overlap
-    # text_W_missing_records
-    # text_W_restart_records
-    # text_W_date_missing
-    
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
   }
   loggernet_status = rbind(loggernet_status,loggernet_status_prj)
-  
-  
-  # ..... Final Report .....................................................................................................................................
-  
-  
-  # input_final = paste(project_dir,"Rmd/DQC_Final_Report_Hourly_2.Rmd",sep = "")
-  # output_file_final =  paste("DQC_Report_",substring(report_start,1,4),
-  #                            substring(report_start,6,7),
-  #                            substring(report_start,9,10),
-  #                            substring(report_start,12,13),
-  #                            substring(report_start,15,16),".html", sep = "")
-  # output_dir_final = output_dir_report
-  # 
-  # rmarkdown::render(input = input_final,
-  #                   output_file = output_file_final ,
-  #                   output_dir = output_dir_final,
-  #                   params = list(report_start = report_start ,
-  #                                 final_dataframe = final_dataframe))
-  
-  
-  # ..... Data preparation for Database .....................................................................................................................................
-  
   
   print("--------------------------------------------------------------------------------------------------")
   
 }
 
 
-# # non funziona!!!!!
 df_loggernet_status =as.data.frame(loggernet_status)
 df_loggernet_status$Last_modification = as.POSIXct(df_loggernet_status$Last_modification,tz = "Etc/GMT-1")
 
@@ -769,27 +671,16 @@ h_DQC = trunc(date_DQC,units = "hours")
 
 hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_loggernet_last_modif, tz = "Etc/GMT-1",units = "hours"))
 
-
-if( hours_diff >= LOGGERNET_OFFLINE){
+hours_diff = 1
+if(hours_diff >= LOGGERNET_OFFLINE){
   icinga_station = "LOGGERNET"
   # icinga_status = 3
   icinga_status = "L30"
   icinga_text = "Loggernet doesn't download any station!"
-}else{
-  icinga_station = "LOGGERNET"
-  icinga_status = 0
-  icinga_text = "OK"
-}
-
-# ----- LOGGERNET DOESN'T WORK  ------
-
-mail_table = read.csv(mail_file,stringsAsFactors = F)
-mail_status = mail_table$Status[which(mail_table$Station == "LOGGERNET")]
-
-if(icinga_status != mail_status ){
-  if(icinga_status != 0){
-    
-    my_subject = paste("LOGGERNET doesn't work. All stations were already downloaded!")
+  
+  if(!file.exists(paste(mail_dir,"lock_Loggernet.lock",sep = ""))){
+    file.create(paste(mail_dir,"lock_Loggernet.lock",sep = ""))
+    my_subject = paste("TEST -","LOGGERNET doesn't work. All stations were already downloaded!")
     my_body = paste("Any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
     
     send.mail(from = sender,
@@ -800,11 +691,16 @@ if(icinga_status != mail_status ){
               authenticate = TRUE,
               send = TRUE)
   }
-  mail_table$Status[which(mail_table$Station == "LOGGERNET")] = icinga_status
-  write.csv(mail_table, mail_file,quote = F,row.names = F)
+  
+}else{
+  icinga_station = "LOGGERNET"
+  icinga_status = 0
+  icinga_text = "OK"
+  if(file.exists(paste(mail_dir,"lock_Loggernet.lock",sep = ""))){
+    file.remove(paste(mail_dir,"lock_Loggernet.lock",sep = ""))
+  }
+  
 }
-
-
 
 file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 

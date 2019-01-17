@@ -5,7 +5,7 @@
 #' @param RANGE_DIR directory where support files are stored
 #' @param RANGE_FILE name of filr where min/max thresholds are defined for each variable. Thi file is in RANGE_DIR
 #' @param MAIL_DIR aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-#' @param MAIL_FILE aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+#' @param MAIL_FILE_ALERT aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 #' @param STATION name of station
 #' @param USE_FLAG true/false --> decide to use or not the station flags in range file
 #' @param DATETIME_FORMAT kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
@@ -17,7 +17,7 @@
 #' exclude_out_of_range(DATA = mydata, RANGE_DIR = RANGE_DIR, RANGE_FILE = "Range.csv")
 #'
 
-alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT = "%Y-%m-%d %H:%M",RECORD_HEADER, RANGE_DIR, RANGE_FILE, MAIL_DIR, MAIL_FILE, STATION, USE_FLAG){
+alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT = "%Y-%m-%d %H:%M",RECORD_HEADER, RANGE_DIR, RANGE_FILE, MAIL_DIR, MAIL_FILE_ALERT, STATION, USE_FLAG){
   
   ######
   # DATA = cbind(DATA,rep(1000, times = nrow(DATA)))

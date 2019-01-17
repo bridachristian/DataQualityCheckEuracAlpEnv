@@ -27,7 +27,6 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
   # # DATA = DATA[,-18]
   # colnames(DATA)[ncol(DATA)] = "pippo"
   ######
-  aaa = read.csv(paste(MAIL_DIR, MAIL_FILE_ALERT,sep = ""),stringsAsFactors = FALSE)  
   
   options(scipen = 999)
   range = read.csv(paste(RANGE_DIR, RANGE_FILE,sep = ""),stringsAsFactors = FALSE)          # <- import table that contains for each variable the permissible range
@@ -52,8 +51,28 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
     range[-w_col_data,w_station] = NA
   }
   
+  oor_flag = read.csv(paste(MAIL_DIR, MAIL_FILE_ALERT,sep = ""),stringsAsFactors = FALSE)  
+  
+  if(!(STATION %in% colnames(oor_flag))){
+    void_vect = c(rep(NA, times = nrow(oor_flag)))
+    
+    oor_flag = cbind(oor_flag,void_vect)
+    colnames(oor_flag)[ncol(oor_flag)] = STATION
+    
+    w_col_data_oor = which(oor_flag$Variable %in% colnames(DATA))
+    w_station_oor = which(colnames(oor_flag) == STATION)
+    
+    oor_flag[w_col_data_oor,w_station_oor] = 1
+    
+  }else{
+    w_col_data_oor = which(oor_flag$Variable %in% colnames(DATA))
+    w_station_oor = which(colnames(oor_flag) == STATION)
+    range[-w_col_data_oor,w_station_oor] = NA
+  }
+  
   
   range = range[order(range$Variable),] # reorder range file based on variable
+  oor_flag = oor_flag[order(oor_flag$Variable),]
   
   new = DATA # define new dataframe called new that is a copy of DATA
   
@@ -65,7 +84,10 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
   to_add = c()
   df_to_add = as.data.frame(matrix(ncol = ncol(range)))
   colnames(df_to_add)  = colnames(range)
-  # df_to_add = df_to_add[-1,]
+  
+  to_add_oor = c()
+  df_to_add_oor = as.data.frame(matrix(ncol = ncol(oor_flag)))
+  colnames(df_to_add_oor)  = colnames(oor_flag)
   
   df_upper = as.data.frame(matrix(ncol = 5, nrow = 0))
   colnames(df_upper) = c("Variable", "From", "To", "Hours", "Mean_Value")
@@ -75,19 +97,23 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
   colnames(df_NA) = c("Variable", "From", "To", "Hours", "Mean_Value")
   
   for(k in 1:ncol(new)){
-    if(colnames(new)[k] %in% range$Variable){
+    if((colnames(new)[k] %in% range$Variable) & (colnames(new)[k] %in% oor_flag$Variable)){
       w = which(range$Variable == colnames(new)[k])
+      w2 = which(oor_flag$Variable == colnames(new)[k])
       
       range$Variable[w]
+      # oor_flag[w2,which(colnames(oor_flag)==STATION)]
+      
       lower_limit = range$Alert_min[w]
       upper_limit = range$Alert_Max[w]
       
       if(USE_FLAG == TRUE){
-        if(range[w,which(colnames(range) == STATION)] == 0){
+        if(range[w,which(colnames(range) == STATION)] == 0 | oor_flag[w2,which(colnames(oor_flag)==STATION)] == 0 ){      #  Check variables activated when manual range is 1 and automatic flag = 1
           lower_limit = NA
           upper_limit = NA
         }
       }
+      # NB. il controllo dei paramtetri avviene solo se sia il range file  sia il out_of_range file abilita il controlle del parametro X (entrambi devono essere 1)
       
       if(!is.na(lower_limit) & !is.na(upper_limit)) {         # Exclude data without a range set
         
@@ -202,6 +228,9 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
           colnames(df_NA_tmp) = c("Variable", "From", "To", "Hours", "Mean_Value")
         }
         
+        if(length(c(w_low,w_high,w_NA)) > 0){
+          oor_flag[w2,which(colnames(oor_flag)==STATION)] = 0
+        }
         # new_status[,k] = ifelse(new[,k] < lower_limit, -1, new_status[,k])
         # new_status[,k] = ifelse(new[,k] > upper_limit, 1, new_status[,k])
         
@@ -213,7 +242,14 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
       
       ####
       
-    }else{
+    }else{ 
+      
+      
+      ##########
+      
+      # AGGIUNGERE QUI IL CODICE CHE PERMETTE L' AGGIORNAMENTO DEL FILE "out_of_range.csv" per variabili nuove --> legarlo a range file? 
+      
+      ##########
       to_add = c(to_add, colnames(new)[k])
       df_to_add = rbind(df_to_add,rep(NA,times = nrow(df_to_add)))
       
@@ -245,6 +281,8 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
   df_out_of_range = df_out_of_range[order(df_out_of_range$From),]
   df_out_of_range = df_out_of_range[,c(2,1,3:ncol(df_out_of_range))]
   
+  
+  
   if(length(to_add) != 0){
     # df_to_add = data.frame(to_add, 
     #                        rep(NA, times=length(to_add)),
@@ -264,6 +302,7 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
   range$Alert_min = as.character(range$Alert_min)
   range$Alert_Max = as.character(range$Alert_Max)
   write.csv(range,paste(RANGE_DIR, RANGE_FILE,sep = ""),quote = F,row.names = F, na = "")
+  write.csv(oor_flag,paste(MAIL_DIR, MAIL_FILE_ALERT,sep = ""),quote = F,row.names = F, na = "")
   
   
   out = list(df_out_of_range, variable_new, variable_to_set)     # no new_status

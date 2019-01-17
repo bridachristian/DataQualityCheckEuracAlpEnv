@@ -184,7 +184,7 @@ DQC_function_NEW_2= function(input_dir,
               rm(missing)
               
               # ALERT OUT OF RANGE --> ANY MYDATA MODIFICATION
-              alert_range <- alert_range_notify_NEW_2(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header,
+              alert_range <- alert_range_notify_NEW_2(DATA = mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format, RECORD_HEADER = record_header,
                                                     RANGE_DIR = range_dir, RANGE_FILE = range_file, 
                                                     MAIL_DIR = mail_dir, MAIL_FILE_ALERT = mail_file_alert,
                                                     STATION = STATION_NAME, USE_FLAG = use_alert_station_flag) # <- Substitute with NA data out of phisical range

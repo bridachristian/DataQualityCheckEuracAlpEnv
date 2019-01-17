@@ -99,8 +99,8 @@ date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GM
 loggernet_status = c()
 
 mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
-mail_file = paste(mail_dir,"mail_status.csv",sep = "")
-
+mail_file = "mail_status.csv"
+mail_file_alert = "out_of_range.csv"
 # --- read mail configuration ---
 
 mail_config_file = paste(mail_dir,"mail_config_v2.xml",sep = "")
@@ -253,7 +253,7 @@ for(PROJECT in project_type){
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
-                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type","use_alert_station_flag","mail_dir","url_webservice")))
+                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type","use_alert_station_flag","mail_dir","url_webservice","mail_file_alert")))
     
     
     
@@ -353,8 +353,6 @@ for(PROJECT in project_type){
         
       }
       
-      
-      
       # -----------------
       
       if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
@@ -380,6 +378,7 @@ for(PROJECT in project_type){
         logger_info_file = logger_info_file
         record_check = dwnl_info$record_check
         use_alert_station_flag = use_alert_station_flag
+        mail_file_alert = mail_file_alert
         
         # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
@@ -387,7 +386,7 @@ for(PROJECT in project_type){
         
         # rm(dwnl_info)
         
-        DQC_results = DQC_function_NEW(input_dir,
+        DQC_results = DQC_function_NEW_2(input_dir,
                                        output_dir_data,
                                        output_dir_report,
                                        project_dir,
@@ -407,7 +406,8 @@ for(PROJECT in project_type){
                                        logger_info_file,
                                        record_check,
                                        output_dir_raw,
-                                       use_alert_station_flag)
+                                       use_alert_station_flag,
+                                       mail_file_alert)
         
         
         mydata = DQC_results[[1]]
@@ -462,7 +462,7 @@ for(PROJECT in project_type){
         
         ####################################################################
         
-        mail_table = read.csv(mail_file,stringsAsFactors = F)
+        mail_table = read.csv(paste(mail_dir,mail_file,sep = ""),stringsAsFactors = F)
         
         mail_station = mail_table[,c(1,2,which(colnames(mail_table) == station_name))]
         colnames(mail_station)[3] = "mail_active"
@@ -552,7 +552,7 @@ for(PROJECT in project_type){
         mail_table[which(mail_table$Err_name %in% c("err_out_of_range","err_duplicates_rows")) , which(colnames(mail_table) == station_name)] = 0
         mail_table[which(mail_table$Err_name %in% c("err_range_alert")) , which(colnames(mail_table) == station_name)] = 1
         
-        write.csv(mail_table, mail_file,quote = F,row.names = F)
+        write.csv(mail_table, paste(mail_dir,mail_file,sep = ""),quote = F,row.names = F)
         
         # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         

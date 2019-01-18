@@ -386,7 +386,7 @@ for(PROJECT in project_type){
         
         # rm(dwnl_info)
         
-        DQC_results = DQC_function_NEW_2(input_dir,
+        DQC_results = DQC_function(input_dir,
                                        output_dir_data,
                                        output_dir_report,
                                        project_dir,

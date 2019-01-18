@@ -72,8 +72,8 @@ library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv
 # ..... Params section .....................................................................................................................................
 
 # main_dir = "Z:/"
-main_dir = "/shared/"
-# main_dir = "/shared/test_christian/"
+# main_dir = "/shared/"
+main_dir = "/shared/test_christian/"
 
 main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
 main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
@@ -85,8 +85,8 @@ project_type = c("LTER","MONALISA")
 
 PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
-input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
-# input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+# input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 # project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
@@ -113,19 +113,22 @@ date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GM
 
 loggernet_status = c()
 
-mail_file = paste(DQC_setting_dir,"Process/email_status/mail_status.csv",sep = "")
+mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
+mail_file = "mail_status.csv"
+mail_file_alert = "out_of_range.csv"
 
 # --- read mail configuration ---
 
-mail_config_file = paste(DQC_setting_dir,"Process/email_status/mail_config.xml",sep = "")
+mail_config_file = paste(mail_dir,"mail_config.xml",sep = "")
 mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 
-mail_config_info = mail_config_parsing(mail_config)
+mail_config_info = mail_config_parsing_new(mail_config)
 
 sender = mail_config_info$sender
-reciver = mail_config_info$reciver
-# reciver = "Christian.Brida@eurac.edu"
+# reciver = mail_config_info$reciver
+reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
+url_webservice = mail_config_info$url_webservice
 # -------------------------------
 
 if(!file.exists(paste(DQC_setting_dir,"lock_report.lock",sep = ""))){
@@ -274,7 +277,7 @@ for(PROJECT in project_type){
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
                                              "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type",
-                                             "report_info", "report_dataframe","main_dir_mapping_in","main_dir_mapping_out","use_alert_station_flag")))
+                                             "report_info", "report_dataframe","main_dir_mapping_in","main_dir_mapping_out","use_alert_station_flag","mail_dir","url_webservice","mail_file_alert")))
     
     
     
@@ -388,7 +391,7 @@ for(PROJECT in project_type){
         logger_info_file = logger_info_file
         record_check = dwnl_info$record_check
         use_alert_station_flag = use_alert_station_flag
-        
+        mail_file_alert = mail_file_alert
         
         # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
@@ -396,27 +399,28 @@ for(PROJECT in project_type){
         
         # rm(dwnl_info)
         # DQC_results = DQC_function(input_dir,
-        DQC_results = DQC_function_NEW(input_dir,
-                                       output_dir_data,
-                                       output_dir_report,
-                                       project_dir,
-                                       data_from_row,
-                                       header_row_number,
-                                       datetime_header,
-                                       datetime_format,
-                                       datetime_sampling,
-                                       record_header,
-                                       range_file,
-                                       write_output_files,
-                                       write_output_report,
-                                       file_name,
-                                       station_name,
-                                       start_date,
-                                       database_dir,
-                                       logger_info_file,
-                                       record_check,
-                                       output_dir_raw,
-                                       use_alert_station_flag)
+        DQC_results = DQC_function(input_dir,
+                                   output_dir_data,
+                                   output_dir_report,
+                                   project_dir,
+                                   data_from_row,
+                                   header_row_number,
+                                   datetime_header,
+                                   datetime_format,
+                                   datetime_sampling,
+                                   record_header,
+                                   range_file,
+                                   write_output_files,
+                                   write_output_report,
+                                   file_name,
+                                   station_name,
+                                   start_date,
+                                   database_dir,
+                                   logger_info_file,
+                                   record_check,
+                                   output_dir_raw,
+                                   use_alert_station_flag,
+                                   mail_file_alert)
         
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]
@@ -811,9 +815,9 @@ for(PROJECT in project_type){
   my_subject = paste(PROJECT,"report")
   # my_body = paste(output_dir_final,output_file_final,sep="")
   # my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
-  my_body = paste("http://report.alpenv.eurac.edu",substring(output_dir_final, nchar(data_output_dir)),output_file_final,sep="")
+  my_body = paste(url_webservice,substring(output_dir_final, nchar(data_output_dir)),output_file_final,sep="")
   
-  # my_body = paste("http://report.alpenv.eurac.edu",icinga_text,sep = "")
+  # my_body = paste(url_webservice,icinga_text,sep = "")
   # icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")               # to disactivate when webservice is ready!
   # icinga_text = paste(substring(output_dir,nchar(data_output_dir)),output_file,sep = "")        # to activate when webservice is ready!
   

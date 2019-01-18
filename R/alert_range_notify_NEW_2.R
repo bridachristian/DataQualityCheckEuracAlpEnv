@@ -70,8 +70,8 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
   
   new = DATA # define new dataframe called new that is a copy of DATA
   
-  new = cbind(DATA, rep(100,times = nrow(DATA))) ####################################################################
-  colnames(new)[ncol(new)] = "PIPPO"             ####################################################################
+  # new = cbind(DATA, rep(100,times = nrow(DATA))) ####################################################################
+  # colnames(new)[ncol(new)] = "PIPPO"             ####################################################################
   
   new_status = new # create a dataframe with the same structure that DATA. Inside there is only 0. When data are out of range 0 is subsitute wiht -1 or 1
   new_status[,-which(colnames(new_status) == DATETIME_HEADER )] = 0

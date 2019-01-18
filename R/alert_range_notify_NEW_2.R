@@ -30,44 +30,38 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
   
   options(scipen = 999)
   range = read.csv(paste(RANGE_DIR, RANGE_FILE,sep = ""),stringsAsFactors = FALSE)          # <- import table that contains for each variable the permissible range
+  oor_flag = read.csv(paste(MAIL_DIR, MAIL_FILE_ALERT,sep = ""),stringsAsFactors = FALSE)  
   
   range$Alert_min = as.numeric(range$Alert_min)
   range$Alert_Max = as.numeric(range$Alert_Max)
   
-  if(!(STATION %in% colnames(range))){
+  # ATTENZIONE: Possibili problemi se i 2 file hanno lista variabili e nomi delle stazioni diverse (PER MODIFICHE MANUALI!!!)
+  
+  if(!(STATION %in% colnames(range)) & !(STATION %in% colnames(oor_flag))){       # possibili solo F&F e T&T
     void_vect = c(rep(NA, times = nrow(range)))
+    void_vect_oor = c(rep(NA, times = nrow(oor_flag)))
     
     range = cbind(range,void_vect)
     colnames(range)[ncol(range)] = STATION
-    
-    w_col_data = which(range$Variable %in% colnames(DATA))
-    w_station = which(colnames(range) == STATION)
-    
-    range[w_col_data,w_station] = 1
-    
-  }else{
-    w_col_data = which(range$Variable %in% colnames(DATA))
-    w_station = which(colnames(range) == STATION)
-    range[-w_col_data,w_station] = NA
-  }
-  
-  oor_flag = read.csv(paste(MAIL_DIR, MAIL_FILE_ALERT,sep = ""),stringsAsFactors = FALSE)  
-  
-  if(!(STATION %in% colnames(oor_flag))){
-    void_vect = c(rep(NA, times = nrow(oor_flag)))
-    
-    oor_flag = cbind(oor_flag,void_vect)
+    oor_flag = cbind(oor_flag,void_vect_oor)
     colnames(oor_flag)[ncol(oor_flag)] = STATION
     
+    w_col_data = which(range$Variable %in% colnames(DATA))
+    w_station = which(colnames(range) == STATION)
     w_col_data_oor = which(oor_flag$Variable %in% colnames(DATA))
     w_station_oor = which(colnames(oor_flag) == STATION)
     
+    range[w_col_data,w_station] = 1
     oor_flag[w_col_data_oor,w_station_oor] = 1
     
   }else{
+    w_col_data = which(range$Variable %in% colnames(DATA))
+    w_station = which(colnames(range) == STATION)
+    range[-w_col_data,w_station] = NA 
+    
     w_col_data_oor = which(oor_flag$Variable %in% colnames(DATA))
     w_station_oor = which(colnames(oor_flag) == STATION)
-    range[-w_col_data_oor,w_station_oor] = NA
+    oor_flag[-w_col_data_oor,w_station_oor] = NA
   }
   
   
@@ -75,6 +69,9 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
   oor_flag = oor_flag[order(oor_flag$Variable),]
   
   new = DATA # define new dataframe called new that is a copy of DATA
+  
+  new = cbind(DATA, rep(100,times = nrow(DATA))) ####################################################################
+  colnames(new)[ncol(new)] = "PIPPO"             ####################################################################
   
   new_status = new # create a dataframe with the same structure that DATA. Inside there is only 0. When data are out of range 0 is subsitute wiht -1 or 1
   new_status[,-which(colnames(new_status) == DATETIME_HEADER )] = 0
@@ -101,7 +98,7 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
       w = which(range$Variable == colnames(new)[k])
       w2 = which(oor_flag$Variable == colnames(new)[k])
       
-      range$Variable[w]
+      # range$Variable[w]
       # oor_flag[w2,which(colnames(oor_flag)==STATION)]
       
       lower_limit = range$Alert_min[w]
@@ -260,6 +257,12 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
       df_to_add$Alert_min[nrow(df_to_add)] = NA
       df_to_add$Alert_Max [nrow(df_to_add)]= NA
       df_to_add[nrow(df_to_add),which(colnames(df_to_add) == STATION)] = 1
+      
+      to_add_oor = c(to_add_oor, colnames(new)[k])
+      df_to_add_oor = rbind(df_to_add_oor,rep(NA,times = nrow(df_to_add_oor)))
+      
+      df_to_add_oor$Variable[nrow(df_to_add_oor)] = colnames(new)[k]
+      df_to_add_oor[nrow(df_to_add_oor),which(colnames(df_to_add_oor) == STATION)] = 1
     }
   }
   
@@ -284,15 +287,10 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
   
   
   if(length(to_add) != 0){
-    # df_to_add = data.frame(to_add, 
-    #                        rep(NA, times=length(to_add)),
-    #                        rep(NA, times=length(to_add)),
-    #                        rep(1, times=length(to_add)),
-    #                        rep(NA, times=length(to_add)),
-    #                        rep(NA, times=length(to_add)))
-    # colnames(df_to_add) = colnames(range)
-    
     range = rbind(range,df_to_add[-1,])
+  }
+  if(length(to_add_oor) != 0){
+    oor_flag = rbind(oor_flag,df_to_add_oor[-1,])
   }
   
   variable_new = to_add
@@ -301,6 +299,7 @@ alert_range_notify_NEW_2 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_
   
   range$Alert_min = as.character(range$Alert_min)
   range$Alert_Max = as.character(range$Alert_Max)
+  
   write.csv(range,paste(RANGE_DIR, RANGE_FILE,sep = ""),quote = F,row.names = F, na = "")
   write.csv(oor_flag,paste(MAIL_DIR, MAIL_FILE_ALERT,sep = ""),quote = F,row.names = F, na = "")
   

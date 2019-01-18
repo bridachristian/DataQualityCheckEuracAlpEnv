@@ -22,8 +22,8 @@ library("DataQualityCheckEuracAlpEnv")
 
 # ..... Params section .....................................................................................................................................
 
-# main_dir = "/shared/"
-main_dir = "/shared/test_christian/"
+main_dir = "/shared/"
+# main_dir = "/shared/test_christian/"
 DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
 if(!file.exists(paste(DQC_setting_dir,"lock_reset.lock",sep = ""))){

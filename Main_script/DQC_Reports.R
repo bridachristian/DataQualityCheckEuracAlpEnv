@@ -64,7 +64,7 @@ library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv
 # library(dygraphs)
 # library(xts)
 # library(hwriter)
-
+# 
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
@@ -72,8 +72,8 @@ library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv
 # ..... Params section .....................................................................................................................................
 
 # main_dir = "Z:/"
-main_dir = "/shared/"
-# main_dir = "/shared/test_christian/"
+# main_dir = "/shared/"
+main_dir = "/shared/test_christian/"
 
 main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
 main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
@@ -85,8 +85,8 @@ project_type = c("LTER","MONALISA")
 
 PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
-input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
-# input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+# input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
 project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 # project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
@@ -125,8 +125,8 @@ mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 mail_config_info = mail_config_parsing_new(mail_config)
 
 sender = mail_config_info$sender
-reciver = mail_config_info$reciver
-# reciver = "Christian.Brida@eurac.edu"
+# reciver = mail_config_info$reciver
+reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice
 # -------------------------------
@@ -277,7 +277,7 @@ for(PROJECT in project_type){
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
                                              "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type",
-                                             "report_info", "report_dataframe","main_dir_mapping_in","main_dir_mapping_out","use_alert_station_flag","mail_dir","url_webservice","mail_file_alert")))
+                                             "report_info", "report_dataframe","use_alert_station_flag","mail_dir","url_webservice","mail_file_alert")))
     
     
     
@@ -498,7 +498,8 @@ for(PROJECT in project_type){
                              errors_list_warning,
                              errors_list_report_errors)
           names(params_list) = c("report_mydata", "dqc_date","station_name","errors_list_critical","errors_list_warning","errors_list_report_errors")
-          
+         
+          gc(reset = T)
           rmarkdown::render(input = input,
                             output_file = output_file,
                             output_dir = output_dir,
@@ -798,7 +799,7 @@ for(PROJECT in project_type){
                              format(date_DQC,format = "%d"),".html", sep = "")
   
   output_dir_final = output_dir_report
-  # 
+  rm(params)
   rmarkdown::render(input = input_final,
                     output_file = output_file_final ,
                     output_dir = output_dir_final,

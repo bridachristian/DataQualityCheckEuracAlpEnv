@@ -277,35 +277,35 @@ for(PROJECT in project_type){
       if(dir.exists(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))){
         output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
         output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
-        output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/Reports/", sep = "")
-        warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = "")
+        output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Alerts/Reports/", sep = "")
+        warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
       }else{
-        dir.create(paste(data_output_dir,STATION_NAME,"/Reports/", sep = ""))
-        dir.create(paste(data_output_dir,STATION_NAME,"/Reports/Reports/", sep = ""))
-        dir.create(paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/Reports/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Processed/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
         output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
         output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
-        output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/Reports/", sep = "")
-        warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = "")
+        output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Alerts/Reports/", sep = "")
+        warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
         
       }
     }else{
       dir.create(paste(data_output_dir,STATION_NAME,"/", sep = ""))      
-      dir.create(paste(data_output_dir,STATION_NAME,"/Reports/", sep = ""))
-      dir.create(paste(data_output_dir,STATION_NAME,"/Reports/Reports/", sep = ""))
-      dir.create(paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/Reports/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Processed/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
       output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
       output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
-      output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/Reports/", sep = "")
-      warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = "")
+      output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Alerts/Reports/", sep = "")
+      warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
       
     }
     

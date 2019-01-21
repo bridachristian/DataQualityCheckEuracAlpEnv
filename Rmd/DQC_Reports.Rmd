@@ -19,7 +19,6 @@ errors_list_warning <- params$errors_list_warning
 errors_list_report_errors <- params$errors_list_report_errors
 dqc_date <- params$dqc_date
 
-gc(reset = T)
 ```
 
 ## Station: **`r  station_name`**

@@ -1,4 +1,4 @@
-mail_config_parsing_new = function(mail_config_file){
+mail_config_parsing_new= function(mail_config_file){
   
   list_inpt = xmlToList(mail_config_file)
   if(any(names(list_inpt) == "comment")){

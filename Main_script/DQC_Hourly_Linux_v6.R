@@ -42,15 +42,20 @@ library(optparse)
 
 option_list = list(
   make_option(c("-md", "--maindir"), type="character", default="/shared/", 
-              help="set the main dir", metavar="character")
+              help="set the main dir", metavar="character"),
+  make_option(c("-pd", "--prjdir"), type="character", default="/home/cbrida/DataQualityCheckEuracAlpEnv/", 
+              help="set the project dir", metavar="character")
 ); 
 
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
 main_dir = opt$maindir
-
+project_dir = opt$prjdir
+  
 print(main_dir)
+print(project_dir)
+
 # stop()
 # library(devtools) 
 # install_github("bridachristian/DataQualityCheckEuracAlpEnv")
@@ -85,10 +90,11 @@ PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are    # TEST!!!!
-print(input_dir)
-stop()
-project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+
+# project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 # project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+
+
 
 DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
@@ -98,11 +104,10 @@ download_table_dir <- paste(DQC_setting_dir,"/Process/Download_tables/Hourly/", 
 
 warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  TO REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# issue_counter_dir <- paste(DQC_setting_dir,"/Process/", sep = "")# 
-# issue_flags_dir <- paste(DQC_setting_dir,"/Process/issue_flags", sep = "")
-# MESSAGE_EVERY_TIMES = 24
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# print(DQC_setting_dir)
+# print(warning_report_RMD)
+# 
+# stop()
 
 HOURS_OFFLINE = 24       # <- no data update since 24h --> station broken?
 LOGGERNET_OFFLINE = 1    # <. all station offline since 1h --> loggernet doesn't work!
@@ -127,7 +132,6 @@ reciver = mail_config_info$reciver
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice
 # -------------------------------
-
 
 if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
   file.create(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))

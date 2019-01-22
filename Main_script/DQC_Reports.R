@@ -122,13 +122,15 @@ mail_file_alert = "out_of_range.csv"
 mail_config_file = paste(mail_dir,"mail_config.xml",sep = "")
 mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 
-mail_config_info = mail_config_parsing_new(mail_config)
+# mail_config_info = mail_config_parsing_new(mail_config) ##################################################
+mail_config_info = mail_config_parsing(mail_config)
 
 sender = mail_config_info$sender
 # reciver = mail_config_info$reciver
 reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
-url_webservice = mail_config_info$url_webservice
+# url_webservice = mail_config_info$url_webservice ######################################################### 
+url_webservice = "http://report.alpenv.eurac.edu/"
 # -------------------------------
 
 if(!file.exists(paste(DQC_setting_dir,"lock_report.lock",sep = ""))){
@@ -153,7 +155,7 @@ for(PROJECT in project_type){
   datetime_sampling =  "15 min"
   record_header =  "RECORD"
   range_file =  "Range.csv"
-  use_alert_station_flag = FALSE
+  use_alert_station_flag = TRUE        # <-- IN REPORT DON'T SHOW ANALYZE VARIABLES SET AS 0 IN RANGE FILE
   
   write_output_files =  "FALSE"
   # write_output_files =  "TRUE"
@@ -349,12 +351,7 @@ for(PROJECT in project_type){
       database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
     }
     
-    # if(dir.exists(paste(warning_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store WARNINGS files 
-    #   warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
-    # }else{
-    #   dir.create(paste(warning_file_dir,STATION_NAME,"/", sep = "")) 
-    #   warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
-    # }
+    
     
     if(dwnl_info$Stop_DQC == 0){
       

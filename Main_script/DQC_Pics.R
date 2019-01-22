@@ -14,57 +14,57 @@ print("-------------------------------------------------------------------------
 print(paste("Data Quality Check:",Sys.time()))
 
 # ..... Libraries .....................................................................................................................................
-library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-library("DataQualityCheckEuracAlpEnv")
-install_github("alexsanjoseph/compareDF")
-library(compareDF)
-
-library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-
-library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-
-library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-library(xtable, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-library(dygraphs, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-library(xts, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-library(stringr,lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-
-install.packages("stringr", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
-
-# install.packages("hwriter" )
-# library(devtools)
+# library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 # install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 # library("DataQualityCheckEuracAlpEnv")
 # install_github("alexsanjoseph/compareDF")
 # library(compareDF)
 # 
-# library(zoo)
-# library(knitr)
-# library(ggplot2)
-# library(reshape2)
-# library(DT)
-# library(htmltools)
-# library(rmarkdown)
-# library(yaml)
-# library(highr)
+# library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 # 
-# library(mailR)
-# library(XML)
-# library(xtable)
-# library(dygraphs)
-# library(xts)
-# library(hwriter)
+# library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# 
+# library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# library(xtable, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+# library(dygraphs, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+# library(xts, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+# library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+# library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+# library(stringr,lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+
+# install.packages("stringr", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
+
+# install.packages("hwriter" )
+library(devtools)
+install_github("bridachristian/DataQualityCheckEuracAlpEnv")
+library("DataQualityCheckEuracAlpEnv")
+install_github("alexsanjoseph/compareDF")
+library(compareDF)
+
+library(zoo)
+library(knitr)
+library(ggplot2)
+library(reshape2)
+library(DT)
+library(htmltools)
+library(rmarkdown)
+library(yaml)
+library(highr)
+
+library(mailR)
+library(XML)
+library(xtable)
+library(dygraphs)
+library(xts)
+library(hwriter)
 
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
@@ -72,8 +72,8 @@ install.packages("stringr", lib = "/home/cbrida/Libraries_DataQualityCheckEuracA
 
 # ..... Params section .....................................................................................................................................
 
-# main_dir = "Z:/"
-main_dir = "/shared/test_christian/"
+main_dir = "Z:/test_christian/"
+# main_dir = "/shared/test_christian/"
 
 main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
 main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
@@ -87,6 +87,8 @@ PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/Pics",sep = "")                    # where input files are
+# input_dir <- paste("Z:","/Stations_Data/Data/LoggerNet_Raw_Data/Data/Pics",sep = "")                    # where input files are
+
 backup_dir <- paste(main_dir,"/Stations_Data/Data/Pics_Backup",sep = "")                    # where input files are
 corrupt_dir <-paste(main_dir,"/Stations_Data/Data/Pics_Corrupted",sep = "")
 
@@ -115,7 +117,8 @@ mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 mail_config_info = mail_config_parsing(mail_config)
 
 sender = mail_config_info$sender
-reciver = mail_config_info$reciver   
+# reciver = mail_config_info$reciver 
+reciver = "Christian.Brida@eurac.edu" 
 my_smtp = mail_config_info$my_smtp
 # -------------------------------
 
@@ -127,7 +130,7 @@ my_smtp = mail_config_info$my_smtp
 
 for(PROJECT in project_type){
   data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
-  warning_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_Warnings/",PROJECT,"/", sep = "")  # where to put warnings html files
+  # warning_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_Warnings/",PROJECT,"/", sep = "")  # where to put warnings html files
   
   
   # ..... files selection .....................................................................................................................................
@@ -154,21 +157,21 @@ for(PROJECT in project_type){
     if(dir.exists(paste(data_output_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store data organized by station name
       if(dir.exists(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))){
         output_dir_pics_new = paste(data_output_dir,STATION_NAME,"/Pics/", sep = "")
+        warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
       }else{
         dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = ""))
         output_dir_pics_new = paste(data_output_dir,STATION_NAME,"/Pics/", sep = "")
+        warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
+        
       }
     }else{
       dir.create(paste(data_output_dir,STATION_NAME,"/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = ""))
       output_dir_pics_new = paste(data_output_dir,STATION_NAME,"/Pics/", sep = "")
-    }
-    
-    if(dir.exists(paste(warning_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store WARNINGS files 
-      warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
-    }else{
-      dir.create(paste(warning_file_dir,STATION_NAME,"/", sep = "")) 
-      warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
+      warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
+      
     }
     
     
@@ -243,7 +246,7 @@ for(PROJECT in project_type){
       }
       
       if(length(pics_corrupted) > 0 ){
-        file.rename(from = paste(inpur_dir_pics,"/", pics_corrupted,sep = ""), to = paste(output_dir_pics_new,"/", pics_corrupted, sep = ""))
+        file.rename(from = paste(inpur_dir_pics,"/", pics_corrupted,sep = ""), to = paste(corrupt_dir_pics,"/", pics_corrupted, sep = ""))
         # NB --> file.rename sovrascrive !!!! --> assicurarsi di copiare nella cartella di ouput solo i file diversi!
         
         

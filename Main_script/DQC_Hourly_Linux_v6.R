@@ -82,7 +82,7 @@ print(project_dir)
 
 # main_dir = "/shared/"
 # main_dir = "/shared/test_christian/"
-# main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
+# main_dir = "Z:/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
@@ -92,7 +92,7 @@ input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep =
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are    # TEST!!!!
 
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-# project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+# project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github
 
 
 
@@ -107,7 +107,6 @@ warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 # print(DQC_setting_dir)
 # print(warning_report_RMD)
 # 
-# stop()
 
 HOURS_OFFLINE = 24       # <- no data update since 24h --> station broken?
 LOGGERNET_OFFLINE = 1    # <. all station offline since 1h --> loggernet doesn't work!
@@ -205,9 +204,10 @@ for(PROJECT in project_type){
       logg_data_NAME[h] = substring(text = files_no_project[h],first = 1,last = u1[h]-1)
       table_data_NAME[h] = substring(text = files_no_project[h],first = u1[h]+1,last = nchar(files_no_project[h]))
     }  
-    df_files = data.frame(files_available, logg_data_NAME, table_data_NAME)
+    df_files = data.frame(files_available, logg_data_NAME, table_data_NAME,stringsAsFactors = F)
     colnames(df_files) = c("Files", "LoggerNet_name", "Datatable_name")
     
+    # files_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
     files_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
     
     # if(PROJECT == "LTER"){                                                                        # <--Filter files based on Project (diffent if is MONALISA or LTER)
@@ -539,7 +539,7 @@ for(PROJECT in project_type){
             
             
             my_subject = paste(PROJECT,"-",icinga_station,"-",error_write)
-            my_body = paste(url_webservice,icinga_text,sep = "")
+            my_body = paste(url_webservice,PROJECT,icinga_text,sep = "") ################ aggiungere project
             
             send.mail(from = sender,
                       to = reciver,

@@ -61,11 +61,6 @@ print(project_dir)
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
 
-source("C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/R/alert_range_notify.R")
-source("C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/R/DQC_function.R")
-
-
-
 # ..... Params section .....................................................................................................................................
 
 main_dir = "Z:/test_christian/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -14,31 +14,25 @@ print("-------------------------------------------------------------------------
 print(paste("Data Quality Check:",Sys.time()))
 
 # ..... Libraries .....................................................................................................................................
-# library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-# library("DataQualityCheckEuracAlpEnv")
-# install_github("alexsanjoseph/compareDF")
-# library(compareDF)
-# 
-# library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# 
-# library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# 
-# library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(xtable, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(dygraphs, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(xts, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-library(optparse)
+ library(devtools)
+ library(compareDF)
+ library(zoo)
+ library(knitr)
+ library(ggplot2)
+ library(reshape2)
+ library(DT)
+ library(htmltools)
+ library(rmarkdown)
+ library(yaml)
+ library(highr)
+ library(mailR)
+ library(XML)
+ library(xtable)
+ library(dygraphs)
+ library(xts)
+ library(hwriter)
+ library(labeling)
+ library(optparse)
 
 option_list = list(
   make_option(c("-md", "--maindir"), type="character", default="/shared/", 
@@ -57,23 +51,6 @@ print(main_dir)
 print(project_dir)
 
 # stop()
-# library(devtools) 
-# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-# library("DataQualityCheckEuracAlpEnv")
-# install_github("alexsanjoseph/compareDF")
-# library(compareDF)
-# 
-# library(zoo)
-# library(knitr)
-# library(ggplot2)
-# library(reshape2)
-# library(DT)
-# library(htmltools)
-# library(rmarkdown)
-# library(yaml)
-# library(highr)
-# 
-# library(mailR)
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
@@ -116,21 +93,21 @@ date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GM
 
 loggernet_status = c()
 
-mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
-mail_file = "mail_status.csv"
-mail_file_alert = "out_of_range.csv"
+#mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
+#mail_file = "mail_status.csv"
+#mail_file_alert = "out_of_range.csv"
 # --- read mail configuration ---
 
-mail_config_file = paste(mail_dir,"mail_config.xml",sep = "")
-mail_config = xmlParse(mail_config_file, useInternalNodes = F)
+#mail_config_file = paste(mail_dir,"mail_config.xml",sep = "")
+#mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 
-mail_config_info = mail_config_parsing_new(mail_config)
+#mail_config_info = mail_config_parsing_new(mail_config)
 
-sender = mail_config_info$sender
-reciver = mail_config_info$reciver
+#sender = mail_config_info$sender
+#reciver = mail_config_info$reciver
 # reciver = "Christian.Brida@eurac.edu"
-my_smtp = mail_config_info$my_smtp
-url_webservice = mail_config_info$url_webservice
+#my_smtp = mail_config_info$my_smtp
+#url_webservice = mail_config_info$url_webservice
 # -------------------------------
 
 if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){

@@ -40,37 +40,30 @@ print(paste("Data Quality Check:",Sys.time()))
 # library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 
 # install.packages("labeling", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
+library(optparse)
 
-library(devtools)
-install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-library("DataQualityCheckEuracAlpEnv")
-install_github("alexsanjoseph/compareDF")
-library(compareDF)
+option_list = list(
+  make_option(c("-md", "--maindir"), type="character", default="/shared/", 
+              help="set the main dir", metavar="character"),
+  make_option(c("-pd", "--prjdir"), type="character", default="/home/cbrida/DataQualityCheckEuracAlpEnv/", 
+              help="set the project dir", metavar="character")
+); 
 
-library(zoo)
-library(knitr)
-library(ggplot2)
-library(reshape2)
-library(DT)
-library(htmltools)
-library(rmarkdown)
-library(yaml)
-library(highr)
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
 
-library(mailR)
-library(XML)
-library(xtable)
-library(dygraphs)
-library(xts)
-library(hwriter)
+main_dir = opt$maindir
+project_dir = opt$prjdir
 
+print(main_dir)
+print(project_dir)
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
 
 # ..... Params section .....................................................................................................................................
 
-main_dir = "Z:/test_christian/"
+main_dir = "Z:/test_christian/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # main_dir = "/shared/"
 # main_dir = "/shared/test_christian/"
 
@@ -86,10 +79,10 @@ PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
 # input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
-input_dir <- paste("Z:","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+input_dir <- paste("Z:","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are    
 
-project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-# project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+# project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
@@ -123,14 +116,14 @@ mail_config_file = paste(mail_dir,"mail_config.xml",sep = "")
 mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 
 # mail_config_info = mail_config_parsing_new(mail_config) ##################################################
-mail_config_info = mail_config_parsing(mail_config)
+mail_config_info = mail_config_parsing_new(mail_config)
 
 sender = mail_config_info$sender
 # reciver = mail_config_info$reciver
 reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
-# url_webservice = mail_config_info$url_webservice ######################################################### 
-url_webservice = "http://report.alpenv.eurac.edu/"
+url_webservice = mail_config_info$url_webservice #########################################################
+# url_webservice = "http://report.alpenv.eurac.edu/"
 # -------------------------------
 
 if(!file.exists(paste(DQC_setting_dir,"lock_report.lock",sep = ""))){
@@ -207,7 +200,7 @@ for(PROJECT in project_type){
       logg_data_NAME[h] = substring(text = files_no_project[h],first = 1,last = u1[h]-1)
       table_data_NAME[h] = substring(text = files_no_project[h],first = u1[h]+1,last = nchar(files_no_project[h]))
     }  
-    df_files = data.frame(files_available, logg_data_NAME, table_data_NAME)
+    df_files = data.frame(files_available, logg_data_NAME, table_data_NAME,stringsAsFactors = F)
     colnames(df_files) = c("Files", "LoggerNet_name", "Datatable_name")
     
     files_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
@@ -487,6 +480,8 @@ for(PROJECT in project_type){
           }else{
             report_mydata = NULL
           }
+          
+          
           
           params_list = list(report_mydata,
                              dqc_date,

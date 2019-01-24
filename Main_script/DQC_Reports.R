@@ -61,9 +61,15 @@ print(project_dir)
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
 
+source("C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/R/alert_range_notify.R")
+source("C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/R/DQC_function.R")
+
+
+
 # ..... Params section .....................................................................................................................................
 
 main_dir = "Z:/test_christian/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# main_dir = "Z:/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # main_dir = "/shared/"
 # main_dir = "/shared/test_christian/"
 
@@ -79,7 +85,7 @@ PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
 # input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
-input_dir <- paste("Z:","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are    
+input_dir <- paste("Z:","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -148,7 +154,9 @@ for(PROJECT in project_type){
   datetime_sampling =  "15 min"
   record_header =  "RECORD"
   range_file =  "Range.csv"
-  use_alert_station_flag = TRUE        # <-- IN REPORT DON'T SHOW ANALYZE VARIABLES SET AS 0 IN RANGE FILE
+  # use_alert_station_flag = TRUE        # <-- IN REPORT DON'T SHOW ANALYZE VARIABLES SET AS 0 IN RANGE FILE
+  use_alert_station_flag = TRUE        # <-- use range file flags. Default: TRUE
+  use_realtime_station_flag = FALSE        # <-- use out_of_range file flags. Default: FALSE
   
   write_output_files =  "FALSE"
   # write_output_files =  "TRUE"
@@ -272,7 +280,7 @@ for(PROJECT in project_type){
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
                                              "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
                                              "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type",
-                                             "report_info", "report_dataframe","use_alert_station_flag","mail_dir","url_webservice","mail_file_alert")))
+                                             "report_info", "report_dataframe","use_alert_station_flag","mail_dir","url_webservice","mail_file_alert","use_realtime_station_flag")))
     
     
     
@@ -382,7 +390,7 @@ for(PROJECT in project_type){
         record_check = dwnl_info$record_check
         use_alert_station_flag = use_alert_station_flag
         mail_file_alert = mail_file_alert
-        
+        use_realtime_station_flag = use_realtime_station_flag
         # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
         # output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
@@ -410,7 +418,8 @@ for(PROJECT in project_type){
                                    record_check,
                                    output_dir_raw,
                                    use_alert_station_flag,
-                                   mail_file_alert)
+                                   mail_file_alert,
+                                   use_realtime_station_flag)
         
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]
@@ -481,6 +490,18 @@ for(PROJECT in project_type){
             report_mydata = NULL
           }
           
+          if(use_alert_station_flag == TRUE){
+            range_flags = read.csv(paste(range_dir,range_file,sep = ""),stringsAsFactors = F)
+            range_station = range_flags[,c(1,which(colnames(range_flags) == STATION_NAME))]
+            colnames(range_station)[2] = "Station"
+            variables_flagged = range_station$Variable[which(range_station$Station == 0)]
+            
+            if(length(variables_flagged) == 0){
+              variables_flagged = NULL
+              }
+          }else{
+            variables_flagged = NULL
+          }
           
           
           params_list = list(report_mydata,
@@ -488,9 +509,10 @@ for(PROJECT in project_type){
                              station_name,
                              errors_list_critical,
                              errors_list_warning,
-                             errors_list_report_errors)
-          names(params_list) = c("report_mydata", "dqc_date","station_name","errors_list_critical","errors_list_warning","errors_list_report_errors")
-         
+                             errors_list_report_errors,
+                             variables_flagged)
+          names(params_list) = c("report_mydata", "dqc_date","station_name","errors_list_critical","errors_list_warning","errors_list_report_errors","variables_flagged")
+          
           gc(reset = T)
           rmarkdown::render(input = input,
                             output_file = output_file,

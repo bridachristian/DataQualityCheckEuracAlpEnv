@@ -8,6 +8,7 @@
 #' @param MAIL_FILE_ALERT aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 #' @param STATION name of station
 #' @param USE_FLAG true/false --> decide to use or not the station flags in range file
+#' @param USE_RT_FLAG true/false --> decide to use or not the station flags in range file
 #' @param DATETIME_FORMAT kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
 #' @return A data.frame with all values in its physical range
 #'
@@ -20,7 +21,7 @@
 alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT = "%Y-%m-%d %H:%M",RECORD_HEADER, 
                                     RANGE_DIR, RANGE_FILE, 
                                     MAIL_DIR, MAIL_FILE_ALERT,
-                                    STATION, USE_FLAG){
+                                    STATION, USE_FLAG,USE_RT_FLAG){
   
   ######
   # DATA = cbind(DATA,rep(1000, times = nrow(DATA)))
@@ -105,7 +106,14 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
       upper_limit = range$Alert_Max[w]
       
       if(USE_FLAG == TRUE){
-        if(range[w,which(colnames(range) == STATION)] == 0 | oor_flag[w2,which(colnames(oor_flag)==STATION)] == 0 ){      #  Check variables activated when manual range is 1 and automatic flag = 1
+        if(range[w,which(colnames(range) == STATION)] == 0 ){      #  Check variables activated when manual range is 1 and automatic flag = 1
+          lower_limit = NA
+          upper_limit = NA
+        }
+      }
+      
+      if(USE_RT_FLAG == TRUE){
+        if(oor_flag[w2,which(colnames(oor_flag)==STATION)] == 0 ){      #  Check variables activated when manual range is 1 and automatic flag = 1
           lower_limit = NA
           upper_limit = NA
         }

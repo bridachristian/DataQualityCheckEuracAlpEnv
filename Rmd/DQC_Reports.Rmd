@@ -9,6 +9,7 @@ params:
     errors_list_warning:    # list:  list containing status and eventually errors information
     errors_list_report_errors:   # list:  list containing status and eventually errors information
     dqc_date:               # date: date DQC
+    variables_flagged:      # dataframe : variables with flag = o in range file
 ---
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=TRUE}
@@ -18,6 +19,7 @@ errors_list_critical <- params$errors_list_critical
 errors_list_warning <- params$errors_list_warning
 errors_list_report_errors <- params$errors_list_report_errors
 dqc_date <- params$dqc_date
+variables_flagged <- params$variables_flagged
 
 ```
 
@@ -137,7 +139,7 @@ if(errors_list_critical$err_date_missing$Status == "Y"){
           axis.ticks.y=element_blank(),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())
-  
+  variables_flagged
   
   knit_print(g0)
   
@@ -149,9 +151,17 @@ if(errors_list_critical$err_date_missing$Status == "Y"){
 <!-- ............... WARNINGS STATUS ICINGA ............... -->
 
 <!-- err_alert -->
+##`r if(length(variables_flagged) != 0){ paste("Silent Variables:")}`
+```{r echo=FALSE, warning=FALSE, results='asis',fig.width= 12,fig.height= 6}
+if(length(variables_flagged) != 0){
+  df_var = as.data.frame(variables_flagged)
+  colnames(df_var) = ""
+  kable(df_var)
+  
+}
+```
 
-
-##`r if(errors_list_report_errors$err_out_of_range$Status == "Y"){ paste("Data out of range!")}`
+##`r if(errors_list_warning$err_range_alert$Status == "Y"){ paste("Data out of range!")}`
 ```{r echo=FALSE, warning=FALSE, results='asis',fig.width= 12,fig.height= 6}
 if(errors_list_warning$err_range_alert$Status == "Y"){
   table =errors_list_warning$err_range_alert$Values

@@ -539,7 +539,7 @@ for(PROJECT in project_type){
                               params = params_list)          # generate a report of warnings
             
             if(status[names(status) == "err_range_alert"] == "Y"){
-              variab_out = errors_list_critical$err_range_alert$Values$Variable
+              variab_out = unique(errors_list_critical$err_range_alert$Values$Variable)
               if(length(variab_out) > 1 ){
                 var_write = paste(variab_out[1],"more...",sep = " + ")
               }else{

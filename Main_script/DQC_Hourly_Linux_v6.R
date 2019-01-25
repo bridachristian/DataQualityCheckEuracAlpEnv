@@ -52,7 +52,7 @@ opt = parse_args(opt_parser);
 
 main_dir = opt$maindir
 project_dir = opt$prjdir
-  
+
 print(main_dir)
 print(project_dir)
 
@@ -404,27 +404,27 @@ for(PROJECT in project_type){
         # rm(dwnl_info)
         
         DQC_results = DQC_function(input_dir,
-                                       output_dir_data,
-                                       output_dir_report,
-                                       project_dir,
-                                       data_from_row,
-                                       header_row_number,
-                                       datetime_header,
-                                       datetime_format,
-                                       datetime_sampling,
-                                       record_header,
-                                       range_file,
-                                       write_output_files,
-                                       write_output_report,
-                                       file_name,
-                                       station_name,
-                                       start_date,
-                                       database_dir,
-                                       logger_info_file,
-                                       record_check,
-                                       output_dir_raw,
-                                       use_alert_station_flag,
-                                       mail_file_alert)
+                                   output_dir_data,
+                                   output_dir_report,
+                                   project_dir,
+                                   data_from_row,
+                                   header_row_number,
+                                   datetime_header,
+                                   datetime_format,
+                                   datetime_sampling,
+                                   record_header,
+                                   range_file,
+                                   write_output_files,
+                                   write_output_report,
+                                   file_name,
+                                   station_name,
+                                   start_date,
+                                   database_dir,
+                                   logger_info_file,
+                                   record_check,
+                                   output_dir_raw,
+                                   use_alert_station_flag,
+                                   mail_file_alert)
         
         
         mydata = DQC_results[[1]]
@@ -505,6 +505,7 @@ for(PROJECT in project_type){
             }
           }
           
+          
           output_file_report = paste(station_name,"_",dqc_date_write,"_",error_write,".html",sep = "")
           
           input =  warning_report_RMD 
@@ -537,8 +538,19 @@ for(PROJECT in project_type){
                               output_dir = output_dir,
                               params = params_list)          # generate a report of warnings
             
-            
-            my_subject = paste(PROJECT,"-",icinga_station,"-",error_write)
+            if(status[names(status) == "err_range_alert"] == "Y"){
+              variab_out = errors_list_critical$err_range_alert$Values$Variable
+              if(length(variab_out) > 1 ){
+                var_write = paste(variab_out[1],"more...",sep = " + ")
+              }else{
+                var_write = variab_out
+              }
+              my_subject = paste(PROJECT,"-",icinga_station,"-",error_write,"-",var_write)
+              
+            }else{
+              my_subject = paste(PROJECT,"-",icinga_station,"-",error_write)
+              
+            }
             my_body = paste(url_webservice,PROJECT,icinga_text,sep = "") ################ aggiungere project
             
             send.mail(from = sender,

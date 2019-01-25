@@ -59,7 +59,7 @@ print(project_dir)
 
 # main_dir = "/shared/"
 # main_dir = "/shared/test_christian/"
-# main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
+main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
@@ -69,7 +69,7 @@ input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep =
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are    # TEST!!!!
 
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-# project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
 
 
@@ -95,21 +95,21 @@ date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GM
 
 loggernet_status = c()
 
-#mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
-#mail_file = "mail_status.csv"
-#mail_file_alert = "out_of_range.csv"
+mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
+mail_file = "mail_status.csv"
+mail_file_alert = "out_of_range.csv"
 # --- read mail configuration ---
 
-#mail_config_file = paste(mail_dir,"mail_config.xml",sep = "")
-#mail_config = xmlParse(mail_config_file, useInternalNodes = F)
+mail_config_file = paste(mail_dir,"mail_config.xml",sep = "")
+mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 
-#mail_config_info = mail_config_parsing_new(mail_config)
+mail_config_info = mail_config_parsing_new(mail_config)
 
-#sender = mail_config_info$sender
-#reciver = mail_config_info$reciver
-# reciver = "Christian.Brida@eurac.edu"
-#my_smtp = mail_config_info$my_smtp
-#url_webservice = mail_config_info$url_webservice
+sender = mail_config_info$sender
+# reciver = mail_config_info$reciver
+reciver = "Christian.Brida@eurac.edu"
+my_smtp = mail_config_info$my_smtp
+url_webservice = mail_config_info$url_webservice
 # -------------------------------
 
 if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){

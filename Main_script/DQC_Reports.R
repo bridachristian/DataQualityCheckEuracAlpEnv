@@ -63,8 +63,8 @@ print(project_dir)
 
 # ..... Params section .....................................................................................................................................
 
-main_dir = "Z:/test_christian/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# main_dir = "Z:/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# main_dir = "Z:/test_christian/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+main_dir = "Z:/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # main_dir = "/shared/"
 # main_dir = "/shared/test_christian/"
 
@@ -78,9 +78,9 @@ project_type = c("LTER","MONALISA")
 
 PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
-# input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
-input_dir <- paste("Z:","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+# input_dir <- paste("Z:","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -123,8 +123,8 @@ mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 mail_config_info = mail_config_parsing_new(mail_config)
 
 sender = mail_config_info$sender
-# reciver = mail_config_info$reciver
-reciver = "Christian.Brida@eurac.edu"
+reciver = mail_config_info$reciver
+# reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice #########################################################
 # url_webservice = "http://report.alpenv.eurac.edu/"
@@ -635,7 +635,7 @@ for(PROJECT in project_type){
         if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
           # paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
           # link = paste(main_dir_mapping_out, substring(output_dir_report_new,nchar(main_dir_mapping_in)), output_file_report,sep = "")
-          link = paste(substring(output_dir_report_new,nchar(data_output_dir)), output_file_report,sep = "")
+          link = paste("/",PROJECT,substring(output_dir_report_new,nchar(data_output_dir)), output_file_report,sep = "")
           # link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
         }else{
           link = NA
@@ -825,10 +825,12 @@ for(PROJECT in project_type){
   # MANDARE MAIL !!!!
   print("--------------------------------------------------------------------------------------------------")
   
+  report_output_dir <- paste(data_output_dir,"00_DQC_Reports/",sep = "")  # where to put output reports
+  
   my_subject = paste(PROJECT,"report")
   # my_body = paste(output_dir_final,output_file_final,sep="")
   # my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
-  my_body = paste(url_webservice,substring(output_dir_final, nchar(data_output_dir)),output_file_final,sep="")
+  my_body = paste(url_webservice,PROJECT,substring(report_output_dir, nchar(data_output_dir)),output_file_final,sep="")
   
   # my_body = paste(url_webservice,icinga_text,sep = "")
   # icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")               # to disactivate when webservice is ready!

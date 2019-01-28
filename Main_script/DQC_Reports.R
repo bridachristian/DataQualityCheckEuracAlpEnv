@@ -63,8 +63,8 @@ print(project_dir)
 
 # ..... Params section .....................................................................................................................................
 
-# main_dir = "Z:/test_christian/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-main_dir = "Z:/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+main_dir = "Z:/test_christian/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# main_dir = "Z:/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # main_dir = "/shared/"
 # main_dir = "/shared/test_christian/"
 
@@ -78,9 +78,9 @@ project_type = c("LTER","MONALISA")
 
 PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
-input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+# input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
-# input_dir <- paste("Z:","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+input_dir <- paste("Z:","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -123,8 +123,8 @@ mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 mail_config_info = mail_config_parsing_new(mail_config)
 
 sender = mail_config_info$sender
-reciver = mail_config_info$reciver
-# reciver = "Christian.Brida@eurac.edu"
+# reciver = mail_config_info$reciver
+reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice #########################################################
 # url_webservice = "http://report.alpenv.eurac.edu/"

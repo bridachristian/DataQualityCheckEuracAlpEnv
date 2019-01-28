@@ -59,7 +59,8 @@ print(project_dir)
 
 # main_dir = "/shared/"
 # main_dir = "/shared/test_christian/"
-main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
+# main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
+main_dir = "Z:/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
@@ -69,8 +70,8 @@ input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep =
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are    # TEST!!!!
 
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-
+# project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github
 
 
 DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
@@ -521,7 +522,7 @@ for(PROJECT in project_type){
             
             
             my_subject = paste(PROJECT,"-",icinga_station,"-",error_write)
-            my_body = paste(url_webservice,icinga_text,sep = "")
+            my_body = paste(url_webservice,PROJECT,icinga_text,sep = "")
             
             send.mail(from = sender,
                       to = reciver,

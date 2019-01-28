@@ -13,16 +13,34 @@ rm(list = ls(all.names = TRUE))
 print("--------------------------------------------------------------------------------------------------")
 
 # ..... Libraries .....................................................................................................................................
-library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-library("DataQualityCheckEuracAlpEnv")
+# library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
+# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
+# library("DataQualityCheckEuracAlpEnv")
+library(optparse)
+
+option_list = list(
+  make_option(c("-md", "--maindir"), type="character", default="/shared/", 
+              help="set the main dir", metavar="character"),
+  make_option(c("-pd", "--prjdir"), type="character", default="/home/cbrida/DataQualityCheckEuracAlpEnv/", 
+              help="set the project dir", metavar="character")
+); 
+
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
+
+main_dir = opt$maindir
+project_dir = opt$prjdir
+
+print(main_dir)
+print(project_dir)
+
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
 
 # ..... Params section .....................................................................................................................................
 
-main_dir = "/shared/"
+# main_dir = "/shared/"
 # main_dir = "/shared/test_christian/"
 DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 

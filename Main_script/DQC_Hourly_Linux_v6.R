@@ -101,10 +101,10 @@ download_table_dir <- paste(DQC_setting_dir,"/Process/Download_tables/Hourly/", 
 
 warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 
-# print(DQC_setting_dir)
-# print(warning_report_RMD)
+ print(DQC_setting_dir)
+ print(warning_report_RMD)
 # 
-stop()
+
 HOURS_OFFLINE = 24       # <- no data update since 24h --> station broken?
 LOGGERNET_OFFLINE = 1    # <. all station offline since 1h --> loggernet doesn't work!
 
@@ -127,6 +127,10 @@ reciver = mail_config_info$reciver
 # reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice
+
+ print(mail_config_file)
+ print(sender)
+ print(reciver)
 # -------------------------------
 
 if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){

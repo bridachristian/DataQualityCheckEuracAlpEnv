@@ -14,31 +14,28 @@ print("-------------------------------------------------------------------------
 print(paste("Data Quality Check:",Sys.time()))
 
 # ..... Libraries .....................................................................................................................................
-# library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-# library("DataQualityCheckEuracAlpEnv")
+ library(devtools)
+ library("DataQualityCheckEuracAlpEnv")
 # install_github("alexsanjoseph/compareDF")
-# library(compareDF)
-# 
-# library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# 
-# library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# 
-# library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(xtable, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(dygraphs, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(xts, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-library(optparse)
+ library(compareDF)
+ library(zoo)
+ library(knitr)
+ library(ggplot2)
+ library(reshape2)
+ library(DT)
+ library(htmltools)
+ library(rmarkdown)
+ library(yaml)
+ library(highr)
+ library(mailR)
+ library(XML)
+ library(xtable)
+ library(dygraphs)
+ library(xts)
+ library(hwriter)
+ library(labeling)
+ library(optparse)
+ library(optparse)
 
 option_list = list(
   make_option(c("-md", "--maindir"), type="character", default="/shared/", 
@@ -107,7 +104,7 @@ warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 # print(DQC_setting_dir)
 # print(warning_report_RMD)
 # 
-
+stop()
 HOURS_OFFLINE = 24       # <- no data update since 24h --> station broken?
 LOGGERNET_OFFLINE = 1    # <. all station offline since 1h --> loggernet doesn't work!
 

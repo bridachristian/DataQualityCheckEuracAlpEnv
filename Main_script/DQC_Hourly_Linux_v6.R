@@ -15,6 +15,8 @@ print(paste("Data Quality Check:",Sys.time()))
 
 # ..... Libraries .....................................................................................................................................
 library(devtools)
+library("DataQualityCheckEuracAlpEnv")
+# install_github("alexsanjoseph/compareDF")
 library(compareDF)
 library(zoo)
 library(knitr)
@@ -59,7 +61,6 @@ print(project_dir)
 
 # main_dir = "/shared/"
 # main_dir = "/shared/test_christian/"
-# main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 # main_dir = "Z:/test_christian/"
 
 project_type = c("LTER","MONALISA")
@@ -70,7 +71,6 @@ input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep =
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are    # TEST!!!!
 
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-# project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 # project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github
 
 
@@ -82,10 +82,9 @@ download_table_dir <- paste(DQC_setting_dir,"/Process/Download_tables/Hourly/", 
 
 warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 
-# sapply(dir(paste(project_dir,"R/",sep = ""),pattern = ".R"),FUN = function(x) source(paste(project_dir,"R/",x,sep = ""))) # import all function from 
 
-# print(DQC_setting_dir)
-# print(warning_report_RMD)
+ print(DQC_setting_dir)
+ print(warning_report_RMD)
 # 
 # stop()
 

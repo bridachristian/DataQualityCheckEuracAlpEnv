@@ -13,9 +13,8 @@ rm(list = ls(all.names = TRUE))
 print("--------------------------------------------------------------------------------------------------")
 
 # ..... Libraries .....................................................................................................................................
-# library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-# library("DataQualityCheckEuracAlpEnv")
+library(devtools)
+library("DataQualityCheckEuracAlpEnv")
 library(optparse)
 
 option_list = list(

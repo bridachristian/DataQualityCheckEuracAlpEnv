@@ -14,25 +14,25 @@ print("-------------------------------------------------------------------------
 print(paste("Data Quality Check:",Sys.time()))
 
 # ..... Libraries .....................................................................................................................................
- library(devtools)
- library(compareDF)
- library(zoo)
- library(knitr)
- library(ggplot2)
- library(reshape2)
- library(DT)
- library(htmltools)
- library(rmarkdown)
- library(yaml)
- library(highr)
- library(mailR)
- library(XML)
- library(xtable)
- library(dygraphs)
- library(xts)
- library(hwriter)
- library(labeling)
- library(optparse)
+library(devtools)
+library(compareDF)
+library(zoo)
+library(knitr)
+library(ggplot2)
+library(reshape2)
+library(DT)
+library(htmltools)
+library(rmarkdown)
+library(yaml)
+library(highr)
+library(mailR)
+library(XML)
+library(xtable)
+library(dygraphs)
+library(xts)
+library(hwriter)
+library(labeling)
+library(optparse)
 
 option_list = list(
   make_option(c("-md", "--maindir"), type="character", default="/shared/", 
@@ -60,7 +60,7 @@ print(project_dir)
 # main_dir = "/shared/"
 # main_dir = "/shared/test_christian/"
 # main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
-main_dir = "Z:/test_christian/"
+# main_dir = "Z:/test_christian/"
 
 project_type = c("LTER","MONALISA")
 
@@ -71,7 +71,7 @@ input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep =
 
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 # project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github
+# project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github
 
 
 DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
@@ -82,7 +82,7 @@ download_table_dir <- paste(DQC_setting_dir,"/Process/Download_tables/Hourly/", 
 
 warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 
-sapply(dir(paste(project_dir,"R/",sep = ""),pattern = ".R"),FUN = function(x) source(paste(project_dir,"R/",x,sep = ""))) # import all function from 
+# sapply(dir(paste(project_dir,"R/",sep = ""),pattern = ".R"),FUN = function(x) source(paste(project_dir,"R/",x,sep = ""))) # import all function from 
 
 # print(DQC_setting_dir)
 # print(warning_report_RMD)
@@ -107,8 +107,8 @@ mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 mail_config_info = mail_config_parsing_new(mail_config)
 
 sender = mail_config_info$sender
-# reciver = mail_config_info$reciver
-reciver = "Christian.Brida@eurac.edu"
+reciver = mail_config_info$reciver
+# reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice
 # -------------------------------
@@ -186,7 +186,7 @@ for(PROJECT in project_type){
       logg_data_NAME[h] = substring(text = files_no_project[h],first = 1,last = u1[h]-1)
       table_data_NAME[h] = substring(text = files_no_project[h],first = u1[h]+1,last = nchar(files_no_project[h]))
     }  
-    df_files = data.frame(files_available, logg_data_NAME, table_data_NAME)
+    df_files = data.frame(files_available, logg_data_NAME, table_data_NAME,stringsAsFactors = F)
     colnames(df_files) = c("Files", "LoggerNet_name", "Datatable_name")
     
     files_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
@@ -245,14 +245,14 @@ for(PROJECT in project_type){
   for(t in  1: length(files_available_project)){
     gc(reset = T)
     
-    # rm(list = setdiff(ls(all.names = TRUE),c("date_DQC","main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","loggernet_status",
-    #                                          "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
-    #                                          "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
-    #                                          "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
-    #                                          "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
-    #                                          "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
-    #                                          "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type","use_alert_station_flag","mail_dir","url_webservice","mail_file_alert","use_realtime_station_flag")))
-     
+    rm(list = setdiff(ls(all.names = TRUE),c("date_DQC","main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","loggernet_status",
+                                             "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
+                                             "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
+                                             "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
+                                             "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
+                                             "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
+                                             "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type","use_alert_station_flag","mail_dir","url_webservice","mail_file_alert","use_realtime_station_flag")))
+    
     
     
     FILE_NAME = files_available_project[t]
@@ -520,9 +520,21 @@ for(PROJECT in project_type){
                               output_dir = output_dir,
                               params = params_list)          # generate a report of warnings
             
+            if(status[names(status) == "err_range_alert"] == "Y"){
+              variab_out = unique(errors_list_critical$err_range_alert$Values$Variable)
+              if(length(variab_out) > 1 ){
+                var_write = paste(variab_out[1],"more...",sep = " + ")
+              }else{
+                var_write = variab_out
+              }
+              my_subject = paste(PROJECT,"-",icinga_station,"-",error_write,"-",var_write)
+            }else{
+              my_subject = paste(PROJECT,"-",icinga_station,"-",error_write)
+            }
+            my_body = paste(url_webservice,PROJECT,icinga_text,sep = "") ################ aggiungere project
             
-            my_subject = paste(PROJECT,"-",icinga_station,"-",error_write)
-            my_body = paste(url_webservice,PROJECT,icinga_text,sep = "")
+            # my_subject = paste(PROJECT,"-",icinga_station,"-",error_write)
+            # my_body = paste(url_webservice,PROJECT,icinga_text,sep = "")
             
             send.mail(from = sender,
                       to = reciver,

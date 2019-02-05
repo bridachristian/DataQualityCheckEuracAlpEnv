@@ -79,13 +79,13 @@ mydf$err_overlap[mydf$err_overlap == 0] = "forestgreen"
 mydf$err_overlap[mydf$err_overlap == 1] = "firebrick1"
 
 mydf$err_missing_record[mydf$err_missing_record == 0] = "forestgreen"
-mydf$err_missing_record[mydf$err_missing_record == 1] = "firebrick1"
+mydf$err_missing_record[mydf$err_missing_record == 1] = "gold"
 
 mydf$err_restart_record[mydf$err_restart_record == 0] = "forestgreen"
-mydf$err_restart_record[mydf$err_restart_record == 1] = "firebrick1"
+mydf$err_restart_record[mydf$err_restart_record == 1] = "gold"
 
 mydf$err_date_missing[mydf$err_date_missing == 0] = "forestgreen"
-mydf$err_date_missing[mydf$err_date_missing == 1] = "gold"
+mydf$err_date_missing[mydf$err_date_missing == 1] = "firebrick1"
 
 mydf$err_range_alert[mydf$err_range_alert == 0] = "forestgreen"
 mydf$err_range_alert[mydf$err_range_alert == 1] = "gold"
@@ -105,9 +105,9 @@ colnames(mydf) = c("Station",
                    "File wrong structure",
                    "No new data",
                    "Data overlap",
-                   "Data gap, no record",
-                   "Data gap, restart record",
-                   "Data gap",
+                   "Data gap (record gap)",
+                   "Data gap (new software)",
+                   "Data gap (missing date)",
                    "Data overrange",
                    "Data overrange physical",
                    "Rows duplicated")

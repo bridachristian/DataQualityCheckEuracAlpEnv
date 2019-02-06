@@ -799,7 +799,7 @@ for(PROJECT in project_type){
   # ..... Final Report .....................................................................................................................................
   
   
-  input_final = paste(project_dir,"Rmd/DQC_Report_overview.Rmd",sep = "")
+  input_final = paste(project_dir,"/Rmd/DQC_Report_overview.Rmd",sep = "")
   # date_DQC 
   output_file_final =  paste(PROJECT,"_Report_",
                              format(date_DQC,format = "%Y"),

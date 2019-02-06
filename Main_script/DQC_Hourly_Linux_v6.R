@@ -36,6 +36,7 @@ library(hwriter)
 library(labeling)
 library(optparse)
 
+
 option_list = list(
   make_option(c("-md", "--maindir"), type="character", default="/shared/", 
               help="set the main dir", metavar="character"),
@@ -86,7 +87,6 @@ warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
  print(DQC_setting_dir)
  print(warning_report_RMD)
 # 
-# stop()
 
 HOURS_OFFLINE = 24       # <- no data update since 24h --> station broken?
 LOGGERNET_OFFLINE = 1    # <. all station offline since 1h --> loggernet doesn't work!
@@ -110,6 +110,10 @@ reciver = mail_config_info$reciver
 # reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice
+
+ print(mail_config_file)
+ print(sender)
+ print(reciver)
 # -------------------------------
 
 if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
@@ -188,6 +192,7 @@ for(PROJECT in project_type){
     df_files = data.frame(files_available, logg_data_NAME, table_data_NAME,stringsAsFactors = F)
     colnames(df_files) = c("Files", "LoggerNet_name", "Datatable_name")
     
+    # files_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
     files_available = df_files$Files[which(df_files$LoggerNet_name == df_files$Datatable_name)]
     
     # if(PROJECT == "LTER"){                                                                        # <--Filter files based on Project (diffent if is MONALISA or LTER)
@@ -407,7 +412,7 @@ for(PROJECT in project_type){
                                    use_alert_station_flag,
                                    mail_file_alert,
                                    use_realtime_station_flag)
-        
+
         
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]
@@ -487,6 +492,7 @@ for(PROJECT in project_type){
             }
           }
           
+          
           output_file_report = paste(station_name,"_",dqc_date_write,"_",error_write,".html",sep = "")
           
           input =  warning_report_RMD 
@@ -532,9 +538,7 @@ for(PROJECT in project_type){
             }
             my_body = paste(url_webservice,PROJECT,icinga_text,sep = "") ################ aggiungere project
             
-            # my_subject = paste(PROJECT,"-",icinga_station,"-",error_write)
-            # my_body = paste(url_webservice,PROJECT,icinga_text,sep = "")
-            
+
             send.mail(from = sender,
                       to = reciver,
                       subject = my_subject,

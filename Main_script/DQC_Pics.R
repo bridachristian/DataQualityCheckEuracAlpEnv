@@ -14,41 +14,17 @@ print("-------------------------------------------------------------------------
 print(paste("Data Quality Check:",Sys.time()))
 
 # ..... Libraries .....................................................................................................................................
-# library(devtools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# install_github("bridachristian/DataQualityCheckEuracAlpEnv")
-# library("DataQualityCheckEuracAlpEnv")
-# install_github("alexsanjoseph/compareDF")
-# library(compareDF)
-# 
-# library(zoo,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(knitr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(ggplot2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(reshape2,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(DT,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(htmltools,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(rmarkdown,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(yaml,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# 
-# library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# 
-# library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-# library(xtable, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(dygraphs, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(xts, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
-# library(stringr,lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 
-# install.packages("stringr", lib = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/" )
+rm(list = ls(all.names = TRUE))
 
-# install.packages("hwriter" )
+print("--------------------------------------------------------------------------------------------------")
+print(paste("Data Quality Check:",Sys.time()))
+
+# ..... Libraries .....................................................................................................................................
 library(devtools)
-install_github("bridachristian/DataQualityCheckEuracAlpEnv")
 library("DataQualityCheckEuracAlpEnv")
-install_github("alexsanjoseph/compareDF")
+# install_github("alexsanjoseph/compareDF")
 library(compareDF)
-
 library(zoo)
 library(knitr)
 library(ggplot2)
@@ -58,14 +34,30 @@ library(htmltools)
 library(rmarkdown)
 library(yaml)
 library(highr)
-
 library(mailR)
 library(XML)
 library(xtable)
 library(dygraphs)
 library(xts)
 library(hwriter)
+library(labeling)
+library(optparse)
 
+option_list = list(
+  make_option(c("-md", "--maindir"), type="character", default="/shared/", 
+              help="set the main dir", metavar="character"),
+  make_option(c("-pd", "--prjdir"), type="character", default="/home/cbrida/DataQualityCheckEuracAlpEnv/", 
+              help="set the project dir", metavar="character")
+); 
+
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
+
+main_dir = opt$maindir
+project_dir = opt$prjdir
+
+print(main_dir)
+print(project_dir)
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
@@ -74,12 +66,15 @@ library(hwriter)
 
 main_dir = "Z:/test_christian/"
 # main_dir = "/shared/test_christian/"
-
-main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
-main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
-
-# main_dir = "/shared/test_christian/"
 # main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
+
+project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+# project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+
+# main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
+# main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
+
+
 
 project_type = c("LTER","MONALISA")
 
@@ -94,8 +89,6 @@ corrupt_dir <-paste(main_dir,"/Stations_Data/Data/Pics_Corrupted",sep = "")
 
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
-project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-# project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
 DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
@@ -121,6 +114,8 @@ sender = mail_config_info$sender
 reciver = "Christian.Brida@eurac.edu" 
 my_smtp = mail_config_info$my_smtp
 # -------------------------------
+
+bytes_threshold  = 10000
 
 # if(!file.exists(paste(DQC_setting_dir,"lock_pics.lock",sep = ""))){
 #   file.create(paste(DQC_setting_dir,"lock_pics.lock",sep = ""))
@@ -154,21 +149,34 @@ for(PROJECT in project_type){
     
     inpur_dir_pics = paste(input_dir,"/", FOLDER_NAME,sep = "")
     
+    
+    
+    
     if(dir.exists(paste(data_output_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store data organized by station name
       if(dir.exists(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))){
         output_dir_pics_new = paste(data_output_dir,STATION_NAME,"/Pics/", sep = "")
         warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
       }else{
-        dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/Reports/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Processed/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
         output_dir_pics_new = paste(data_output_dir,STATION_NAME,"/Pics/", sep = "")
         warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
         
       }
     }else{
-      dir.create(paste(data_output_dir,STATION_NAME,"/", sep = ""))
-      dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/", sep = ""))      
+      dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/Reports/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Processed/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
       output_dir_pics_new = paste(data_output_dir,STATION_NAME,"/Pics/", sep = "")
       warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
       
@@ -219,11 +227,11 @@ for(PROJECT in project_type){
     color_new = color
     color_new[which(color == "I")] = "IR" 
     color_new[which(color == "R")] = "RGB" 
-
-    file_new_names = paste(STATION_NAME, "_", color_new, "_", d_to_write,".jpg",sep = "")
-    df = data.frame(file_raw, file_new_names, datetime)
-    df = df[order(df$datetime),]
     
+    file_new_names = paste(STATION_NAME, "_", color_new, "_", d_to_write,".jpg",sep = "")
+    df = data.frame(file_raw, file_new_names, datetime, file.size(file))
+    df = df[order(df$datetime),]
+    colnames(df)[4] = "file_size"
     
     if(length(file) > 0 ){   
       output_no_pics = list("N", NA)
@@ -233,15 +241,18 @@ for(PROJECT in project_type){
       file.copy(from = file,to = paste(backup_dir_pics,"/", file_raw,sep = ""))
       # NB --> file.copy NON sovrascrive !!!!
       
-      w = which(file.size(file) > 10000)  # move to a specific folder pics corrupted. The treshold on file size is 10 KB (= 10000 B)
-      pics_ok = file_raw[w]
-      pics_corrupted = file_raw[-w]
+      w = which(df$file_size > bytes_threshold)  # move to a specific folder pics corrupted. The treshold on file size is 10 KB (= 10000 B)
       
-      if(length(pics_ok) > 0 ){
+      pics_ok_old_name = df$file_raw[w] # <-- original name!
+      pics_ok_new_name = df$file_new_names[w] # <-- new name!
+      pics_corrupted = file_raw[-w]  # <-- original name!
+      
+      if(length(pics_ok_old_name) > 0 ){
         files_old = list.files(output_dir_pics_new)
-       # files_
-          
-        file.rename(from = paste(inpur_dir_pics,"/", pics_ok,sep = "") , to = paste(output_dir_pics_new,"/", pics_ok, sep = "")) 
+        
+        if(length(files_old) == 0){
+          file.rename(from = paste(inpur_dir_pics,"/", pics_ok_old_name,sep = "") , to = paste(output_dir_pics_new,"/", pics_ok_new_name, sep = ""))
+        }
         # NB --> file.rename sovrascrive !!!! --> assicurarsi di copiare nella cartella di ouput solo i file diversi!
       }
       
@@ -324,7 +335,7 @@ for(PROJECT in project_type){
     
     
     
-
+    
     
   }
   

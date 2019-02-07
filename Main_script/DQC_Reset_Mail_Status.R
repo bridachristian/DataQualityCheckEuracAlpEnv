@@ -68,3 +68,6 @@ write.csv(oor_file,paste(oor_status_dir,oor_status_file,sep = ""),quote = F,row.
 
 file.remove(paste(DQC_setting_dir,"lock_reset.lock",sep = ""))
 
+
+print(paste("Reset end time:",Sys.time()))
+cat ("----------------------------------------------------")

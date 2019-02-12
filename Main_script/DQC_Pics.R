@@ -115,7 +115,8 @@ reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 # -------------------------------
 
-bytes_threshold  = 10000
+bytes_threshold  = 10000   # define the threshold on file size!
+
 
 # if(!file.exists(paste(DQC_setting_dir,"lock_pics.lock",sep = ""))){
 #   file.create(paste(DQC_setting_dir,"lock_pics.lock",sep = ""))
@@ -217,6 +218,7 @@ for(PROJECT in project_type){
     file = list.files(inpur_dir_pics, full.names = T)
     file = file[!grepl(pattern = "Thumbs.db",x = file)] 
     
+    size = file.size(file)
     # create new_names
     color = substring(file_raw,1,1)
     d_pics = paste(substring(file_raw,2,nchar(file_raw)-4),"0",sep = "")
@@ -229,7 +231,7 @@ for(PROJECT in project_type){
     color_new[which(color == "R")] = "RGB" 
     
     file_new_names = paste(STATION_NAME, "_", color_new, "_", d_to_write,".jpg",sep = "")
-    df = data.frame(file_raw, file_new_names, datetime, file.size(file))
+    df = data.frame(file_raw, file_new_names, datetime, size)
     df = df[order(df$datetime),]
     colnames(df)[4] = "file_size"
     
@@ -245,14 +247,21 @@ for(PROJECT in project_type){
       
       pics_ok_old_name = df$file_raw[w] # <-- original name!
       pics_ok_new_name = df$file_new_names[w] # <-- new name!
-      pics_corrupted = file_raw[-w]  # <-- original name!
+      pics_corrupted = df$file_raw[-w]  # <-- original name!
       
       if(length(pics_ok_old_name) > 0 ){
         files_old = list.files(output_dir_pics_new)
         
-        if(length(files_old) == 0){
-          file.rename(from = paste(inpur_dir_pics,"/", pics_ok_old_name,sep = "") , to = paste(output_dir_pics_new,"/", pics_ok_new_name, sep = ""))
-        }
+        p_new = pics_ok_new_name[-c(which(pics_ok_new_name %in% files_old))]
+        p_old = pics_ok_old_name[-c(which(pics_ok_new_name %in% files_old))]
+        
+        file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""))
+        
+        p_new_rm = pics_ok_new_name[c(which(pics_ok_new_name %in% files_old))]
+        p_old_rm = pics_ok_old_name[c(which(pics_ok_new_name %in% files_old))]
+        
+        # file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) # <-- ATTIVARE DOPO RISPOSTA MAIL ALESSANDRO
+        
         # NB --> file.rename sovrascrive !!!! --> assicurarsi di copiare nella cartella di ouput solo i file diversi!
       }
       

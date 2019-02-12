@@ -259,8 +259,8 @@ for(PROJECT in project_type){
         
         p_new_rm = pics_ok_new_name[c(which(pics_ok_new_name %in% files_old))]
         p_old_rm = pics_ok_old_name[c(which(pics_ok_new_name %in% files_old))]
-        
-        # file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) # <-- ATTIVARE DOPO RISPOSTA MAIL ALESSANDRO
+
+        file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) # <-- ATTIVARE DOPO RISPOSTA MAIL ALESSANDRO
         
         # NB --> file.rename sovrascrive !!!! --> assicurarsi di copiare nella cartella di ouput solo i file diversi!
       }

@@ -68,8 +68,8 @@ main_dir = "Z:/test_christian/"
 # main_dir = "/shared/test_christian/"
 # main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 
-project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-# project_dir <- "C:/Users/CBrida/Desktop/myDQC/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+# project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
+project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github
 
 # main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
 # main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
@@ -81,8 +81,7 @@ project_type = c("LTER","MONALISA")
 PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
 
-input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/Pics",sep = "")                    # where input files are
-# input_dir <- paste("Z:","/Stations_Data/Data/LoggerNet_Raw_Data/Data/Pics",sep = "")                    # where input files are
+# input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/Pics",sep = "")                    # where input files are
 
 backup_dir <- paste(main_dir,"/Stations_Data/Data/Pics_Backup",sep = "")                    # where input files are
 corrupt_dir <-paste(main_dir,"/Stations_Data/Data/Pics_Corrupted",sep = "")
@@ -100,19 +99,23 @@ datetime_pics_format_new = "%Y%m%d%H%M"
 
 warning_pics_RMD = paste(project_dir,"/Rmd/DQC_Warning_Pics.Rmd",sep = "")
 
-mail_file = paste(DQC_setting_dir,"Process/email_status/mail_status.csv",sep = "")
+mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
+# mail_file = "mail_status.csv"
+# mail_file_alert = "out_of_range.csv"
 
 # --- read mail configuration ---
 
-mail_config_file = paste(DQC_setting_dir,"Process/email_status/mail_config.xml",sep = "")
+mail_config_file = paste(mail_dir,"mail_config.xml",sep = "")
 mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 
-mail_config_info = mail_config_parsing(mail_config)
+# mail_config_info = mail_config_parsing_new(mail_config) ##################################################
+mail_config_info = mail_config_parsing_new(mail_config)
 
 sender = mail_config_info$sender
-# reciver = mail_config_info$reciver 
-reciver = "Christian.Brida@eurac.edu" 
+# reciver = mail_config_info$reciver
+reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
+url_webservice = mail_config_info$url_webservice #########################################################
 # -------------------------------
 
 bytes_threshold  = 10000   # define the threshold on file size!
@@ -156,6 +159,7 @@ for(PROJECT in project_type){
     if(dir.exists(paste(data_output_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store data organized by station name
       if(dir.exists(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))){
         output_dir_pics_new = paste(data_output_dir,STATION_NAME,"/Pics/", sep = "")
+        corrupt_dir_pics =  paste(data_output_dir,STATION_NAME,"/Pics/Corrupted", sep = "")
         warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
       }else{
         dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/", sep = ""))
@@ -165,7 +169,9 @@ for(PROJECT in project_type){
         dir.create(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Processed/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Pics/Corrupted", sep = ""))
         output_dir_pics_new = paste(data_output_dir,STATION_NAME,"/Pics/", sep = "")
+        corrupt_dir_pics =  paste(data_output_dir,STATION_NAME,"/Pics/Corrupted", sep = "")
         warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
         
       }
@@ -178,7 +184,9 @@ for(PROJECT in project_type){
       dir.create(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Processed/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Pics/Corrupted", sep = ""))
       output_dir_pics_new = paste(data_output_dir,STATION_NAME,"/Pics/", sep = "")
+      corrupt_dir_pics =  paste(data_output_dir,STATION_NAME,"/Pics/Corrupted", sep = "")
       warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
       
     }
@@ -194,15 +202,15 @@ for(PROJECT in project_type){
       }
     }
     
-    corrupt_dir_pics = paste( corrupt_dir,"/", FOLDER_NAME,sep = "")
-    if(!dir.exists(corrupt_dir)){
-      dir.create(corrupt_dir)
-      dir.create(corrupt_dir_pics)
-    }else{
-      if(!dir.exists(corrupt_dir_pics)){
-        dir.create(corrupt_dir_pics)
-      }
-    }
+    # corrupt_dir_pics = paste( corrupt_dir,"/", FOLDER_NAME,sep = "")
+    # if(!dir.exists(corrupt_dir)){
+    #   dir.create(corrupt_dir)
+    #   dir.create(corrupt_dir_pics)
+    # }else{
+    #   if(!dir.exists(corrupt_dir_pics)){
+    #     dir.create(corrupt_dir_pics)
+    #   }
+    # }
     
     
     #  ---- import files and folders ----
@@ -217,6 +225,8 @@ for(PROJECT in project_type){
     file_raw = file_raw[!grepl(pattern = "Thumbs.db",x = file_raw)] 
     file = list.files(inpur_dir_pics, full.names = T)
     file = file[!grepl(pattern = "Thumbs.db",x = file)] 
+    
+    if(length(file_raw) != 0){
     
     size = file.size(file)
     # create new_names
@@ -240,38 +250,82 @@ for(PROJECT in project_type){
       names(output_no_pics) =c("Status", "Values")
       
       
-      file.copy(from = file,to = paste(backup_dir_pics,"/", file_raw,sep = ""))
+      file.copy(from = file,to = paste(backup_dir_pics,"/", file_raw,sep = "")) # copio file da cartella loggernet a cartella di backup
       # NB --> file.copy NON sovrascrive !!!!
       
       w = which(df$file_size > bytes_threshold)  # move to a specific folder pics corrupted. The treshold on file size is 10 KB (= 10000 B)
+      w_not = which(df$file_size <= bytes_threshold) 
       
       pics_ok_old_name = df$file_raw[w] # <-- original name!
       pics_ok_new_name = df$file_new_names[w] # <-- new name!
-      pics_corrupted = df$file_raw[-w]  # <-- original name!
+      pics_corrupted_old_name = df$file_raw[w_not]  # <-- original name!
+      pics_corrupted_new_name = df$file_new_names[w_not]  # <-- original name!
+      
       
       if(length(pics_ok_old_name) > 0 ){
         files_old = list.files(output_dir_pics_new)
         
-        p_new = pics_ok_new_name[-c(which(pics_ok_new_name %in% files_old))]
-        p_old = pics_ok_old_name[-c(which(pics_ok_new_name %in% files_old))]
+        w_old = which(pics_ok_new_name %in% files_old)  # trova quali file in loggernet sono gia presenti nella cartella data/.../ Pics
         
-        file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""))
+        if(length(w_old) != 0){
+          p_new = pics_ok_new_name[-c(w_old)]
+          p_old = pics_ok_old_name[-c(w_old)]
+          
+          p_new_rm = pics_ok_new_name[c(w_old)]
+          p_old_rm = pics_ok_old_name[c(w_old)]
+          
+          if(length(p_new) !=0 ){
+            file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""))
+          }
+          
+          file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) 
+          
+          
+        }else{
+          p_new = pics_ok_new_name
+          p_old = pics_ok_old_name
+          file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""))
+          
+        }
         
-        p_new_rm = pics_ok_new_name[c(which(pics_ok_new_name %in% files_old))]
-        p_old_rm = pics_ok_old_name[c(which(pics_ok_new_name %in% files_old))]
-
-        file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) # <-- ATTIVARE DOPO RISPOSTA MAIL ALESSANDRO
         
-        # NB --> file.rename sovrascrive !!!! --> assicurarsi di copiare nella cartella di ouput solo i file diversi!
       }
       
-      if(length(pics_corrupted) > 0 ){
-        file.rename(from = paste(inpur_dir_pics,"/", pics_corrupted,sep = ""), to = paste(corrupt_dir_pics,"/", pics_corrupted, sep = ""))
+      if(length(pics_corrupted_old_name) > 0 ){
+        
+        files_old = list.files(corrupt_dir_pics)
+        
+        w_old = which(pics_corrupted_new_name %in% files_old)  # trova quali file in loggernet sono gia presenti nella cartella data/.../ Pics
+        
+        if(length(w_old) != 0){
+          p_new = pics_corrupted_new_name[-c(w_old)]
+          p_old = pics_corrupted_old_name[-c(w_old)]
+          
+          p_new_rm = pics_corrupted_new_name[c(w_old)]
+          p_old_rm = pics_corrupted_old_name[c(w_old)]
+          
+          if(length(p_new) !=0 ){
+            file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""))
+            
+          }
+          file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) 
+          
+        }else{
+          p_new = pics_corrupted_new_name
+          p_old = pics_corrupted_old_name
+          file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""))
+          
+        }
+        
+        
+        # file.rename(from = paste(inpur_dir_pics,"/", pics_corrupted,sep = ""), to = paste(corrupt_dir_pics,"/", pics_corrupted, sep = ""))
         # NB --> file.rename sovrascrive !!!! --> assicurarsi di copiare nella cartella di ouput solo i file diversi!
         
+        # link = paste("/",PROJECT,substring(output_dir_report_new,nchar(data_output_dir)), output_file_report,sep = "")
         
-        pics_link = paste(main_dir_mapping_out,"/" ,substring(output_dir_pics_new, nchar(main_dir_mapping_in)+1),"/",pics_corrupted,sep = "")
-        df = data.frame(pics_corrupted, pics_link)
+        pics_link = paste("/" ,PROJECT,substring(corrupt_dir_pics, nchar(data_output_dir)),"/",pics_corrupted_new_name,sep = "")
+        
+        df = data.frame(pics_corrupted_new_name, pics_link)
         
         ### ordinare df per data immagini! 
         
@@ -285,7 +339,7 @@ for(PROJECT in project_type){
         
         
         input = warning_pics_RMD
-        output_file = paste(STATION_NAME,"_",dqc_date_write,"_pics_corrupted.html",sep = "")
+        output_file = paste(STATION_NAME,"_",dqc_date_write,"_Pics_Corrupted.html",sep = "")
         output_dir = warning_file_dir_station
         params_list = list(station_name = STATION_NAME,
                            errors_output = errors_output,
@@ -300,11 +354,11 @@ for(PROJECT in project_type){
         
         
         my_subject = paste(STATION_NAME,"- pics corrupted")
-        my_body = paste(main_dir_mapping_out,"/",substring(output_dir,nchar(main_dir_mapping_in)+1),"/", output_file,sep = "")
-        
+        # my_body = paste(main_dir_mapping_out,"/",substring(output_dir,nchar(main_dir_mapping_in)+1),"/", output_file,sep = "")
+        my_body = paste(url_webservice,PROJECT,substring(warning_file_dir_station, nchar(data_output_dir)),output_file,sep="")
+
         send.mail(from = sender,
-                  # to = reciver,
-                  to = "Christian.Brida@eurac.edu",
+                  to = reciver,
                   subject = my_subject,
                   body = my_body,
                   smtp = my_smtp,
@@ -339,30 +393,15 @@ for(PROJECT in project_type){
     names(errors_output) = c("err_no_pics",
                              "err_corrupted")
     
-    # completare con   verifica ultimo downlaoad --> controllare nella cartella di output quale e`  il file piu aggiornato!
-    
-    
-    
+    # TO DO: check the number of pictures downloaded in a single day! Study how to develop the check of pics download! 
+
+    }
     
     
     
   }
   
-  # MANDARE MAIL !!!!
-  # print("--------------------------------------------------------------------------------------------------")
-  # 
-  # my_subject = paste(PROJECT,"report")
-  # # my_body = paste(output_dir_final,output_file_final,sep="")
-  # my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
-  # 
-  # send.mail(from = sender,
-  #           to = reciver,
-  #           # to = "Christian.Brida@eurac.edu",
-  #           subject = my_subject,
-  #           body = my_body,
-  #           smtp = my_smtp,
-  #           authenticate = TRUE,
-  #           send = TRUE)
+ 
 }
 
 

@@ -74,7 +74,12 @@ project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # 
 # main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
 # main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
 
-
+# **************************
+#
+# Ricorda: Trovare il modo di lasciare invariati i file sulla cartella di loggernet (per pb di permessi lettura/scrittura)
+# Costruire download table che preleva ogni volta i file nuovi... Come?
+#
+# **************************
 
 project_type = c("LTER","MONALISA")
 

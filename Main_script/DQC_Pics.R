@@ -86,11 +86,11 @@ project_type = c("LTER","MONALISA")
 PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
 
-# input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/Pics",sep = "")                    # where input files are
+input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/Pics",sep = "")                    # where input files are
 
-backup_dir <- paste(main_dir,"/Stations_Data/Data/Pics_Backup",sep = "")                    # where input files are
-corrupt_dir <-paste(main_dir,"/Stations_Data/Data/Pics_Corrupted",sep = "")
+backup_dir <- paste(main_dir,"/Stations_Data/Data/Pics_Backup",sep = "") 
 
+# corrupt_dir <-paste(main_dir,"/Stations_Data/Data/Pics_Corrupted",sep = "")
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
 
@@ -103,6 +103,12 @@ datetime_pics_format = "%y%m%d%H%M"
 datetime_pics_format_new = "%Y%m%d%H%M"
 
 warning_pics_RMD = paste(project_dir,"/Rmd/DQC_Warning_Pics.Rmd",sep = "")
+
+download_table_dir <- paste(DQC_setting_dir,"/Process/Download_tables/Hourly/", sep = "")
+download_table_file <- "pics_download_table.csv"
+
+datetime_format =  "%Y-%m-%d %H:%M"                          # <-- datetime format. Use only: Y -> year, m -> month, d -> day, H -> hour, M -> minute
+
 
 mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
 # mail_file = "mail_status.csv"
@@ -131,6 +137,9 @@ bytes_threshold  = 10000   # define the threshold on file size!
 # }
 
 # -------------------------------# -------------------------------# -------------------------------# -------------------------------# -------------------------------
+folders_available = dir(input_dir)                  # <-- Admitted pattern:  ".dat" or ".csv"
+
+download_table = read_download_table_pics(DOWNLOAD_TABLE_DIR = download_table_dir, DOWNLOAD_TABLE_FILE = download_table_file, FOLDERS_AVAILABLE = folders_available, DATETIME_FORMAT = datetime_format)
 
 for(PROJECT in project_type){
   data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files

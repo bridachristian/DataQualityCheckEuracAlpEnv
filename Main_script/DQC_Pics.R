@@ -137,9 +137,11 @@ bytes_threshold  = 10000   # define the threshold on file size!
 # }
 
 # -------------------------------# -------------------------------# -------------------------------# -------------------------------# -------------------------------
-folders_available = dir(input_dir)                  # <-- Admitted pattern:  ".dat" or ".csv"
+folders_available = dir(input_dir)                  
+FOLDERS_AVAILABLE = folders_available #cancellare!
 
-download_table = read_download_table_pics(DOWNLOAD_TABLE_DIR = download_table_dir, DOWNLOAD_TABLE_FILE = download_table_file, FOLDERS_AVAILABLE = folders_available, DATETIME_FORMAT = datetime_format)
+download_table = read_download_table_pics(DOWNLOAD_TABLE_DIR = download_table_dir, DOWNLOAD_TABLE_FILE = download_table_file,
+                                          FOLDERS_AVAILABLE = folders_available, DATETIME_FORMAT = datetime_format)
 
 for(PROJECT in project_type){
   data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files

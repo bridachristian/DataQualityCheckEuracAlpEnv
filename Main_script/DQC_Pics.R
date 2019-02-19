@@ -246,12 +246,12 @@ for(PROJECT in project_type){
     loggernet_file_short =list.files(logger_dir_pics,full.names = F)
     loggernet_file_short = loggernet_file_short[!grepl(pattern = "Thumbs.db",x = loggernet_file_short)]  
     
-    if(is.na(dwn_prj$Last_Modification)){
-      file.copy(from = loggernet_file_long, to = paste(inpur_dir_pics,"/",loggernet_file_short,sep = ""))
-      dwn_prj
-    }else{
-      w = which()
-    }
+    # if(is.na(dwn_prj$Last_Modification)){
+    #   file.copy(from = loggernet_file_long, to = paste(inpur_dir_pics,"/",loggernet_file_short,sep = ""))
+    #   dwn_prj
+    # }else{
+    #   w = which()
+    # }
       
     
     

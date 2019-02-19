@@ -70,7 +70,7 @@ main_dir = "Z:/test_christian/"
 
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github
-
+source("../R/read_download_table_pics.R")
 # main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
 # main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
 
@@ -138,7 +138,9 @@ bytes_threshold  = 10000   # define the threshold on file size!
 
 # -------------------------------# -------------------------------# -------------------------------# -------------------------------# -------------------------------
 folders_available = dir(input_dir)                  
-FOLDERS_AVAILABLE = folders_available #cancellare!
+
+folders_available=folders_available[-2]
+# FOLDERS_AVAILABLE = folders_available #cancellare!
 
 download_table = read_download_table_pics(DOWNLOAD_TABLE_DIR = download_table_dir, DOWNLOAD_TABLE_FILE = download_table_file,
                                           FOLDERS_AVAILABLE = folders_available, DATETIME_FORMAT = datetime_format)
@@ -165,9 +167,15 @@ for(PROJECT in project_type){
     STATION_NAME = substring(FOLDER_NAME,u1+1)
     
     
-    #  ---- define path and folders ----
+    # ---- select row from download table ----
     
-    inpur_dir_pics = paste(input_dir,"/", FOLDER_NAME,sep = "")
+    dwn_prj = download_table[which(download_table$Station == FOLDER_NAME),]
+    
+    
+    # ---- define path and folders ----
+    
+    logger_dir_pics = paste(input_dir,"/", FOLDER_NAME,sep = "")
+    
     
     
     
@@ -207,14 +215,14 @@ for(PROJECT in project_type){
       
     }
     
-    
-    backup_dir_pics = paste(backup_dir,"/", FOLDER_NAME,sep = "")
+    inpur_dir_pics = paste(backup_dir,"/", FOLDER_NAME,sep = "")
+    # backup_dir_pics = paste(backup_dir,"/", FOLDER_NAME,sep = "")
     if(!dir.exists(backup_dir)){
       dir.create(backup_dir)
-      dir.create(backup_dir_pics)
+      dir.create(inpur_dir_pics)
     }else{
-      if(!dir.exists(backup_dir_pics)){
-        dir.create(backup_dir_pics)
+      if(!dir.exists(inpur_dir_pics)){
+        dir.create(inpur_dir_pics)
       }
     }
     
@@ -230,13 +238,24 @@ for(PROJECT in project_type){
     
     
     #  ---- import files and folders ----
+    loggernet_file_long = list.files(logger_dir_pics,full.names = T)
+    loggernet_file_long = loggernet_file_long[!grepl(pattern = "Thumbs.db",x = loggernet_file_long)] 
     
-    # inpur_dir_pics
-    # backup_dir_pics
-    # output_dir_pics_new
-    # corrupt_dir_pics
-    # warning_file_dir_station
+    format(file.mtime(loggernet_file_long),format = datetime_format)
     
+    loggernet_file_short =list.files(logger_dir_pics,full.names = F)
+    loggernet_file_short = loggernet_file_short[!grepl(pattern = "Thumbs.db",x = loggernet_file_short)]  
+    
+    if(is.na(dwn_prj$Last_Modification)){
+      file.copy(from = loggernet_file_long, to = paste(inpur_dir_pics,"/",loggernet_file_short,sep = ""))
+      dwn_prj
+    }else{
+      w = which()
+    }
+      
+    
+    
+
     file_raw = list.files(inpur_dir_pics )
     file_raw = file_raw[!grepl(pattern = "Thumbs.db",x = file_raw)] 
     file = list.files(inpur_dir_pics, full.names = T)

@@ -19,11 +19,11 @@ read_download_table_pics = function(DOWNLOAD_TABLE_DIR, DOWNLOAD_TABLE_FILE, FOL
   download_table_file = paste(DOWNLOAD_TABLE_DIR,DOWNLOAD_TABLE_FILE,sep = "") 
   
   if(!file.exists(download_table_file)){              # <- define or extact info from download table
-    
-    first_download_table = data.frame(substring(FOLDERS_AVAILABLE,1, nchar(FOLDERS_AVAILABLE)-4), 
+
+    first_download_table = data.frame(FOLDERS_AVAILABLE, 
                                       rep(NA, times = length(FOLDERS_AVAILABLE)),
                                       rep(NA, times = length(FOLDERS_AVAILABLE)),
-                                      rep(PROJECT,times = length(FOLDERS_AVAILABLE)))
+                                      substring(FOLDERS_AVAILABLE,1,as.numeric(regexpr(pattern ="_",FOLDERS_AVAILABLE))-1))
     
     colnames(first_download_table) = c("Station", "Last_date","Last_Modification", "Project")
     
@@ -42,9 +42,11 @@ read_download_table_pics = function(DOWNLOAD_TABLE_DIR, DOWNLOAD_TABLE_FILE, FOL
     station_already_register = download_table$Station
     station_to_add = setdiff(station_to_process,station_already_register)
     
-    unlist(gregexpr(pattern ="_",FOLDERS_AVAILABLE)[1])
+    prj_to_process = substring(FOLDERS_AVAILABLE,1,as.numeric(regexpr(pattern ="_",FOLDERS_AVAILABLE))-1)
+    prj_to_add = substring(station_to_add,1,as.numeric(regexpr(pattern ="_",station_to_add))-1)
     
-    prj_to_process = substring(FOLDERS_AVAILABLE,1,)
+    
+    
     w = which(FOLDERS_AVAILABLE %in% station_to_add)
     
     
@@ -53,7 +55,8 @@ read_download_table_pics = function(DOWNLOAD_TABLE_DIR, DOWNLOAD_TABLE_FILE, FOL
       df_to_add = data.frame(station_to_add,
                              rep(NA, times = length(station_to_add)),
                              rep(NA, times = length(station_to_add)),
-                             rep(PROJECT, times = length(station_to_add)))
+                             prj_to_add)
+                             # rep(PROJECT, times = length(station_to_add)))
       
       # as.character(file.mtime(paste(input_dir,FOLDERS_AVAILABLE[w],sep = ""))))
       colnames(df_to_add) = c("Station", "Last_date",  "Last_Modification", "Project")

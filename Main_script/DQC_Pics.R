@@ -139,7 +139,7 @@ bytes_threshold  = 10000   # define the threshold on file size!
 # -------------------------------# -------------------------------# -------------------------------# -------------------------------# -------------------------------
 folders_available = dir(input_dir)                  
 
-folders_available=folders_available[-2]
+folders_available=folders_available
 # FOLDERS_AVAILABLE = folders_available #cancellare!
 
 download_table = read_download_table_pics(DOWNLOAD_TABLE_DIR = download_table_dir, DOWNLOAD_TABLE_FILE = download_table_file,
@@ -154,7 +154,7 @@ for(PROJECT in project_type){
   
   folders_available_project = dir(input_dir,pattern = PROJECT)                  # <-- Admitted pattern:  ".dat" or ".csv"
   
-  t = 1
+  t = 2
   
   for(t in  1: length(folders_available_project)){
     

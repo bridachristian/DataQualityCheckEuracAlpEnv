@@ -241,203 +241,207 @@ for(PROJECT in project_type){
     loggernet_file_long = list.files(logger_dir_pics,full.names = T)
     loggernet_file_long = loggernet_file_long[!grepl(pattern = "Thumbs.db",x = loggernet_file_long)] 
     
-    format(file.mtime(loggernet_file_long),format = datetime_format)
+    # format(file.mtime(loggernet_file_long),format = datetime_format)
     
     loggernet_file_short =list.files(logger_dir_pics,full.names = F)
     loggernet_file_short = loggernet_file_short[!grepl(pattern = "Thumbs.db",x = loggernet_file_short)]  
     
-    # if(is.na(dwn_prj$Last_Modification)){
-    #   file.copy(from = loggernet_file_long, to = paste(inpur_dir_pics,"/",loggernet_file_short,sep = ""))
-    #   dwn_prj
-    # }else{
-    #   w = which()
-    # }
+    
+    # REMEMBER: aggiornare la download table! 
+    
+    if(is.na(dwn_prj$Last_Modification)){
+      file.copy(from = loggernet_file_long, to = paste(inpur_dir_pics,"/",loggernet_file_short,sep = ""))
       
+    }else{
+      w = which(format(file.mtime(loggernet_file_long),format = datetime_format) > dwn_prj$Last_Modification )
+      file.copy(from = loggernet_file_long[w], to = paste(inpur_dir_pics,"/",loggernet_file_short[w],sep = ""))
+      
+    }
+    
+    # dwn_prj$Last_Modification = as.POSIXct("2019-02-14 15:25", format = datetime_format)
     
     
-
+    
     file_raw = list.files(inpur_dir_pics )
     file_raw = file_raw[!grepl(pattern = "Thumbs.db",x = file_raw)] 
     file = list.files(inpur_dir_pics, full.names = T)
     file = file[!grepl(pattern = "Thumbs.db",x = file)] 
     
     if(length(file_raw) != 0){
-    
-    size = file.size(file)
-    # create new_names
-    color = substring(file_raw,1,1)
-    d_pics = paste(substring(file_raw,2,nchar(file_raw)-4),"0",sep = "")
-    datetime = as.POSIXct(d_pics,format = datetime_pics_format, tz= "Etc/GMT-1")
-    
-    d_to_write = format(datetime,format = datetime_pics_format_new)
-    
-    color_new = color
-    color_new[which(color == "I")] = "IR" 
-    color_new[which(color == "R")] = "RGB" 
-    
-    file_new_names = paste(STATION_NAME, "_", color_new, "_", d_to_write,".jpg",sep = "")
-    df = data.frame(file_raw, file_new_names, datetime, size)
-    df = df[order(df$datetime),]
-    colnames(df)[4] = "file_size"
-    
-    if(length(file) > 0 ){   
-      output_no_pics = list("N", NA)
-      names(output_no_pics) =c("Status", "Values")
       
+      size = file.size(file)
+      # create new_names
+      color = substring(file_raw,1,1)
+      d_pics = paste(substring(file_raw,2,nchar(file_raw)-4),"0",sep = "")
+      datetime = as.POSIXct(d_pics,format = datetime_pics_format, tz= "Etc/GMT-1")
       
-      file.copy(from = file,to = paste(backup_dir_pics,"/", file_raw,sep = "")) # copio file da cartella loggernet a cartella di backup
-      # NB --> file.copy NON sovrascrive !!!!
+      last_date = format(max(datetime, na.rm = T), format= datetime_format)
+      last_modification = format(max(file.mtime(file), na.rm = T),format = datetime_format)
       
-      w = which(df$file_size > bytes_threshold)  # move to a specific folder pics corrupted. The treshold on file size is 10 KB (= 10000 B)
-      w_not = which(df$file_size <= bytes_threshold) 
+      download_table$Last_date[which(download_table$Station == FOLDER_NAME)] = last_date
+      download_table$Last_Modification[which(download_table$Station == FOLDER_NAME)] = last_modification
       
-      pics_ok_old_name = df$file_raw[w] # <-- original name!
-      pics_ok_new_name = df$file_new_names[w] # <-- new name!
-      pics_corrupted_old_name = df$file_raw[w_not]  # <-- original name!
-      pics_corrupted_new_name = df$file_new_names[w_not]  # <-- original name!
+      d_to_write = format(datetime,format = datetime_pics_format_new)
       
+      color_new = color
+      color_new[which(color == "I")] = "IR" 
+      color_new[which(color == "R")] = "RGB" 
       
-      if(length(pics_ok_old_name) > 0 ){
-        files_old = list.files(output_dir_pics_new)
+      file_new_names = paste(STATION_NAME, "_", color_new, "_", d_to_write,".jpg",sep = "")
+      df = data.frame(file_raw, file_new_names, datetime, size)
+      df = df[order(df$datetime),]
+      colnames(df)[4] = "file_size"
+      
+      if(length(file) > 0 ){   
+        output_no_pics = list("N", NA)
+        names(output_no_pics) =c("Status", "Values")
         
-        w_old = which(pics_ok_new_name %in% files_old)  # trova quali file in loggernet sono gia presenti nella cartella data/.../ Pics
         
-        if(length(w_old) != 0){
-          p_new = pics_ok_new_name[-c(w_old)]
-          p_old = pics_ok_old_name[-c(w_old)]
+        # file.copy(from = file,to = paste(backup_dir_pics,"/", file_raw,sep = "")) # copio file da cartella loggernet a cartella di backup
+        # NB --> file.copy NON sovrascrive !!!!
+        
+        w = which(df$file_size > bytes_threshold)  # move to a specific folder pics corrupted. The treshold on file size is 10 KB (= 10000 B)
+        w_not = which(df$file_size <= bytes_threshold) 
+        
+        pics_ok_old_name = df$file_raw[w] # <-- original name!
+        pics_ok_new_name = df$file_new_names[w] # <-- new name!
+        pics_corrupted_old_name = df$file_raw[w_not]  # <-- original name!
+        pics_corrupted_new_name = df$file_new_names[w_not]  # <-- original name!
+        
+        
+        if(length(pics_ok_old_name) > 0 ){
+          files_old = list.files(output_dir_pics_new)
           
-          p_new_rm = pics_ok_new_name[c(w_old)]
-          p_old_rm = pics_ok_old_name[c(w_old)]
+          w_old = which(pics_ok_new_name %in% files_old)  # trova quali file in loggernet sono gia presenti nella cartella data/.../ Pics
           
-          if(length(p_new) !=0 ){
+          if(length(w_old) != 0){
+            p_new = pics_ok_new_name[-c(w_old)]
+            p_old = pics_ok_old_name[-c(w_old)]
+            
+            p_new_rm = pics_ok_new_name[c(w_old)]
+            p_old_rm = pics_ok_old_name[c(w_old)]
+            
+            if(length(p_new) !=0 ){
+              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""))
+            }
+            
+            file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) 
+            
+            
+          }else{
+            p_new = pics_ok_new_name
+            p_old = pics_ok_old_name
             file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""))
+            
           }
           
-          file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) 
-          
-          
-        }else{
-          p_new = pics_ok_new_name
-          p_old = pics_ok_old_name
-          file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""))
           
         }
         
-        
-      }
-      
-      if(length(pics_corrupted_old_name) > 0 ){
-        
-        files_old = list.files(corrupt_dir_pics)
-        
-        w_old = which(pics_corrupted_new_name %in% files_old)  # trova quali file in loggernet sono gia presenti nella cartella data/.../ Pics
-        
-        if(length(w_old) != 0){
-          p_new = pics_corrupted_new_name[-c(w_old)]
-          p_old = pics_corrupted_old_name[-c(w_old)]
+        if(length(pics_corrupted_old_name) > 0 ){
           
-          p_new_rm = pics_corrupted_new_name[c(w_old)]
-          p_old_rm = pics_corrupted_old_name[c(w_old)]
+          files_old = list.files(corrupt_dir_pics)
           
-          if(length(p_new) !=0 ){
+          w_old = which(pics_corrupted_new_name %in% files_old)  # trova quali file in loggernet sono gia presenti nella cartella data/.../ Pics
+          
+          if(length(w_old) != 0){
+            p_new = pics_corrupted_new_name[-c(w_old)]
+            p_old = pics_corrupted_old_name[-c(w_old)]
+            
+            p_new_rm = pics_corrupted_new_name[c(w_old)]
+            p_old_rm = pics_corrupted_old_name[c(w_old)]
+            
+            if(length(p_new) !=0 ){
+              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""))
+              
+            }
+            file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) 
+            
+          }else{
+            p_new = pics_corrupted_new_name
+            p_old = pics_corrupted_old_name
             file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""))
             
           }
-          file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) 
+          
+          
+          # file.rename(from = paste(inpur_dir_pics,"/", pics_corrupted,sep = ""), to = paste(corrupt_dir_pics,"/", pics_corrupted, sep = ""))
+          # NB --> file.rename sovrascrive !!!! --> assicurarsi di copiare nella cartella di ouput solo i file diversi!
+          
+          # link = paste("/",PROJECT,substring(output_dir_report_new,nchar(data_output_dir)), output_file_report,sep = "")
+          
+          pics_link = paste("/" ,PROJECT,substring(corrupt_dir_pics, nchar(data_output_dir)),"/",pics_corrupted_new_name,sep = "")
+          
+          df = data.frame(pics_corrupted_new_name, pics_link)
+          
+          ### ordinare df per data immagini! 
+          
+          output_corrupted = list("Y", df)
+          names(output_corrupted) =c("Status", "Values")
+          
+          errors_output = list(output_no_pics,
+                               output_corrupted)
+          names(errors_output) = c("err_no_pics",
+                                   "err_corrupted")
+          
+          
+          input = warning_pics_RMD
+          output_file = paste(STATION_NAME,"_",dqc_date_write,"_Pics_Corrupted.html",sep = "")
+          output_dir = warning_file_dir_station
+          params_list = list(station_name = STATION_NAME,
+                             errors_output = errors_output,
+                             dqc_date = date_DQC)
+          
+          rmarkdown::render(input = input,
+                            output_file = output_file,
+                            output_dir = output_dir,
+                            params = params_list)
+          
+          
+          
+          
+          my_subject = paste(STATION_NAME,"- pics corrupted")
+          # my_body = paste(main_dir_mapping_out,"/",substring(output_dir,nchar(main_dir_mapping_in)+1),"/", output_file,sep = "")
+          my_body = paste(url_webservice,PROJECT,substring(warning_file_dir_station, nchar(data_output_dir)),output_file,sep="")
+          
+          send.mail(from = sender,
+                    to = reciver,
+                    subject = my_subject,
+                    body = my_body,
+                    smtp = my_smtp,
+                    authenticate = TRUE,
+                    send = TRUE)
           
         }else{
-          p_new = pics_corrupted_new_name
-          p_old = pics_corrupted_old_name
-          file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""))
+          output_corrupted = list("N", NA)
+          names(output_corrupted) =c("Status", "Values")
           
         }
         
-        
-        # file.rename(from = paste(inpur_dir_pics,"/", pics_corrupted,sep = ""), to = paste(corrupt_dir_pics,"/", pics_corrupted, sep = ""))
-        # NB --> file.rename sovrascrive !!!! --> assicurarsi di copiare nella cartella di ouput solo i file diversi!
-        
-        # link = paste("/",PROJECT,substring(output_dir_report_new,nchar(data_output_dir)), output_file_report,sep = "")
-        
-        pics_link = paste("/" ,PROJECT,substring(corrupt_dir_pics, nchar(data_output_dir)),"/",pics_corrupted_new_name,sep = "")
-        
-        df = data.frame(pics_corrupted_new_name, pics_link)
-        
-        ### ordinare df per data immagini! 
-        
-        output_corrupted = list("Y", df)
-        names(output_corrupted) =c("Status", "Values")
-        
-        errors_output = list(output_no_pics,
-                             output_corrupted)
-        names(errors_output) = c("err_no_pics",
-                                 "err_corrupted")
-        
-        
-        input = warning_pics_RMD
-        output_file = paste(STATION_NAME,"_",dqc_date_write,"_Pics_Corrupted.html",sep = "")
-        output_dir = warning_file_dir_station
-        params_list = list(station_name = STATION_NAME,
-                           errors_output = errors_output,
-                           dqc_date = date_DQC)
-        
-        rmarkdown::render(input = input,
-                          output_file = output_file,
-                          output_dir = output_dir,
-                          params = params_list)
-        
-        
-        
-        
-        my_subject = paste(STATION_NAME,"- pics corrupted")
-        # my_body = paste(main_dir_mapping_out,"/",substring(output_dir,nchar(main_dir_mapping_in)+1),"/", output_file,sep = "")
-        my_body = paste(url_webservice,PROJECT,substring(warning_file_dir_station, nchar(data_output_dir)),output_file,sep="")
-
-        send.mail(from = sender,
-                  to = reciver,
-                  subject = my_subject,
-                  body = my_body,
-                  smtp = my_smtp,
-                  authenticate = TRUE,
-                  send = TRUE)
-        
-      }else{
-        output_corrupted = list("N", NA)
-        names(output_corrupted) =c("Status", "Values")
-        
-      }
+      }      
+      output_no_pics = list("Y", NA)
+      names(output_no_pics) =c("Status", "Values")
       
-      # color = substring(file_raw,1,1)
-      # d_pics = paste(substring(file_raw,2,nchar(file_raw)-4),"0",sep = "")
-      # datetime = as.POSIXct(d_pics,format = datetime_pics_format, tz= "Etc/GMT-1")
-      # corrup = rep(1, times = length(file_raw))
-      # corrup[w] = 0
-      # 
-      # df = data.frame(file_raw, color, datetime, corrup)
-      # df = df[order(df$datetime),]
+      output_corrupted = list("N", NA)
+      names(output_corrupted) =c("Status", "Values")
       
+      errors_output = list(output_no_pics,
+                           output_corrupted)
+      names(errors_output) = c("err_no_pics",
+                               "err_corrupted")
       
-    }      
-    output_no_pics = list("Y", NA)
-    names(output_no_pics) =c("Status", "Values")
-    
-    output_corrupted = list("N", NA)
-    names(output_corrupted) =c("Status", "Values")
-    
-    errors_output = list(output_no_pics,
-                         output_corrupted)
-    names(errors_output) = c("err_no_pics",
-                             "err_corrupted")
-    
-    # TO DO: check the number of pictures downloaded in a single day! Study how to develop the check of pics download! 
-
+      # TO DO: check the number of pictures downloaded in a single day! Study how to develop the check of pics download! 
+      
     }
     
     
     
   }
   
- 
+  
 }
+
+write.csv(download_table, paste(download_table_dir,download_table_file,sep = ""),quote = F,row.names = F)
 
 
 

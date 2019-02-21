@@ -64,7 +64,8 @@ print(project_dir)
 
 # ..... Params section .....................................................................................................................................
 
-main_dir = "Z:/test_christian/"
+# main_dir = "Z:/test_christian/"
+main_dir = "Z:/"
 # main_dir = "/shared/test_christian/"
 # main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 

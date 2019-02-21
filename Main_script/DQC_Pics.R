@@ -176,10 +176,7 @@ for(PROJECT in project_type){
     
     logger_dir_pics = paste(input_dir,"/", FOLDER_NAME,sep = "")
     
-    
-    
-    
-    
+
     if(dir.exists(paste(data_output_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store data organized by station name
       if(dir.exists(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))){
         output_dir_pics_new = paste(data_output_dir,STATION_NAME,"/Pics/", sep = "")
@@ -226,16 +223,6 @@ for(PROJECT in project_type){
       }
     }
     
-    # corrupt_dir_pics = paste( corrupt_dir,"/", FOLDER_NAME,sep = "")
-    # if(!dir.exists(corrupt_dir)){
-    #   dir.create(corrupt_dir)
-    #   dir.create(corrupt_dir_pics)
-    # }else{
-    #   if(!dir.exists(corrupt_dir_pics)){
-    #     dir.create(corrupt_dir_pics)
-    #   }
-    # }
-    
     
     #  ---- import files and folders ----
     loggernet_file_long = list.files(logger_dir_pics,full.names = T)
@@ -246,9 +233,6 @@ for(PROJECT in project_type){
     loggernet_file_short =list.files(logger_dir_pics,full.names = F)
     loggernet_file_short = loggernet_file_short[!grepl(pattern = "Thumbs.db",x = loggernet_file_short)]  
     
-    
-    # REMEMBER: aggiornare la download table! 
-    
     if(is.na(dwn_prj$Last_Modification)){
       file.copy(from = loggernet_file_long, to = paste(inpur_dir_pics,"/",loggernet_file_short,sep = ""))
       
@@ -257,10 +241,6 @@ for(PROJECT in project_type){
       file.copy(from = loggernet_file_long[w], to = paste(inpur_dir_pics,"/",loggernet_file_short[w],sep = ""))
       
     }
-    
-    # dwn_prj$Last_Modification = as.POSIXct("2019-02-14 15:25", format = datetime_format)
-    
-    
     
     file_raw = list.files(inpur_dir_pics )
     file_raw = file_raw[!grepl(pattern = "Thumbs.db",x = file_raw)] 
@@ -400,7 +380,7 @@ for(PROJECT in project_type){
           
           
           
-          my_subject = paste(STATION_NAME,"- pics corrupted")
+          my_subject = paste(PROJECT,STATION_NAME,"pics corrupted", sep = " - ")
           # my_body = paste(main_dir_mapping_out,"/",substring(output_dir,nchar(main_dir_mapping_in)+1),"/", output_file,sep = "")
           my_body = paste(url_webservice,PROJECT,substring(warning_file_dir_station, nchar(data_output_dir)),output_file,sep="")
           

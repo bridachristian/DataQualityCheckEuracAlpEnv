@@ -141,7 +141,8 @@ if(!file.exists(paste(DQC_setting_dir,"lock_pics.lock",sep = ""))){
 # -------------------------------# -------------------------------# -------------------------------# -------------------------------# -------------------------------
 folders_available = dir(input_dir)                  
 
-folders_available=folders_available
+folders_available=folders_available[!grepl(pattern = "Thumbs.db",x = folders_available)] 
+
 # FOLDERS_AVAILABLE = folders_available #cancellare!
 
 download_table = read_download_table_pics(DOWNLOAD_TABLE_DIR = download_table_dir, DOWNLOAD_TABLE_FILE = download_table_file,

@@ -65,13 +65,14 @@ print(project_dir)
 # ..... Params section .....................................................................................................................................
 
 # main_dir = "Z:/test_christian/"
-main_dir = "Z:/"
+# main_dir = "Z:/"
 # main_dir = "/shared/test_christian/"
 # main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github
-source("../R/read_download_table_pics.R")
+# project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github
+# source(paste(project_dir,"/R/read_download_table_pics.R",sep = ""))
+
 # main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
 # main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
 

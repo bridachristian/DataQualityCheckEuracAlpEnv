@@ -157,7 +157,7 @@ for(PROJECT in project_type){
   
   folders_available_project = dir(input_dir,pattern = PROJECT)                  # <-- Admitted pattern:  ".dat" or ".csv"
   
-  t = 2
+  t = 1
   
   for(t in  1: length(folders_available_project)){
     
@@ -294,7 +294,7 @@ for(PROJECT in project_type){
         
         if(length(pics_ok_old_name) > 0 ){
           files_old = list.files(output_dir_pics_new)
-          
+          files_old = files_old[-which(files_old == "Corrupted")]
           w_old = which(pics_ok_new_name %in% files_old)  # trova quali file in loggernet sono gia presenti nella cartella data/.../ Pics
           
           if(length(w_old) != 0){

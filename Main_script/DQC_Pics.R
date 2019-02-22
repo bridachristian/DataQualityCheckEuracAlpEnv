@@ -334,7 +334,7 @@ for(PROJECT in project_type){
             p_new = pics_corrupted_new_name
             p_old = pics_corrupted_old_name
             file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""))
-            
+            print(paste(PROJECT, STATION_NAME,"File copied", sep = " - "))
           }
           
           

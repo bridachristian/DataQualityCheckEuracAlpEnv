@@ -21,7 +21,7 @@ exclude_out_of_range_v3 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_F
   range$min = as.numeric(range$min)
   range$max = as.numeric(range$max)
   
-  range = range[order(range$Variable),] # reorder range file based on variable
+  # range = range[order(range$Variable),] # reorder range file based on variable
   
   new = DATA # define new dataframe called new that is a copy of DATA
   

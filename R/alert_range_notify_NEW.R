@@ -47,7 +47,7 @@ alert_range_notify_NEW = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FO
   }
   
   
-  range = range[order(range$Variable),] # reorder range file based on variable
+  # range = range[order(range$Variable),] # reorder range file based on variable
   
   new = DATA # define new dataframe called new that is a copy of DATA
   

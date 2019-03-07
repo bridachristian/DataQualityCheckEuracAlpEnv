@@ -366,7 +366,7 @@ DQC_function= function(input_dir,
                     # se non scrivo file di output non servirebbe andare a controllare se ci sono righe duplicate tra nuove e vecchie 
           
                     if(write_output_files == FALSE){    
-                      flag_new_duplicates_rows_tmp = NA
+                      flag_new_duplicates_rows_tmp = 0
                     }
 
                     new_duplicated_data = time_to_char(DATA = new_duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)

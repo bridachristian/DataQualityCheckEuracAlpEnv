@@ -250,12 +250,13 @@ for(PROJECT in project_type){
                                 "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates", "flag_missing_records_new",   
                                 "Report_link", "Data_folder", "File_name")
   
-  report_dataframe = matrix(ncol = 14, nrow = length(files_available_project))
+  report_dataframe = matrix(ncol = 15, nrow = length(files_available_project))
   colnames(report_dataframe) = c("Station",
                                  "Offline",
                                  "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
                                  "err_date_missing","err_range_alert",
                                  "err_out_of_range","err_duplicates_rows",
+                                 "var_flagged",
                                  "report_link")
   
   
@@ -455,6 +456,20 @@ for(PROJECT in project_type){
         dqc_date = date_DQC
         
         df_status = data.frame(STATION_NAME,t(status))
+        
+        if(use_alert_station_flag == TRUE){
+          range_flags = read.csv(paste(range_dir,range_file,sep = ""),stringsAsFactors = F)
+          range_station = range_flags[,c(1,which(colnames(range_flags) == STATION_NAME))]
+          colnames(range_station)[2] = "Station"
+          variables_flagged = range_station$Variable[which(range_station$Station == 0)]
+          
+          if(length(variables_flagged) == 0){
+            variables_flagged = NULL
+          }
+        }else{
+          variables_flagged = NULL
+        }
+        
         if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
           
           station_name = STATION_NAME
@@ -484,18 +499,18 @@ for(PROJECT in project_type){
             report_mydata = NULL
           }
           
-          if(use_alert_station_flag == TRUE){
-            range_flags = read.csv(paste(range_dir,range_file,sep = ""),stringsAsFactors = F)
-            range_station = range_flags[,c(1,which(colnames(range_flags) == STATION_NAME))]
-            colnames(range_station)[2] = "Station"
-            variables_flagged = range_station$Variable[which(range_station$Station == 0)]
-            
-            if(length(variables_flagged) == 0){
-              variables_flagged = NULL
-              }
-          }else{
-            variables_flagged = NULL
-          }
+          # if(use_alert_station_flag == TRUE){
+          #   range_flags = read.csv(paste(range_dir,range_file,sep = ""),stringsAsFactors = F)
+          #   range_station = range_flags[,c(1,which(colnames(range_flags) == STATION_NAME))]
+          #   colnames(range_station)[2] = "Station"
+          #   variables_flagged = range_station$Variable[which(range_station$Station == 0)]
+          #   
+          #   if(length(variables_flagged) == 0){
+          #     variables_flagged = NULL
+          #     }
+          # }else{
+          #   variables_flagged = NULL
+          # }
           
           
           params_list = list(report_mydata,
@@ -513,113 +528,7 @@ for(PROJECT in project_type){
                             output_dir = output_dir,
                             params = params_list)
         }
-        # generate a report of warnings
-        # -------------------------------------------------------------
-        
-        
-        #   if(any(status[critical_errors] == "Y")){
-        #     icinga_station = STATION_NAME
-        #     icinga_status = 2
-        #     # icinga_error = critical_errors[status[critical_errors] == "Y"]
-        #     icinga_text = paste(output_dir,output_file,sep = "")
-        #   }else{
-        #     if(any(status[warning_errors] == "Y")){
-        #       icinga_station = STATION_NAME
-        #       icinga_status = 1
-        #       # icinga_error = paste(warning_errors[status[warning_errors] == "Y"],collapse = " - ")
-        #       icinga_text = paste(output_dir,output_file,sep = "")
-        #     }
-        #   }
-        # }else{
-        #   icinga_station = STATION_NAME
-        #   icinga_status = 0
-        #   # icinga_error = "None"
-        #   icinga_text = "OK"
-        # }
-        
-        
-        
-        # ------- inseririre qui controllo sul file mail status -------
-        
-        
-        # mail_table = read.csv(mail_file,stringsAsFactors = F)
-        # mail_status = mail_table$Status[which(mail_table$Station == icinga_station)]
-        # 
-        # 
-        # if(icinga_status != mail_status ){
-        #   if(icinga_status != 0){
-        #     
-        #     
-        #     my_subject = paste("Station:",icinga_station,"- Errors:",error_write,"- DQC runs:", date_DQC)
-        #     
-        #     my_body = paste("Error/Warning report:",icinga_text)
-        #     
-        #     send.mail(from = sender,
-        #               to = reciver,
-        #               subject = my_subject,
-        #               body = my_body,
-        #               smtp = my_smtp,
-        #               authenticate = TRUE,
-        #               send = TRUE)
-        #   }
-        #   mail_table$Status[which(mail_table$Station == icinga_station)] = icinga_status
-        #   write.csv(mail_table, mail_file,quote = F,row.names = F)
-        # }
-        
-        # -------------------------------------------------------------
-        
-        # date_DQC = as.POSIXct(Sys.time(),tz = "Ect/GMT-1")
-        # date_to_print = paste(format(date_DQC,format = "%Y"),format(date_DQC,format = "%m"),format(date_DQC,format = "%d"),
-        #                                      format(date_DQC,format = "%H"),format(date_DQC,format = "%M"),sep = "")
-        # 
-        # status = unlist(lapply(errors,function(x) x[[1]]))
-        # data_errors = lapply(errors,function(x) x[[2]])
-        # # which(status == "Y")
-        # 
-        # if(is.na(issue_file$Date_error[which(issue_file$Errors == names(status)[which(status == "Y")])])){
-        #   issue_file$Date_error[which(issue_file$Errors == names(status)[which(status == "Y")])] = format(date_DQC,format = "%Y-%m-%d %H:%M")
-        #   
-        #   error_data = data_errors[[which(status == "Y")]]
-        #   
-        #   error_file = paste(issue_counter_dir,"errors_data/error_",STATION_NAME,"_",date_to_print,".rds",sep = "")
-        #   saveRDS(error_data,error_file)
-        # }
-        # 
-        # if(names(status)[[which(status == "Y")]] == "err_range_alert"){
-        #   error_data = data_errors[[which(status == "Y")]]
-        #   
-        # }
-        
-        # # ~ ~ ~ ~ xxxxxxxxxxxxx ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-        
-        # non serve?  
-        # Verificare che si puo togliere da qui: 
-        # out_filename_report = paste("DQC_Report_",STATION_NAME,"_",out_filename_date,".html",sep = "")
-        # 
-        # if(file.exists(paste(output_dir_report,out_filename_report,sep = ""))){
-        #   
-        #   j=0
-        #   repeat{
-        #     j=j+1
-        #     out_filename_report_new = paste(substring(out_filename_report,1, nchar(out_filename_report)-5),"_vers",j,".html",sep = "")
-        #     if(!file.exists(paste(output_dir_report,out_filename_report_new,sep = ""))){
-        #       break
-        #     }
-        #   }
-        # } else {
-        #   out_filename_report_new = out_filename_report
-        # }
-        # 
-        # out_filename_report = out_filename_report_new
-        # 
-        # if(write_output_report == TRUE){
-        #   output_file_report = file.rename(from = paste(output_dir_report,output_file_report,sep = ""),
-        #                                    to = paste(output_dir_report,out_filename_report,sep = ""))
-        # }else{
-        #   file.remove(paste(output_dir_report,output_file_report,sep = ""))
-        # }
-        
-        # a qui!
+       
         # Report su script esterno! Nella funzione DQC_Function prevedere il salvataggio e l' append degli errori!
         
         status_final = status
@@ -637,12 +546,20 @@ for(PROJECT in project_type){
           link = NA
           # link = "---"
         }
-        report_info = c(STATION_NAME,0,status_final, link)
+        
+        if(length(variables_flagged) == 0){
+          var_flagged = 0
+        }else{
+          var_flagged = 1
+        }
+        
+        report_info = c(STATION_NAME,0,status_final,var_flagged, link)
         names(report_info) = c("Station",
                                "Offline",
                                "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
                                "err_date_missing","err_range_alert",
                                "err_out_of_range","err_duplicates_rows",
+                               "var_flagged",
                                "report_link")
         
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -730,12 +647,13 @@ for(PROJECT in project_type){
         # }
         # 
         # ~~~~~~~
-        report_info = c(STATION_NAME,1,rep(NA,11), NA)
+        report_info = c(STATION_NAME,1,rep(NA,11),NA, NA)
         names(report_info) = c("Station",
                                "Offline",
                                "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
                                "err_date_missing","err_range_alert",
                                "err_out_of_range","err_duplicates_rows",
+                               "var_flagged",
                                "report_link")
         
         warning(paste(STATION_NAME, "already analyzed!"))
@@ -749,12 +667,13 @@ for(PROJECT in project_type){
       }
       
     }else{
-      report_info = c(STATION_NAME,2,rep(NA,11), NA)
+      report_info = c(STATION_NAME,2,rep(NA,11),NA, NA)
       names(report_info) = c("Station",
                              "Offline",
                              "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
                              "err_date_missing","err_range_alert",
                              "err_out_of_range","err_duplicates_rows",
+                             "var_flagged",
                              "report_link")
       final_info = c(STATION_NAME, "Not analyzed",
                      NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
@@ -840,51 +759,6 @@ for(PROJECT in project_type){
             authenticate = TRUE,
             send = TRUE)
 }
-
-
-# # # non funziona!!!!!
-# df_loggernet_status =as.data.frame(loggernet_status)
-# df_loggernet_status$Last_modification = as.POSIXct(df_loggernet_status$Last_modification,tz = "Etc/GMT-1")
-# 
-# h_loggernet_last_modif = trunc(max(df_loggernet_status$Last_modification,na.rm = T),units = "hours")
-# h_DQC = trunc(date_DQC,units = "hours")
-# 
-# hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_loggernet_last_modif, tz = "Etc/GMT-1",units = "hours"))
-# 
-# 
-# if( hours_diff >= LOGGERNET_OFFLINE){
-#   icinga_station = "LOGGERNET"
-#   icinga_status = 3
-#   icinga_text = "Loggernet doesn't download any station!"
-# }else{
-#   icinga_station = "LOGGERNET"
-#   icinga_status = 0
-#   icinga_text = "OK"
-# }
-# 
-# # ----- LOGGERNET DOESN'T WORK  ------
-# 
-# mail_table = read.csv(mail_file,stringsAsFactors = F)
-# mail_status = mail_table$Status[which(mail_table$Station == "LOGGERNET")]
-# 
-# if(icinga_status != mail_status ){
-#   if(icinga_status != 0){
-#     
-#     my_subject = paste("LOGGERNET doesn't work. All stations were already downloaded!")
-#     my_body = paste("Error: any new data in scheduling folder. Last data were downloaded at:", max(download_table$Last_Modification, na.rm = T))
-#     
-#     send.mail(from = sender,
-#               to = reciver,
-#               subject = my_subject,
-#               body = my_body,
-#               smtp = my_smtp,
-#               authenticate = TRUE,
-#               send = TRUE)
-#   }
-#   mail_table$Status[which(mail_table$Station == "LOGGERNET")] = icinga_status
-#   write.csv(mail_table, mail_file,quote = F,row.names = F)
-# }
-
 
 
 file.remove(paste(DQC_setting_dir,"lock_report.lock",sep = ""))

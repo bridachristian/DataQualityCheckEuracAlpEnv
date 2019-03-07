@@ -96,6 +96,9 @@ mydf$err_out_of_range[mydf$err_out_of_range == 1] = "gold"
 mydf$err_duplicates_rows[mydf$err_duplicates_rows == 0] = "forestgreen"
 mydf$err_duplicates_rows[mydf$err_duplicates_rows == 1] = "gold"
 
+mydf$var_flagged[mydf$var_flagged == 0] = "forestgreen"
+mydf$var_flagged[mydf$var_flagged == 1] = "gold"
+
 mydf[is.na(mydf)] = "white"
 
 colnames(mydf) = c("Station",
@@ -110,7 +113,8 @@ colnames(mydf) = c("Station",
                    "Data gap (missing date)",
                    "Data overrange",
                    "Data overrange physical",
-                   "Rows duplicated")
+                   "Rows duplicated",
+                   "Silent variables")
 
 
 

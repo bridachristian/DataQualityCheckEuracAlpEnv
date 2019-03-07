@@ -27,6 +27,10 @@ variables_flagged <- params$variables_flagged
 
 #### Data Quality Check : **`r  dqc_date`**
 
+---------
+
+#### From **`r  mydata$TIMESTAMP[1]`** to **`r mydata$TIMESTAMP[nrow(mydata)]`** 
+
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=FALSE}
 # names(errors_list_warning)
 
@@ -139,7 +143,8 @@ if(errors_list_critical$err_date_missing$Status == "Y"){
           axis.ticks.y=element_blank(),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank())
-  variables_flagged
+  
+  # variables_flagged
   
   knit_print(g0)
   
@@ -155,8 +160,12 @@ if(errors_list_critical$err_date_missing$Status == "Y"){
 ```{r echo=FALSE, warning=FALSE, results='asis',fig.width= 12,fig.height= 6}
 if(length(variables_flagged) != 0){
   df_var = as.data.frame(variables_flagged)
-  colnames(df_var) = ""
-  kable(df_var)
+  # colnames(df_var) = ""
+  df_var = cbind(rep("-",times = nrow(df_var)),df_var)
+    colnames(df_var) = c("","")
+
+  # kable(df_var)
+  cat(hwrite(df_var, border=0, center=TRUE,  width='1000px', row.names=FALSE, row.style=list('font-weight:bold')))
   
 }
 ```
@@ -167,6 +176,9 @@ if(errors_list_warning$err_range_alert$Status == "Y"){
   table =errors_list_warning$err_range_alert$Values
   # table$Variable = as.factor(table$Variable)
   vars = unique(table$Variable)
+  
+  w = which(colnames(mydata) %in% vars)
+  vars = colnames(mydata)[w]
   
   time_mydata = as.POSIXct(mydata[, which(colnames(mydata) == "TIMESTAMP")], tz = "Etc/GMT-1")
   
@@ -192,15 +204,17 @@ if(errors_list_warning$err_range_alert$Status == "Y"){
       geom_rect(data = tab_var,aes(xmin = From, xmax = To, ymin = -Inf, ymax = Inf, fill = Error),alpha = 0.3)+
       geom_line(data = melt_mydata, aes(x = TIMESTAMP, y = value))+
       scale_fill_manual(name = "",values = c("grey20","blue", "red"), labels = c("NaN_value","Too_low","Too_high"),drop = F)+
-      ggtitle(paste("Variable:", vars[i]),subtitle = paste(paste("From:",min(melt_mydata$TIMESTAMP), "to", max(melt_mydata$TIMESTAMP)),
-                                                           paste("Total NaN:",sum(tab_var$Hours[which(tab_var$Error == "NaN_value")], na.rm = T),"hours"),   # cambiare modo sommare
-                                                           paste("Total low data:",sum(tab_var$Hours[which(tab_var$Error == "Too_low")], na.rm = T),"hours"),
-                                                           paste("Total high data:",sum(tab_var$Hours[which(tab_var$Error == "Too_high")], na.rm = T),"hours"),sep = "\n"))+
+      # ggtitle(paste("Variable:", vars[i]),subtitle = paste(paste("From:",min(melt_mydata$TIMESTAMP), "to", max(melt_mydata$TIMESTAMP)),
+      #                                                      paste("Total NaN:",sum(tab_var$Hours[which(tab_var$Error == "NaN_value")], na.rm = T),"hours"),   # cambiare modo sommare
+      #                                                      paste("Total low data:",sum(tab_var$Hours[which(tab_var$Error == "Too_low")], na.rm = T),"hours"),
+      #                                                      paste("Total high data:",sum(tab_var$Hours[which(tab_var$Error == "Too_high")], na.rm = T),"hours"),sep = "\n"))+
+      ggtitle(vars[i])+
       scale_x_datetime(date_labels = "%b %d",date_minor_breaks = "1 day") +
       scale_y_continuous(name = vars[i])+
       theme_bw()+
       theme(panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank())
+            panel.grid.minor = element_blank(),
+            plot.title = element_text(hjust = 0.5, face="bold",size=28))
     
     # d1 = data.frame(c(1,2),c(2,5))
     # colnames(d1) = c("x","y")
@@ -208,7 +222,7 @@ if(errors_list_warning$err_range_alert$Status == "Y"){
     print(g1)
     
     # print(xtable(tab_var_v0[order(tab_var_v0$From),]),type = "html")
-    cat(hwrite(tab_var_v0[order(tab_var_v0$From),], border=0, center=TRUE,  width='1000px', row.names=FALSE, row.style=list('font-weight:bold')))
+    cat(hwrite(tab_var_v0[order(tab_var_v0$From),-1], border=0, center=TRUE,  width='1000px', row.names=FALSE, row.style=list('font-weight:bold')))
     # print(kable(tab_var_v0[order(tab_var_v0$From),],row.names = F),type = "html")
     # print( htmltools::tagList(datatable(tab_var_v0[order(tab_var_v0$From),])))
     cat (c("------------------------------------------------------------------------"),sep = "\n")

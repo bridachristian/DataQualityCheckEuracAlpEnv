@@ -115,8 +115,8 @@ mail_config = xmlParse(mail_config_file, useInternalNodes = F)
 mail_config_info = mail_config_parsing_new(mail_config)
 
 sender = mail_config_info$sender
-# reciver = mail_config_info$reciver
-reciver = "Christian.Brida@eurac.edu"
+reciver = mail_config_info$reciver
+# reciver = "Christian.Brida@eurac.edu"
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice #########################################################
 # -------------------------------

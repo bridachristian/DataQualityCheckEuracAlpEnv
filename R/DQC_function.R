@@ -1,28 +1,28 @@
 
 
 DQC_function= function(input_dir,
-                            output_dir_data,
-                            output_dir_report,
-                            project_dir,
-                            data_from_row,
-                            header_row_number,
-                            datetime_header,
-                            datetime_format,
-                            datetime_sampling,
-                            record_header,
-                            range_file,
-                            write_output_files,
-                            write_output_report,
-                            file_name,
-                            station_name,
-                            start_date,
-                            database_dir,
-                            logger_info_file,
-                            record_check,
-                            output_dir_raw,
-                            use_alert_station_flag,
-                            mail_file_alert,
-                            use_realtime_station_flag){
+                       output_dir_data,
+                       output_dir_report,
+                       project_dir,
+                       data_from_row,
+                       header_row_number,
+                       datetime_header,
+                       datetime_format,
+                       datetime_sampling,
+                       record_header,
+                       range_file,
+                       write_output_files,
+                       write_output_report,
+                       file_name,
+                       station_name,
+                       start_date,
+                       database_dir,
+                       logger_info_file,
+                       record_check,
+                       output_dir_raw,
+                       use_alert_station_flag,
+                       mail_file_alert,
+                       use_realtime_station_flag){
   
   # ..... Define flags ..................................................................................................................................
   
@@ -186,10 +186,10 @@ DQC_function= function(input_dir,
               
               # ALERT OUT OF RANGE --> ANY MYDATA MODIFICATION
               alert_range <- alert_range_notify(DATA = mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format, RECORD_HEADER = record_header,
-                                                    RANGE_DIR = range_dir, RANGE_FILE = range_file, 
-                                                    MAIL_DIR = mail_dir, MAIL_FILE_ALERT = mail_file_alert,
-                                                    STATION = STATION_NAME, 
-                                                    USE_FLAG = use_alert_station_flag,USE_RT_FLAG = use_realtime_station_flag) # <- Substitute with NA data out of phisical range
+                                                RANGE_DIR = range_dir, RANGE_FILE = range_file, 
+                                                MAIL_DIR = mail_dir, MAIL_FILE_ALERT = mail_file_alert,
+                                                STATION = STATION_NAME, 
+                                                USE_FLAG = use_alert_station_flag,USE_RT_FLAG = use_realtime_station_flag) # <- Substitute with NA data out of phisical range
               alert_out_of_range_table = alert_range[[1]]
               alert_variable_new = alert_range[[2]]
               alert_variable_to_set = alert_range[[3]]
@@ -336,7 +336,7 @@ DQC_function= function(input_dir,
                     df_toadd =  mydata[which(format(time_mydata, format = "%Y") == years[k]),]
                     df_toadd[,which(colnames(df_toadd)== datetime_header)] = as.POSIXct(format(df_toadd[,which(colnames(df_toadd)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
                     
-                   
+                    
                     # new[order(new$TIMESTAMP),]
                     new = rbind(old_data,df_toadd)
                     new = new[order(new[,which(colnames(new) == datetime_header)]),]
@@ -377,7 +377,7 @@ DQC_function= function(input_dir,
                     }
                     
                     
-
+                    
                     new_duplicated_data = time_to_char(DATA = new_duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
                     raw_new_duplicated_data = time_to_char(DATA = raw_new_duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
                     
@@ -393,7 +393,7 @@ DQC_function= function(input_dir,
                           rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
                           
                         }else{
-                        rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+                          rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
                         }
                         flag_missing_records_new_tmp = rec_miss[[1]]
                         records_missing_new = rec_miss[[2]]
@@ -806,7 +806,7 @@ DQC_function= function(input_dir,
       n_record = which(diff == -1)-which(diff == 1)
       
       hour_overlap =  difftime(time1 = end_overlap,time2 = start_overlap,units = "hours")
-        
+      
       overl_table = data.frame(start_overlap, end_overlap, n_record, hour_overlap)
       colnames(overl_table) = c("From", "To", "Number of Record", "Hours")
       

@@ -355,6 +355,25 @@ for(PROJECT in project_type){
                   authenticate = TRUE,
                   send = TRUE)
         
+        if(!file.exists(paste(DQC_setting_dir,STATION_NAME,"_offline.lock",sep = ""))){
+          file.create(paste(DQC_setting_dir,STATION_NAME,"_offline.lock",sep = ""))
+        }
+        
+      }else{
+        if(hours_diff < HOURS_OFFLINE){
+          if(file.exists(paste(DQC_setting_dir,STATION_NAME,"_offline.lock",sep = ""))){
+            my_subject = paste(PROJECT,"-",STATION_NAME,"- Station Online!")
+            my_body = paste("Online from:", date_last_modif_file)
+            
+            send.mail(from = sender,
+                      to = reciver,
+                      subject = my_subject,
+                      body = my_body,
+                      smtp = my_smtp,
+                      authenticate = TRUE,
+                      send = TRUE)
+            file.remove(paste(DQC_setting_dir,STATION_NAME,"_offline.lock",sep = ""))
+          }
       }
       
       # -----------------

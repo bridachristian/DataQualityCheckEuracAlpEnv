@@ -84,8 +84,8 @@ download_table_dir <- paste(DQC_setting_dir,"/Process/Download_tables/Hourly/", 
 warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 
 
- print(DQC_setting_dir)
- print(warning_report_RMD)
+print(DQC_setting_dir)
+print(warning_report_RMD)
 # 
 
 HOURS_OFFLINE = 24       # <- no data update since 24h --> station broken?
@@ -111,9 +111,9 @@ reciver = mail_config_info$reciver
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice
 
- print(mail_config_file)
- print(sender)
- print(reciver)
+print(mail_config_file)
+print(sender)
+print(reciver)
 # -------------------------------
 
 if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
@@ -374,6 +374,7 @@ for(PROJECT in project_type){
                       send = TRUE)
             file.remove(paste(DQC_setting_dir,STATION_NAME,"_offline.lock",sep = ""))
           }
+        }
       }
       
       # -----------------
@@ -433,7 +434,7 @@ for(PROJECT in project_type){
                                    use_alert_station_flag,
                                    mail_file_alert,
                                    use_realtime_station_flag)
-
+        
         
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]
@@ -559,7 +560,7 @@ for(PROJECT in project_type){
             }
             my_body = paste(url_webservice,PROJECT,icinga_text,sep = "") ################ aggiungere project
             
-
+            
             send.mail(from = sender,
                       to = reciver,
                       subject = my_subject,

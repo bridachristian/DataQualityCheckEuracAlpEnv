@@ -385,7 +385,7 @@ DQC_function= function(input_dir,
                     
                     raw_new_duplicated_data = raw_new_deletes_duplcated [[2]]
                     
-                    
+                    #####################
                     if(unique(as.character(new_duplicated_data[1,])) == "---"){
                       if(write_output_files == FALSE){   # non ha senso vedere se ci sono righe duplicate tra quelle scaricate e file vecchi --> gia processiati!
                         flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,0)

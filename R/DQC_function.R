@@ -336,33 +336,7 @@ DQC_function= function(input_dir,
                     df_toadd =  mydata[which(format(time_mydata, format = "%Y") == years[k]),]
                     df_toadd[,which(colnames(df_toadd)== datetime_header)] = as.POSIXct(format(df_toadd[,which(colnames(df_toadd)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
                     
-                    #--------------------------
-                    # # Quando gira lo script per i record nei file total sono gia presenti dati successivi alla data della download table. 
-                    # # Per questo quando vado a fare l'append dei nuovi dati vado a creare artificialmente righe doppie. Quindi aggiungo l' if
-                    # # sottostante per evitare l'inserimento di righe duplicate artificiali nel calcolo (non scritte)
-                    # # Probabilmente si può estendere la metodologia anche al caso generico... per problemi di tempo lascio a future manutenzioni 
-                    # # questo test
-                    # 
-                    # 
-                    # if(write_output_files == F){    # added to prevent overwrinting of rows in reports (usually the file was already written)
-                    #   date_my_start = df_toadd[1,which(colnames(df_toadd)== datetime_header)]
-                    #   date_my_end = df_toadd[nrow(df_toadd),which(colnames(df_toadd)== datetime_header)]
-                    #   date_old_start = old_data[1,which(colnames(old_data)== datetime_header)]
-                    #   date_old_end = old_data[nrow(old_data),which(colnames(old_data)== datetime_header)]
-                    #   
-                    #   if(date_old_end > date_my_start){
-                    #     old_data_star = old_data[1:(which(old_data[,which(colnames(old_data)== datetime_header)] == date_my_start)-1),]
-                    #     
-                    #   }else{
-                    #     old_data_star = old_data
-                    #   }
-                    #   new = rbind(old_data_star, df_toadd)
-                    # }else{
-                    #   new = rbind(old_data,df_toadd)
-                    # }
-                    
-                    #--------------------------
-                    
+                   
                     # new[order(new$TIMESTAMP),]
                     new = rbind(old_data,df_toadd)
                     new = new[order(new[,which(colnames(new) == datetime_header)]),]

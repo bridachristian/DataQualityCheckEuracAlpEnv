@@ -335,8 +335,36 @@ DQC_function= function(input_dir,
                     # append new data to old data if headers new and old are the same
                     df_toadd =  mydata[which(format(time_mydata, format = "%Y") == years[k]),]
                     df_toadd[,which(colnames(df_toadd)== datetime_header)] = as.POSIXct(format(df_toadd[,which(colnames(df_toadd)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
-                    new = rbind(old_data,df_toadd)
+                    
+                    #--------------------------
+                    # # Quando gira lo script per i record nei file total sono gia presenti dati successivi alla data della download table. 
+                    # # Per questo quando vado a fare l'append dei nuovi dati vado a creare artificialmente righe doppie. Quindi aggiungo l' if
+                    # # sottostante per evitare l'inserimento di righe duplicate artificiali nel calcolo (non scritte)
+                    # # Probabilmente si può estendere la metodologia anche al caso generico... per problemi di tempo lascio a future manutenzioni 
+                    # # questo test
+                    # 
+                    # 
+                    # if(write_output_files == F){    # added to prevent overwrinting of rows in reports (usually the file was already written)
+                    #   date_my_start = df_toadd[1,which(colnames(df_toadd)== datetime_header)]
+                    #   date_my_end = df_toadd[nrow(df_toadd),which(colnames(df_toadd)== datetime_header)]
+                    #   date_old_start = old_data[1,which(colnames(old_data)== datetime_header)]
+                    #   date_old_end = old_data[nrow(old_data),which(colnames(old_data)== datetime_header)]
+                    #   
+                    #   if(date_old_end > date_my_start){
+                    #     old_data_star = old_data[1:(which(old_data[,which(colnames(old_data)== datetime_header)] == date_my_start)-1),]
+                    #     
+                    #   }else{
+                    #     old_data_star = old_data
+                    #   }
+                    #   new = rbind(old_data_star, df_toadd)
+                    # }else{
+                    #   new = rbind(old_data,df_toadd)
+                    # }
+                    
+                    #--------------------------
+                    
                     # new[order(new$TIMESTAMP),]
+                    new = rbind(old_data,df_toadd)
                     new = new[order(new[,which(colnames(new) == datetime_header)]),]
                     
                     # append new raw data to old data if headers new and old are the same
@@ -357,17 +385,24 @@ DQC_function= function(input_dir,
                     
                     raw_new_duplicated_data = raw_new_deletes_duplcated [[2]]
                     
+                    
                     if(unique(as.character(new_duplicated_data[1,])) == "---"){
-                      flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,0)
+                      if(write_output_files == FALSE){   # non ha senso vedere se ci sono righe duplicate tra quelle scaricate e file vecchi --> gia processiati!
+                        flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,0)
+                        
+                      }else{  
+                        flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,0)
+                      }
                     } else{
-                      flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,1)
+                      if(write_output_files == FALSE){   # non ha senso vedere se ci sono righe duplicate tra quelle scaricate e file vecchi --> gia processiati!
+                        flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,0)
+                        
+                      }else{    
+                        flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,1)
+                      }
                     }
                     
-                    # se non scrivo file di output non servirebbe andare a controllare se ci sono righe duplicate tra nuove e vecchie 
-          
-                    if(write_output_files == FALSE){    
-                      flag_new_duplicates_rows_tmp = 0
-                    }
+                    
 
                     new_duplicated_data = time_to_char(DATA = new_duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
                     raw_new_duplicated_data = time_to_char(DATA = raw_new_duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
@@ -380,7 +415,12 @@ DQC_function= function(input_dir,
                       
                       if(record_check == 1){
                         w_last = which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)
+                        if(length(w_last) == 0){
+                          rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+                          
+                        }else{
                         rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+                        }
                         flag_missing_records_new_tmp = rec_miss[[1]]
                         records_missing_new = rec_miss[[2]]
                         records_restart_new = rec_miss[[3]]

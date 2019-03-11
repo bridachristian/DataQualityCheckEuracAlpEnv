@@ -67,7 +67,7 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
   
   
   # range = range[order(range$Variable),] # reorder range file based on variable
-  oor_flag = oor_flag[order(oor_flag$Variable),]
+  # oor_flag = oor_flag[order(oor_flag$Variable),]
   
   new = DATA # define new dataframe called new that is a copy of DATA
   
@@ -248,7 +248,6 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
       ####
       
     }else{ 
-      
       
       ##########
       

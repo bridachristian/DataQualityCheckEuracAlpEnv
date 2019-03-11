@@ -101,6 +101,8 @@ download_table_file <- "pics_download_table.csv"
 
 datetime_format =  "%Y-%m-%d %H:%M"                          # <-- datetime format. Use only: Y -> year, m -> month, d -> day, H -> hour, M -> minute
 
+HOURS_OFFLINE = 24       # <- no data update since 24h --> station broken?
+
 
 mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
 # mail_file = "mail_status.csv"
@@ -169,7 +171,7 @@ for(PROJECT in project_type){
     
     logger_dir_pics = paste(input_dir,"/", FOLDER_NAME,sep = "")
     
-
+    
     if(dir.exists(paste(data_output_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store data organized by station name
       if(dir.exists(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))){
         output_dir_pics_new = paste(data_output_dir,STATION_NAME,"/Pics/", sep = "")
@@ -217,7 +219,52 @@ for(PROJECT in project_type){
     }
     
     
+    # ----- station offline  ------
+    m = max(file.mtime(list.files(logger_dir_pics,full.names = T)), na.rm = T)
+    date_last_modif_file = as.character(format(m,format = datetime_format))
+    
+    h_last_modif_file = trunc(as.POSIXct(date_last_modif_file, tz = "Etc/GMT-1"),units = "hours")
+    h_DQC = trunc(date_DQC,units = "hours")
+    
+    hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_last_modif_file, tz = "Etc/GMT-1",units = "hours"))
+    
+    if(hours_diff >= HOURS_OFFLINE & hours_diff%%HOURS_OFFLINE == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
+      
+      my_subject = paste(PROJECT,"-",STATION_NAME,"- Pics Offline!")
+      my_body = paste("Last pics download:", date_last_modif_file)
+      
+      send.mail(from = sender,
+                to = reciver,
+                subject = my_subject,
+                body = my_body,
+                smtp = my_smtp,
+                authenticate = TRUE,
+                send = TRUE)
+      
+      if(!file.exists(paste(DQC_setting_dir,STATION_NAME,"_pics_offline.lock",sep = ""))){
+        file.create(paste(DQC_setting_dir,STATION_NAME,"_pics_offline.lock",sep = ""))
+      }
+      
+    }else{
+      if(hours_diff < HOURS_OFFLINE){
+        if(file.exists(paste(DQC_setting_dir,STATION_NAME,"_pics_offline.lock",sep = ""))){
+          my_subject = paste(PROJECT,"-",STATION_NAME,"- Pics back online!")
+          my_body = paste("Online from:", date_last_modif_file)
+          
+          send.mail(from = sender,
+                    to = reciver,
+                    subject = my_subject,
+                    body = my_body,
+                    smtp = my_smtp,
+                    authenticate = TRUE,
+                    send = TRUE)
+          file.remove(paste(DQC_setting_dir,STATION_NAME,"_pics_offline.lock",sep = ""))
+        }
+      }
+    }
+    
     #  ---- import files and folders ----
+    
     loggernet_file_long = list.files(logger_dir_pics,full.names = T)
     loggernet_file_long = loggernet_file_long[!grepl(pattern = "Thumbs.db",x = loggernet_file_long)] 
     

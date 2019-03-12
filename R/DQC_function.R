@@ -792,8 +792,7 @@ DQC_function= function(input_dir,
       max_date = max(overlap_date)
       
       seq_date = seq(min_date, max_date, by = datetime_sampling)
-      # seq_date = seq(as.POSIXct("2018-11-25 19:15", tz = "Etc/GMT-1"), as.POSIXct("2018-11-28 19:15", tz = "Etc/GMT-1"), by = datetime_sampling)
-      
+
       
       stat = rep(0, times = length(seq_date))
       stat[which(seq_date %in% overlap_date )] = 1

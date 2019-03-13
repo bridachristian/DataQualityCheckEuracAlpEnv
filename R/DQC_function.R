@@ -67,6 +67,7 @@ DQC_function= function(input_dir,
     header_colnames = data_import [[2]]
     data = data_import [[3]]
     flag_error_df = data_import [[4]]
+    data_star = data_import [[5]]
     
     rm(data_import)
     
@@ -717,29 +718,67 @@ DQC_function= function(input_dir,
   }
   
   # - - - -  Provide difference on data structure - - - - - - - - - - - - - 
-  
-  if(!is.na(flag_error_df) & (flag_error_df == 1 | flag_error_df == -1)){
-    ncol_vect = c(ncol(header),ncol(data))
-    names(ncol_vect) = c("ncol_header", "ncol_data")
+  if(!is.na(flag_error_df) & (flag_error_df == 2)){
+    w1 = as.data.frame(which(data_star == "",arr.ind = T))
+    names(w1) = c("row", "col")
+    df = data.frame(  data_star[w1$row, which(header_colnames == DATETIME_HEADER )], as.character(header_colnames)[w1$col])
+    colnames(df) = c(DATETIME_HEADER, "Variable")
     
-    output_structure = list("Y",ncol_vect)
+    u = unique(df$Variable)
+    
+    out_df = data.frame(matrix(ncol = 3, nrow = length(u)))
+    colnames(out_df) = c( "Empty cells", "From", "To")  
+    i=1
+    for(i in 1:length(u)){
+      df_date = as.POSIXct(df[,1],format = DATETIME_FORMAT, tz = "Etc/GMT-1") 
+      min_date = min(df_date)
+      max_date = max(df_date)
+      
+      seq_date = seq(min_date, max_date, by = datetime_sampling)
+      
+      
+      stat = rep(0, times = length(seq_date))
+      stat[which(seq_date %in% df_date )] = 1
+      stat = c(0,stat,0)
+      diff = diff(stat)
+      
+      start_blank = seq_date[which(diff == 1)]
+      end_blank = seq_date[which(diff == -1)-1]
+      
+      out_df$From[i] = format(start_blank, format = datetime_format)
+      out_df$To[i] =  format(end_blank, format = datetime_format)
+      out_df[i,1] = u[i]
+      
+    }
+    
+    output_structure = list("Y",out_df)
     names(output_structure) = c("Status", "Values")
+    
+    
   }else{
-    if(exists("df_difference")){
-      if(!is.na(flag_error_df) & (flag_error_df == 0  &  nrow(df_difference) != 0 )){
-        # structure_message = df_difference
-        output_structure = list("Y",df_difference)
-        names(output_structure) = c("Status", "Values")
+    
+    if(!is.na(flag_error_df) & (flag_error_df == 1 | flag_error_df == -1 )){
+      ncol_vect = c(ncol(header),ncol(data))
+      names(ncol_vect) = c("ncol_header", "ncol_data")
+      
+      output_structure = list("Y",ncol_vect)
+      names(output_structure) = c("Status", "Values")
+    }else{
+      if(exists("df_difference")){
+        if(!is.na(flag_error_df) & (flag_error_df == 0  &  nrow(df_difference) != 0 )){
+          # structure_message = df_difference
+          output_structure = list("Y",df_difference)
+          names(output_structure) = c("Status", "Values")
+        }else{
+          output_structure = list("N",NA)
+          names(output_structure) = c("Status", "Values")
+        }
       }else{
         output_structure = list("N",NA)
         names(output_structure) = c("Status", "Values")
       }
-    }else{
-      output_structure = list("N",NA)
-      names(output_structure) = c("Status", "Values")
     }
   }
-  
   # - - - -  Provide date issue - - - - - - - - - - - - - 
   
   if(!is.na(flag_date) & flag_date == 1){
@@ -764,7 +803,7 @@ DQC_function= function(input_dir,
     max_date = max(overlap_date)
     
     seq_date = seq(min_date, max_date, by = datetime_sampling)
-
+    
     
     stat = rep(0, times = length(seq_date))
     stat[which(seq_date %in% overlap_date )] = 1
@@ -791,7 +830,7 @@ DQC_function= function(input_dir,
       max_date = max(overlap_date)
       
       seq_date = seq(min_date, max_date, by = datetime_sampling)
-
+      
       
       stat = rep(0, times = length(seq_date))
       stat[which(seq_date %in% overlap_date )] = 1

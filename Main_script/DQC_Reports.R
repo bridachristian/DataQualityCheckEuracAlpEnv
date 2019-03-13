@@ -763,4 +763,6 @@ for(PROJECT in project_type){
 
 file.remove(paste(DQC_setting_dir,"lock_report.lock",sep = ""))
 
-
+print("------------------------------------------------------------------------------------------")
+print(Sys.time())
+print("--------------------- End script! --------------------------------------------------------")

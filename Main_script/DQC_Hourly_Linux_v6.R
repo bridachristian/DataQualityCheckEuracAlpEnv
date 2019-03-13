@@ -741,3 +741,6 @@ if(hours_diff >= LOGGERNET_OFFLINE){
 file.remove(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))
 
 
+print("------------------------------------------------------------------------------------------")
+print(Sys.time())
+print("--------------------- End script! --------------------------------------------------------")

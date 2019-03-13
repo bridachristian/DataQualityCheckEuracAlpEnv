@@ -17,78 +17,83 @@
 
 # DATETIME_FORMAT = "%Y-%m-d %H:%M"
 read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , DATETIME_FORMAT = "yyyy-mm-dd HH:MM", DATA_FROM_ROW = 5, HEADER_ROW_NUMBER = 2){
-
+  
   header <- read.csv(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), nrows = DATA_FROM_ROW - 1,header = F,stringsAsFactors = F,na.strings = c(NA, "NaN", "NAN"))
   header_colnames <- header[HEADER_ROW_NUMBER,]
   data <- read.csv(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), skip = DATA_FROM_ROW - 1,header = F,stringsAsFactors = F,na.strings = c(NA, "NaN", "NAN"))
   
-  if(ncol(data) == ncol(header_colnames)){
-
-    colnames(data) = header_colnames
-
-    w <- which(colnames(data) == DATETIME_HEADER)
-
-    date_chr = data[,w]
+  data_star <- read.csv(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), skip = HEADER_ROW_NUMBER - 1,header = F,stringsAsFactors = F)
+  data_star = data_star[-c(1:(DATA_FROM_ROW-HEADER_ROW_NUMBER)),]
+  
+  if(any(data_star == "", na.rm = T)){
+    flag_error_df = 2
     
-    # data2= data[57646:85019,]
-    # data2= data[85020:96056,]
-    # date_chr = data2[,w]
-    # data$RECORD[85018]
-    # data$TIMESTAMP[85018]
-    # strptime(x = date_chr, format = DATETIME_FORMAT,tz = "Etc/GMT-1")
+    # w1 = as.data.frame(which(data_star == "",arr.ind = T))
+    # names(w1) = c("row", "col")
+    # df = data.frame(  data_star$V1[w1$row], as.character(header_colnames)[w1$col])
     
-    time <- as.POSIXct(strptime(x = date_chr, format = DATETIME_FORMAT), tz = 'Etc/GMT-1') # Error in strptime(x = as.character(date_chr), format = DATETIME_FORMAT):input string is too long
-
-    data[,w] <- time
-
-    not_w <- which(colnames(data) != DATETIME_HEADER)
-
-    for(i in not_w){
-      data[,i] <- as.numeric(data[,i])
-    }
-    flag_error_df = 0
-
-    matr_data = as.matrix(data)
-    ind_NA = which(apply(matr_data,1, function(x) all(is.na(x))))
-
-    if(length(ind_NA) != 0){
-      data = data[-ind_NA,]
-    }
-
-  } else{
-
-
-    if(ncol(data) < ncol(header_colnames)){
-
-      df_NA = as.data.frame(matrix(data = NA, ncol = ncol(header_colnames)-ncol(data),nrow = nrow(data)))
-
-      data = cbind(data,df_NA)
+  }else{
+    
+    if(ncol(data) == ncol(header_colnames)){
+      
       colnames(data) = header_colnames
-
+      
       w <- which(colnames(data) == DATETIME_HEADER)
-
+      
       date_chr = data[,w]
-      time <- as.POSIXct( strptime(x = date_chr, format = DATETIME_FORMAT), tz = 'Etc/GMT-1')
-      time <- format(time,format = DATETIME_FORMAT)
-
+      
+      time <- as.POSIXct(strptime(x = date_chr, format = DATETIME_FORMAT), tz = 'Etc/GMT-1') # Error in strptime(x = as.character(date_chr), format = DATETIME_FORMAT):input string is too long
+      
       data[,w] <- time
-
+      
       not_w <- which(colnames(data) != DATETIME_HEADER)
-
+      
       for(i in not_w){
         data[,i] <- as.numeric(data[,i])
       }
-      flag_error_df = -1
-
-    } else {
-      if(ncol(data) > ncol(header_colnames)){
-        flag_error_df = 1
+      flag_error_df = 0
+      
+      matr_data = as.matrix(data)
+      ind_NA = which(apply(matr_data,1, function(x) all(is.na(x))))
+      
+      if(length(ind_NA) != 0){
+        data = data[-ind_NA,]
+      }
+      
+    } else{
+      
+      
+      if(ncol(data) < ncol(header_colnames)){
+        
+        df_NA = as.data.frame(matrix(data = NA, ncol = ncol(header_colnames)-ncol(data),nrow = nrow(data)))
+        
+        data = cbind(data,df_NA)
+        colnames(data) = header_colnames
+        
+        w <- which(colnames(data) == DATETIME_HEADER)
+        
+        date_chr = data[,w]
+        time <- as.POSIXct( strptime(x = date_chr, format = DATETIME_FORMAT), tz = 'Etc/GMT-1')
+        time <- format(time,format = DATETIME_FORMAT)
+        
+        data[,w] <- time
+        
+        not_w <- which(colnames(data) != DATETIME_HEADER)
+        
+        for(i in not_w){
+          data[,i] <- as.numeric(data[,i])
+        }
+        flag_error_df = -1
+        
+      } else {
+        if(ncol(data) > ncol(header_colnames)){
+          flag_error_df = 1
+        }
       }
     }
   }
-
   gc(reset = T)
-
-  return(list(header,header_colnames,data,flag_error_df))
-
+  
+  return(list(header,header_colnames,data,flag_error_df,data_star))
+  
 }

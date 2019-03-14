@@ -33,7 +33,11 @@ library(highr,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 library(mailR,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
 
 library(XML,lib.loc = '/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/')
-
+library(xtable, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+library(dygraphs, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+library(xts, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+library(hwriter, lib.loc = "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
+library(labeling, lib.loc =  "/home/cbrida/Libraries_DataQualityCheckEuracAlpEnv/")
 
 
 # library(devtools) 
@@ -116,10 +120,11 @@ if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
 
 for(PROJECT in project_type){
   data_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
-  report_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/DQC_Reports/",sep = "")  # where to put output reports
+  report_output_dir <- paste(data_output_dir,"/00_DQC_Reports/",sep = "")  # where to put output reports
+  # report_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/DQC_Reports/",sep = "")  # where to put output reports
   database_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
   
-  warning_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_Warnings/",PROJECT,"/", sep = "")  # where to put warnings html files
+  # warning_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_Warnings/",PROJECT,"/", sep = "")  # where to put warnings html files
   
   
   data_from_row =  5                                             # <-- Row number of first data
@@ -235,7 +240,7 @@ for(PROJECT in project_type){
   
   report_start = Sys.time()
   
-  t = 10
+  t = 1
   
   for(t in  1: length(files_available_project)){
     gc(reset = T)
@@ -270,25 +275,36 @@ for(PROJECT in project_type){
       if(dir.exists(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))){
         output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
         output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
+        output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/Reports/", sep = "")
+        warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = "")
       }else{
         dir.create(paste(data_output_dir,STATION_NAME,"/Reports/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Reports/Reports/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Processed/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
         output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
         output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
+        output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/Reports/", sep = "")
+        warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = "")
         
       }
     }else{
-      dir.create(paste(data_output_dir,STATION_NAME,"/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/", sep = ""))      
       dir.create(paste(data_output_dir,STATION_NAME,"/Reports/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Reports/Reports/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Processed/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
       output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
       output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
+      output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Reports/Reports/", sep = "")
+      warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Reports/Warnings/", sep = "")
+      
     }
     
     if(dir.exists(paste(database_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store mini files for database organized by station name 
@@ -307,12 +323,7 @@ for(PROJECT in project_type){
       database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
     }
     
-    if(dir.exists(paste(warning_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store WARNINGS files 
-      warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
-    }else{
-      dir.create(paste(warning_file_dir,STATION_NAME,"/", sep = "")) 
-      warning_file_dir_station = paste(warning_file_dir,STATION_NAME,"/", sep = "")
-    }
+    
     
     if(dwnl_info$Stop_DQC == 0){
       
@@ -327,7 +338,7 @@ for(PROJECT in project_type){
       
       if(hours_diff >= HOURS_OFFLINE & hours_diff%%HOURS_OFFLINE == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
         
-        my_subject = paste(STATION_NAME,"- Station Offline!")
+        my_subject = paste(PROJECT,"-",STATION_NAME,"- Station Offline!")
         my_body = paste("Last data download:", date_last_modif_file)
         
         send.mail(from = sender,
@@ -478,6 +489,7 @@ for(PROJECT in project_type){
                              errors_list_critical)
           names(params_list) = c("dqc_date","station_name","errors_list_critical")
           
+          # input = "/home/cbrida/DataQualityCheckEuracAlpEnv//Rmd/DQC_Warning_Reports_test.Rmd"
           rmarkdown::render(input = input,
                             output_file = output_file,
                             output_dir = output_dir,
@@ -486,7 +498,9 @@ for(PROJECT in project_type){
           # if(any(status[critical_errors] == "Y")){
           icinga_station = STATION_NAME
           icinga_status = paste("E",critical_number[which(status[critical_errors] == "Y")][1],sep = "")
-          icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")        # path --> external definition
+          # icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")               # to disactivate when webservice is ready!
+          icinga_text = paste(substring(output_dir,nchar(data_output_dir)),output_file,sep = "")        # to activate when webservice is ready!
+
           # }
           
         }else{
@@ -510,12 +524,12 @@ for(PROJECT in project_type){
           if(icinga_status != 0){
             
             
-            my_subject = paste(icinga_station,"-",error_write)
+            my_subject = paste(PROJECT,"-",icinga_station,"-",error_write)
             
             
             # my_body = paste("\\smb.scientificnet.org\alpenv",,sep = "")
             
-            my_body = paste("\\\\smb.scientificnet.org\\alpenv",icinga_text,sep = "")
+            my_body = paste("http://report.alpenv.eurac.edu",icinga_text,sep = "")
             
             send.mail(from = sender,
                       to = reciver,

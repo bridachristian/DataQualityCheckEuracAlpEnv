@@ -58,10 +58,14 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
   }else{
     w_col_data = which(range$Variable %in% colnames(DATA))
     w_station = which(colnames(range) == STATION)
+    
+    range[w_col_data,w_station][is.na(range[w_col_data,w_station])] = 1
     range[-w_col_data,w_station] = NA 
     
     w_col_data_oor = which(oor_flag$Variable %in% colnames(DATA))
     w_station_oor = which(colnames(oor_flag) == STATION)
+    
+    oor_flag[w_col_data_oor,w_station_oor][is.na( oor_flag[w_col_data_oor,w_station_oor])] = 1
     oor_flag[-w_col_data_oor,w_station_oor] = NA
   }
   

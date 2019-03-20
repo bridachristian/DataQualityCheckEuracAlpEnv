@@ -29,7 +29,19 @@ variables_flagged <- params$variables_flagged
 
 ---------
 
-#### From **`r  mydata$TIMESTAMP[1]`** to **`r mydata$TIMESTAMP[nrow(mydata)]`** 
+```{r echo=FALSE, warning=FALSE, results='asis',fig.width= 12,fig.height= 6}
+if(errors_list_critical$err_structure$Status == "N" & 
+   errors_list_critical$err_logger_number$Status == "N" &
+   errors_list_critical$err_structure$Status == "N" &
+   errors_list_critical$err_no_new_data$Status == "N" ){ 
+  
+  is.POSIXct <- function(x) inherits(x, "POSIXct")
+  s = sapply(mydata, is.POSIXct)
+  w = which(s == T)
+  cat(paste("From", mydata[1,w], "to", mydata[nrow(mydata),w],sep = " " ))
+}
+```
+
 
 ```{r message=FALSE,echo=FALSE, warning=FALSE, error=FALSE, eval=FALSE}
 # names(errors_list_warning)
@@ -162,8 +174,8 @@ if(length(variables_flagged) != 0){
   df_var = as.data.frame(variables_flagged)
   # colnames(df_var) = ""
   df_var = cbind(rep("-",times = nrow(df_var)),df_var)
-    colnames(df_var) = c("","")
-
+  colnames(df_var) = c("","")
+  
   # kable(df_var)
   cat(hwrite(df_var, border=0, center=TRUE,  width='1000px', row.names=FALSE, row.style=list('font-weight:bold')))
   

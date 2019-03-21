@@ -42,7 +42,9 @@ library(optparse)
 option_list = list(
   make_option(c("-md", "--maindir"), type="character", default="/shared/", 
               help="set the main dir", metavar="character"),
-  make_option(c("-pd", "--prjdir"), type="character", default="/home/cbrida/DataQualityCheckEuracAlpEnv/", 
+  make_option(c("-ind", "--inptdir"), type="character", default="/shared/", 
+              help="set the input dir", metavar="character"),
+  make_option(c("-pd", "--prjdir"), type="character",default="/home/cbrida/DataQualityCheckEuracAlpEnv/", 
               help="set the project dir", metavar="character")
 ); 
 
@@ -50,9 +52,16 @@ opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
 main_dir = opt$maindir
+input_dir = opt$inptdir
 project_dir = opt$prjdir
 
+main_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/dataqualitycheck_workplace/"
+input_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/dataqualitycheck_workplace/Data/Raw_Data/"
+project_dir = "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"
+
+
 print(main_dir)
+print(input_dir)
 print(project_dir)
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
@@ -60,32 +69,13 @@ print(project_dir)
 
 # ..... Params section .....................................................................................................................................
 
-# main_dir = "Z:/test_christian/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# main_dir = "Z:/"    # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# main_dir = "/shared/"
-# main_dir = "/shared/test_christian/"
-
-main_dir_mapping_in = "/shared/"                                   # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
-main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/shared/" will be replaced with "\\\\smb.scientificnet.org\\alpenv"
-
-# main_dir = "/shared/test_christian/"
-# main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
-
 project_type = c("LTER","MONALISA")
 
 PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
-input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
-# input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
-# input_dir <- paste("Z:","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+# input_dir <- paste(main_dir,"/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
-# project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
-# project_dir <- "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"  # where package is developed or cloned from github # disattivare!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-# sapply(dir(paste(project_dir,"R/",sep = ""),pattern = ".R"),FUN = function(x) source(paste(project_dir,"R/",x,sep = ""))) # import all function from 
-
-
-DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
+DQC_setting_dir <- paste(main_dir,"/DQC/",sep = "")
 
 logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.csv", sep = "")
 range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
@@ -125,6 +115,9 @@ reciver = mail_config_info$reciver
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice #########################################################
 # -------------------------------
+print(mail_config_file)
+print(sender)
+print(reciver)
 
 if(!file.exists(paste(DQC_setting_dir,"lock_report.lock",sep = ""))){
   file.create(paste(DQC_setting_dir,"lock_report.lock",sep = ""))
@@ -133,10 +126,10 @@ if(!file.exists(paste(DQC_setting_dir,"lock_report.lock",sep = ""))){
 # -------------------------------# -------------------------------# -------------------------------# -------------------------------# -------------------------------
 
 for(PROJECT in project_type){
-  data_output_dir   <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
+  data_output_dir   <- paste(main_dir,"/Data/DQC_Processed_Data/",PROJECT,"/Stations/",sep = "")  # where to put output files
   report_output_dir <- paste(data_output_dir,"00_DQC_Reports/",sep = "")  # where to put output reports
   # report_output_dir <- paste(main_dir,"Stations_Data/Data/DQC_Processed_Data/",PROJECT,"/Stations/00_DQC_Reports/",sep = "")  # where to put output reports
-  database_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
+  database_file_dir <- paste(main_dir,"/Data/DQC_DB/",PROJECT,"/", sep = "")  # where to put output files (MODIFIED FOR DATABASE TESTING) -----> "Permission denied"
   
   # warning_file_dir <- paste(main_dir,"Stations_Data/Data/DQC_Warnings/",PROJECT,"/", sep = "")  # where to put warnings html files
   
@@ -528,7 +521,7 @@ for(PROJECT in project_type){
                             output_dir = output_dir,
                             params = params_list)
         }
-       
+        
         # Report su script esterno! Nella funzione DQC_Function prevedere il salvataggio e l' append degli errori!
         
         status_final = status

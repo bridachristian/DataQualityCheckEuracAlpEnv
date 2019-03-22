@@ -377,7 +377,7 @@ for(PROJECT in project_type){
         range_file = range_file
         write_output_files = write_output_files
         write_output_report = write_output_report
-        database_dir = database_file_dir_new
+        # database_dir = database_file_dir_new
         file_name = FILE_NAME
         station_name = STATION_NAME
         start_date = dwnl_info$Last_date
@@ -408,7 +408,7 @@ for(PROJECT in project_type){
                                    file_name,
                                    station_name,
                                    start_date,
-                                   database_dir,
+                                   # database_dir,
                                    logger_info_file,
                                    record_check,
                                    output_dir_raw,

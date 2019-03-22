@@ -39,7 +39,7 @@ if(errors_output$err_corrupted$Status == "Y"){
   
   r_link = ff$pics_link
   r_link_text =  ff$pics_corrupted
-    
+  
   # r_link_text =  gsub(pattern = "/",replacement = "\\\\",r_link)
   #   w1 = which(is.na(r_link_text))
   # w2 = which(!is.na(r_link_text))
@@ -53,10 +53,10 @@ if(errors_output$err_corrupted$Status == "Y"){
   new_ff = as.data.frame(ff$pics_link)
   colnames(new_ff) = c( "Pics")
   
-
-  # knitr::kable(new_ff,row.names = FALSE)
-    cat(hwrite(new_ff, border=0, center=TRUE,  width='1000px', row.names=FALSE, row.style=list('font-weight:bold')))
-
+  
+  knitr::kable(new_ff,row.names = FALSE)
+  # cat(hwrite(new_ff, border=0, center=TRUE,  width='1000px', row.names=FALSE, row.style=list('font-weight:bold')))
+  
   
 }
 

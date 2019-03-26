@@ -28,8 +28,8 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
   if(any(data_star == "", na.rm = T)){
     flag_error_df = 2
     
-    colnames(data_star) == header_colnames
-    colnames(data) == header_colnames
+    colnames(data_star) = header_colnames
+    colnames(data) = header_colnames
    
     
   }else{

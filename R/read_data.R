@@ -29,8 +29,7 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
     flag_error_df = 2
     
     colnames(data_star) = header_colnames
-    colnames(data) = header_colnames
-   
+
     
   }else{
     

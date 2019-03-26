@@ -857,7 +857,7 @@ DQC_function= function(input_dir,
     colnames(out_df) = c( "Empty cells", "From", "To")  
     i=1
     for(i in 1:length(u)){
-      df_date = as.POSIXct(df[,1],format = DATETIME_FORMAT, tz = "Etc/GMT-1") 
+      df_date = as.POSIXct(df[,1],format = datetime_header, tz = "Etc/GMT-1") 
       min_date = min(df_date)
       max_date = max(df_date)
       

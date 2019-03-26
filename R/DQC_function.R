@@ -571,6 +571,10 @@ DQC_function= function(input_dir,
                     
                     file.rename(from = paste(output_dir_data,file_names_total_data,sep = ""),to = paste(output_dir_data,file_names_old,sep = ""))
                     
+                    output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)
+                    file_names_old_csv = paste(substring(file_names_old, 1, nchar(file_names_old)-4),".csv",sep = "")
+                    file.copy(from = paste(output_dir_data,file_names_old,sep = ""),to = paste(output_dir_data_csv,file_names_old_csv,sep = ""))
+                    
                     # rename raw data
                     
                     j=0
@@ -583,6 +587,7 @@ DQC_function= function(input_dir,
                     }
                     file_names_raw_data = paste(substring(file_names[k],1,nchar(file_names[k])-4),".dat", sep = "")
                     file.rename(from = paste(output_dir_raw,file_names_raw_data,sep = ""),to = paste(output_dir_raw,file_names_original_old,sep = ""))
+                    
                     
                     # ~~~~~~~~~
                     

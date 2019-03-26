@@ -28,9 +28,9 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
   if(any(data_star == "", na.rm = T)){
     flag_error_df = 2
     
-    # w1 = as.data.frame(which(data_star == "",arr.ind = T))
-    # names(w1) = c("row", "col")
-    # df = data.frame(  data_star$V1[w1$row], as.character(header_colnames)[w1$col])
+    colnames(data_star) == header_colnames
+    colnames(data) == header_colnames
+   
     
   }else{
     

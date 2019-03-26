@@ -942,8 +942,9 @@ DQC_function= function(input_dir,
     
     n_record = which(diff == -1)-which(diff == 1)
     
-    end_tmp = seq(end_overlap,by = datetime_sampling,length.out = 2)[2]  # fix error in difference!
-    hour_overlap =  difftime(time1 = end_tmp,time2 = start_overlap,units = "hours")
+    # end_tmp = seq(end_overlap,by = datetime_sampling,length.out = 2)[2]  # fix error in difference!
+    # hour_overlap =  difftime(time1 = end_tmp,time2 = start_overlap,units = "hours")
+    hour_overlap =  difftime(time1 = end_overlap,time2 = start_overlap,units = "hours")
     
     overl_table = data.frame(start_overlap, end_overlap, n_record, hour_overlap)
     colnames(overl_table) = c("From", "To", "Number of Record", "Hours")

@@ -848,8 +848,8 @@ DQC_function= function(input_dir,
   if(!is.na(flag_error_df) & (flag_error_df == 2)){
     w1 = as.data.frame(which(data_star == "",arr.ind = T))
     names(w1) = c("row", "col")
-    df = data.frame(  data_star[w1$row, which(header_colnames == DATETIME_HEADER )], as.character(header_colnames)[w1$col])
-    colnames(df) = c(DATETIME_HEADER, "Variable")
+    df = data.frame(  data_star[w1$row, which(header_colnames == datetime_header )], as.character(header_colnames)[w1$col])
+    colnames(df) = c(datetime_header, "Variable")
     
     u = unique(df$Variable)
     

@@ -562,7 +562,7 @@ DQC_function= function(input_dir,
                     j=0
                     repeat{
                       j=j+1
-                      file_names_old = paste(substring(file_names[k],1, nchar(file_names[k])-4),"_old",j,".csv",sep = "")
+                      file_names_old = paste(substring(file_names[k],1, nchar(file_names[k])-4),"_old",j,".dat",sep = "")
                       if(!file.exists(paste(output_dir_data,file_names_old,sep = ""))){
                         break
                       }

@@ -25,7 +25,10 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
   data_star <- read.csv(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), skip = HEADER_ROW_NUMBER - 1,header = F,stringsAsFactors = F)
   data_star = data_star[-c(1:(DATA_FROM_ROW-HEADER_ROW_NUMBER)),]
   
-  if(any(data_star == "", na.rm = T)){
+  max_col = max(count.fields(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), sep = ','), na.rm = T)
+
+  
+  if(any(data_star == "", na.rm = T) & max_col <= ncol(data_star)){
     flag_error_df = 2
     
     colnames(data_star) = header_colnames
@@ -33,7 +36,7 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
     
   }else{
     
-    if(ncol(data) == ncol(header_colnames)){
+    if(ncol(data) == ncol(header_colnames) & max_col == ncol(data_star)){
       
       colnames(data) = header_colnames
       
@@ -61,8 +64,8 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
       
     } else{
       
-      
-      if(ncol(data) < ncol(header_colnames)){
+     
+      if(ncol(data) < ncol(header_colnames) &  max_col <= ncol(data_star)){
         
         df_NA = as.data.frame(matrix(data = NA, ncol = ncol(header_colnames)-ncol(data),nrow = nrow(data)))
         
@@ -85,7 +88,7 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
         flag_error_df = -1
         
       } else {
-        if(ncol(data) > ncol(header_colnames)){
+        if(ncol(data) > ncol(header_colnames) |  max_col > ncol(data_star)){
           flag_error_df = 1
         }
       }
@@ -93,6 +96,6 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
   }
   gc(reset = T)
   
-  return(list(header,header_colnames,data,flag_error_df,data_star))
+  return(list(header,header_colnames,data,flag_error_df,data_star, max_col))
   
 }

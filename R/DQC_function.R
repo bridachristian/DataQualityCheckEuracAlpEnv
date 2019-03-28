@@ -308,6 +308,7 @@ DQC_function= function(input_dir,
             
             new_missing_index_date_tot = c()
             new_overlap_tot = c()
+            k=1
             for(k in 1: length(years)){
               
               if(file.exists(paste(output_dir_data,file_names[k],sep = ""))){

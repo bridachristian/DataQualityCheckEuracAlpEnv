@@ -142,8 +142,8 @@ for(PROJECT in project_type){
   use_realtime_station_flag = TRUE        # <-- use out_of_range file flags. Default: TRUE
   
   
-  write_output_files =  "FALSE"
-  write_output_report =  "FALSE"
+  write_output_files =  TRUE
+  write_output_report =  FALSE
   
   # general stations status --> loggernent doesn't work properly!
   loggernet_status_prj = as.data.frame(matrix(ncol = 3))

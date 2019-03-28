@@ -142,8 +142,8 @@ for(PROJECT in project_type){
   use_realtime_station_flag = TRUE        # <-- use out_of_range file flags. Default: TRUE
   
   
-  write_output_files =  TRUE
-  write_output_report =  FALSE
+  write_output_files =  "TRUE"
+  write_output_report =  "FALSE"
   
   # general stations status --> loggernent doesn't work properly!
   loggernet_status_prj = as.data.frame(matrix(ncol = 3))
@@ -690,7 +690,11 @@ for(PROJECT in project_type){
     
     loggernet_status_prj[t,1] = final_info[1]
     loggernet_status_prj[t,2] = final_info[2]
-    loggernet_status_prj[t,3] = date_last_modif_file
+    if(dwnl_info$Stop_DQC == 0){
+      loggernet_status_prj[t,3] = date_last_modif_file
+    }else{
+      loggernet_status_prj[t,3] = NA
+    }
     
     
     gc(reset = T)

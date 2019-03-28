@@ -71,25 +71,39 @@ DQC_function= function(input_dir,
     
     rm(data_import)
     
-    logger_number = header[1,4]                                                                   # check logger numbers
-    software_version = header[1,6]
+    # logger_number = header[1,4]                                                                   # check logger numbers
+    # software_version = header[1,6]
     logger_info_csv = read.csv(file = logger_info_file, stringsAsFactors = F)
     w_logger = which(logger_info_csv[,1] == station_name)
+    header_info = header[1,1:8]
     
     if(length(w_logger) == 0){
-      logger_info_csv = rbind(logger_info_csv, c(station_name, logger_number, software_version))
-      write.csv(logger_info_csv,logger_info_file,row.names = F,col.names = F )
+      # logger_info_csv = rbind(logger_info_csv, c(station_name, logger_number, software_version))
+      new_logger_info = cbind(station_name,header_info)
+      colnames(new_logger_info) = colnames(logger_info_csv)
+      logger_info_csv = rbind(logger_info_csv, new_logger_info)
+      write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
       flag_logger_number = 0
     }else{
       logger_info = logger_info_csv[w_logger,]
-      if(logger_number != logger_info[,2]){
+      if(any(header_info != logger_info[,-1])){
         flag_logger_number = 1
+        
+        w_diff = which(header_info != logger_info[,-1])
+        cc = colnames(logger_info[,-1])[w_diff]
+        new_h = as.character(header_info[w_diff])
+        old_h = as.character(logger_info[,-1][w_diff])
+        logger_difference = data.frame(cc,old_h,new_h)
+        colnames(logger_difference) = c("Column", "Old", "New")
+        
+        logger_difference = gsub("_", " ", logger_difference$Column)   # remove underescore 
+        
       }else{
         flag_logger_number = 0
       }
     }
     
-    if(flag_logger_number == 0){
+    # if(flag_logger_number == 0){
       if(flag_error_df == 0){
         time_data = data[,which(colnames(data)==datetime_header)]
         time_data = time_data[order(time_data)]
@@ -262,7 +276,7 @@ DQC_function= function(input_dir,
           }
         }
       }
-    }
+    # }
   }
   
   
@@ -274,7 +288,7 @@ DQC_function= function(input_dir,
   
   
   if(flag_empty == 0){
-    if(flag_logger_number == 0){
+    # if(flag_logger_number == 0){
       if(flag_error_df == 0){
         if(flag_date == 0){
           if(flag_overlap == 0){
@@ -535,9 +549,19 @@ DQC_function= function(input_dir,
                           #                                      format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
                           
                           if(write_output_files == TRUE){    # here????
+                            
+                            # keep updtate logger_info_file!
+                            w_logger = which(logger_info_csv[,1] == station_name)
+                            new_logger_info = cbind(station_name,header[1,1:8])
+                            colnames(new_logger_info) = colnames(logger_info_csv)
+                            logger_info_csv[w_logger,] = new_logger_info
+                            write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
+                            
+                            # write total .dat
                             write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
                             write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
                             
+                            # write total .csv
                             file_name_output_csv = paste(substring(file_name_output, 1, nchar(file_name_output)-4),".csv",sep="") 
                             output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
                             file.copy(from = paste(output_dir_data,file_name_output,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
@@ -556,7 +580,8 @@ DQC_function= function(input_dir,
                     
                     ######### new section ##########
                     # ~~~~~~~~~
-                    
+                    if(write_output_files == TRUE){    # here???? 
+                      
                     # rename total file
                     
                     j=0
@@ -590,24 +615,97 @@ DQC_function= function(input_dir,
                     
                     
                     # ~~~~~~~~~
+                    w_first = which(format(time_mydata, format = "%m") == "01" &
+                                      format(time_mydata, format = "%d") == "01" &
+                                      format(time_mydata, format = "%H") == "00" &
+                                      format(time_mydata, format = "%M") == "00" )
+                    y_first = as.numeric(format(time_mydata, format = "%Y")[w_first])
                     
+                    if(length(w_first)!= 0){
+                      w1 = which(y_first == years[k])
+                      w2 = which(y_first == years[k]+1)
+                      
+                      w_tot = which(format(time_mydata, format = "%Y") == years[k])
+                      w_tot = c(w_tot,w_first[w2])
+                      
+                      if(length(w1)!= 0){
+                        if(w_first[w1] %in% w_tot){
+                          w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
+                        }else{
+                          w_tot_2 = w_tot
+                        }
+                      }else{
+                        w_tot_2 = w_tot
+                      }
+                      
+                      out_my = mydata[c(w_tot_2),]
+                      
+                      
+                    }else{
+                      out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+                      
+                    }
+                    #######################
+                    w_first = which(format(time_orig, format = "%m") == "01" &
+                                      format(time_orig, format = "%d") == "01" &
+                                      format(time_orig, format = "%H") == "00" &
+                                      format(time_orig, format = "%M") == "00" )
+                    y_first = as.numeric(format(time_orig, format = "%Y")[w_first])
+                    
+                    if(length(w_first)!= 0){
+                      w1 = which(y_first == years[k])
+                      w2 = which(y_first == years[k]+1)
+                      
+                      w_tot = which(format(time_orig, format = "%Y") == years[k])
+                      w_tot = c(w_tot,w_first[w2])
+                      
+                      if(length(w1)!= 0){
+                        if(w_first[w1] %in% w_tot){
+                          w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
+                        }else{
+                          w_tot_2 = w_tot
+                        }
+                      }else{
+                        w_tot_2 = w_tot
+                      }
+                      
+                      out_orig = orig_wihtout_dupli[c(w_tot_2),]
+                      
+                      
+                    }else{
+                      out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
+                      
+                    }
                     colnames(header) = header[1,]
-                    out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+                    # out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
                     colnames(out_my) = colnames(header)
                     out_mydata=rbind(header[-1,],out_my)
                     file_name_output = file_names[k]
                     
                     
-                    out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
+                    # out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
                     out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
                     colnames(out_orig) = colnames(header)
                     out_original=rbind(header[-1,],out_orig)
                     file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
                     
-                    if(write_output_files == TRUE){    # here???? 
+                      # keep updtate logger_info_file!
+                      w_logger = which(logger_info_csv[,1] == station_name)
+                      new_logger_info = cbind(station_name,header[1,1:8])
+                      colnames(new_logger_info) = colnames(logger_info_csv)
+                      logger_info_csv[w_logger,] = new_logger_info
+                      write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
+                      
+                      
+                      # write total .dat
                       write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
                       write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
                       
+                      # write total .csv
+                      file_name_output_csv = paste(substring(file_name_output, 1, nchar(file_name_output)-4),".csv",sep="") 
+                      output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
+                      file.copy(from = paste(output_dir_data,file_name_output,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                      #
                     }
                     ######### end new section ##########
                     
@@ -739,9 +837,20 @@ DQC_function= function(input_dir,
                   #                                      format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
                   
                   if(write_output_files == TRUE){
+                    
+                    # keep updtate logger_info_file!
+                    w_logger = which(logger_info_csv[,1] == station_name)
+                    new_logger_info = cbind(station_name,header[1,1:8])
+                    colnames(new_logger_info) = colnames(logger_info_csv)
+                    logger_info_csv[w_logger,] = new_logger_info
+                    write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
+                    
+                    
+                    # write total .dat
                     write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
                     write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
                     
+                    # write total .csv
                     file_name_output_csv = paste(substring(file_name_output, 1, nchar(file_name_output)-4),".csv",sep="") 
                     output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
                     file.copy(from = paste(output_dir_data,file_name_output,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
@@ -786,7 +895,7 @@ DQC_function= function(input_dir,
           }
         }
       }
-    }
+    # }
   }
   
   # new_missing_index_date_tot
@@ -831,12 +940,14 @@ DQC_function= function(input_dir,
   # - - - -  Provide difference on logger numbers - - - - - - - - - - - - - 
   
   if(!is.na(flag_logger_number) & flag_logger_number == 1){
-    file_logger_numb = logger_number 
-    old_logger_numb = logger_info[,2]
-    logger_numbers=c(old_logger_numb,file_logger_numb)
-    names(logger_numbers) = c("old", "new")
+    # logger_difference
     
-    output_logger_number = list("Y",logger_numbers)
+    # file_logger_numb = logger_number 
+    # old_logger_numb = logger_info[,2]
+    # logger_numbers=c(old_logger_numb,file_logger_numb)
+    # names(logger_numbers) = c("old", "new")
+    
+    output_logger_number = list("Y",logger_difference)
     names(output_logger_number) = c("Status", "Values")
     
   }else{

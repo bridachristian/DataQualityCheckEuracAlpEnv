@@ -959,8 +959,8 @@ DQC_function= function(input_dir,
   # - - - -  Provide difference on data structure - - - - - - - - - - - - - 
   if(!is.na(flag_error_df) & (flag_error_df == 2)){
     w1 = as.data.frame(which(data_star == "",arr.ind = T))
-    names(w1) = c("row", "col")w1$row[1]
-    df = data.frame(  data_star[w1$row[1]-1, which(header_colnames == datetime_header )], as.character(header_colnames)[w1$col])
+    names(w1) = c("row", "col")
+    df = data.frame(  data_star[w1$row, which(header_colnames == datetime_header )], as.character(header_colnames)[w1$col])
     colnames(df) = c(datetime_header, "Variable")
     
     u = unique(df$Variable)
@@ -999,17 +999,17 @@ DQC_function= function(input_dir,
     if(!is.na(flag_error_df) & (flag_error_df == 1 | flag_error_df == -1 )){
       
       if(max_col == ncol(header) | max_col == ncol(header)){  #### To check! Not sure that it works!
-      ncol_vect = c(ncol(header),ncol(data))
-      names(ncol_vect) = c("ncol_header", "ncol_data")
+        ncol_vect = c(ncol(header),ncol(data))
+        names(ncol_vect) = c("ncol_header", "ncol_data")
       }else{
         if(max_col >  ncol(header)){
           ncol_vect = c(ncol(header),max_col)
-        names(ncol_vect) = c("ncol_header", "ncol_data")
-        }else{
-        if(max_col >  ncol(data)){
-          ncol_vect = c(max_col,ncol(header))
           names(ncol_vect) = c("ncol_header", "ncol_data")
-        }
+        }else{
+          if(max_col >  ncol(data)){
+            ncol_vect = c(max_col,ncol(header))
+            names(ncol_vect) = c("ncol_header", "ncol_data")
+          }
         }
       }
       

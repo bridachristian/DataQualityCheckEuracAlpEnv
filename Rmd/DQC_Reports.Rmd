@@ -65,7 +65,14 @@ if(errors_list_critical$err_structure$Status == "N" &
 <!-- err_logger_number -->
 
 ##`r if(errors_list_critical$err_logger_number$Status == "Y"){ paste("Logger wrong number!")}`
-`r if(errors_list_critical$err_logger_number$Status == "Y"){ paste("Logger numbers doesn't match. Old:",errors_list_critical$err_logger_number$Values[1], "New:",errors_list_critical$err_logger_number$Values[2])}`
+```{r echo=FALSE}
+if(errors_list_critical$err_logger_number$Status == "Y"){ 
+  # datatable(errors_list_critical$err_structure$Values)
+  kable(errors_list_critical$err_logger_number$Values)
+}
+```
+
+<!-- `r if(errors_list_critical$err_logger_number$Status == "Y"){ paste("Logger numbers doesn't match. Old:",errors_list_critical$err_logger_number$Values[1], "New:",errors_list_critical$err_logger_number$Values[2])}` -->
 
 <!-- err_structure -->
 

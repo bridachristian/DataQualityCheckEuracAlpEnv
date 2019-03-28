@@ -50,6 +50,9 @@ opt = parse_args(opt_parser);
 main_dir = opt$maindir
 project_dir = opt$prjdir
 
+main_dir = "Z:/"
+project_dir = "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"
+
 print(main_dir)
 print(project_dir)
 
@@ -68,7 +71,8 @@ project_type = c("LTER","MONALISA")
 
 PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
-input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+# input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/BACKUP_IMPORTANT/Raw_Delme/1/",sep = "")                    # where input files are
 
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
@@ -138,7 +142,7 @@ for(PROJECT in project_type){
   use_realtime_station_flag = TRUE        # <-- use out_of_range file flags. Default: TRUE
   
   
-  write_output_files =  "TRUE"
+  write_output_files =  "FALSE"
   write_output_report =  "FALSE"
   
   # general stations status --> loggernent doesn't work properly!

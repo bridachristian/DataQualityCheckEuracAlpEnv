@@ -96,7 +96,7 @@ DQC_function= function(input_dir,
         logger_difference = data.frame(cc,old_h,new_h)
         colnames(logger_difference) = c("Column", "Old", "New")
         
-        logger_difference = gsub("_", " ", logger_difference$Column)   # remove underescore 
+        # logger_difference = gsub("_", " ", logger_difference$Column)   # remove underescore 
         
       }else{
         flag_logger_number = 0

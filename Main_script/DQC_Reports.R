@@ -427,7 +427,7 @@ for(PROJECT in project_type){
         mylist <- split(flags_df$value, seq(nrow(flags_df)))
         names(mylist) = flags_df$flag_names
         
-        if(mylist$flag_empty == 0 & mylist$flag_logger_number == 0 & mylist$flag_error_df == 0 & mylist$flag_date == 0){
+        if(mylist$flag_empty == 0  & mylist$flag_error_df == 0 & mylist$flag_date == 0){
           out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),

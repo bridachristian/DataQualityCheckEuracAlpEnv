@@ -567,7 +567,7 @@ for(PROJECT in project_type){
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
         if(!is.na(mylist$flag_missing_dates)){
-          if(mylist$flag_logger_number == 0){
+           # if(mylist$flag_logger_number == 0){
             if(mylist$flag_new_overlap == 1){
               if(write_output_report == TRUE){
                 final_info = c(STATION_NAME, "Analyzed and write output",
@@ -607,7 +607,7 @@ for(PROJECT in project_type){
                                paste(file_names[length(file_names)],sep = ""))
               }
             }
-          }
+          # }
         }else{
           
           

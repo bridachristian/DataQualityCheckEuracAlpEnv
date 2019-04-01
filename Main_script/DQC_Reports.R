@@ -296,8 +296,8 @@ for(PROJECT in project_type){
     dwnl_info = download_table[w_dwnl,]
     
     if(dir.exists(paste(data_output_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store data organized by station name
-      if(dir.exists(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))){
-        output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
+      if(dir.exists(paste(data_output_dir,STATION_NAME,"/Total/Files_dat/", sep = ""))){
+        output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/Files_dat/", sep = "")
         output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
         output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Alerts/Reports/", sep = "")
         warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
@@ -307,9 +307,10 @@ for(PROJECT in project_type){
         dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))
+        dir.create(paste(data_output_dir,STATION_NAME,"/Total/Files_dat/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Processed/", sep = ""))
         dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
-        output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
+        output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/Files_dat/", sep = "")
         output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
         output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Alerts/Reports/", sep = "")
         warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
@@ -322,30 +323,31 @@ for(PROJECT in project_type){
       dir.create(paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Raw/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Total/", sep = ""))
+      dir.create(paste(data_output_dir,STATION_NAME,"/Total/Files_dat/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Processed/", sep = ""))
       dir.create(paste(data_output_dir,STATION_NAME,"/Pics/", sep = ""))
-      output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/", sep = "")
+      output_dir_data_new = paste(data_output_dir,STATION_NAME,"/Total/Files_dat/", sep = "")
       output_dir_raw_new = paste(data_output_dir,STATION_NAME,"/Raw/", sep = "")
       output_dir_report_new = paste(data_output_dir,STATION_NAME,"/Alerts/Reports/", sep = "")
       warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
       
     }
     
-    if(dir.exists(paste(database_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store mini files for database organized by station name 
-      if(dir.exists(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))){ 
-        database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
-      }else{
-        dir.create(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))
-        dir.create(paste(database_file_dir,STATION_NAME,"/Pics/", sep = ""))
-        database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
-        
-      }
-    }else{
-      dir.create(paste(database_file_dir,STATION_NAME,"/", sep = "")) 
-      dir.create(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))
-      dir.create(paste(database_file_dir,STATION_NAME,"/Pics/", sep = ""))
-      database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
-    }
+    # if(dir.exists(paste(database_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store mini files for database organized by station name 
+    #   if(dir.exists(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))){ 
+    #     database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
+    #   }else{
+    #     dir.create(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))
+    #     dir.create(paste(database_file_dir,STATION_NAME,"/Pics/", sep = ""))
+    #     database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
+    #     
+    #   }
+    # }else{
+    #   dir.create(paste(database_file_dir,STATION_NAME,"/", sep = "")) 
+    #   dir.create(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))
+    #   dir.create(paste(database_file_dir,STATION_NAME,"/Pics/", sep = ""))
+    #   database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
+    # }
     
     
     

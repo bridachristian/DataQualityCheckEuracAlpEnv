@@ -36,7 +36,7 @@ sum_col = apply(mydf[,c(2:ncol(mydf))],1,sum)
 
 # -----------------------
 
-j=10
+j=1
 for(j in 1:nrow(mydf)){ 
   if(any(mydf[j,] == 1,na.rm = T)){
     if(mydf[j,2] == 2){
@@ -44,7 +44,7 @@ for(j in 1:nrow(mydf)){
     }else{
       w = which(mydf[j,] == 1)
       
-      if(w <= 7 ){
+      if(w <= 7  & w != 4){
         mydf[j,(w+1):ncol(mydf)] = NA
       }else{
         if (w %in% c(8,9)){
@@ -67,7 +67,7 @@ mydf$err_empty[mydf$err_empty == 0] = "forestgreen"
 mydf$err_empty[mydf$err_empty == 1] = "firebrick1"
 
 mydf$err_logger_number[mydf$err_logger_number == 0] = "forestgreen"
-mydf$err_logger_number[mydf$err_logger_number == 1] = "firebrick1"
+mydf$err_logger_number[mydf$err_logger_number == 1] = "gold"
 
 mydf$err_structure[mydf$err_structure == 0] = "forestgreen"
 mydf$err_structure[mydf$err_structure == 1] = "firebrick1"

@@ -814,6 +814,10 @@ DQC_function= function(input_dir,
                 out_mydata=rbind(header[-1,],out_my)
                 file_name_output = file_names[k]
                 
+                if(nrow(out_my) == 0){            #  <- risolvo problema legato alla generazione di file senza dati. 
+                  write_output_files = FALSE
+                }
+                
                 
                 # out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
                 out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)

@@ -230,7 +230,7 @@ for(PROJECT in project_type){
     
     if(hours_diff >= HOURS_OFFLINE & hours_diff%%HOURS_OFFLINE == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
       
-      my_subject = paste(PROJECT,"-",STATION_NAME,"- Pics Offline!")
+      my_subject = paste(PROJECT,"-",STATION_NAME,"- NO Pics!")
       my_body = paste("Last pics download:", date_last_modif_file)
       
       send.mail(from = sender,
@@ -241,14 +241,14 @@ for(PROJECT in project_type){
                 authenticate = TRUE,
                 send = TRUE)
       
-      if(!file.exists(paste(DQC_setting_dir,STATION_NAME,"_pics_offline.lock",sep = ""))){
-        file.create(paste(DQC_setting_dir,STATION_NAME,"_pics_offline.lock",sep = ""))
+      if(!file.exists(paste(DQC_setting_dir,STATION_NAME,"_no_pics.lock",sep = ""))){
+        file.create(paste(DQC_setting_dir,STATION_NAME,"_no_pics.lock",sep = ""))
       }
       
     }else{
       if(hours_diff < HOURS_OFFLINE){
-        if(file.exists(paste(DQC_setting_dir,STATION_NAME,"_pics_offline.lock",sep = ""))){
-          my_subject = paste(PROJECT,"-",STATION_NAME,"- Pics back online!")
+        if(file.exists(paste(DQC_setting_dir,STATION_NAME,"_no_pics.lock",sep = ""))){
+          my_subject = paste(PROJECT,"-",STATION_NAME,"- Pics OK!")
           my_body = paste("Online from:", date_last_modif_file)
           
           send.mail(from = sender,
@@ -258,7 +258,7 @@ for(PROJECT in project_type){
                     smtp = my_smtp,
                     authenticate = TRUE,
                     send = TRUE)
-          file.remove(paste(DQC_setting_dir,STATION_NAME,"_pics_offline.lock",sep = ""))
+          file.remove(paste(DQC_setting_dir,STATION_NAME,"_no_pics.lock",sep = ""))
         }
       }
     }
@@ -421,7 +421,7 @@ for(PROJECT in project_type){
           
           
           
-          my_subject = paste(PROJECT,STATION_NAME,"pics corrupted", sep = " - ")
+          my_subject = paste(PROJECT,STATION_NAME,"- Pics corrupted!", sep = " - ")
           # my_body = paste(main_dir_mapping_out,"/",substring(output_dir,nchar(main_dir_mapping_in)+1),"/", output_file,sep = "")
           my_body = paste(url_webservice,PROJECT,substring(warning_file_dir_station, nchar(data_output_dir)),output_file,sep="")
           

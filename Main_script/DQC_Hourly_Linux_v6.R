@@ -602,45 +602,45 @@ for(PROJECT in project_type){
         
         if(!is.na(mylist$flag_missing_dates)){
           # if(mylist$flag_logger_number == 0){
-            if(mylist$flag_new_overlap == 1){
-              if(write_output_report == TRUE){
-                final_info = c(STATION_NAME, "Analyzed and write output",
-                               flags_df$value,
-                               paste(output_dir_report,out_filename_report,sep = ""),
-                               NA,
-                               NA)
-              }else{
-                final_info = c(STATION_NAME, "Analyzed and write output",
-                               flags_df$value,
-                               NA,
-                               NA,
-                               NA)
-              }
+          if(mylist$flag_new_overlap == 1){
+            if(write_output_report == TRUE){
+              final_info = c(STATION_NAME, "Analyzed and write output",
+                             flags_df$value,
+                             paste(output_dir_report,out_filename_report,sep = ""),
+                             NA,
+                             NA)
             }else{
-              download_table$Last_date[w_dwnl] = last_date
-              download_table$Last_Modification[w_dwnl] = date_last_modif_file
-              
-              # if(download_table$record_check[w_dwnl] == 0){
-              #   download_table$record_check[w_dwnl] = 1
-              # }
-              
-              download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
-              write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
-              
-              if(write_output_report == TRUE){
-                final_info = c(STATION_NAME, "Analyzed and write output",
-                               flags_df$value,
-                               paste(output_dir_report,out_filename_report,sep = ""),
-                               paste(output_dir_data,sep = ""),
-                               paste(file_names[length(file_names)],sep = ""))
-              }else{
-                final_info = c(STATION_NAME, "Analyzed and write output",
-                               flags_df$value,
-                               NA,
-                               paste(output_dir_data_new,sep = ""),
-                               paste(file_names[length(file_names)],sep = ""))
-              }
+              final_info = c(STATION_NAME, "Analyzed and write output",
+                             flags_df$value,
+                             NA,
+                             NA,
+                             NA)
             }
+          }else{
+            download_table$Last_date[w_dwnl] = last_date
+            download_table$Last_Modification[w_dwnl] = date_last_modif_file
+            
+            # if(download_table$record_check[w_dwnl] == 0){
+            #   download_table$record_check[w_dwnl] = 1
+            # }
+            
+            download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
+            write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
+            
+            if(write_output_report == TRUE){
+              final_info = c(STATION_NAME, "Analyzed and write output",
+                             flags_df$value,
+                             paste(output_dir_report,out_filename_report,sep = ""),
+                             paste(output_dir_data,sep = ""),
+                             paste(file_names[length(file_names)],sep = ""))
+            }else{
+              final_info = c(STATION_NAME, "Analyzed and write output",
+                             flags_df$value,
+                             NA,
+                             paste(output_dir_data_new,sep = ""),
+                             paste(file_names[length(file_names)],sep = ""))
+            }
+          }
           # }
         }else{
           

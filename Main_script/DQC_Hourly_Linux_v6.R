@@ -50,9 +50,6 @@ opt = parse_args(opt_parser);
 main_dir = opt$maindir
 project_dir = opt$prjdir
 
-main_dir = "Z:/"
-project_dir = "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"
-
 print(main_dir)
 print(project_dir)
 
@@ -493,6 +490,12 @@ for(PROJECT in project_type){
         ####################################################################
         
         mail_table = read.csv(paste(mail_dir,mail_file,sep = ""),stringsAsFactors = F)
+        
+        if(length(which(colnames(mail_table) == station_name)) == 0 ){           # update mail_table with new station
+          new_mail_station = c(rep(1, times = 9), rep(0, times = 2))
+          mail_table = cbind(mail_table, new_mail_station)
+          colnames(mail_table)[ncol(mail_table)] = station_name
+        }
         
         mail_station = mail_table[,c(1,2,which(colnames(mail_table) == station_name))]
         colnames(mail_station)[3] = "mail_active"

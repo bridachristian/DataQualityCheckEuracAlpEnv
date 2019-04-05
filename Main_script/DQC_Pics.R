@@ -277,7 +277,8 @@ for(PROJECT in project_type){
       file.copy(from = loggernet_file_long, to = paste(inpur_dir_pics,"/",loggernet_file_short,sep = ""))
       
     }else{
-      w = which(format(file.mtime(loggernet_file_long),format = datetime_format) > dwn_prj$Last_Modification )
+      info_file = file.info(loggernet_file_long)
+      w = which(format(info_file$ctime,format = datetime_format) > dwn_prj$Last_Modification )   # copy file that change status
       file.copy(from = loggernet_file_long[w], to = paste(inpur_dir_pics,"/",loggernet_file_short[w],sep = ""))
       
     }

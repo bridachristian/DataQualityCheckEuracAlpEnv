@@ -716,8 +716,8 @@ DQC_function= function(input_dir,
                   old_header_t = as.data.frame(t(old_header))
                   
                   if( nrow(header_t) < nrow(old_header_t)){
-                    ff_df = matrix(data = "", nrow = nrow(header_t) - nrow(old_header_t), ncol = ncol(header_t))
-                    header_t = rbind(old_header_t,diff_df)
+                    diff_df = matrix(data = "", nrow = nrow(old_header_t) - nrow(header_t), ncol = ncol(header_t))
+                    header_t = rbind(header_t,diff_df)
                   }else{
                     if( nrow(header_t) > nrow(old_header_t)){
                       diff_df = matrix(data = "", nrow = nrow(header_t) - nrow(old_header_t), ncol = ncol(header_t))

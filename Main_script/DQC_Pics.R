@@ -343,7 +343,7 @@ for(PROJECT in project_type){
             p_old_rm = pics_ok_old_name[c(w_old)]
             
             if(length(p_new) !=0 & !file.exists(paste(output_dir_pics_new,"/", p_new, sep = ""))){
-              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""),overwrite = FALSE) # TO CHECK
+              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = "")) # TO CHECK
             }
             
             file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) 
@@ -353,7 +353,7 @@ for(PROJECT in project_type){
             p_new = pics_ok_new_name
             p_old = pics_ok_old_name
             if(!file.exists(paste(output_dir_pics_new,"/", p_new, sep = ""))){
-            file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""),overwrite = FALSE)
+            file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""))
             }
           }
           
@@ -374,7 +374,7 @@ for(PROJECT in project_type){
             p_old_rm = pics_corrupted_old_name[c(w_old)]
             
             if(length(p_new) !=0 & !file.exists(paste(corrupt_dir_pics,"/", p_new, sep = "")) ){
-              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""),overwrite = FALSE)
+              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""))
               
             }
             file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) 
@@ -383,7 +383,7 @@ for(PROJECT in project_type){
             p_new = pics_corrupted_new_name
             p_old = pics_corrupted_old_name
             if(!file.exists(paste(corrupt_dir_pics,"/", p_new, sep = ""))){
-              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""),overwrite = FALSE)
+              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""))
               print(paste(PROJECT, STATION_NAME,"File copied", sep = " - "))
             }
           }

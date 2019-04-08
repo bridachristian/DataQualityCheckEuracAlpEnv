@@ -274,12 +274,12 @@ for(PROJECT in project_type){
     loggernet_file_short = loggernet_file_short[!grepl(pattern = "Thumbs.db",x = loggernet_file_short)]  
     
     if(is.na(dwn_prj$Last_Modification)){
-      file.copy(from = loggernet_file_long, to = paste(inpur_dir_pics,"/",loggernet_file_short,sep = ""))
+      file.copy(from = loggernet_file_long, to = paste(inpur_dir_pics,"/",loggernet_file_short,sep = ""),overwrite = FALSE)
       
     }else{
       info_file = file.info(loggernet_file_long)
       w = which(format(info_file$ctime,format = datetime_format) > dwn_prj$Last_Modification )   # copy file that change status
-      file.copy(from = loggernet_file_long[w], to = paste(inpur_dir_pics,"/",loggernet_file_short[w],sep = ""))
+      file.copy(from = loggernet_file_long[w], to = paste(inpur_dir_pics,"/",loggernet_file_short[w],sep = ""),overwrite = FALSE)
       
     }
     
@@ -342,8 +342,8 @@ for(PROJECT in project_type){
             p_new_rm = pics_ok_new_name[c(w_old)]
             p_old_rm = pics_ok_old_name[c(w_old)]
             
-            if(length(p_new) !=0 ){
-              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""))
+            if(length(p_new) !=0 & !file.exists(paste(output_dir_pics_new,"/", p_new, sep = ""))){
+              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""),overwrite = FALSE) # TO CHECK
             }
             
             file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) 
@@ -352,8 +352,9 @@ for(PROJECT in project_type){
           }else{
             p_new = pics_ok_new_name
             p_old = pics_ok_old_name
-            file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""))
-            
+            if(!file.exists(paste(output_dir_pics_new,"/", p_new, sep = ""))){
+            file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = "") , to = paste(output_dir_pics_new,"/", p_new, sep = ""),overwrite = FALSE)
+            }
           }
           
           
@@ -372,8 +373,8 @@ for(PROJECT in project_type){
             p_new_rm = pics_corrupted_new_name[c(w_old)]
             p_old_rm = pics_corrupted_old_name[c(w_old)]
             
-            if(length(p_new) !=0 ){
-              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""))
+            if(length(p_new) !=0 & !file.exists(paste(corrupt_dir_pics,"/", p_new, sep = "")) ){
+              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""),overwrite = FALSE)
               
             }
             file.remove(paste(inpur_dir_pics,"/", p_old_rm,sep = "")) 
@@ -381,8 +382,10 @@ for(PROJECT in project_type){
           }else{
             p_new = pics_corrupted_new_name
             p_old = pics_corrupted_old_name
-            file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""))
-            print(paste(PROJECT, STATION_NAME,"File copied", sep = " - "))
+            if(!file.exists(paste(corrupt_dir_pics,"/", p_new, sep = ""))){
+              file.rename(from = paste(inpur_dir_pics,"/", p_old,sep = ""), to = paste(corrupt_dir_pics,"/", p_new, sep = ""),overwrite = FALSE)
+              print(paste(PROJECT, STATION_NAME,"File copied", sep = " - "))
+            }
           }
           
           

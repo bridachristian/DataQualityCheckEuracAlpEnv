@@ -713,13 +713,25 @@ DQC_function= function(input_dir,
                   flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 1)
                   
                   header_t = as.data.frame(t(header))
+                  old_header_t = as.data.frame(t(old_header))
+                  
+                  if( nrow(header_t) < nrow(old_header_t)){
+                    ff_df = matrix(data = "", nrow = nrow(header_t) - nrow(old_header_t), ncol = ncol(header_t))
+                    header_t = rbind(old_header_t,diff_df)
+                  }else{
+                    if( nrow(header_t) > nrow(old_header_t)){
+                      diff_df = matrix(data = "", nrow = nrow(header_t) - nrow(old_header_t), ncol = ncol(header_t))
+                      old_header_t = rbind(old_header_t,diff_df) 
+                    }
+                  }
+                  
                   header_t = cbind(rep(NA, times = nrow(header_t)),header_t )
                   colnames(header_t) = c("NA","Station_info", "Header","Units", "Sampling_method")
                   # colnames(header_t) = paste("row_",seq(1:ncol(header_t))-1,sep = "")
                   rownames(header_t) = paste("col_",seq(1:nrow(header_t))-1,sep = "")
                   header_t = header_t[,-c(1:2)]
                   
-                  old_header_t = as.data.frame(t(old_header))
+                  # old_header_t = as.data.frame(t(old_header))
                   old_header_t = cbind(rep(NA, times = nrow(old_header_t)),old_header_t )
                   colnames(old_header_t) = c("NA","Station_info", "Header","Units", "Sampling_method")
                   # colnames(old_header_t) = paste("row_",seq(1:ncol(old_header_t))-1,sep = "")
@@ -728,6 +740,8 @@ DQC_function= function(input_dir,
                   
                   # header_t[old_header_t != header_t]
                   # old_header_t[old_header_t != header_t]
+                  nrow(old_header_t)
+                  nrow(header_t)
                   
                   w_df = as.data.frame(which(old_header_t != header_t,arr.ind = T))
                   

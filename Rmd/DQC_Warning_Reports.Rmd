@@ -39,7 +39,7 @@ dqc_date <- params$dqc_date
 
 <!-- err_logger_number -->
 
-##`r if(errors_list_critical$err_logger_number$Status == "Y"){ paste("Logger wrong number!")}`
+##`r if(errors_list_critical$err_logger_number$Status == "Y"){ paste("Logger information changed!")}`
 ```{r echo=FALSE}
 if(errors_list_critical$err_logger_number$Status == "Y"){ 
   # datatable(errors_list_critical$err_structure$Values)

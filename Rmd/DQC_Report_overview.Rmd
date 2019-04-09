@@ -104,7 +104,7 @@ mydf[is.na(mydf)] = "white"
 colnames(mydf) = c("Station",
                    "Station Offline",
                    "File empty",
-                   "Logger wrong number",
+                   "Logger information changed",
                    "File wrong structure",
                    "No new data",
                    "Data overlap",

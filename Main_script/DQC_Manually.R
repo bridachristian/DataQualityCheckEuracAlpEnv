@@ -203,10 +203,10 @@ colnames(final_dataframe) = c("Station", "Status",
                               "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates", "flag_missing_records_new",   
                               "Report_link", "Data_folder", "File_name")
 
-report_dataframe = matrix(ncol = 15, nrow = length(files_available_project))
+report_dataframe = matrix(ncol = 16, nrow = length(files_available_project))
 colnames(report_dataframe) = c("Station",
                                "Offline",
-                               "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                               "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
                                "err_date_missing","err_range_alert",
                                "err_out_of_range","err_duplicates_rows",
                                "var_flagged",
@@ -381,7 +381,7 @@ for(t in  1: length(files_available_project)){
       data_errors = lapply(errors,function(x) x[[2]])
       w_yes = which(status == "Y")
       
-      critical_errors = c("err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing")
+      critical_errors = c("err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing")
       warning_errors = c("err_range_alert")
       report_errors = c("err_out_of_range","err_duplicates_rows")
       
@@ -468,6 +468,10 @@ for(t in  1: length(files_available_project)){
       status_final[which(status_final == "N")] = 0
       status_final = status_final[c(critical_errors,warning_errors, report_errors)]
       
+      if(dwnl_info$record_check == 0){
+        w_rec = which(names(status_final) %in% c("err_missing_record","err_restart_record" ))
+        status_final[w_rec] = 2
+      }
       
       if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
         # paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
@@ -488,7 +492,7 @@ for(t in  1: length(files_available_project)){
       report_info = c(STATION_NAME,0,status_final,var_flagged, link)
       names(report_info) = c("Station",
                              "Offline",
-                             "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                             "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
                              "err_date_missing","err_range_alert",
                              "err_out_of_range","err_duplicates_rows",
                              "var_flagged",
@@ -579,10 +583,10 @@ for(t in  1: length(files_available_project)){
       # }
       # 
       # ~~~~~~~
-      report_info = c(STATION_NAME,1,rep(NA,11),NA, NA)
+      report_info = c(STATION_NAME,1,rep(NA,12),NA, NA)
       names(report_info) = c("Station",
                              "Offline",
-                             "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                             "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
                              "err_date_missing","err_range_alert",
                              "err_out_of_range","err_duplicates_rows",
                              "var_flagged",
@@ -599,10 +603,10 @@ for(t in  1: length(files_available_project)){
     }
     
   }else{
-    report_info = c(STATION_NAME,2,rep(NA,11),NA, NA)
+    report_info = c(STATION_NAME,2,rep(NA,12),NA, NA)
     names(report_info) = c("Station",
                            "Offline",
-                           "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                           "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
                            "err_date_missing","err_range_alert",
                            "err_out_of_range","err_duplicates_rows",
                            "var_flagged",

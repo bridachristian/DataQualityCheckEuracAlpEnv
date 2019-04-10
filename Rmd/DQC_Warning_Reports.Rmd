@@ -59,6 +59,16 @@ if(errors_list_critical$err_structure$Status == "Y"){
 }
 ```
 
+<!-- err_structure_change -->
+
+##`r if(errors_list_critical$err_structure_change$Status == "Y"){ paste("File structure changed!")}`
+```{r echo=FALSE}
+if(errors_list_critical$err_structure_change$Status == "Y"){ 
+  # DT::datatable(errors_list_critical$err_structure$Values)
+  kable(errors_list_critical$err_structure_change$Values)
+}
+```
+
 <!-- err_no_new_data -->
 
 ##`r if(errors_list_critical$err_no_new_data$Status == "Y"){ paste("No new data!")}`

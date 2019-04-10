@@ -1034,21 +1034,41 @@ DQC_function= function(input_dir,
       output_structure = list("Y",ncol_vect)
       names(output_structure) = c("Status", "Values")
     }else{
-      if(exists("df_difference")){
-        if(!is.na(flag_error_df) & (flag_error_df == 0  &  nrow(df_difference) != 0 )){
-          # structure_message = df_difference
-          output_structure = list("Y",df_difference)
-          names(output_structure) = c("Status", "Values")
-        }else{
-          output_structure = list("N",NA)
-          names(output_structure) = c("Status", "Values")
-        }
-      }else{
         output_structure = list("N",NA)
         names(output_structure) = c("Status", "Values")
-      }
+      
+      # if(exists("df_difference")){
+      #   if(!is.na(flag_error_df) & (flag_error_df == 0  &  nrow(df_difference) != 0 )){
+      #     # structure_message = df_difference
+      #     output_structure = list("Y",df_difference)
+      #     names(output_structure) = c("Status", "Values")
+      #   }else{
+      #     output_structure = list("N",NA)
+      #     names(output_structure) = c("Status", "Values")
+      #   }
+      # }else{
+      #   output_structure = list("N",NA)
+      #   names(output_structure) = c("Status", "Values")
+      # }
     }
   }
+  
+  # - - - -  Structure change: warning - - - - - - - - - - - - - 
+  
+  if(exists("df_difference")){
+    if(!is.na(flag_error_df) & (flag_error_df == 0  &  nrow(df_difference) != 0 )){
+      # structure_message = df_difference
+      output_structure_change = list("Y",df_difference)
+      names(output_structure_change) = c("Status", "Values")
+    }else{
+      output_structure_change = list("N",NA)
+      names(output_structure_change) = c("Status", "Values")
+    }
+  }else{
+    output_structure_change = list("N",NA)
+    names(output_structure_change) = c("Status", "Values")
+  }
+  
   # - - - -  Provide date issue - - - - - - - - - - - - - 
   
   if(!is.na(flag_date) & flag_date == 1){
@@ -1310,6 +1330,7 @@ DQC_function= function(input_dir,
   errors_output = list(output_empty,
                        output_logger_number,
                        output_structure,
+                       output_structure_change,
                        output_no_new_data,
                        output_overlap,
                        output_duplicates_rows,
@@ -1322,6 +1343,7 @@ DQC_function= function(input_dir,
   names(errors_output) = c("err_empty",
                            "err_logger_number",
                            "err_structure",
+                           "err_structure_change",
                            "err_no_new_data",    # "err_date_issue",
                            "err_overlap",
                            "err_duplicates_rows",

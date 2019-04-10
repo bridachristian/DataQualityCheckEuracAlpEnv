@@ -68,8 +68,8 @@ project_type = c("LTER","MONALISA")
 
 PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
-input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
-# input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/BACKUP_IMPORTANT/Raw_Delme/1/",sep = "")                    # where input files are
+# input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/BACKUP_IMPORTANT/Raw_Delme/2/",sep = "")                    # where input files are
 
 # project_dir <- "/home/cbrida/DataQualityCheckEuracAlpEnv/"  # where package is developed or cloned from github
 
@@ -113,6 +113,7 @@ url_webservice = mail_config_info$url_webservice
 print(mail_config_file)
 print(sender)
 print(reciver)
+print(input_dir)
 # -------------------------------
 
 if(!file.exists(paste(DQC_setting_dir,"lock_DQC.lock",sep = ""))){
@@ -245,7 +246,7 @@ for(PROJECT in project_type){
   
   t = 1
   
-  for(t in  1: length(files_available_project)){
+  for(t in 1: length(files_available_project)){
     gc(reset = T)
     
     rm(list = setdiff(ls(all.names = TRUE),c("date_DQC","main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","loggernet_status",
@@ -469,12 +470,12 @@ for(PROJECT in project_type){
         data_errors = lapply(errors,function(x) x[[2]])
         w_yes = which(status == "Y")
         
-        critical_errors = c("err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing","err_range_alert")
+        critical_errors = c("err_empty","err_logger_number","err_structure","err_structure_change", "err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing","err_range_alert")
         
         total_errors = names(status)
         total_number = seq(1,length(total_errors),1)
         names(total_number) = total_errors
-        total_string = c("File_empty", "Logger_wrong_number","File_wrong_structure",
+        total_string = c("File_empty", "Logger_information_changed","File_wrong_structure","File_structure_changed",
                          "No_new_data","Data_overlap","Rows_duplicated",
                          "Data_gap_no_record", "Data_gap_restart_record","Data_gap",
                          "Data_overrange","Data_overrange_physical")

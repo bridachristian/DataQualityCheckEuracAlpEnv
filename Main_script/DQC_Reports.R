@@ -126,6 +126,12 @@ my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice #########################################################
 # -------------------------------
 
+print(mail_config_file)
+print(sender)
+print(reciver)
+print(input_dir)
+
+
 if(!file.exists(paste(DQC_setting_dir,"lock_report.lock",sep = ""))){
   file.create(paste(DQC_setting_dir,"lock_report.lock",sep = ""))
 }
@@ -250,10 +256,10 @@ for(PROJECT in project_type){
                                 "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates", "flag_missing_records_new",   
                                 "Report_link", "Data_folder", "File_name")
   
-  report_dataframe = matrix(ncol = 15, nrow = length(files_available_project))
+  report_dataframe = matrix(ncol = 16, nrow = length(files_available_project))
   colnames(report_dataframe) = c("Station",
                                  "Offline",
-                                 "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                                 "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
                                  "err_date_missing","err_range_alert",
                                  "err_out_of_range","err_duplicates_rows",
                                  "var_flagged",
@@ -451,7 +457,7 @@ for(PROJECT in project_type){
         data_errors = lapply(errors,function(x) x[[2]])
         w_yes = which(status == "Y")
         
-        critical_errors = c("err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing")
+        critical_errors = c("err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing")
         warning_errors = c("err_range_alert")
         report_errors = c("err_out_of_range","err_duplicates_rows")
         
@@ -538,6 +544,10 @@ for(PROJECT in project_type){
         status_final[which(status_final == "N")] = 0
         status_final = status_final[c(critical_errors,warning_errors, report_errors)]
         
+        if(dwnl_info$record_check == 0){
+          w_rec = which(names(status_final) %in% c("err_missing_record","err_restart_record" ))
+          status_final[w_rec] = 2
+        }
         
         if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
           # paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
@@ -558,7 +568,7 @@ for(PROJECT in project_type){
         report_info = c(STATION_NAME,0,status_final,var_flagged, link)
         names(report_info) = c("Station",
                                "Offline",
-                               "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                               "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
                                "err_date_missing","err_range_alert",
                                "err_out_of_range","err_duplicates_rows",
                                "var_flagged",
@@ -649,10 +659,10 @@ for(PROJECT in project_type){
         # }
         # 
         # ~~~~~~~
-        report_info = c(STATION_NAME,1,rep(NA,11),NA, NA)
+        report_info = c(STATION_NAME,1,rep(NA,12),NA, NA)
         names(report_info) = c("Station",
                                "Offline",
-                               "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                               "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
                                "err_date_missing","err_range_alert",
                                "err_out_of_range","err_duplicates_rows",
                                "var_flagged",
@@ -669,10 +679,10 @@ for(PROJECT in project_type){
       }
       
     }else{
-      report_info = c(STATION_NAME,2,rep(NA,11),NA, NA)
+      report_info = c(STATION_NAME,2,rep(NA,12),NA, NA)
       names(report_info) = c("Station",
                              "Offline",
-                             "err_empty","err_logger_number","err_structure","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                             "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
                              "err_date_missing","err_range_alert",
                              "err_out_of_range","err_duplicates_rows",
                              "var_flagged",
@@ -768,3 +778,4 @@ file.remove(paste(DQC_setting_dir,"lock_report.lock",sep = ""))
 print("------------------------------------------------------------------------------------------")
 print(Sys.time())
 print("--------------------- End script! --------------------------------------------------------")
+

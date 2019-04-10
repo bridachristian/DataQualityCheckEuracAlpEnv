@@ -18,7 +18,7 @@ Report start at **`r date_DQC`**
 
 ### `r paste(PROJECT, "report")`
 
-```{r echo=FALSE, warning=FALSE}
+```{r echo=FALSE, warning=FALSE,fig.width= 12,fig.height= 9}
 # report_dataframe
 
 mydf = report_dataframe[,-ncol(report_dataframe)]
@@ -36,31 +36,103 @@ sum_col = apply(mydf[,c(2:ncol(mydf))],1,sum)
 
 # -----------------------
 
+
+new_order = c("Station",
+              "Offline", 
+              "err_no_new_data", 
+              "err_empty",
+              "err_structure",
+              "err_overlap", 
+              "err_missing_record", 
+              "err_restart_record",
+              "err_date_missing",
+              "err_duplicates_rows",
+              "err_logger_number",
+              "err_structure_change",
+              "var_flagged",
+              "err_range_alert",
+              "err_out_of_range")
+
+new_colnames = c("Station",
+                 "Station Offline",
+                 "No new data",
+                 "File empty",
+                 "File wrong structure",
+                 "Data overlap",
+                 "Data gap (record gap)",
+                 "Data gap (new software)",
+                 "Data gap (not recoverable)",
+                 "Rows duplicated",
+                 "Logger information changed", 
+                 "File structure changed",
+                  "Silent variables",
+                 "Data overrange",
+                 "Data overrange physical")
+
+mydf = mydf[,new_order]
+# mydf[1,7] = 1
+
 j=1
-for(j in 1:nrow(mydf)){ 
+
+for(j in 1:nrow(mydf)){
   if(any(mydf[j,] == 1,na.rm = T)){
-    if(mydf[j,2] == 2){
+    
+    # --- Offline (2 column) ---
+    
+    if(mydf[j,2] == 1 & !is.na(mydf[j,2])){  # station offline == 1 => station offline
       mydf[j,3:ncol(mydf)] = NA
-    }else{
-      w = which(mydf[j,] == 1)
-      
-      if(w <= 7  & w != 4){
-        mydf[j,(w+1):ncol(mydf)] = NA
-      }else{
-        if (w %in% c(8,9)){
-          mydf[j,10:ncol(mydf)] = NA
-        }
-      }
     }
+    if(mydf[j,2] == 2 & !is.na(mydf[j,2])){  # station offline == 2 => manually excluded
+      mydf[j,3:ncol(mydf)] = NA
+    }
+    
+    # --- err_no_new_data (3 column) ---
+    
+    if(mydf[j,3] == 1 & !is.na(mydf[j,3])){  # err_no_new_data == 1 => no new data, but the file (empty and structure) are OK!
+      mydf[j,6:ncol(mydf)] = NA
+    }
+    
+    # --- err_empty (4 column) ---
+    
+    if(mydf[j,4] == 1 & !is.na(mydf[j,4])){  # err_empty == 1 => the file is empty (no new data are not evaluated)
+      mydf[j,c(3,5:ncol(mydf))] = NA
+    }
+    
+     # --- err_structure (5 column) ---
+    
+    if(mydf[j,5] == 1 & !is.na(mydf[j,5])){  # err_structure == 1 => the file has a wrong structure (no new data are not evaluated)
+      mydf[j,c(3,6:ncol(mydf))] = NA
+    }
+    
+     # --- err_overlap (6 column) ---
+    
+    if(mydf[j,6] == 1 & !is.na(mydf[j,6])){  # err_structure == 1 => the file has an overlap
+      mydf[j,c(9:ncol(mydf))] = NA
+    }
+    
+    # --- err_missing_record (7 column) ---
+    
+    if(mydf[j,7] == 1 & !is.na(mydf[j,7])){  # err_missing_record == 1 => the file has a date gap due to missing record (recoverable)
+      mydf[j,c(9:ncol(mydf))] = NA
+    }
+    
+    # --- err_restart_record (8 column) ---
+    
+    if(mydf[j,8] == 1 & !is.na(mydf[j,8])){  # err_restart_record == 1 => the file has a date gap due to restart record (recoverable)
+      mydf[j,c(9:ncol(mydf))] = NA
+    }
+    
+    
   }
 }
+     
 
 # -----------------------
 
-mydf[is.na(mydf)] = "white"
+mydf[is.na(mydf)] = "grey"
 
 mydf$Offline[mydf$Offline == 1] = "firebrick1"
-mydf$Offline[mydf$Offline == 2] = "grey"
+mydf$Offline[mydf$Offline == 2] = "blue"
 mydf$Offline[mydf$Offline == 0] = "forestgreen"
 
 mydf$err_empty[mydf$err_empty == 0] = "forestgreen"
@@ -72,6 +144,9 @@ mydf$err_logger_number[mydf$err_logger_number == 1] = "gold"
 mydf$err_structure[mydf$err_structure == 0] = "forestgreen"
 mydf$err_structure[mydf$err_structure == 1] = "firebrick1"
 
+mydf$err_structure_change[mydf$err_structure_change == 0] = "forestgreen"
+mydf$err_structure_change[mydf$err_structure_change == 1] = "gold"
+
 mydf$err_no_new_data[mydf$err_no_new_data == 0] = "forestgreen"
 mydf$err_no_new_data[mydf$err_no_new_data == 1] = "firebrick1"
 
@@ -79,13 +154,17 @@ mydf$err_overlap[mydf$err_overlap == 0] = "forestgreen"
 mydf$err_overlap[mydf$err_overlap == 1] = "firebrick1"
 
 mydf$err_missing_record[mydf$err_missing_record == 0] = "forestgreen"
-mydf$err_missing_record[mydf$err_missing_record == 1] = "gold"
+mydf$err_missing_record[mydf$err_missing_record == 1] = "firebrick1"
+mydf$err_missing_record[mydf$err_missing_record == 2] = "blue"
+
 
 mydf$err_restart_record[mydf$err_restart_record == 0] = "forestgreen"
-mydf$err_restart_record[mydf$err_restart_record == 1] = "gold"
+mydf$err_restart_record[mydf$err_restart_record == 1] = "firebrick1"
+mydf$err_restart_record[mydf$err_restart_record == 2] = "blue"
+
 
 mydf$err_date_missing[mydf$err_date_missing == 0] = "forestgreen"
-mydf$err_date_missing[mydf$err_date_missing == 1] = "firebrick1"
+mydf$err_date_missing[mydf$err_date_missing == 1] = "gold"
 
 mydf$err_range_alert[mydf$err_range_alert == 0] = "forestgreen"
 mydf$err_range_alert[mydf$err_range_alert == 1] = "gold"
@@ -99,41 +178,34 @@ mydf$err_duplicates_rows[mydf$err_duplicates_rows == 1] = "gold"
 mydf$var_flagged[mydf$var_flagged == 0] = "forestgreen"
 mydf$var_flagged[mydf$var_flagged == 1] = "gold"
 
-mydf[is.na(mydf)] = "white"
+mydf[is.na(mydf)] = "grey"
 
-colnames(mydf) = c("Station",
-                   "Station Offline",
-                   "File empty",
-                   "Logger information changed",
-                   "File wrong structure",
-                   "No new data",
-                   "Data overlap",
-                   "Data gap (record gap)",
-                   "Data gap (new software)",
-                   "Data gap (missing date)",
-                   "Data overrange",
-                   "Data overrange physical",
-                   "Rows duplicated",
-                   "Silent variables")
+colnames(mydf) = new_colnames
 
+mydf = mydf[,-which(colnames(mydf) == "Data overrange physical")]   # remove warning of data overrange (physical range)
 
+aaa = cbind(mydf[,1:8], rep("white", nrow(mydf)),mydf[,9:ncol(mydf)])
+colnames(aaa)[9] = ""
 
-mycolors = c("grey","firebrick1",  "gold","forestgreen", "white")
-mycolors_value = c("Not evaluated!", "Critical!", "Warnings!","OK!", "---")
+mycolors = c("forestgreen","gold","firebrick1", "grey", "blue")
+mycolors_value = c("OK!","Check it out!","Action required!", "Not evaluated!", "Manual excluded!")
 
-melt_final = melt(mydf,id.vars = "Station")
+melt_final = melt(aaa,id.vars = "Station")
 melt_final$value = factor(melt_final$value,levels = mycolors)
 
 station_level = unique(melt_final$Station)
 
 ggplot(melt_final, aes(x = variable, y = Station))+
-  theme(axis.text.x = element_text(angle = 90, hjust = 0, vjust =0),
+  theme(text = element_text(size = 18),
+    axis.text.x = element_text(angle = 45, hjust = 0, vjust =0),
+        axis.ticks.x = element_blank(),
         panel.background = element_rect(fill = "white", colour = "grey"),
         panel.border = element_rect(fill = "NA", colour = "white"))+
-  geom_tile(aes(fill = value),colour = "black")+
+  geom_tile(aes(fill = value),colour = "white")+
   scale_fill_manual(name = "",values = mycolors,limits = mycolors,labels = mycolors_value, drop = FALSE)+
   scale_y_discrete(name = "Stations",limits = rev(station_level))+
   scale_x_discrete(name = "",position = "top")
+
 ##################################
 
 

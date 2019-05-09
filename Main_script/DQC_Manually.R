@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
-# File Title:   DQC_Hourly_Linux_v6.R
+# File Title:   DQC_Manually.R
 # TITLE:        Data quality check LTER on different files in scheduling folder
 # Author:       Brida Christian, Genova Giulio, Zandonai Alessandro
 #               Institute for Alpine Environment
@@ -88,7 +88,7 @@ LOGGERNET_OFFLINE = 1    # <. all station offline since 1h --> loggernet doesn't
 
 date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
 
-loggernet_status = c()
+# loggernet_status = c()
 
 mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
 mail_file = "mail_status.csv"
@@ -144,8 +144,8 @@ write_output_files =  "TRUE"
 write_output_report =  "FALSE"
 
 # general stations status --> loggernent doesn't work properly!
-loggernet_status_prj = as.data.frame(matrix(ncol = 3))
-colnames(loggernet_status_prj) = c("Station", "Status", "Last_modification")
+# loggernet_status_prj = as.data.frame(matrix(ncol = 3))
+# colnames(loggernet_status_prj) = c("Station", "Status", "Last_modification")
 
 # ..........................................................................................................................................................
 
@@ -185,7 +185,7 @@ station_name_group = logg_data_NAME
 if(length(unique(file_group))  > 1){
   warning("Put in the input folder only files belonging to the same station!")
 }else{
-   
+  
   project_unique = unique(project_group) 
   file_unique = paste(unique(file_group),".dat",sep = "")   # .dat per ricondurmi condizioni script automatico!
   station_unique = unique(station_name_group)
@@ -199,15 +199,15 @@ if(length(unique(file_group))  > 1){
   # ~ ~ ~ ~ ~ ~ 
   
   ############################################
-
-  final_dataframe = matrix(ncol = 20, nrow = length(files_available))
-  colnames(final_dataframe) = c("Station", "Status",
-                                "flag_empty","flag_logger_number", "flag_error_df","flag_date",
-                                "flag_duplicates_rows","flag_overlap","flag_missing_records","flag_missing_dates",
-                                "flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range",
-                                "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates", "flag_missing_records_new",
-                                "Report_link", "Data_folder", "File_name")
-
+  
+  # final_dataframe = matrix(ncol = 20, nrow = length(files_available))
+  # colnames(final_dataframe) = c("Station", "Status",
+  #                               "flag_empty","flag_logger_number", "flag_error_df","flag_date",
+  #                               "flag_duplicates_rows","flag_overlap","flag_missing_records","flag_missing_dates",
+  #                               "flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range",
+  #                               "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates", "flag_missing_records_new",
+  #                               "Report_link", "Data_folder", "File_name")
+  
   report_dataframe = matrix(ncol = 16, nrow = length(files_available))
   colnames(report_dataframe) = c("Station",
                                  "Offline",
@@ -223,9 +223,10 @@ if(length(unique(file_group))  > 1){
   
   t = 1
   
-  df_files
+  # df_files
   
   for(t in  1: length(files_available)){
+  # for(t in  1: 6){
     gc(reset = T)
     
     FILE_NAME = files_available[t]
@@ -278,24 +279,7 @@ if(length(unique(file_group))  > 1){
       # warning_file_dir_station = paste(data_output_dir,STATION_NAME,"/Alerts/Warnings/", sep = "")
       
     }
-    # 
-    # if(dir.exists(paste(database_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store mini files for database organized by station name 
-    #   if(dir.exists(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))){ 
-    #     database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
-    #   }else{
-    #     dir.create(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))
-    #     dir.create(paste(database_file_dir,STATION_NAME,"/Pics/", sep = ""))
-    #     database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
-    #     
-    #   }
-    # }else{
-    #   dir.create(paste(database_file_dir,STATION_NAME,"/", sep = "")) 
-    #   dir.create(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))
-    #   dir.create(paste(database_file_dir,STATION_NAME,"/Pics/", sep = ""))
-    #   database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
-    # }
-    
-    
+   
     
     if(dwnl_info$Stop_DQC == 0){
       
@@ -313,313 +297,247 @@ if(length(unique(file_group))  > 1){
       #!!!!!!!! ------------------- !!!!!!!!!!!!!
       
       
-      if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
+      # if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
+      
+      input_dir = input_dir
+      output_dir_data = output_dir_data_new
+      output_dir_raw = output_dir_raw_new
+      output_dir_report = report_output_dir
+      project_dir = project_dir
+      data_from_row = data_from_row
+      header_row_number = header_row_number
+      datetime_header = datetime_header
+      datetime_format = datetime_format
+      datetime_sampling = datetime_sampling
+      record_header = record_header
+      range_file = range_file
+      write_output_files = write_output_files
+      write_output_report = write_output_report
+      # database_dir = database_file_dir_new
+      file_name = FILE_NAME
+      station_name = STATION_NAME
+      start_date = dwnl_info$Last_date
+      logger_info_file = logger_info_file
+      record_check = dwnl_info$record_check
+      use_alert_station_flag = use_alert_station_flag
+      mail_file_alert = mail_file_alert
+      use_realtime_station_flag = use_realtime_station_flag
+      
+      DQC_results = DQC_function(input_dir,
+                                 output_dir_data,
+                                 output_dir_report,
+                                 project_dir,
+                                 data_from_row,
+                                 header_row_number,
+                                 datetime_header,
+                                 datetime_format,
+                                 datetime_sampling,
+                                 record_header,
+                                 range_file,
+                                 write_output_files,
+                                 write_output_report,
+                                 file_name,
+                                 station_name,
+                                 start_date,
+                                 # database_dir,
+                                 logger_info_file,
+                                 record_check,
+                                 output_dir_raw,
+                                 use_alert_station_flag,
+                                 mail_file_alert,
+                                 use_realtime_station_flag)
+      
+      mydata = DQC_results[[1]]
+      flags_df = DQC_results[[2]]
+      file_names = DQC_results[[3]]
+      errors = DQC_results[[4]]
+      mydata_out_of_range = DQC_results[[5]]
+      
+      mylist <- split(flags_df$value, seq(nrow(flags_df)))
+      names(mylist) = flags_df$flag_names
+     
+      status = unlist(lapply(errors,function(x) x[[1]]))
+      
+      if(mylist$flag_empty == 0 & mylist$flag_logger_number == 0 & mylist$flag_error_df == 0 & mylist$flag_date == 0){
+        out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
+                                  substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
+                                  substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
+                                  # "_",
+                                  substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+                                  substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+                                  sep = "")
         
-        input_dir = input_dir
-        output_dir_data = output_dir_data_new
-        output_dir_raw = output_dir_raw_new
-        output_dir_report = report_output_dir
-        project_dir = project_dir
-        data_from_row = data_from_row
-        header_row_number = header_row_number
-        datetime_header = datetime_header
-        datetime_format = datetime_format
-        datetime_sampling = datetime_sampling
-        record_header = record_header
-        range_file = range_file
-        write_output_files = write_output_files
-        write_output_report = write_output_report
-        # database_dir = database_file_dir_new
-        file_name = FILE_NAME
-        station_name = STATION_NAME
-        start_date = dwnl_info$Last_date
-        logger_info_file = logger_info_file
-        record_check = dwnl_info$record_check
-        use_alert_station_flag = use_alert_station_flag
-        mail_file_alert = mail_file_alert
-        use_realtime_station_flag = use_realtime_station_flag
-        
-        DQC_results = DQC_function(input_dir,
-                                   output_dir_data,
-                                   output_dir_report,
-                                   project_dir,
-                                   data_from_row,
-                                   header_row_number,
-                                   datetime_header,
-                                   datetime_format,
-                                   datetime_sampling,
-                                   record_header,
-                                   range_file,
-                                   write_output_files,
-                                   write_output_report,
-                                   file_name,
-                                   station_name,
-                                   start_date,
-                                   # database_dir,
-                                   logger_info_file,
-                                   record_check,
-                                   output_dir_raw,
-                                   use_alert_station_flag,
-                                   mail_file_alert,
-                                   use_realtime_station_flag)
-        
-        mydata = DQC_results[[1]]
-        flags_df = DQC_results[[2]]
-        file_names = DQC_results[[3]]
-        errors = DQC_results[[4]]
-        mydata_out_of_range = DQC_results[[5]]
-        
-        mylist <- split(flags_df$value, seq(nrow(flags_df)))
-        names(mylist) = flags_df$flag_names
-        
-        if(mylist$flag_empty == 0 & mylist$flag_logger_number == 0 & mylist$flag_error_df == 0 & mylist$flag_date == 0){
-          out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
-                                    # "_",
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
-                                    sep = "")
-          
-          last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
-          
-        } else {
-          out_filename_date = "no_datetime"
-        }
-        
-        
-        # ~ ~ ~ ~ Issue Management (on/off message) ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-        
-        # date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
-        
-        status = unlist(lapply(errors,function(x) x[[1]]))
-        data_errors = lapply(errors,function(x) x[[2]])
-        w_yes = which(status == "Y")
-        
-        critical_errors = c("err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing")
-        warning_errors = c("err_range_alert")
-        report_errors = c("err_out_of_range","err_duplicates_rows")
-        
-        dqc_date = date_DQC
-        
-        df_status = data.frame(STATION_NAME,t(status))
-        
-        if(use_alert_station_flag == TRUE){
-          range_flags = read.csv(paste(range_dir,range_file,sep = ""),stringsAsFactors = F)
-          range_station = range_flags[,c(1,which(colnames(range_flags) == STATION_NAME))]
-          colnames(range_station)[2] = "Station"
-          variables_flagged = range_station$Variable[which(range_station$Station == 0)]
-          
-          if(length(variables_flagged) == 0){
-            variables_flagged = NULL
-          }
-        }else{
-          variables_flagged = NULL
-        }
-        
-        if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
-          
-          station_name = STATION_NAME
-          errors_list_critical = errors[critical_errors]
-          errors_list_warning = errors[warning_errors]
-          errors_list_report_errors = errors[report_errors]
-          
-          dqc_date_write = paste(format(dqc_date,"%Y"),format(dqc_date,"%m"),format(dqc_date,"%d"),sep = "")
-          
-          
-          # generate a report of warnings
-          
-          # output_file_report = paste(STATION_NAME,"_",dqc_date_write,".html",sep = "")
-          output_file_report = paste(substring(file_name, 1,nchar(file_name)-4),".html",sep = "")
-          
-          issue_report_RMD = paste(project_dir,"/Rmd/DQC_Reports.Rmd",sep = "")
-          
-          issue_file_dir_station = output_dir_report_new
-          
-          input =  issue_report_RMD 
-          output_file = output_file_report
-          output_dir = issue_file_dir_station
-          
-          if(!is.null(mydata_out_of_range)){
-            report_mydata = mydata_out_of_range
-            report_mydata[,which(colnames(report_mydata) == datetime_header)] = as.POSIXct(report_mydata[,which(colnames(report_mydata) == datetime_header)] ,tz = "Etc/GMT-1")
-          }else{
-            report_mydata = NULL
-          }
-          
-          # if(use_alert_station_flag == TRUE){
-          #   range_flags = read.csv(paste(range_dir,range_file,sep = ""),stringsAsFactors = F)
-          #   range_station = range_flags[,c(1,which(colnames(range_flags) == STATION_NAME))]
-          #   colnames(range_station)[2] = "Station"
-          #   variables_flagged = range_station$Variable[which(range_station$Station == 0)]
-          #   
-          #   if(length(variables_flagged) == 0){
-          #     variables_flagged = NULL
-          #     }
-          # }else{
-          #   variables_flagged = NULL
-          # }
-          
-          
-          params_list = list(report_mydata,
-                             dqc_date,
-                             station_name,
-                             errors_list_critical,
-                             errors_list_warning,
-                             errors_list_report_errors,
-                             variables_flagged)
-          names(params_list) = c("report_mydata", "dqc_date","station_name","errors_list_critical","errors_list_warning","errors_list_report_errors","variables_flagged")
-          
-          gc(reset = T)
-          rmarkdown::render(input = input,
-                            output_file = output_file,
-                            output_dir = output_dir,
-                            params = params_list)
-        }
-        
-        # Report su script esterno! Nella funzione DQC_Function prevedere il salvataggio e l' append degli errori!
-        
-        status_final = status
-        status_final[which(status_final == "Y")] = 1
-        status_final[which(status_final == "N")] = 0
-        status_final = status_final[c(critical_errors,warning_errors, report_errors)]
-        
-        if(dwnl_info$record_check == 0){
-          w_rec = which(names(status_final) %in% c("err_missing_record","err_restart_record" ))
-          status_final[w_rec] = 2
-        }
-        
-        if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
-          # paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
-          # link = paste(main_dir_mapping_out, substring(output_dir_report_new,nchar(main_dir_mapping_in)), output_file_report,sep = "")
-          output_dir_report_new
-          link = paste(output_dir_report_new, output_file_report,sep = "")  
-          # link = paste("/",project_unique,substring(output_dir_report_new,nchar(data_output_dir)), output_file_report,sep = "")
-          # link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
-        }else{
-          link = NA
-          # link = "---"
-        }
-        
-        if(length(variables_flagged) == 0){
-          var_flagged = 0
-        }else{
-          var_flagged = 1
-        }
-        
-        # report_info = c(STATION_NAME,0,status_final,var_flagged, link)
-        report_info = c(substring(FILE_NAME, 1, nchar(FILE_NAME)-4),0,status_final,var_flagged, link)
-        names(report_info) = c("Station",
-                               "Offline",
-                               "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
-                               "err_date_missing","err_range_alert",
-                               "err_out_of_range","err_duplicates_rows",
-                               "var_flagged",
-                               "report_link")
-        
-        # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-        
-        if(!is.na(mylist$flag_missing_dates)){
-          # if(mylist$flag_logger_number == 0){
-            if(mylist$flag_new_overlap == 1){
-              if(write_output_report == TRUE){
-                final_info = c(STATION_NAME, "Analyzed and write output",
-                               flags_df$value,
-                               paste(output_dir_report,out_filename_report,sep = ""),
-                               NA,
-                               NA)
-              }else{
-                final_info = c(STATION_NAME, "Analyzed and write output",
-                               flags_df$value,
-                               NA,
-                               NA,
-                               NA)
-              }
-            }else{
-              download_table$Last_date[w_dwnl] = last_date
-              download_table$Last_Modification[w_dwnl] = date_last_modif_file
-              
-              # if(download_table$record_check[w_dwnl] == 0){
-              #   download_table$record_check[w_dwnl] = 1
-              # }
-              
-              download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
-              write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
-              
-              if(write_output_report == TRUE){
-                final_info = c(STATION_NAME, "Analyzed and write output",
-                               flags_df$value,
-                               paste(output_dir_report,out_filename_report,sep = ""),
-                               paste(output_dir_data,sep = ""),
-                               paste(file_names[length(file_names)],sep = ""))
-              }else{
-                final_info = c(STATION_NAME, "Analyzed and write output",
-                               flags_df$value,
-                               NA,
-                               paste(output_dir_data_new,sep = ""),
-                               paste(file_names[length(file_names)],sep = ""))
-              }
-            }
-          # }
-        }else{
-          
-          
-          
-          # file_stopped = c(file_stopped, FILE)
-          if(write_output_report == TRUE){
-            final_info = c(STATION_NAME, "Analyzed with errors",
-                           flags_df$value,
-                           paste(output_dir_report,out_filename_report,sep = ""),
-                           NA, NA )
-          }else{
-            final_info = c(STATION_NAME, "Analyzed with errors",
-                           flags_df$value,
-                           NA,
-                           NA, NA )
-          }
-          
-          
-        }
-        
-        # reset counter if file is updated
-        # w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4)) 
-        # issue_counter$W_Update_station[w_1] = 0
-        # write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
+        last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
         
       } else {
+        out_filename_date = "no_datetime"
+        last_date = NA
+      }
+      
+      
+      # ~ ~ ~ ~ Issue Management (on/off message) ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+      
+      # date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
+      
+      # status = unlist(lapply(errors,function(x) x[[1]]))
+      data_errors = lapply(errors,function(x) x[[2]])
+      w_yes = which(status == "Y")
+      
+      critical_errors = c("err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record","err_date_missing")
+      warning_errors = c("err_range_alert")
+      report_errors = c("err_out_of_range","err_duplicates_rows")
+      
+      dqc_date = date_DQC
+      
+      df_status = data.frame(STATION_NAME,t(status))
+      
+      if(use_alert_station_flag == TRUE){
+        range_flags = read.csv(paste(range_dir,range_file,sep = ""),stringsAsFactors = F)
+        range_station = range_flags[,c(1,which(colnames(range_flags) == STATION_NAME))]
+        colnames(range_station)[2] = "Station"
+        variables_flagged = range_station$Variable[which(range_station$Station == 0)]
         
-        # ~~~~~~~
-        # update counter if file is not update
-        # 
-        # w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-        # issue_counter$W_Update_station[w_1] = issue_counter$W_Update_station[w_1]+1
-        # write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
-        # 
-        # # send message
-        # if(issue_counter$W_Update_station[w_1] %% MESSAGE_EVERY_TIMES == 0){
-        #   text_W_Update_station = paste(FILE_NAME, "not updated since",dwnl_info$Last_Modification)
-        #   warning(text_W_Update_station)
+        if(length(variables_flagged) == 0){
+          variables_flagged = NULL
+        }
+      }else{
+        variables_flagged = NULL
+      }
+      
+      if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
+        
+        station_name = STATION_NAME
+        errors_list_critical = errors[critical_errors]
+        errors_list_warning = errors[warning_errors]
+        errors_list_report_errors = errors[report_errors]
+        
+        dqc_date_write = paste(format(dqc_date,"%Y"),format(dqc_date,"%m"),format(dqc_date,"%d"),sep = "")
+        
+        
+        # generate a report of warnings
+        
+        # output_file_report = paste(STATION_NAME,"_",dqc_date_write,".html",sep = "")
+        output_file_report = paste(substring(file_name, 1,nchar(file_name)-4),".html",sep = "")
+        
+        issue_report_RMD = paste(project_dir,"/Rmd/DQC_Reports.Rmd",sep = "")
+        
+        issue_file_dir_station = output_dir_report_new
+        
+        input =  issue_report_RMD 
+        output_file = output_file_report
+        output_dir = issue_file_dir_station
+        
+        if(!is.null(mydata_out_of_range)){
+          report_mydata = mydata_out_of_range
+          report_mydata[,which(colnames(report_mydata) == datetime_header)] = as.POSIXct(report_mydata[,which(colnames(report_mydata) == datetime_header)] ,tz = "Etc/GMT-1")
+        }else{
+          report_mydata = NULL
+        }
+        
+        # if(use_alert_station_flag == TRUE){
+        #   range_flags = read.csv(paste(range_dir,range_file,sep = ""),stringsAsFactors = F)
+        #   range_station = range_flags[,c(1,which(colnames(range_flags) == STATION_NAME))]
+        #   colnames(range_station)[2] = "Station"
+        #   variables_flagged = range_station$Variable[which(range_station$Station == 0)]
+        #   
+        #   if(length(variables_flagged) == 0){
+        #     variables_flagged = NULL
+        #     }
+        # }else{
+        #   variables_flagged = NULL
         # }
-        # 
-        # ~~~~~~~
-        report_info = c(substring(FILE_NAME, 1, nchar(FILE_NAME)-4),1,rep(NA,12),NA, NA)
-        names(report_info) = c("Station",
-                               "Offline",
-                               "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
-                               "err_date_missing","err_range_alert",
-                               "err_out_of_range","err_duplicates_rows",
-                               "var_flagged",
-                               "report_link")
         
-        warning(paste(FILE_NAME, "already analyzed!"))
-        # file_already_processed = c(file_already_processed,FILE)
-        final_info = c(STATION_NAME, "Already analyzed",
-                       NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-                       NA,
-                       NA, NA)
-        output_dir_report = report_output_dir
+        
+        params_list = list(report_mydata,
+                           dqc_date,
+                           station_name,
+                           errors_list_critical,
+                           errors_list_warning,
+                           errors_list_report_errors,
+                           variables_flagged)
+        names(params_list) = c("report_mydata", "dqc_date","station_name","errors_list_critical","errors_list_warning","errors_list_report_errors","variables_flagged")
+        
+        gc(reset = T)
+        rmarkdown::render(input = input,
+                          output_file = output_file,
+                          output_dir = output_dir,
+                          params = params_list)
+      }
+      
+      # Report su script esterno! Nella funzione DQC_Function prevedere il salvataggio e l' append degli errori!
+      
+      status_final = status
+      status_final[which(status_final == "Y")] = 1
+      status_final[which(status_final == "N")] = 0
+      status_final = status_final[c(critical_errors,warning_errors, report_errors)]
+      
+      if(dwnl_info$record_check == 0){
+        w_rec = which(names(status_final) %in% c("err_missing_record","err_restart_record" ))
+        status_final[w_rec] = 2
+      }
+      
+      if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
+        # paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
+        # link = paste(main_dir_mapping_out, substring(output_dir_report_new,nchar(main_dir_mapping_in)), output_file_report,sep = "")
+        output_dir_report_new
+        link = paste(output_dir_report_new, output_file_report,sep = "")  
+        # link = paste("/",project_unique,substring(output_dir_report_new,nchar(data_output_dir)), output_file_report,sep = "")
+        # link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
+      }else{
+        link = NA
+        # link = "---"
+      }
+      
+      if(length(variables_flagged) == 0){
+        var_flagged = 0
+      }else{
+        var_flagged = 1
+      }
+      
+      # report_info = c(STATION_NAME,0,status_final,var_flagged, link)
+      report_info = c(substring(FILE_NAME, 1, nchar(FILE_NAME)-4),0,status_final,var_flagged, link)
+      names(report_info) = c("Station",
+                             "Offline",
+                             "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",
+                             "err_date_missing","err_range_alert",
+                             "err_out_of_range","err_duplicates_rows",
+                             "var_flagged",
+                             "report_link")
+      
+      # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+      
+      
+      # if(mylist$flag_new_overlap == 1){ ######## da correggere in accordo con report overview rmd!
+      # 
+      #   
+      # }else{
+      #   
+      #   new_order = c("Station",
+      #                 "Offline", 
+      #                 "err_no_new_data", 
+      #                 "err_empty",
+      #                 "err_structure",
+      #                 "err_overlap", 
+      #                 "err_missing_record", 
+      #                 "err_restart_record",
+      #                 "err_date_missing",
+      #                 "err_duplicates_rows",
+      #                 "err_logger_number",
+      #                 "err_structure_change",
+      #                 "var_flagged",
+      #                 "err_range_alert",
+      #                 "err_out_of_range")
+      
+      if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
+                                          "err_overlap", "err_missing_record","err_restart_record")] == "N")){
+        download_table$Last_date[w_dwnl] = last_date
+        download_table$Last_Modification[w_dwnl] = date_last_modif_file
+        
+        download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
+        write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
         
       }
+      
       
     }else{
       report_info = c(substring(FILE_NAME, 1, nchar(FILE_NAME)-4),2,rep(NA,12),NA, NA)
@@ -630,30 +548,30 @@ if(length(unique(file_group))  > 1){
                              "err_out_of_range","err_duplicates_rows",
                              "var_flagged",
                              "report_link")
-      final_info = c(STATION_NAME, "Not analyzed",
-                     NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-                     NA,
-                     NA, NA)
+      # final_info = c(STATION_NAME, "Not analyzed",
+      #                NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
+      #                NA,
+      #                NA, NA)
       output_dir_report = report_output_dir
       
     }
     
     # # final_dataframe = rbind(final_dataframe,final_info)
     
-    final_dataframe[t,] = final_info
-
+    # final_dataframe[t,] = final_info
+    
     report_dataframe[t,] = report_info
-
-    loggernet_status_prj[t,1] = final_info[1]
-    loggernet_status_prj[t,2] = final_info[2]
-    loggernet_status_prj[t,3] = date_last_modif_file
-
+    
+    # loggernet_status_prj[t,1] = final_info[1]
+    # loggernet_status_prj[t,2] = final_info[2]
+    # loggernet_status_prj[t,3] = date_last_modif_file
+    
     
     gc(reset = T)
     
   }
   report_dataframe = as.data.frame(report_dataframe)
-  loggernet_status = rbind(loggernet_status,loggernet_status_prj)
+  # loggernet_status = rbind(loggernet_status,loggernet_status_prj)
   
   
   # ..... Final Report .....................................................................................................................................
@@ -693,13 +611,12 @@ if(length(unique(file_group))  > 1){
   # my_body = paste(url_webservice,icinga_text,sep = "")
   # icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")               # to disactivate when webservice is ready!
   # icinga_text = paste(substring(output_dir,nchar(data_output_dir)),output_file,sep = "")        # to activate when webservice is ready!
-
+  
   
   send.mail(from = sender,
             to = reciver,
             subject = my_subject,
-            body = "OK",
-            # body = my_body,
+            body = " ",
             attach.files = my_body,
             inline = T,
             smtp = my_smtp,

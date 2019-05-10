@@ -56,7 +56,7 @@ input_dir = opt$inptdir
 project_dir = opt$prjdir
 
 main_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/dataqualitycheck_workplace/"
-input_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/dataqualitycheck_workplace/Data/Input_Data/I1/"   # Possibile modificare la cartella sorgente!
+input_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/dataqualitycheck_workplace/Data/Input_Data/I1/2015/"   # Possibile modificare la cartella sorgente!
 project_dir = "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"
 
 

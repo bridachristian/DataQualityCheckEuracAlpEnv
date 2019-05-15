@@ -634,7 +634,7 @@ if(length(unique(file_group))  > 1){
     }else{
       j=j+1
       output_file_final_new = paste(substring(output_file_final,1, nchar(output_file_final)-5),"(",j,").html",sep = "")
-      if(!file.exists(paste(output_dir,output_file_final_new,sep = ""))){
+      if(!file.exists(paste(output_dir_final,output_file_final_new,sep = ""))){
         output_file_TOT = output_file_final_new
         break
       }

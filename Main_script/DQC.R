@@ -52,15 +52,24 @@
   opt = parse_args(opt_parser);
 
   main_dir = opt$maindir
-  input_dir = opt$inptdir
+  data_input_dir = opt$inptdir
   project_dir = opt$prjdir
 
-  main_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/dataqualitycheck_workplace/"
-  input_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/dataqualitycheck_workplace/Data/Input_Data/P1/"   # Possibile modificare la cartella sorgente!
-  project_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/dataqualitycheckeuracalpenv/"
+  root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/"
+
+  project_dir = paste(root_dir,"/DQC/dataqualitycheckeuracalpenv/",sep="")
+  data_output_dir =paste(root_dir,"/Output/",sep="")
+  data_input_dir =paste(root_dir,"/Input/XS6/RAW_2/",sep="")               # <- insert here the name of the folder to source data
+  DQC_setting_dir = paste(root_dir,"/Setting/",sep="")
+
+  range_dir <- paste(DQC_setting_dir,"/Range/", sep = "")
+  download_table_dir <- paste(DQC_setting_dir,"/Download_tables/", sep = "")
+  logger_info_dir <- paste(DQC_setting_dir,"/Range/", sep = "")
+  mail_dir = paste(DQC_setting_dir,"/email_status/",sep = "")
+  report_output_dir <- paste(data_output_dir,"/00_DQC_Reports/",sep = "")  # where to put output reports
 
   print(main_dir)
-  print(input_dir)
+  print(data_input_dir)
   print(project_dir)
 
   # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
@@ -72,13 +81,12 @@
 
   # PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
-  # input_dir <- paste(main_dir,"/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
+  # data_input_dir <- paste(main_dir,"/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 
-  DQC_setting_dir <- paste(main_dir,"/DQC/",sep = "")
 
-  logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.csv", sep = "")
-  range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
-  download_table_dir <- paste(DQC_setting_dir,"/Process/Download_tables/", sep = "")
+
+  logger_info_file <- paste(logger_info_dir,"Logger_number_and_software.csv", sep = "")
+
 
   warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")
 
@@ -89,10 +97,12 @@
 
   # loggernet_status = c()
 
-  mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
   mail_file = "mail_status.csv"
-  mail_file_alert = "out_of_range.csv"
-
+  mail_file_alert_ONE = "out_of_range.csv"
+  mail_file_alert_ZERO = "out_of_range_0.csv"
+  
+  
+ 
   # --- read mail configuration ---
 
   mail_config_file = paste(mail_dir,"mail_config.xml",sep = "")
@@ -110,7 +120,7 @@
   print(mail_config_file)
   print(sender)
   print(reciver)
-  print(input_dir)
+  print(data_input_dir)
 
   # if(!file.exists(paste(DQC_setting_dir,"lock_report.lock",sep = ""))){
   #   file.create(paste(DQC_setting_dir,"lock_report.lock",sep = ""))
@@ -120,8 +130,6 @@
 
   # for(PROJECT in project_type){
 
-  data_output_dir   <- paste(main_dir,"/Data/Output/",sep = "")  # where to put output files
-  report_output_dir <- paste(data_output_dir,"00_DQC_Reports/",sep = "")  # where to put output reports
 
   if(!dir.exists(report_output_dir)){
     dir.create(report_output_dir)
@@ -133,7 +141,8 @@
   datetime_format =  "%Y-%m-%d %H:%M"                          # <-- datetime format. Use only: Y -> year, m -> month, d -> day, H -> hour, M -> minute
   datetime_sampling =  "15 min"
   record_header =  "RECORD"
-  range_file =  "Range.csv"
+  range_file_ONE =  "Range.csv"
+  range_file_ZERO =  "Range_0.csv"
   # use_alert_station_flag = TRUE        # <-- IN REPORT DON'T SHOW ANALYZE VARIABLES SET AS 0 IN RANGE FILE
   use_alert_station_flag = TRUE        # <-- use range file flags. Default: TRUE
   use_realtime_station_flag = FALSE        # <-- use out_of_range file flags. Default: FALSE
@@ -146,11 +155,32 @@
   # loggernet_status_prj = as.data.frame(matrix(ncol = 3))
   # colnames(loggernet_status_prj) = c("Station", "Status", "Last_modification")
 
+  # ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+  #
+  # SELECTION OF RANGE FILE TO CONSIDER!!! BE CAREFUL DATA FOLDER SHOULD BE "RAW_0", "RAW_1", "RAW_2"
+  #
+  # ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+  
+  if(substring(data_input_dir,nchar(data_input_dir)-5,nchar(data_input_dir)-1) == "RAW_0"){
+    mail_file_alert  = mail_file_alert_ZERO
+    range_file = range_file_ZERO
+  }else{
+    mail_file_alert  = mail_file_alert_ONE
+    range_file = range_file_ONE
+  }
+  # else{
+  #   if(substring(data_input_dir,nchar(data_input_dir)-5,nchar(data_input_dir)-1) == "RAW_0"){
+  #     mail_file_alert  = mail_file_alert_ZERO
+  #   }else{       
+  #     stop("Define better the folder name")     
+  #   }   
+  # }
+  
   # ..........................................................................................................................................................
 
   # ..... files selection .....................................................................................................................................
 
-  files_available_raw = dir(input_dir,pattern = ".dat")                  # <-- Admitted pattern:  ".dat" or ".csv"
+  files_available_raw = dir(data_input_dir,pattern = ".dat")                  # <-- Admitted pattern:  ".dat" or ".csv"
   files_available_raw = files_available_raw[grepl(pattern = ".dat$",x = files_available_raw)]
 
   files_available_raw = files_available_raw[!grepl(pattern = "backup",x = files_available_raw)]          # REMOVE FILES WITH WRONG NAMES (.dat.backup not admitted)
@@ -284,9 +314,9 @@
 
       if(dwnl_info$Stop_DQC == 0){
 
-        # date_last_modif_file = as.character(format(file.mtime(paste(input_dir,FILE_NAME,sep = "")),format = datetime_format))
-        # file_info = file.info(paste(input_dir, dir(input_dir),sep = ""))
-        file_info = file.info(paste(input_dir,FILE_NAME,sep = ""))
+        # date_last_modif_file = as.character(format(file.mtime(paste(data_input_dir,FILE_NAME,sep = "")),format = datetime_format))
+        # file_info = file.info(paste(data_input_dir, dir(data_input_dir),sep = ""))
+        file_info = file.info(paste(data_input_dir,FILE_NAME,sep = ""))
         # date_last_modif_file = as.character(format(file_info$mtime,format = datetime_format))
 
         #!!!!!!!! ------------------- !!!!!!!!!!!!!
@@ -300,7 +330,7 @@
 
         if(file_datetime > as.POSIXct(dwnl_info$Last_Modification,tz = "Etc/GMT-1", format = datetime_format) | is.na(dwnl_info$Last_Modification)){
 
-          input_dir = input_dir
+          input_dir = data_input_dir
           output_dir_data = output_dir_data_new
           output_dir_raw = output_dir_raw_new
           output_dir_report = report_output_dir
@@ -425,8 +455,26 @@
             issue_file_dir_station = output_dir_report_new
 
             input =  issue_report_RMD
-            output_file = output_file_report
+            # output_file = output_file_report
             output_dir = issue_file_dir_station
+          
+            j=0
+          
+            repeat{
+              if(!file.exists(paste(output_dir,output_file_report,sep = ""))){
+                output_file = output_file_report
+                break
+              }else{
+                j=j+1
+                output_file_new = paste(substring(output_file_report,1, nchar(output_file_report)-5),"(",j,").html",sep = "")
+                if(!file.exists(paste(output_dir,output_file_new,sep = ""))){
+                  output_file = output_file_new
+                  break
+                }
+              }
+              
+            }
+
 
             if(!is.null(mydata_out_of_range)){
               report_mydata = mydata_out_of_range
@@ -480,10 +528,9 @@
           if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
             # paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
             # link = paste(main_dir_mapping_out, substring(output_dir_report_new,nchar(main_dir_mapping_in)), output_file_report,sep = "")
-            output_dir_report_new
-            link = paste(output_dir_report_new, output_file_report,sep = "")
+            link = paste(output_dir_report_new, output_file,sep = "")
             # link = paste("/",project_unique,substring(output_dir_report_new,nchar(data_output_dir)), output_file_report,sep = "")
-            # link = paste("\\\\smb.scientificnet.org\\alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
+            # link = paste("////smb.scientificnet.org//alpenv", substring(output_dir_report_new,nchar('/shared/')), output_file_report,sep = "")
           }else{
             link = NA
             # link = "---"
@@ -579,16 +626,32 @@
     input_final = paste(project_dir,"/Rmd/DQC_Report_overview.Rmd",sep = "")
     # date_DQC
     output_file_final =  paste(project_unique,"_",station_unique,"_Report_",
-                               format(date_DQC,format = "%Y"),
-                               format(date_DQC,format = "%m"),
-                               format(date_DQC,format = "%d"),
-                               format(date_DQC,format = "%H"),
-                               format(date_DQC,format = "%M"),".html", sep = "")
-
+                               format(date_DQC,format = "%Y"),"_",
+                               format(date_DQC,format = "%m"),"_",
+                               format(date_DQC,format = "%d"),".html", sep = "")
+    
     output_dir_final = output_dir_report
+    
+    j=0
+    
+    repeat{
+      if(!file.exists(paste(output_dir_final,output_file_final,sep = ""))){
+        output_file_TOT = output_file_final
+        break
+      }else{
+        j=j+1
+        output_file_final_new = paste(substring(output_file_final,1, nchar(output_file_final)-5),"(",j,").html",sep = "")
+        if(!file.exists(paste(output_dir,output_file_final_new,sep = ""))){
+          output_file_TOT = output_file_final_new
+          break
+        }
+      }
+      
+    }
+
     rm(params)
     rmarkdown::render(input = input_final,
-                      output_file = output_file_final ,
+                      output_file = output_file_TOT ,
                       output_dir = output_dir_final,
                       params = list(PROJECT = project_unique,
                                     date_DQC = date_DQC ,
@@ -603,7 +666,7 @@
     report_output_dir <- paste(data_output_dir,"00_DQC_Reports/",sep = "")  # where to put output reports
 
     my_subject = paste("Manual report:", project_unique,station_unique)
-    my_body = paste(output_dir_final,output_file_final,sep="")
+    my_body = paste(output_dir_final,output_file_TOT,sep="")
     # my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
     # my_body = paste(url_webservice,project_unique,substring(report_output_dir, nchar(data_output_dir)),output_file_final,sep="")
 

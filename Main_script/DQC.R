@@ -59,7 +59,7 @@ root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/"
 
 project_dir = paste(root_dir,"/DQC/dataqualitycheckeuracalpenv/",sep="")
 data_output_dir =paste(root_dir,"/Output/",sep="")
-data_input_dir =paste(root_dir,"/Input/XS6/RAW_2/",sep="")               # <- insert here the name of the folder to source data
+data_input_dir =paste(root_dir,"/Input/P1/RAW_0/2017_2018/",sep="")               # <- insert here the name of the folder to source data
 DQC_setting_dir = paste(root_dir,"/Setting/",sep="")
 
 range_dir <- paste(DQC_setting_dir,"/Range/", sep = "")
@@ -160,7 +160,7 @@ write_output_report =  "FALSE"
 #
 # ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
 
-if(substring(data_input_dir,nchar(data_input_dir)-5,nchar(data_input_dir)-1) == "RAW_0"){
+if(grepl(pattern = "RAW_0", data_input_dir)){
   mail_file_alert  = mail_file_alert_ZERO
   range_file = range_file_ZERO
 }else{

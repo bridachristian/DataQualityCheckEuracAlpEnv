@@ -55,11 +55,15 @@ main_dir = opt$maindir
 data_input_dir = opt$inptdir
 project_dir = opt$prjdir
 
+print(main_dir)
+print(data_input_dir)
+print(project_dir)
+
 root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/"
 
 project_dir = paste(root_dir,"/DQC/dataqualitycheckeuracalpenv/",sep="")
 data_output_dir =paste(root_dir,"/Output/",sep="")
-data_input_dir =paste(root_dir,"/Input/P1/RAW_0/2017_2018/",sep="")               # <- insert here the name of the folder to source data
+data_input_dir =paste(root_dir,"/Input/S4/RAW_0/",sep="")               # <- insert here the name of the folder to source data
 DQC_setting_dir = paste(root_dir,"/Setting/",sep="")
 
 range_dir <- paste(DQC_setting_dir,"/Range/", sep = "")
@@ -68,9 +72,16 @@ logger_info_dir <- paste(DQC_setting_dir,"/Range/", sep = "")
 mail_dir = paste(DQC_setting_dir,"/email_status/",sep = "")
 report_output_dir <- paste(data_output_dir,"/00_DQC_Reports/",sep = "")  # where to put output reports
 
-print(main_dir)
-print(data_input_dir)
-print(project_dir)
+
+# ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+
+# To set TRUE if you wanto to bypass all files of data_input_dir 
+# If it is FALSE every file was checked using the download table flag record_check (0 -> bypass, 1 --> check)
+
+BYPASS_ALL_RECORD_CHECK = TRUE
+
+# ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
@@ -246,7 +257,7 @@ if(length(unique(file_group))  > 1){
   t = 1
   
   for(t in  1: length(files_available)){
-    # for(t in  1: 6){
+    
     gc(reset = T)
     
     FILE_NAME = files_available[t]
@@ -382,7 +393,9 @@ if(length(unique(file_group))  > 1){
         
         status = unlist(lapply(errors,function(x) x[[1]]))
         
-        if(mylist$flag_empty == 0 & mylist$flag_logger_number == 0 & mylist$flag_error_df == 0 & mylist$flag_date == 0){
+        if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
+                                            "err_overlap", "err_missing_record","err_restart_record")] == "N")){
+          # if(mylist$flag_empty == 0 & mylist$flag_logger_number == 0 & mylist$flag_error_df == 0 & mylist$flag_date == 0){
           out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
@@ -553,7 +566,19 @@ if(length(unique(file_group))  > 1){
           download_table$Last_date[w_dwnl] = last_date
           download_table$Last_Modification[w_dwnl] = format(file_datetime, format = datetime_format)
           
-          download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
+          ### ------ NEW, TO TEST ------
+          
+          if(BYPASS_ALL_RECORD_CHECK == TRUE & download_table$record_check[w_dwnl] == 0){           # to test! If bypass is activated every file  
+            download_table$record_check[w_dwnl] = 0
+          }else{         
+            download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
+          }
+          
+          ### --------------------------
+          
+          # download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
+          
+          
           write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
           
         }else{
@@ -606,6 +631,7 @@ if(length(unique(file_group))  > 1){
   # reset download table stop_dqc at the end of loop
   w_stat_downl = which(download_table$Station == substring(file_unique, 1, nchar(file_unique)-4))
   download_table$Stop_DQC[w_stat_downl] = 0
+  download_table$record_check[w_stat_downl] = 1     # added to reset at the original status when a folder ended!
   write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
   
   

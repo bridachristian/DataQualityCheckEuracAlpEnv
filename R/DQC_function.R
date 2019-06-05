@@ -92,7 +92,7 @@ DQC_function= function(input_dir,
         header_info = header_info[,-c(1,2)]     # difference on TOA and on Station_Name are admitted
         logger_info = logger_info[,-c(2,3)]     # difference on TOA and on Station_Name are admitted
         
-        w_diff = which(header_info != logger_info[,-1]) !
+        w_diff = which(header_info != logger_info[,-1]) 
         cc = colnames(logger_info[,-1])[w_diff]
         new_h = as.character(header_info[w_diff])
         old_h = as.character(logger_info[,-1][w_diff])

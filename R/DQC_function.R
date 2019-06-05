@@ -776,6 +776,8 @@ DQC_function= function(input_dir,
                   mer = mer[order(match(mer$Header, level_header),match(mer$Row, level_row)),]
                   mer = data.frame(mer, stringsAsFactors = F)
                   colnames(mer) = c("Column", "Row", "Old", "New")
+                  mer$Column = as.character(mer$Column)
+                  mer$Row = as.character(mer$Row)
                   
                   old_h = setdiff(old_header_t$Header,header_t$Header)
                   new_h = setdiff(header_t$Header,old_header_t$Header)

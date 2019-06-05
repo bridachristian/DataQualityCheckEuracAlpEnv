@@ -785,10 +785,13 @@ DQC_function= function(input_dir,
                   
                   old_df = data.frame(match(old_h, old_header_t$Header),rep("Header", times = length(old_h)), old_h,rep("", times = length(old_h)))
                   colnames(old_df) = colnames(mer)
+                  old_df$Column = as.character(old_df$Column)
                   
                   
                   new_df = data.frame(match(new_h, header_t$Header),rep("Header", times = length(new_h)),rep("", times = length(new_h)), new_h)
                   colnames(new_df) = colnames(mer)
+                  new_df$Column = as.character(new_df$Column)
+                  
                   
                   add_remove = rbind(old_df, new_df)
                   

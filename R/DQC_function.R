@@ -743,12 +743,54 @@ DQC_function= function(input_dir,
                   nrow(old_header_t)
                   nrow(header_t)
                   
-                  w_df = as.data.frame(which(old_header_t != header_t,arr.ind = T))
+                  # ------ NEW -------
+                  old_eq= old_header_t[which(old_header_t$Header == intersect(old_header_t$Header,header_t$Header)),]
+                  new_eq= header_t[which(header_t$Header == intersect(old_header_t$Header,header_t$Header)),]
                   
-                  df_difference_tmp = data.frame(rownames(header_t)[w_df$row],
-                                                 colnames(header_t)[w_df$col],
-                                                 old_header_t[old_header_t != header_t],
-                                                 header_t[old_header_t != header_t])
+                  w_df = as.data.frame(which(old_eq != new_eq,arr.ind = T))
+                  
+                  o = old_eq[w_df$row,]
+                  n = new_eq[w_df$row,]
+                  
+                  m_o = melt(o,id.vars = "Header")
+                  m_n = melt(n,id.vars = "Header")
+                  
+                  colnames(m_o)[2:3] = c("Row" ,"Old")
+                  colnames(m_n)[2:3] = c("Row" ,"New")
+                  
+                  mer = merge(m_o, m_n)
+                  
+                  mer$Header = factor(mer$Header)
+                  mer$Row = factor(mer$Row)
+                  
+                  level_header = intersect(old_header_t$Header,header_t$Header)
+                  level_row = c("Units","Sampling_method")
+                  
+                  mer = mer[order(match(mer$Header, level_header),match(mer$Row, level_row)),]
+                  mer = data.frame(mer, stringsAsFactors = F)
+                  colnames(mer) = c("Column", "Row", "Old", "New")
+                  
+                  old_h = setdiff(old_header_t$Header,header_t$Header)
+                  new_h = setdiff(header_t$Header,old_header_t$Header)
+                  
+                  old_df = data.frame(paste("col_",match(old_h, old_header_t$Header),sep = ""),rep("Header", times = length(old_h)), old_h,rep("", times = length(old_h)))
+                  colnames(old_df) = colnames(mer)
+                  
+                  new_df = data.frame(paste("col_",match(new_h, header_t$Header),sep = ""),rep("Header", times = length(new_h)),rep("", times = length(new_h)), new_h)
+                  colnames(new_df) = colnames(mer)
+                  
+                  add_remove = rbind(old_df, new_df)
+                  
+                  df_difference_tmp = rbind(mer, add_remove)
+                  
+                  # ------------------
+                  
+                  # w_df = as.data.frame(which(old_header_t != header_t,arr.ind = T))
+                  # 
+                  # df_difference_tmp = data.frame(rownames(header_t)[w_df$row],
+                  #                                colnames(header_t)[w_df$col],
+                  #                                old_header_t[old_header_t != header_t],
+                  #                                header_t[old_header_t != header_t])
                   
                   colnames(df_difference_tmp) = c("Column", "Row", "Old", "New")
                   df_difference = rbind(df_difference,df_difference_tmp)

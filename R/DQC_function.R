@@ -747,9 +747,13 @@ DQC_function= function(input_dir,
                   nrow(header_t)
                   
                   # ------ NEW -------
-                  old_eq= old_header_t[which(old_header_t$Header == intersect(old_header_t$Header,header_t$Header)),]
-                  new_eq= header_t[which(header_t$Header == intersect(old_header_t$Header,header_t$Header)),]
                   
+                  # intersect(old_header_t$Header,header_t$Header)
+                  
+                  old_eq= old_header_t[which(old_header_t$Header %in% intersect(old_header_t$Header,header_t$Header)),]
+                  new_eq=     header_t[which(    header_t$Header %in% intersect(old_header_t$Header,header_t$Header)),]
+                  
+                  new_eq = new_eq[ match(old_eq$Header,new_eq$Header), ]
                   w_df = as.data.frame(which(old_eq != new_eq,arr.ind = T))
                   
                   o = old_eq[w_df$row,]
@@ -776,15 +780,21 @@ DQC_function= function(input_dir,
                   old_h = setdiff(old_header_t$Header,header_t$Header)
                   new_h = setdiff(header_t$Header,old_header_t$Header)
                   
-                  old_df = data.frame(paste("col_",match(old_h, old_header_t$Header),sep = ""),rep("Header", times = length(old_h)), old_h,rep("", times = length(old_h)))
+                  
+                  old_df = data.frame(match(old_h, old_header_t$Header),rep("Header", times = length(old_h)), old_h,rep("", times = length(old_h)))
                   colnames(old_df) = colnames(mer)
                   
-                  new_df = data.frame(paste("col_",match(new_h, header_t$Header),sep = ""),rep("Header", times = length(new_h)),rep("", times = length(new_h)), new_h)
+                  
+                  new_df = data.frame(match(new_h, header_t$Header),rep("Header", times = length(new_h)),rep("", times = length(new_h)), new_h)
                   colnames(new_df) = colnames(mer)
                   
                   add_remove = rbind(old_df, new_df)
                   
-                  df_difference_tmp = rbind(mer, add_remove)
+                  if(nrow(mer) == 0  & nrow(add_remove) == 0){
+                    df_difference_tmp = data.frame("","Headers reorded", "", "")
+                  }else{
+                    df_difference_tmp = rbind(mer, add_remove)
+                  }
                   
                   # ------------------
                   
@@ -1079,8 +1089,8 @@ DQC_function= function(input_dir,
       output_structure = list("Y",ncol_vect)
       names(output_structure) = c("Status", "Values")
     }else{
-        output_structure = list("N",NA)
-        names(output_structure) = c("Status", "Values")
+      output_structure = list("N",NA)
+      names(output_structure) = c("Status", "Values")
       
       # if(exists("df_difference")){
       #   if(!is.na(flag_error_df) & (flag_error_df == 0  &  nrow(df_difference) != 0 )){

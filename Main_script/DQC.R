@@ -60,18 +60,20 @@ print(data_input_dir)
 print(project_dir)
 
 
-root_dir_home = "C:/Users/azandonai/Desktop/DATA PAPER/ANNO ZERO/"
+root_dir_home = "C:/Users/CBrida/Desktop/Anno_Zero/"
 data_output_dir =paste(root_dir_home,"/Output/",sep="")
-data_input_dir =paste(root_dir_home,"/Input/S4/RAW_0/",sep="")               # <- insert here the name of the folder to source data
+data_input_dir =paste(root_dir_home,"/Input/I1/RAW_0/2017_2018/",sep="")               # <- insert here the name of the folder to source data
 
 
-root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/"
+# root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/"
+root_dir = "C:/Users/CBrida/Desktop/Anno_Zero/"
 
 # data_output_dir =paste(root_dir,"/Output/",sep="")
 # data_input_dir =paste(root_dir,"/Input/S4/RAW_0/",sep="")               # <- insert here the name of the folder to source data
 report_output_dir <- paste(data_output_dir,"/00_DQC_Reports/",sep = "")  # where to put output reports
 DQC_setting_dir = paste(root_dir,"/Setting/",sep="")
-project_dir = paste(root_dir,"/DQC/dataqualitycheckeuracalpenv/",sep="")
+# project_dir = paste(root_dir,"/DQC/dataqualitycheckeuracalpenv/",sep="")
+project_dir = "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"
 
 range_dir <- paste(DQC_setting_dir,"/Range/", sep = "")
 download_table_dir <- paste(DQC_setting_dir,"/Download_tables/", sep = "")
@@ -262,8 +264,9 @@ if(length(unique(file_group))  > 1){
   # report_start = Sys.time()
 
   t = 1
-
+  
   for(t in  1: length(files_available)){
+  # for(t in  1:3){
 
     gc(reset = T)
 
@@ -325,20 +328,8 @@ if(length(unique(file_group))  > 1){
 
     if(dwnl_info$Stop_DQC == 0){
 
-      # date_last_modif_file = as.character(format(file.mtime(paste(data_input_dir,FILE_NAME,sep = "")),format = datetime_format))
-      # file_info = file.info(paste(data_input_dir, dir(data_input_dir),sep = ""))
       file_info = file.info(paste(data_input_dir,FILE_NAME,sep = ""))
-      # date_last_modif_file = as.character(format(file_info$mtime,format = datetime_format))
-
-      #!!!!!!!! ------------------- !!!!!!!!!!!!!
-
-      # TROVARE IL MODOO DI NON CONTROLLARE FILE GIA PROCESSATI! (nella download_table viene ricordata solo la data di modifica dell'ultimo file)
-      # --> se modifiche? file ancora da processare sono esclusi...
-      # --> file vecchi? attualmente processati perche data nelle download table diversa da quella di modifica...
-
-      #!!!!!!!! ------------------- !!!!!!!!!!!!!
-
-
+      
       if(file_datetime > as.POSIXct(dwnl_info$Last_Modification,tz = "Etc/GMT-1", format = datetime_format) | is.na(dwnl_info$Last_Modification)){
 
         input_dir = data_input_dir
@@ -496,20 +487,7 @@ if(length(unique(file_group))  > 1){
             report_mydata = NULL
           }
 
-          # if(use_alert_station_flag == TRUE){
-          #   range_flags = read.csv(paste(range_dir,range_file,sep = ""),stringsAsFactors = F)
-          #   range_station = range_flags[,c(1,which(colnames(range_flags) == STATION_NAME))]
-          #   colnames(range_station)[2] = "Station"
-          #   variables_flagged = range_station$Variable[which(range_station$Station == 0)]
-          #
-          #   if(length(variables_flagged) == 0){
-          #     variables_flagged = NULL
-          #     }
-          # }else{
-          #   variables_flagged = NULL
-          # }
-
-
+          
           params_list = list(report_mydata,
                              dqc_date,
                              station_name,

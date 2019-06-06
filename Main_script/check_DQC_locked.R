@@ -100,7 +100,7 @@ if(file.exists(file_to_check)){
   
   hours_diff = as.numeric(difftime(time1 = h_system, time2 = h_last_modif_file, tz = "Etc/GMT-1",units = "hours"))
   
-  if(hours_diff == 168+1 | hours_diff%%12 == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
+  if(hours_diff == 168+1 | hours_diff%%168 == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
     
     my_subject = paste("Report locked!")
     my_body = paste("Report locked from:", date_last_modif_file)

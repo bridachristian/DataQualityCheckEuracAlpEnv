@@ -32,13 +32,25 @@ variables_flagged <- params$variables_flagged
 ```{r echo=FALSE, warning=FALSE, results='asis',fig.width= 12,fig.height= 6}
 if(errors_list_critical$err_structure$Status == "N" & 
    errors_list_critical$err_logger_number$Status == "N" &
-   errors_list_critical$err_structure$Status == "N" &
    errors_list_critical$err_no_new_data$Status == "N" ){ 
   
   is.POSIXct <- function(x) inherits(x, "POSIXct")
   s = sapply(mydata, is.POSIXct)
   w = which(s == T)
+  
+  end_date =  trunc(as.POSIXct(mydata[nrow(mydata),w], tz = "Etc/GMT-1"),units = "hours")
+  dqc_date_2 = trunc(as.POSIXct(dqc_date, tz = "Etc/GMT-1"),units = "hours")
+  
+  hours_diff = as.numeric(difftime(time1 = dqc_date_2, time2 = end_date, tz = "Etc/GMT-1",units = "hours"))
+  
+  if(hours_diff > 24){
+    cat("The station is currently OFFLINE!")
+    cat("  \n")
+  }
+  
+  cat("  \n")
   cat(paste("From", mydata[1,w], "to", mydata[nrow(mydata),w],sep = " " ))
+  cat("  \n")
 }
 ```
 
@@ -87,10 +99,123 @@ if(errors_list_critical$err_structure$Status == "Y"){
 <!-- err_structure_change -->
 
 ##`r if(errors_list_critical$err_structure_change$Status == "Y"){ paste("File structure changed!")}`
-```{r echo=FALSE}
+```{r echo=FALSE,results='asis'}
 if(errors_list_critical$err_structure_change$Status == "Y"){ 
   # DT::datatable(errors_list_critical$err_structure$Values)
-  kable(errors_list_critical$err_structure_change$Values)
+  struct_change = errors_list_critical$err_structure_change$Values
+  
+  modified = struct_change[which(struct_change$Row != "Header"),]
+  modified = modified[which(modified$Row != "Headers reorded"),]
+  colnames(modified)[1] = "Header"
+  
+  if(nrow(modified)>0){
+    print( kable(modified,row.names = F, caption = "Units or Sampling time modified:"))    
+  }
+  
+  headers = struct_change[which(struct_change$Row == "Header"),]
+  
+  old_headers = headers[which(headers$Old != ""),]
+  old_headers = old_headers[,-c(2,4)]
+  old_headers$Column = as.numeric( old_headers$Column )
+  # if(nrow(old_headers)>0){
+  #   # t1 = kable(old_headers,row.names = F, caption = "Old headers removed (or modified):",booktabs = TRUE)
+  #   # print( kable(old_headers,row.names = F, caption = "Old headers removed (or modified):"))
+  # }
+  
+  new_headers = headers[which(headers$New != ""),]
+  new_headers = new_headers[,-c(2,3)]
+  new_headers$Column = as.numeric( new_headers$Column )
+
+  # if(nrow(new_headers)>0){
+  #   # t2 = kable(new_headers,row.names = F, caption = "New headers added:" ,booktabs = TRUE)
+  #   # print( kable(new_headers,row.names = F, caption = "New headers added:"))
+  # }
+  
+  m = merge(old_headers,new_headers,all = T)
+  if(nrow(m)>0){
+    v_col = as.numeric(m$Column)
+    
+    m = m[match(v_col,as.numeric(m$Column)),]
+    m$Old[is.na(m$Old)] = ""
+    m$New[is.na(m$New)] = ""
+    m$Column = as.character(m$Column)
+    print( kable(m,row.names = F, caption = "Headers removed/added:"))
+  }
+  
+  reordered = struct_change[which(struct_change$Row == "Headers reorded"),]
+  if(nrow(reordered) > 0){
+    cat("Header reordered!")
+    cat("  \n")
+  }
+  
+  # # struct_change = struct_change[order(struct_change$Column),]
+  # v_col = as.numeric(substring(struct_change$Column,5,nchar(struct_change$Column)))
+  # v_col[order(v_col)]
+  # struct_change = struct_change[v_col[order(v_col)],]
+  # 
+  # 
+  # 
+  # 
+  # 
+  # u = unique(struct_change$Column)
+  # df_u = data.frame(matrix(ncol = 2, nrow = length(u)))
+  # colnames(df_u) = c("col", "n")
+  # k=1
+  # for(k in 1:length(u)){
+  #   df_u$col[k] = u[k]  
+  #   df_u$n[k] = length(struct_change$Column[which(struct_change$Column == u[k])])  
+  #   
+  # }
+  # 
+  # struct_change_new = struct_change[ struct_change$Column %in%  df_u$col[which(df_u$n != 3)],]
+  # struct_change_add_rem = struct_change[ struct_change$Column %in%  df_u$col[which(df_u$n == 3)],]
+  # 
+  # h_a = struct_change_add_rem[which(struct_change_add_rem$New != ""),]
+  # h_added = as.data.frame(h_a$New[which(h_a$Row == "Header")])
+  # colnames(h_added) = "New"
+  # 
+  # h_r = struct_change_add_rem[which(struct_change_add_rem$Old != ""),]
+  # h_removed = as.data.frame(h_r$Old[which(h_r$Row == "Header") ])
+  # colnames(h_removed) = "Old"
+  # 
+  # 
+  # # if(any(struct_change$Row == "Header")){
+  # h_change = struct_change_new[struct_change_new$Row == "Header",-which(colnames(struct_change_new)== "Row")]
+  # h_modif = h_change[order(h_change$Column),]
+  # 
+  # v_col = as.numeric(substring(h_modif$Column,5,nchar(h_modif$Column)))
+  # h_modif$Column = paste("col_",v_col+1,sep = "")
+  # 
+  # u_change = struct_change_new[struct_change_new$Row != "Header",]
+  # u_modif = u_change[order(u_change$Column),]
+  # 
+  # w_col = as.numeric(substring(u_modif$Column,5,nchar(u_modif$Column)))
+  # u_modif$Column = colnames(mydata)[w_col+1]
+  # 
+  # if(nrow(h_added)>0){
+  #   # h_add =as.data.frame(h_added)
+  #   # colnames(h_add) = "New"
+  #   print( kable(h_added,row.names = F, caption = "New headers added:"))    
+  #   # cat("  \n")
+  # }
+  # 
+  # if(nrow(h_removed)>0){
+  #   # h_rem =as.data.frame(h_removed)
+  #   # colnames(h_rem) = "Old"
+  #   print( kable(h_removed,row.names = F, caption = "Headers removed:"))    
+  #   # cat("  \n")
+  # }
+  # 
+  # if(nrow(h_modif)>0){
+  #   h_mod =as.data.frame(h_modif[,-1])
+  #   print( kable(h_mod,row.names = F, caption = "Headers modified:"))    
+  #   # cat("  \n")
+  #   print( kable(u_modif,row.names = F, caption = "Units or Sampling method modified:"))    
+  #   # cat("  \n")
+  #   
+  # }
+  
+  # kable(errors_list_critical$err_structure_change$Values)
 }
 ```
 

@@ -86,7 +86,7 @@ DQC_function= function(input_dir,
       flag_logger_number = 0
     }else{
       logger_info = logger_info_csv[w_logger,]
-      if(any(header_info != logger_info[,-1])){
+      if(any(header_info[,-c(1,2)] != logger_info[,-c(1,2,3)])){
         flag_logger_number = 1
         
         header_info = header_info[,-c(1,2)]     # difference on TOA and on Station_Name are admitted

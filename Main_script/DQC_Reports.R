@@ -512,6 +512,13 @@ for(PROJECT in project_type){
             report_mydata = NULL
           }
           
+          if(!is.null(mydata)){
+            mydata_to_report = mydata
+            mydata_to_report[, which(colnames(mydata_to_report) == datetime_header)] = as.POSIXct(mydata_to_report[, which(colnames(mydata_to_report) == datetime_header)], format = datetime_format, tz = "Etc/GMT-1")
+          }else{
+            mydata_to_report = NULL
+          }
+          
           # if(use_alert_station_flag == TRUE){
           #   range_flags = read.csv(paste(range_dir,range_file,sep = ""),stringsAsFactors = F)
           #   range_station = range_flags[,c(1,which(colnames(range_flags) == STATION_NAME))]
@@ -526,14 +533,15 @@ for(PROJECT in project_type){
           # }
           
           
-          params_list = list(report_mydata,
+          params_list = list(mydata_to_report,
+                             report_mydata,
                              dqc_date,
                              station_name,
                              errors_list_critical,
                              errors_list_warning,
                              errors_list_report_errors,
                              variables_flagged)
-          names(params_list) = c("report_mydata", "dqc_date","station_name","errors_list_critical","errors_list_warning","errors_list_report_errors","variables_flagged")
+          names(params_list) = c("mydata_to_report","report_mydata", "dqc_date","station_name","errors_list_critical","errors_list_warning","errors_list_report_errors","variables_flagged")
           
           gc(reset = T)
           rmarkdown::render(input = input,

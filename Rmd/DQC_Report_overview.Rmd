@@ -134,6 +134,7 @@ mydf[is.na(mydf)] = "grey"
 mydf$Offline[mydf$Offline == 1] = "firebrick1"
 mydf$Offline[mydf$Offline == 2] = "blue"
 mydf$Offline[mydf$Offline == 0] = "forestgreen"
+mydf$Offline[mydf$Offline == 3] = "greenyellow"
 
 mydf$err_empty[mydf$err_empty == 0] = "forestgreen"
 mydf$err_empty[mydf$err_empty == 1] = "firebrick1"
@@ -187,8 +188,8 @@ mydf = mydf[,-which(colnames(mydf) == "Data overrange physical")]   # remove war
 aaa = cbind(mydf[,1:8], rep("white", nrow(mydf)),mydf[,9:ncol(mydf)])
 colnames(aaa)[9] = ""
 
-mycolors = c("forestgreen","gold","firebrick1", "grey", "blue")
-mycolors_value = c("OK!","Check it out!","Action required!", "Not evaluated!", "Bypassed!")
+mycolors = c("forestgreen", "greenyellow","gold","firebrick1", "grey", "blue")
+mycolors_value = c("OK!", "Currently offline! (>24h)","Check it out!","Action required!", "Not evaluated!", "Bypassed!")
 
 melt_final = melt(aaa,id.vars = "Station")
 melt_final$value = factor(melt_final$value,levels = mycolors)

@@ -368,6 +368,11 @@ for(PROJECT in project_type){
       
       hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_last_modif_file, tz = "Etc/GMT-1",units = "hours"))
       
+      if(hours_diff >= 24 ){   # 24 =  24h offline
+        offline_value = 3
+      }else{
+        offline_value = 0
+      }
       
       if(date_last_modif_file != dwnl_info$Last_Modification | is.na(dwnl_info$Last_Modification)){
         
@@ -565,7 +570,7 @@ for(PROJECT in project_type){
           var_flagged = 1
         }
         
-        report_info = c(STATION_NAME,0,status_final,var_flagged, link)
+        report_info = c(STATION_NAME,offline_value,status_final,var_flagged, link)
         names(report_info) = c("Station",
                                "Offline",
                                "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",

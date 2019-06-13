@@ -62,7 +62,7 @@ print(project_dir)
 
 root_dir_home = "C:/Users/CBrida/Desktop/Anno_Zero/"
 data_output_dir =paste(root_dir_home,"/Output/",sep="")
-data_input_dir =paste(root_dir_home,"/Input/M5/RAW_0/",sep="")               # <- insert here the name of the folder to source data
+data_input_dir =paste(root_dir_home,"/Input/S3/RAW_0/",sep="")               # <- insert here the name of the folder to source data
 
 
 # root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/"
@@ -330,6 +330,19 @@ if(length(unique(file_group))  > 1){
       
       file_info = file.info(paste(data_input_dir,FILE_NAME,sep = ""))
       
+      date_last_modif_file = as.character(format(file_info$mtime),format = datetime_format)
+      h_last_modif_file = trunc(as.POSIXct(date_last_modif_file, tz = "Etc/GMT-1"),units = "hours")
+      h_DQC = trunc(date_DQC,units = "hours")
+      
+      hours_diff = as.numeric(difftime(time1 = h_DQC, time2 = h_last_modif_file, tz = "Etc/GMT-1",units = "hours"))
+      
+      if(hours_diff >= 24 ){   # 24 =  24h offline
+        # offline_value = 3    # manual report by default don't show if the station is offline (obvious)
+        offline_value = 0      # Evenutally activable setting offline_value = 3
+      }else{
+        offline_value = 0
+      }
+      
       if(file_datetime > as.POSIXct(dwnl_info$Last_Modification,tz = "Etc/GMT-1", format = datetime_format) | is.na(dwnl_info$Last_Modification)){
         
         input_dir = data_input_dir
@@ -540,8 +553,10 @@ if(length(unique(file_group))  > 1){
           var_flagged = 1
         }
         
+        
         # report_info = c(STATION_NAME,0,status_final,var_flagged, link)
-        report_info = c(substring(FILE_NAME, 1, nchar(FILE_NAME)-4),0,status_final,var_flagged, link)
+        
+        report_info = c(substring(FILE_NAME, 1, nchar(FILE_NAME)-4),offline_value,status_final,var_flagged, link)
         names(report_info) = c("Station",
                                "Offline",
                                "err_empty","err_logger_number","err_structure","err_structure_change","err_no_new_data","err_overlap","err_missing_record","err_restart_record",

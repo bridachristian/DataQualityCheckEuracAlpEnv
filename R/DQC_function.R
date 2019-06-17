@@ -685,7 +685,7 @@ DQC_function= function(input_dir,
                     first_new_datetime = as.POSIXct(out_my[1,which(colnames(out_my) == datetime_header)],tz = "Etc/GMT-1")
                     
                     all_dates = seq(from = last_old_datetime, to = first_new_datetime, by = datetime_sampling)
-                    all_dates = all_dates[-length(all_dates)]
+                    all_dates = all_dates[-c(1,length(all_dates))da]
                     all_dates_df =  data.frame(matrix(nrow =length(all_dates), ncol = ncol(out_my)))
                     colnames(all_dates_df) = colnames(out_my)
                     all_dates_df[,which(colnames(all_dates_df) == datetime_header)] = format(all_dates,format = datetime_format,tz = "Etc/GMT-1")

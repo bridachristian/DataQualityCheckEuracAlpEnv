@@ -686,12 +686,13 @@ DQC_function= function(input_dir,
                     
                     all_dates = seq(from = last_old_datetime, to = first_new_datetime, by = datetime_sampling)
                     all_dates = all_dates[-c(1,length(all_dates))]
-                    all_dates_df =  data.frame(matrix(nrow =length(all_dates), ncol = ncol(out_my)))
-                    colnames(all_dates_df) = colnames(out_my)
-                    all_dates_df[,which(colnames(all_dates_df) == datetime_header)] = format(all_dates,format = datetime_format,tz = "Etc/GMT-1")
-                    all_dates_df[,which(colnames(all_dates_df) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
                     
-                    if(nrow(all_dates_df)>0){
+                    if(length(all_dates)>0){
+                      all_dates_df =  data.frame(matrix(nrow =length(all_dates), ncol = ncol(out_my)))
+                      colnames(all_dates_df) = colnames(out_my)
+                      all_dates_df[,which(colnames(all_dates_df) == datetime_header)] = format(all_dates,format = datetime_format,tz = "Etc/GMT-1")
+                      all_dates_df[,which(colnames(all_dates_df) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
+                      
                       out_my = rbind(all_dates_df, out_my)
                     }
                     

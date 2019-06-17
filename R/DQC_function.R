@@ -680,6 +680,21 @@ DQC_function= function(input_dir,
                       out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
                       
                     }
+                    
+                    # add missing records before in the new structure files
+                    first_new_datetime = as.POSIXct(out_my[1,which(colnames(out_my) == datetime_header)],tz = "Etc/GMT-1")
+                    
+                    all_dates = seq(from = last_old_datetime, to = first_new_datetime, by = datetime_sampling)
+                    all_dates = all_dates[-length(all_dates)]
+                    all_dates_df =  data.frame(matrix(nrow =length(all_dates), ncol = ncol(out_my)))
+                    colnames(all_dates_df) = colnames(out_my)
+                    all_dates_df[,which(colnames(all_dates_df) == datetime_header)] = format(all_dates,format = datetime_format,tz = "Etc/GMT-1")
+                    all_dates_df[,which(colnames(all_dates_df) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
+                    
+                    if(nrow(all_dates_df)>0){
+                      out_my = rbind(all_dates_df, out_my)
+                    }
+                    
                     colnames(header) = header[1,]
                     # out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
                     colnames(out_my) = colnames(header)

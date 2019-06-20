@@ -185,13 +185,14 @@ DQC_function= function(input_dir,
           
           # inserire qui controllo sul numero dei record. Ricorda di togliere le date inserite (missing dates --> record = -1) 
           
+          rec_miss  <- missing_record(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+          records_missing = rec_miss[[2]]
+          records_restart = rec_miss[[3]]
+          
           if(record_check == 1){
-            rec_miss  <- missing_record(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
             flag_missing_records = rec_miss[[1]]
-            records_missing = rec_miss[[2]]
-            records_restart = rec_miss[[3]]
           }else{
-            flag_missing_records = 50
+            flag_missing_records = 50  
           }
           
           if(flag_missing_records != 1){
@@ -297,9 +298,17 @@ DQC_function= function(input_dir,
         if(flag_overlap == 0){
           if(flag_missing_records != 1){
             # if(write_output_files == TRUE){    # here????
+            
             time_mydata = as.POSIXct(mydata[,which(colnames(mydata)== datetime_header)],format = datetime_format, tz = 'Etc/GMT-1')
             time_orig = as.POSIXct(orig_wihtout_dupli[,which(colnames(orig_wihtout_dupli)== datetime_header)],format = datetime_format, tz = 'Etc/GMT-1')
+            years_mydata = as.numeric(unique(format(time_mydata, format = "%Y")))
+            
+            # start_date_new = as.POSIXct(start_date,format = datetime_format, tz = 'Etc/GMT-1')
+            # years_start = as.numeric(format(start_date_new, format = "%Y"))
+            # 
+            # years = as.numeric(unique(c(years_start,years_mydata)))
             years = as.numeric(unique(format(time_mydata, format = "%Y")))
+            
             file_names = paste(station_name,"_", years,".dat",sep = "")
             
             flag_new_duplicates_rows_tmp = c()
@@ -471,20 +480,40 @@ DQC_function= function(input_dir,
                     
                     flag_new_overlap_tmp = c(flag_new_overlap_tmp,0)
                     
+                    # ----- old!!!! ------
+                    # if(record_check == 1){
+                    #   w_last = which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)
+                    #   if(length(w_last) == 0){
+                    #     rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+                    #     
+                    #   }else{
+                    #     rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+                    #   }
+                    #   flag_missing_records_new_tmp = rec_miss[[1]]
+                    #   records_missing_new = rec_miss[[2]]
+                    #   records_restart_new = rec_miss[[3]]
+                    # }else{
+                    #   flag_missing_records_new_tmp = 50
+                    # }
+                    # ----- old!!!! ------
+                    
+                    # ----- new!!!! ------
+                    w_last = which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)
+                    if(length(w_last) == 0){
+                      rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+                      
+                    }else{
+                      rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+                    }
+                    records_missing_new = rec_miss[[2]]
+                    records_restart_new = rec_miss[[3]]
+                    
                     if(record_check == 1){
-                      w_last = which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)
-                      if(length(w_last) == 0){
-                        rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
-                        
-                      }else{
-                        rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
-                      }
                       flag_missing_records_new_tmp = rec_miss[[1]]
-                      records_missing_new = rec_miss[[2]]
-                      records_restart_new = rec_miss[[3]]
                     }else{
                       flag_missing_records_new_tmp = 50
                     }
+                    # ----- new!!!! ------
                     
                     if(flag_missing_records_new_tmp != 1){
                       new_missing  <- missing_dates(DATA = new_mydata,

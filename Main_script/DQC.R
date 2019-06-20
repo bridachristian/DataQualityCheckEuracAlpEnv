@@ -404,8 +404,16 @@ if(length(unique(file_group))  > 1){
         
         status = unlist(lapply(errors,function(x) x[[1]]))
         
+        
+        # da rivedere! se missing/restart record sempre come info dipende se record_check è attivo o meno
+        
         if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
-                                            "err_overlap", "err_missing_record","err_restart_record")] == "N")){
+                                            "err_overlap")] == "N")){
+          if(record_check != 1 | (record_check == 1 & all(status[names(status) %in% c( "err_missing_record","err_restart_record")] == "N"))){
+
+        # if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
+        #                                     "err_overlap", "err_missing_record","err_restart_record")] == "N")){
+            
           # if(mylist$flag_empty == 0 & mylist$flag_logger_number == 0 & mylist$flag_error_df == 0 & mylist$flag_date == 0){
           out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
@@ -416,6 +424,7 @@ if(length(unique(file_group))  > 1){
                                     sep = "")
           
           last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
+          }
           
         } else {
           out_filename_date = "no_datetime"
@@ -531,9 +540,16 @@ if(length(unique(file_group))  > 1){
         status_final[which(status_final == "N")] = 0
         status_final = status_final[c(critical_errors,warning_errors, report_errors)]
         
-        if(dwnl_info$record_check == 0){
-          w_rec = which(names(status_final) %in% c("err_missing_record","err_restart_record" ))
-          status_final[w_rec] = 2
+        if(dwnl_info$record_check == 0 ){
+          if(status_final[which(names(status_final) == "err_missing_record" )] == "1"){
+          w_rec_missing = which(names(status_final) == "err_missing_record")
+          status_final[w_rec_missing] = 2
+          
+          }
+          if(status_final[which(names(status_final) == "err_restart_record" )] == "1" ){
+          w_rec_restart = which(names(status_final) == "err_restart_record" )
+          status_final[w_rec_restart] = 2
+          }
         }
         
         if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
@@ -567,9 +583,11 @@ if(length(unique(file_group))  > 1){
         
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
         
-        
         if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
-                                            "err_overlap", "err_missing_record","err_restart_record")] == "N")){
+                                            "err_overlap")] == "N")){
+          if(record_check != 1 | (record_check == 1 & all(status[names(status) %in% c( "err_missing_record","err_restart_record")] == "N"))){
+        # if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
+        #                                     "err_overlap", "err_missing_record","err_restart_record")] == "N")){
           download_table$Last_date[w_dwnl] = last_date
           download_table$Last_Modification[w_dwnl] = format(file_datetime, format = datetime_format)
           
@@ -587,11 +605,12 @@ if(length(unique(file_group))  > 1){
           
           
           write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
-          
+          }
         }else{
           download_table$Stop_DQC[w_dwnl] = 1
           write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
         }
+          
         
       }else{
         report_info = c(substring(FILE_NAME, 1, nchar(FILE_NAME)-4),1,rep(NA,12),NA, NA)

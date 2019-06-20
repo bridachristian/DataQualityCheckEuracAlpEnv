@@ -1322,73 +1322,99 @@ DQC_function= function(input_dir,
   # - - - -  Provide missing dates - - - - - - - - - - - - - 
   # missing_index_date
   
+  # NOTE: the section inside *******     ****** was developed to avoid that missing/restart records were misclassificated as missing dates 
   
   if((!is.na(flag_missing_dates) & flag_missing_dates == 1)|(!is.na(flag_new_missing_dates) & flag_new_missing_dates == 1)){
     
     date_missing = rbind(missing_index_date,new_missing_index_date_tot)
     
+    # ************
+    if(nrow(table_missing_record) >0){
+      record_missing = seq(from = as.POSIXct(table_missing_record$Last.date.Before, format = datetime_format, tz ="Etc/GMT-1"),
+                           to   = as.POSIXct(table_missing_record$First.date.After, format = datetime_format, tz ="Etc/GMT-1"), by = datetime_sampling)
+      record_missing = record_missing[-c(1,length(record_missing))]
+    }else{record_missing = c()}
+    if(nrow(table_restart_record) >0){
+      record_restart = seq(from = as.POSIXct(table_restart_record$Last.date.Before, format = datetime_format, tz ="Etc/GMT-1"),
+                           to   = as.POSIXct(table_restart_record$First.date.After, format = datetime_format, tz ="Etc/GMT-1"), by = datetime_sampling) 
+      record_restart = record_restart[-c(1,length(record_restart))]
+      
+    }else{record_restart = c()}
     
-    # #####
-    # seq.POSIXt(from = date_missing$Date[1],to = date_missing$Date[length(date_missing$Date)], by = datetime_sampling)
-    # 
-    # #####
+    record_tot = c(record_missing, record_restart)
     
-    time_tot <- as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1' )
-    # time_tot <- c(new_missing_index_date$Date, time_tot) 
-    # time_tot <- unique(c(date_missing$Date,time_tot)) # don't work! issues whith datatime --> unexpected timezone conversion! Why? 
-    time_tot <- as.POSIXct(unique(c(as.character(date_missing$Date), as.character(time_tot))),tz = "Etc/GMT-1") 
+    date_missing = date_missing[-which(date_missing$Date %in% record_tot),]
     
-    time_tot = time_tot[order(time_tot)]
-    
-    # time_missing <- missing_index_date[,2]
-    time_missing <- date_missing[,2]
-    
-    
-    df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
-    colnames(df_missing) = c("time","Status")
-    df_missing[which(time_tot %in% time_missing ),2] = "Missing dates filled"
-    y = rep(1, times = length(time_tot))
-    
-    Status_num = rep(1,times = length(time_tot))
-    Status_num[which(time_tot %in% time_missing )] = 0
-    
-    df_missing = cbind(df_missing, y,Status_num)
-    Status_num_NA=df_missing
-    Status_num_NA = Status_num_NA[,-c(2,3)]
-    
-    differ = c(0,diff(Status_num_NA$Status_num))
-    
-    if(Status_num_NA$Status_num[1] == 0){
-      differ[1] = -1
-    }
-    
-    start = which(differ == -1)
-    end  = which(differ == 1) - 1
-    gap_lenght = end - start + 1
-    
-    date_start = Status_num_NA$time[start]
-    date_end = Status_num_NA$time[end]
-    
-    if(length(date_end) != 0){
-      date_end_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
-      for(k in 1:length(date_end)){
-        
-        date_end_tmp[k] =  seq.POSIXt(date_end[k], by = datetime_sampling, length. =  2)[2]
-      }
-      gap_hour = difftime(time1 = date_end_tmp,time2 = date_start,units = "hours")
+    if(nrow(date_missing) == 0){
+      output_date_missing = list("N", NA)
+      names(output_date_missing) =c("Status", "Values")
     }else{
-      gap_hour = numeric(0)
+      
+      # ************
+      
+      
+      # #####
+      # seq.POSIXt(from = date_missing$Date[1],to = date_missing$Date[length(date_missing$Date)], by = datetime_sampling)
+      # 
+      # #####
+      
+      time_tot <- as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1' )
+      # time_tot <- c(new_missing_index_date$Date, time_tot) 
+      # time_tot <- unique(c(date_missing$Date,time_tot)) # don't work! issues whith datatime --> unexpected timezone conversion! Why? 
+      time_tot <- as.POSIXct(unique(c(as.character(date_missing$Date), as.character(time_tot))),tz = "Etc/GMT-1") 
+      
+      time_tot = time_tot[order(time_tot)]
+      
+      # time_missing <- missing_index_date[,2]
+      time_missing <- date_missing[,2]
+      
+      
+      df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))
+      colnames(df_missing) = c("time","Status")
+      df_missing[which(time_tot %in% time_missing ),2] = "Missing dates filled"
+      y = rep(1, times = length(time_tot))
+      
+      Status_num = rep(1,times = length(time_tot))
+      Status_num[which(time_tot %in% time_missing )] = 0
+      
+      df_missing = cbind(df_missing, y,Status_num)
+      Status_num_NA=df_missing
+      Status_num_NA = Status_num_NA[,-c(2,3)]
+      
+      differ = c(0,diff(Status_num_NA$Status_num))
+      
+      if(Status_num_NA$Status_num[1] == 0){
+        differ[1] = -1
+      }
+      
+      start = which(differ == -1)
+      end  = which(differ == 1) - 1
+      gap_lenght = end - start + 1
+      
+      date_start = Status_num_NA$time[start]
+      date_end = Status_num_NA$time[end]
+      
+      if(length(date_end) != 0){
+        date_end_tmp = as.POSIXct("1990-01-01 00:00")    # this for cycle is to fix a bug on time difference
+        for(k in 1:length(date_end)){
+          
+          date_end_tmp[k] =  seq.POSIXt(date_end[k], by = datetime_sampling, length. =  2)[2]
+        }
+        gap_hour = difftime(time1 = date_end_tmp,time2 = date_start,units = "hours")
+      }else{
+        gap_hour = numeric(0)
+      }
+      
+      statistic_missing = data.frame(date_start,date_end,gap_lenght,gap_hour)
+      colnames(statistic_missing) = c("From", "To", "Number of Record", "Hours")
+      statistic_missing[,1:2] = format(statistic_missing[,1:2], format = datetime_format)
+      
+      date_missing_period = statistic_missing
+      
+      output_date_missing = list("Y",date_missing_period )
+      # output_restart_record = list("N", NA)
+      names(output_date_missing) =c("Status", "Values")
     }
-    
-    statistic_missing = data.frame(date_start,date_end,gap_lenght,gap_hour)
-    colnames(statistic_missing) = c("From", "To", "Number of Record", "Hours")
-    statistic_missing[,1:2] = format(statistic_missing[,1:2], format = datetime_format)
-    
-    date_missing_period = statistic_missing
-    
-    output_date_missing = list("Y",date_missing_period )
-    # output_restart_record = list("N", NA)
-    names(output_date_missing) =c("Status", "Values")
   }else{
     # date_missing = NULL
     output_date_missing = list("N", NA)

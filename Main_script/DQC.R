@@ -586,31 +586,32 @@ if(length(unique(file_group))  > 1){
         if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
                                             "err_overlap")] == "N")){
           if(record_check != 1 | (record_check == 1 & all(status[names(status) %in% c( "err_missing_record","err_restart_record")] == "N"))){
-        # if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
-        #                                     "err_overlap", "err_missing_record","err_restart_record")] == "N")){
-          download_table$Last_date[w_dwnl] = last_date
-          download_table$Last_Modification[w_dwnl] = format(file_datetime, format = datetime_format)
+            
+            # if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
+            #                                 "err_overlap", "err_missing_record","err_restart_record")] == "N")){
+            download_table$Last_date[w_dwnl] = last_date
+            download_table$Last_Modification[w_dwnl] = format(file_datetime, format = datetime_format)
+            
+            ### ------ NEW, TO TEST ------
+            
+            if(BYPASS_ALL_RECORD_CHECK == TRUE & download_table$record_check[w_dwnl] == 0){           # to test! If bypass is activated every file
+              download_table$record_check[w_dwnl] = 0
+            }else{
+              download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
+            }
+            
+            ### --------------------------
+            
+            # download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
+            
+            
+            write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
           
-          ### ------ NEW, TO TEST ------
-          
-          if(BYPASS_ALL_RECORD_CHECK == TRUE & download_table$record_check[w_dwnl] == 0){           # to test! If bypass is activated every file
-            download_table$record_check[w_dwnl] = 0
           }else{
-            download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
+            download_table$Stop_DQC[w_dwnl] = 1
+            write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
           }
-          
-          ### --------------------------
-          
-          # download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
-          
-          
-          write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
-          }
-        }else{
-          download_table$Stop_DQC[w_dwnl] = 1
-          write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
         }
-          
         
       }else{
         report_info = c(substring(FILE_NAME, 1, nchar(FILE_NAME)-4),1,rep(NA,12),NA, NA)

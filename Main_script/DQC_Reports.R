@@ -438,7 +438,9 @@ for(PROJECT in project_type){
         mylist <- split(flags_df$value, seq(nrow(flags_df)))
         names(mylist) = flags_df$flag_names
         
-        if(mylist$flag_empty == 0  & mylist$flag_error_df == 0 & mylist$flag_date == 0){
+        if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
+                                            "err_overlap")] == "N")){
+          if(record_check != 1 | (record_check == 1 & all(status[names(status) %in% c( "err_missing_record","err_restart_record")] == "N"))){
           out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
                                     substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
@@ -448,7 +450,7 @@ for(PROJECT in project_type){
                                     sep = "")
           
           last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
-          
+          }
         } else {
           out_filename_date = "no_datetime"
         }
@@ -557,10 +559,22 @@ for(PROJECT in project_type){
         status_final[which(status_final == "N")] = 0
         status_final = status_final[c(critical_errors,warning_errors, report_errors)]
         
-        if(dwnl_info$record_check == 0){
-          w_rec = which(names(status_final) %in% c("err_missing_record","err_restart_record" ))
-          status_final[w_rec] = 2
+        if(dwnl_info$record_check == 0 ){
+          if(status_final[which(names(status_final) == "err_missing_record" )] == "1"){
+            w_rec_missing = which(names(status_final) == "err_missing_record")
+            status_final[w_rec_missing] = 2
+            
+          }
+          if(status_final[which(names(status_final) == "err_restart_record" )] == "1" ){
+            w_rec_restart = which(names(status_final) == "err_restart_record" )
+            status_final[w_rec_restart] = 2
+          }
         }
+        
+        # if(dwnl_info$record_check == 0){
+        #   w_rec = which(names(status_final) %in% c("err_missing_record","err_restart_record" ))
+        #   status_final[w_rec] = 2
+        # }
         
         if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
           # paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")

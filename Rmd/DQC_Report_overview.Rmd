@@ -19,10 +19,11 @@ Report start at **`r date_DQC`**
 ### `r paste(PROJECT, "report")`
 
 ```{r echo=FALSE, warning=FALSE,fig.width= 12,fig.height= 9}
-# report_dataframe
 
 mydf = report_dataframe[,-ncol(report_dataframe)]
 orig_mydf = mydf
+
+mydf[] <- lapply(mydf, as.character)
 
 # colnames(mydf)  ######
 # mydf[1,8] = 1   ######
@@ -218,6 +219,7 @@ ggplot(melt_final, aes(x = variable, y = Station))+
 ```{r echo=FALSE, warning=FALSE}
 # report_dataframe
 ff = as.data.frame(report_dataframe,stringsAsFactors = F)
+ff[] <- lapply(ff, as.character)
 
 for(i in 2:(ncol(ff)-1)){
   ff[,i] = as.numeric(ff[,i])

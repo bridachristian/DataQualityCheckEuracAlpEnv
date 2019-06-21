@@ -105,7 +105,7 @@ LOGGERNET_OFFLINE = 1    # <. all station offline since 1h --> loggernet doesn't
 
 date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
 
-loggernet_status = c()
+# loggernet_status = c()
 
 mail_dir = paste(DQC_setting_dir,"Process/email_status/",sep = "")
 mail_file = "mail_status.csv"
@@ -163,8 +163,8 @@ for(PROJECT in project_type){
   write_output_report =  "FALSE"
   
   # general stations status --> loggernent doesn't work properly!
-  loggernet_status_prj = as.data.frame(matrix(ncol = 3))
-  colnames(loggernet_status_prj) = c("Station", "Status", "Last_modification")
+  # loggernet_status_prj = as.data.frame(matrix(ncol = 3))
+  # colnames(loggernet_status_prj) = c("Station", "Status", "Last_modification")
   
   # file <- "M4s.dat"
   # start_date <- NA
@@ -248,13 +248,13 @@ for(PROJECT in project_type){
   
   ############################################
   
-  final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
-  colnames(final_dataframe) = c("Station", "Status",
-                                "flag_empty","flag_logger_number", "flag_error_df","flag_date",
-                                "flag_duplicates_rows","flag_overlap","flag_missing_records","flag_missing_dates",
-                                "flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range",
-                                "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates", "flag_missing_records_new",   
-                                "Report_link", "Data_folder", "File_name")
+  # final_dataframe = matrix(ncol = 20, nrow = length(files_available_project))
+  # colnames(final_dataframe) = c("Station", "Status",
+  #                               "flag_empty","flag_logger_number", "flag_error_df","flag_date",
+  #                               "flag_duplicates_rows","flag_overlap","flag_missing_records","flag_missing_dates",
+  #                               "flag_range_variable_to_set","flag_range_variable_new","flag_out_of_range",
+  #                               "flag_new_duplicates_rows","flag_new_overlap","flag_new_missing_dates", "flag_missing_records_new",   
+  #                               "Report_link", "Data_folder", "File_name")
   
   report_dataframe = matrix(ncol = 16, nrow = length(files_available_project))
   colnames(report_dataframe) = c("Station",
@@ -438,18 +438,22 @@ for(PROJECT in project_type){
         mylist <- split(flags_df$value, seq(nrow(flags_df)))
         names(mylist) = flags_df$flag_names
         
+        status = unlist(lapply(errors,function(x) x[[1]]))
+        
         if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
                                             "err_overlap")] == "N")){
           if(record_check != 1 | (record_check == 1 & all(status[names(status) %in% c( "err_missing_record","err_restart_record")] == "N"))){
-          out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
-                                    # "_",
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
-                                    sep = "")
-          
-          last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
+            out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
+                                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
+                                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
+                                      # "_",
+                                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+                                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+                                      sep = "")
+            
+            last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
+          }else {
+            out_filename_date = "no_datetime"
           }
         } else {
           out_filename_date = "no_datetime"
@@ -460,7 +464,6 @@ for(PROJECT in project_type){
         
         # date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
         
-        status = unlist(lapply(errors,function(x) x[[1]]))
         data_errors = lapply(errors,function(x) x[[2]])
         w_yes = which(status == "Y")
         
@@ -551,13 +554,14 @@ for(PROJECT in project_type){
                             output_dir = output_dir,
                             params = params_list)
         }
-       
+        
         # Report su script esterno! Nella funzione DQC_Function prevedere il salvataggio e l' append degli errori!
         
         status_final = status
         status_final[which(status_final == "Y")] = 1
         status_final[which(status_final == "N")] = 0
         status_final = status_final[c(critical_errors,warning_errors, report_errors)]
+        # status_final = as.numeric(status_final)
         
         if(dwnl_info$record_check == 0 ){
           if(status_final[which(names(status_final) == "err_missing_record" )] == "1"){
@@ -602,90 +606,19 @@ for(PROJECT in project_type){
                                "report_link")
         
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-        
-        if(!is.na(mylist$flag_missing_dates)){
-           # if(mylist$flag_logger_number == 0){
-            if(mylist$flag_new_overlap == 1){
-              if(write_output_report == TRUE){
-                final_info = c(STATION_NAME, "Analyzed and write output",
-                               flags_df$value,
-                               paste(output_dir_report,out_filename_report,sep = ""),
-                               NA,
-                               NA)
-              }else{
-                final_info = c(STATION_NAME, "Analyzed and write output",
-                               flags_df$value,
-                               NA,
-                               NA,
-                               NA)
-              }
-            }else{
-              download_table$Last_date[w_dwnl] = last_date
-              download_table$Last_Modification[w_dwnl] = date_last_modif_file
-              
-              # if(download_table$record_check[w_dwnl] == 0){
-              #   download_table$record_check[w_dwnl] = 1
-              # }
-              
-              download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
-              write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
-              
-              if(write_output_report == TRUE){
-                final_info = c(STATION_NAME, "Analyzed and write output",
-                               flags_df$value,
-                               paste(output_dir_report,out_filename_report,sep = ""),
-                               paste(output_dir_data,sep = ""),
-                               paste(file_names[length(file_names)],sep = ""))
-              }else{
-                final_info = c(STATION_NAME, "Analyzed and write output",
-                               flags_df$value,
-                               NA,
-                               paste(output_dir_data_new,sep = ""),
-                               paste(file_names[length(file_names)],sep = ""))
-              }
-            }
-          # }
-        }else{
-          
-          
-          
-          # file_stopped = c(file_stopped, FILE)
-          if(write_output_report == TRUE){
-            final_info = c(STATION_NAME, "Analyzed with errors",
-                           flags_df$value,
-                           paste(output_dir_report,out_filename_report,sep = ""),
-                           NA, NA )
-          }else{
-            final_info = c(STATION_NAME, "Analyzed with errors",
-                           flags_df$value,
-                           NA,
-                           NA, NA )
+        if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
+                                            "err_overlap")] == "N")){
+          if(record_check != 1 | (record_check == 1 & all(status[names(status) %in% c( "err_missing_record","err_restart_record")] == "N"))){
+            
+            download_table$Last_date[w_dwnl] = last_date
+            download_table$Last_Modification[w_dwnl] = format(date_last_modif_file, format = datetime_format)
+            download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
+            
+            write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
           }
-          
-          
         }
-        
-        # reset counter if file is updated
-        # w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4)) 
-        # issue_counter$W_Update_station[w_1] = 0
-        # write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
-        
       } else {
         
-        # ~~~~~~~
-        # update counter if file is not update
-        # 
-        # w_1 = which(issue_counter$Station == substring(FILE_NAME, 1,nchar(FILE_NAME)-4))
-        # issue_counter$W_Update_station[w_1] = issue_counter$W_Update_station[w_1]+1
-        # write.csv(issue_counter, paste(issue_counter_dir,"issue_counter.csv",sep = ""),quote = F,row.names = F) 
-        # 
-        # # send message
-        # if(issue_counter$W_Update_station[w_1] %% MESSAGE_EVERY_TIMES == 0){
-        #   text_W_Update_station = paste(FILE_NAME, "not updated since",dwnl_info$Last_Modification)
-        #   warning(text_W_Update_station)
-        # }
-        # 
-        # ~~~~~~~
         report_info = c(STATION_NAME,1,rep(NA,12),NA, NA)
         names(report_info) = c("Station",
                                "Offline",
@@ -696,13 +629,8 @@ for(PROJECT in project_type){
                                "report_link")
         
         warning(paste(STATION_NAME, "already analyzed!"))
-        # file_already_processed = c(file_already_processed,FILE)
-        final_info = c(STATION_NAME, "Already analyzed",
-                       NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-                       NA,
-                       NA, NA)
-        output_dir_report = report_output_dir
         
+        output_dir_report = report_output_dir
       }
       
     }else{
@@ -714,22 +642,23 @@ for(PROJECT in project_type){
                              "err_out_of_range","err_duplicates_rows",
                              "var_flagged",
                              "report_link")
-      final_info = c(STATION_NAME, "Not analyzed",
-                     NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-                     NA,
-                     NA, NA)
+      # final_info = c(STATION_NAME, "Not analyzed",
+      #                NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
+      #                NA,
+      #                NA, NA)
       output_dir_report = report_output_dir
       
     }
     
     # final_dataframe = rbind(final_dataframe,final_info)
-    final_dataframe[t,] = final_info
+    # final_dataframe[t,] = final_info
     
     report_dataframe[t,] = report_info
     
-    loggernet_status_prj[t,1] = final_info[1]
-    loggernet_status_prj[t,2] = final_info[2]
-    loggernet_status_prj[t,3] = date_last_modif_file
+    # loggernet_status_prj[t,1] = final_info[1]
+    # loggernet_status_prj[t,2] = final_info[2]
+    # # loggernet_status_prj[t,3] = date_last_modif_file
+    # loggernet_status_prj[t,3] = date_DQC
     
     
     gc(reset = T)
@@ -751,7 +680,7 @@ for(PROJECT in project_type){
     
   }
   report_dataframe = as.data.frame(report_dataframe)
-  loggernet_status = rbind(loggernet_status,loggernet_status_prj)
+  # loggernet_status = rbind(loggernet_status,loggernet_status_prj)
   
   
   # ..... Final Report .....................................................................................................................................

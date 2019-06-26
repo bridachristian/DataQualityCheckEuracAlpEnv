@@ -1343,7 +1343,9 @@ DQC_function= function(input_dir,
     
     record_tot = c(record_missing, record_restart)
     
-    date_missing = date_missing[-which(date_missing$Date %in% record_tot),]
+    if(length(record_tot) != 0){
+      date_missing = date_missing[-which(date_missing$Date %in% record_tot),]
+    }
     
     if(nrow(date_missing) == 0){
       output_date_missing = list("N", NA)

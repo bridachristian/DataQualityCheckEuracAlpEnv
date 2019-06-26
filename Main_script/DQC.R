@@ -62,7 +62,7 @@ print(project_dir)
 
 root_dir_home = "C:/Users/CBrida/Desktop/Anno_Zero/"
 data_output_dir =paste(root_dir_home,"/Output/",sep="")
-data_input_dir =paste(root_dir_home,"/Input/M1/RAW_0/",sep="")               # <- insert here the name of the folder to source data
+data_input_dir =paste(root_dir_home,"/Input/X1/RAW_0/",sep="")               # <- insert here the name of the folder to source data
 
 
 # root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/"
@@ -410,20 +410,20 @@ if(length(unique(file_group))  > 1){
         if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
                                             "err_overlap")] == "N")){
           if(record_check != 1 | (record_check == 1 & all(status[names(status) %in% c( "err_missing_record","err_restart_record")] == "N"))){
-
-        # if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
-        #                                     "err_overlap", "err_missing_record","err_restart_record")] == "N")){
             
-          # if(mylist$flag_empty == 0 & mylist$flag_logger_number == 0 & mylist$flag_error_df == 0 & mylist$flag_date == 0){
-          out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
-                                    # "_",
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
-                                    sep = "")
-          
-          last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
+            # if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
+            #                                     "err_overlap", "err_missing_record","err_restart_record")] == "N")){
+            
+            # if(mylist$flag_empty == 0 & mylist$flag_logger_number == 0 & mylist$flag_error_df == 0 & mylist$flag_date == 0){
+            out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
+                                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
+                                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
+                                      # "_",
+                                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+                                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+                                      sep = "")
+            
+            last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
           }
           
         } else {
@@ -510,8 +510,8 @@ if(length(unique(file_group))  > 1){
           }
           
           if(!is.null(mydata)){
-          mydata_to_report = mydata
-          mydata_to_report[, which(colnames(mydata_to_report) == datetime_header)] = as.POSIXct(mydata_to_report[, which(colnames(mydata_to_report) == datetime_header)], format = datetime_format, tz = "Etc/GMT-1")
+            mydata_to_report = mydata
+            mydata_to_report[, which(colnames(mydata_to_report) == datetime_header)] = as.POSIXct(mydata_to_report[, which(colnames(mydata_to_report) == datetime_header)], format = datetime_format, tz = "Etc/GMT-1")
           }else{
             mydata_to_report = NULL
           }
@@ -542,13 +542,13 @@ if(length(unique(file_group))  > 1){
         
         if(dwnl_info$record_check == 0 ){
           if(status_final[which(names(status_final) == "err_missing_record" )] == "1"){
-          w_rec_missing = which(names(status_final) == "err_missing_record")
-          status_final[w_rec_missing] = 2
-          
+            w_rec_missing = which(names(status_final) == "err_missing_record")
+            status_final[w_rec_missing] = 2
+            
           }
           if(status_final[which(names(status_final) == "err_restart_record" )] == "1" ){
-          w_rec_restart = which(names(status_final) == "err_restart_record" )
-          status_final[w_rec_restart] = 2
+            w_rec_restart = which(names(status_final) == "err_restart_record" )
+            status_final[w_rec_restart] = 2
           }
         }
         
@@ -606,12 +606,25 @@ if(length(unique(file_group))  > 1){
             
             
             write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
-          
+            
+          # --- new ---
           }else{
+            if(record_check == 1){
             download_table$Stop_DQC[w_dwnl] = 1
             write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
+            }else{
+              download_table$Stop_DQC[w_dwnl] = 0
+              write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
+            }
           }
+          # --- new ---
+          
+          
+        }else{
+          download_table$Stop_DQC[w_dwnl] = 1
+          write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
         }
+        
         
       }else{
         report_info = c(substring(FILE_NAME, 1, nchar(FILE_NAME)-4),1,rep(NA,12),NA, NA)

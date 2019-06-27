@@ -6,53 +6,71 @@ DataQualityCheckEuracAlpEnv
 1. Introduction
 ---------------
 
-The R package DataQualityCheckEuracAlpEnv provide functions and examples to manage data quality for automatic weather station network. There are about 25 stations, divided in 2 main project ( [LTER](http://lter.eurac.edu/en) and [MONALISA](http://monalisasos.eurac.edu/sos/)) that send via GSM data every hour. Our target is to collect all data, check possible bugs and storage continuos time series. To do that we use 2 main scripts. The first runs hourly in a crontab on a Linux machine, the second is manual script that could be use for an offline data quality check. This second script give us the information about problems detected in an html page, easy to read and well structured.
+The R package DataQualityCheckEuracAlpEnv provide functions and examples to manage data quality for automatic microclimatic stations network. The stations collect data of many sensors and send datatables at regular intervals via GSM using [Loggernet](https://www.campbellsci.com/loggernet), a software developed by Campbell Scientific to manage loggers. Many problems affects raw data due to missing connections, due to manual preprocessing or due to software updates. We need to check if the data downloaded were well formatted and detect, as soon as possbile, failures of the sensors installed. For these reasons we developed the DataQualityCheckEuracAlpEnv package containg usefull functions and scripts to different purpose.
 
-Next steps are to develop an user interface report for hourly script and then puts it in a container to give advandtage in term of stability and portability. Other structural work are expected to generalyze the manual script to give to everybody the possibility to configure their own files and folder. We want explore the possibility to use an external inpts file to well define path and input.
+The newtwork of stations managed by Institute of Alpine Environment consist in 28 microclimatic stations used mainly for research purpose, ecology, hydrology and climate change impact are the study fields.
 
+The stations belong to 2 project:
+
+-   [LTSER Matsch/Mazia](http://lter.eurac.edu/en) a project to monitoring climate change in term of ecological and hydrological impacts. The project belogns to [LTER network](http://www.lteritalia.it/) (Long Term Ecological Research) and the research sites are located in Matsch/Mazia valley
+-   [MONALISA](http://monalisasos.eurac.edu/sos/) a project to monitoring alpine environments in South Tyrol
+
+The first target is to manage and check real time data, collect them, detect possible bugs and outliers, and save, if it is possible in a regular time series usable from researcher. To do that we developed the script **DQC\_Hourly\_Linux\_v6.R** (further details below) that runs in a cronjob every hour. The second is a detailed analysis of troubles occoured in the last week. This is done by the script **DQC\_Hourly\_Linux\_v6.R** and is a tool for mainenace to detect anomlies on sensors that requires a repair. This script runs automatically (cronjob) every week The third is an analysis of a group of files belongs to the same stations. It is used to check old data and old files, to detect structure change and to highline the typical problem of the manual preprocesing. The script that do that is "DQC.R" and is used to prepare hystorical data.
+
+The first and the second script run on HPCgeo01 a virtual machine Linux prepared by the [ICT](http://www.eurac.edu/en/aboutus/organisation/servicedepartments/ict/Pages/default.aspx). The third script runs locally on a Windows machine, we are working on the portability and to try to generalize input structure.
+
+<!-- Our target is to collect all data, check possible bugs and storage continuos time series. To do that we use 2 main scripts. The first runs hourly in a crontab on a Linux machine, the second is manual script that could be use for an offline data quality check. This second script give us the information about problems detected in an html page, easy to read and well structured. -->
 2. Download the Package
 -----------------------
 
-2.1 Download package from [Github](https://github.com/bridachristian/DataQualityCheckEuracAlpEnv)
+2.1 Clone the repository
+
+Clone the entire repository from [https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git](%22https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git%22) in a local folder
+
+2.2 Download package
+
+Download the package from [GitLab](%22https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git%22)
 
 ``` r
 install_packages("devtools")
 library(devtools)
-install_github("bridachristian/DataQualityCheckEuracAlpEnv")
+devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git",credentials = git2r::cred_user_pass("username@eurac.edu", getPass::getPass()))
 library("DataQualityCheckEuracAlpEnv")
 ```
 
-2.2 Dowload libraries
+For credential ask directly to [Christian.Brida@eurac.edu](Christian.Brida@eurac.edu) (Institute for Alpine Environment) or [Luca.Cattani@eurac.edu](Luca.Cattani@eurac.edu) (ICT)
+
+2.3 Dowload libraries
 
 ``` r
-install_packages("zoo")
-install_packages("knitr")
-install_packages("ggplot2")
-install_packages("reshape2")
-install_packages("DT")
-install_packages("htmltools")
-install_packages("xtable")
+install_github("alexsanjoseph/compareDF")
+install.packages("zoo")
+install.packages("knitr")
+install.packages("ggplot2")
+install.packages("reshape2")
+install.packages("DT")
+install.packages("htmltools")
+install.packages("rmarkdown")
+install.packages("yaml")
+install.packages("highr")
+install.packages("mailR")
+install.packages("XML")
+install.packages("xtable")
+install.packages("dygraphs")
+install.packages("xts")
+install.packages("hwriter")
+install.packages("labeling")
+install.packages("optparse")
 ```
 
-3. Folder structure
--------------------
+3. Function description
+-----------------------
 
-The script that runs hourly is customized for a specific folder structure used in our Institute and to share some data with others in a specific way. We don't descitbe this structure, for any information contact us.
+The 3 scripts named before are structured in this way: a file management system to prepare files, folders and to summaryze results. Inside there is a core script that apply some function in the proper oreder, every function are indipendent but some actions need to be executed consecutively.
 
-For the manual script we suggest to create this structure:
+In this section we start to describe every single function, how it is made and what its do.
 
--   **DQC**
-    -   **DataQualityCheck\_results**
-        -   **Input**: put inside input files, It should be: *LTER\_station\_station.dat* or *MONALISA\_station\_MeteoVal.dat*. Other names are not admitted!
-        -   **Output**
-            -   **Data**: were output data are saved, for each files we save the raw data that produce processed data
-            -   **Report**: were reports are savet. For each station we create an html page and for each DQC we create a summary to have an overview of problems.
-        -   **Process**: here there are some files used by DQC scripts
-            -   *Logger\_number\_and\_software.csv* (**Mandatory**). An example is in package data. A file that match name of file and logger number. With a supervisor check the software detect anomalies and stop DQC if the number of logger defined here and in the datatabla doesn't match.
-            -   *Range.csv* (**Mandatory**). An example is in package data. For each variable is defined a physical range. Data out of this range are considered outliers and deleted.
-            -   *download\_table.csv* (**Optional**). Created by DQC the first time of DQC and updated automatically every new file process. It is used to filter data based on the most recent date
-            -   *download\_table\_old.csv* (**Optional**). A copy of *download\_table.csv* whith the old value. Updated automatically. It could be used to restore old configuration.
-    -   **DataQualityCheckEuracAlpEnv**: clone here the package DataQualityCheckEuracAlpEnv
+-   check\_empty\_file
 
 How to use (not completed)
 --------------------------

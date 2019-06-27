@@ -77,7 +77,7 @@ install.packages("optparse")
 
 The 3 scripts named before are structured in this way: a file management system to prepare files, folders and to summaryze results. Inside there is a core script that apply some function in the proper oreder, every function are indipendent but some actions need to be executed consecutively.
 
-A detailed function are available [here](Functions_description)
+A detailed function are available [here](https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv/blob/master/Functions_description.Rmd)
 
 ## 4. Scripts description 
 

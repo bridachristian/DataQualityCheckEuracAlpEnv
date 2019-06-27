@@ -68,25 +68,16 @@ install.packages("optparse")
 
 The 3 scripts named before are structured in this way: a file management system to prepare files, folders and to summaryze results. Inside there is a core script that apply some function in the proper oreder, every function are indipendent but some actions need to be executed consecutively.
 
-In this section we start to describe every single function, how it is made and what its do.
+A detailed function are available [here](https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv/blob/master/Functions_description.Rmd)
 
--   check\_empty\_file
-
-How to use (not completed)
---------------------------
-
--   Clone the package from <https://github.com/bridachristian/DataQualityCheckEuracAlpEnv> to use the examples
-
--   In folder **Main\_script** there is:
-    -   a script for manual quality check. It apply a quality check to a sigle data file.
--   In folder **R** there are some functions developed as specific modules
-
--   In folder **data** there are subfolders where put input data, support files and a folder where scripts save outputs
+4. Scripts description
+----------------------
 
 ##### Contributors & Contacts:
 
 -   Brida Christian [mail](Christian.Brida@eurac.edu)
 -   Genova Giulio
 -   Zandonai Alessandro
+-   Luca Cattani
 
 <!-- ## [Package Documentetion: Vignette] -->

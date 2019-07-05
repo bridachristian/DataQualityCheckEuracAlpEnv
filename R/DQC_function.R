@@ -860,167 +860,420 @@ DQC_function= function(input_dir,
                 }
                 
               }else{
-                colnames(header) = header[1,]
                 
+                # NEW!!!!
+                # Manage date gaps and record gaps between 2 years
+                file_names_old = paste(station_name,"_", years[k]-1,".dat",sep = "")
                 
-                # -- considero il dato delle yyyy-01-01 00:00 come appartenente all' anno precedente -- 
-                w_first = which(format(time_mydata, format = "%m") == "01" &
-                                  format(time_mydata, format = "%d") == "01" &
-                                  format(time_mydata, format = "%H") == "00" &
-                                  format(time_mydata, format = "%M") == "00" )
-                y_first = as.numeric(format(time_mydata, format = "%Y")[w_first])
-                
-                if(length(w_first)!= 0){
-                  w1 = which(y_first == years[k])
-                  w2 = which(y_first == years[k]+1)
+                if(file.exists(paste(output_dir_data,file_names_old,sep = ""))){
+                  old_data_list = read_data(INPUT_DATA_DIR = output_dir_data,
+                                            FILE_NAME = file_names_old,
+                                            DATETIME_HEADER = datetime_header,
+                                            DATETIME_FORMAT = datetime_format, 
+                                            DATA_FROM_ROW = data_from_row, 
+                                            HEADER_ROW_NUMBER = header_row_number)
                   
-                  w_tot = which(format(time_mydata, format = "%Y") == years[k])
-                  w_tot = c(w_tot,w_first[w2])
+                  old_original_list = read_data(INPUT_DATA_DIR = output_dir_raw,
+                                                FILE_NAME = paste(substring(file_names_old,1, nchar(file_names_old)-4),".dat",sep = ""),
+                                                DATETIME_HEADER = datetime_header,
+                                                DATETIME_FORMAT = datetime_format,
+                                                DATA_FROM_ROW = data_from_row,
+                                                HEADER_ROW_NUMBER = header_row_number)
                   
-                  if(length(w1)!= 0){
-                    if(w_first[w1] %in% w_tot){
-                      w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
+                  
+                  old_header = old_data_list [[1]]
+                  old_header_colnames = old_data_list [[2]]
+                  old_data = old_data_list [[3]]
+                  
+                  last_old_datetime = old_data[nrow(old_data),which(colnames(old_data) == datetime_header)]
+                  last_old_record = old_data[nrow(old_data),which(colnames(old_data) == record_header)]
+                  
+                  rm(old_data_list)
+                  
+                  old_orig_header = old_original_list [[1]]
+                  old_orig_header_colnames = old_original_list [[2]]
+                  old_orig_data = old_original_list [[3]]
+                  
+                  last_old_orig_datetime = old_orig_data[nrow(old_orig_data),which(colnames(old_orig_data) == datetime_header)]
+                  last_old_orig_record = old_orig_data[nrow(old_orig_data),which(colnames(old_orig_data) == record_header)]
+                  
+                  rm(old_original_list)
+                  
+                  if(identical(old_header[-1,], header[-1,])){
+                    w_first = which(format(time_mydata,format = "%m-%d %H:%M",tz = "Etc/GMT-1") ==  "01-01 00:00")
+                    y_first = as.numeric(format(time_mydata, format = "%Y")[w_first])
+
+                    if(length(w_first)!= 0){
+                      w1 = which(y_first == years[k])
+                      w2 = which(y_first == years[k]+1)                    #
+                      w_tot = which(format(time_mydata, format = "%Y") == years[k])
+                      w_tot = c(w_tot,w_first[w2])
+
+                      if(length(w1)!= 0){
+                        if(w_first[w1] %in% w_tot){
+                          w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
+                        }else{
+                          w_tot_2 = w_tot
+                        }
+                      }else{
+                        w_tot_2 = w_tot
+                      }
+                      df_toadd = mydata[c(w_tot_2),]
+                    }else{
+                      df_toadd = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+                    }
+                    # #######################
+                    w_first = which(format(time_orig,format = "%m-%d %H:%M",tz = "Etc/GMT-1") ==  "01-01 00:00")
+                    y_first = as.numeric(format(time_orig, format = "%Y")[w_first])
+                    # w_first = which(format(time_orig, format = "%m") == "01" &
+                    #                   format(time_orig, format = "%d") == "01" &
+                    #                   format(time_orig, format = "%H") == "00" &
+                    #                   format(time_orig, format = "%M") == "00" )
+                    # y_first = as.numeric(format(time_orig, format = "%Y")[w_first])
+                    # 
+                    if(length(w_first)!= 0){
+                      w1 = which(y_first == years[k])
+                      w2 = which(y_first == years[k]+1)
+                      w_tot = which(format(time_orig, format = "%Y") == years[k])
+                      w_tot = c(w_tot,w_first[w2])
+
+                      if(length(w1)!= 0){
+                        if(w_first[w1] %in% w_tot){
+                          w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
+                        }else{
+                          w_tot_2 = w_tot
+                        }
+                      }else{
+                        w_tot_2 = w_tot
+                      }
+                      df_toadd_raw = orig_wihtout_dupli[c(w_tot_2),]
+                    }else{
+                      df_toadd_raw = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
+                    }
+                    
+                    # -------------------------------------------------------------------------------
+                    # append new data to old data if headers new and old are the same
+                    df_toadd[,which(colnames(df_toadd)== datetime_header)] = as.POSIXct(format(df_toadd[,which(colnames(df_toadd)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
+                    new = rbind(old_data,df_toadd)
+                    new = new[order(new[,which(colnames(new) == datetime_header)]),]
+                    
+                    # -------------------------------------------------------------------------------
+                    # append new raw data to old data if headers new and old are the same
+                    df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)] = as.POSIXct(format(df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
+                    
+                    # -------------------------------------------------------------------------------
+                    new = rbind(old_data,df_toadd)
+                    new = new[order(new[,which(colnames(new) == datetime_header)]),]
+                    
+                    new_raw = rbind(old_orig_data,df_toadd_raw)
+                    new_raw = new_raw[order(new_raw[,which(colnames(new_raw) == datetime_header)]),]
+                    
+                    new_deletes_duplcated <- deletes_duplcated_data(DATA = new,DATETIME_HEADER = datetime_header)        
+                    new_mydata = new_deletes_duplcated [[1]]
+                    new_duplicated_data = new_deletes_duplcated [[2]]
+                    
+                    raw_new_deletes_duplcated <- deletes_duplcated_data(DATA = new_raw,DATETIME_HEADER = datetime_header)        
+                    raw_new_mydata = raw_new_deletes_duplcated [[1]]
+                    
+                    orig_data_new = raw_new_mydata
+                    
+                    raw_new_duplicated_data = raw_new_deletes_duplcated [[2]]
+                    
+                    
+                    # non ha senso vedere se ci sono righe duplicate tra quelle scaricate e file vecchi --> gia processiati!
+                    if(unique(as.character(new_duplicated_data[1,])) == "---"){
+                      if(write_output_files == FALSE){   
+                        flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,0)
+                        
+                      }else{  
+                        flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,0)
+                      }
+                    } else{
+                      if(write_output_files == FALSE){  
+                        flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,0)
+                        
+                      }else{    
+                        flag_new_duplicates_rows_tmp = c(flag_new_duplicates_rows_tmp,1)
+                      }
+                    }
+                    new_duplicated_data = time_to_char(DATA = new_duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                    raw_new_duplicated_data = time_to_char(DATA = raw_new_duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                    
+                    new_overlap <- detect_overlap(DATA = new_mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header) 
+                    new_overlap_tot = rbind(new_overlap_tot, new_overlap)
+                    
+                    if(length(new_overlap) == 0){
+                      
+                      flag_new_overlap_tmp = c(flag_new_overlap_tmp,0)
+                      w_last = which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)
+                      if(length(w_last) == 0){
+                        rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+                        
+                      }else{
+                        rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+                      }
+                      records_missing_new = rec_miss[[2]]
+                      records_restart_new = rec_miss[[3]]
+                      
+                      if(record_check == 1){
+                        flag_missing_records_new_tmp = rec_miss[[1]]
+                      }else{
+                        flag_missing_records_new_tmp = 50
+                      }
+                      if(flag_missing_records_new_tmp != 1){
+                        new_missing  <- missing_dates(DATA = new_mydata,
+                                                      DATETIME_HEADER = datetime_header,
+                                                      RECORD_HEADER = record_header, 
+                                                      DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
+                        new_mydata = new_missing[[1]]
+                        new_missing_index_date = new_missing[[2]]
+                        
+                        new_missing_index_date_tot = rbind(new_missing_index_date_tot,new_missing_index_date)
+                        
+                        if(record_check != 1 | flag_missing_records_new_tmp != 1){     
+                          # We avoid to write output if record control is active (record_check = 1) and record has some issues (indicated by flag_append_new = -1)
+                          
+                          # prepare data for output
+                          
+                          new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                          orig_data_new <- time_to_char(DATA = orig_data_new, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                          
+                          
+                          new_time_tot = as.POSIXct(new_mydata[,which(colnames(new_mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+                          new_time_orig = as.POSIXct(orig_data_new[,which(colnames(orig_data_new) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+                          
+                          new_time_missing = new_missing_index_date[,2]
+                          
+                          if(length(which(new_time_tot %in% new_time_missing )) == 0){
+                            flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,0)      # No missing dates
+                          }else{
+                            flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,1)      # YES missing dates
+                          }
+                          
+                          rm(new_missing)
+                          
+                          mmm_datetime = as.POSIXct(new_mydata$TIMESTAMP,format = datetime_format, tz = "Etc/GMT-1") 
+                          w_old = which(format(mmm_datetime,format = "%m-%d %H:%M",tz = "Etc/GMT-1") ==  "01-01 00:00")
+                          new_mydata_old = new_mydata[1:w_old,]
+                          new_mydata_new = new_mydata[(w_old+1) : nrow(new_mydata),]
+                          ##### da sistemare e finire! manca la parte se gap seguito da cambio strutttura!
+                          
+                          colnames(header) = header[1,]
+                          out_my = new_mydata
+                          colnames(out_my) = colnames(header)
+                          out_mydata=rbind(header[-1,],out_my)
+                          file_name_output = file_names[k]
+                          flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 0)  
+                          
+                          
+                          # out_orig = orig_data_new[which(format(new_time_orig, format = "%Y") == years[k]),]
+                          out_orig = orig_data_new
+                          out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
+                          colnames(out_orig) = colnames(header)
+                          out_original=rbind(header[-1,],out_orig)
+                          # file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
+                          file_name_original = file_names[k]
+                          if(write_output_files == TRUE){    # here????
+                            
+                            # keep updtate logger_info_file!
+                            w_logger = which(logger_info_csv[,1] == station_name)
+                            new_logger_info = cbind(station_name,header[1,1:8])
+                            colnames(new_logger_info) = colnames(logger_info_csv)
+                            logger_info_csv[w_logger,] = new_logger_info
+                            write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
+                            
+                            # write total .dat
+                            write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                            write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
+                            
+                            # write total .csv
+                            file_name_output_csv = paste(substring(file_name_output, 1, nchar(file_name_output)-4),".csv",sep="") 
+                            output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
+                            file.copy(from = paste(output_dir_data,file_name_output,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                            # write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
+                          }
+                          
+                        }
+                        
+                        
+                      }
+                    }else{
+                      flag_new_overlap_tmp = c(flag_new_overlap_tmp,1)
+                      new_overlap[,1]<- new_overlap[,1] + data_from_row - 1
+                      colnames(new_overlap)[1]= "File Row"
+                    }
+                    
+                  }else{
+                    
+                    
+                    # completare con azioni da svolgere se struttura header non identica e anno precendete esistente!
+                    
+                  }
+                  
+                  colnames(header) = header[1,]
+                  
+                  
+                  # -- considero il dato delle yyyy-01-01 00:00 come appartenente all' anno precedente -- 
+                  w_first = which(format(time_mydata, format = "%m") == "01" &
+                                    format(time_mydata, format = "%d") == "01" &
+                                    format(time_mydata, format = "%H") == "00" &
+                                    format(time_mydata, format = "%M") == "00" )
+                  y_first = as.numeric(format(time_mydata, format = "%Y")[w_first])
+                  
+                  if(length(w_first)!= 0){
+                    w1 = which(y_first == years[k])
+                    w2 = which(y_first == years[k]+1)
+                    
+                    w_tot = which(format(time_mydata, format = "%Y") == years[k])
+                    w_tot = c(w_tot,w_first[w2])
+                    
+                    if(length(w1)!= 0){
+                      if(w_first[w1] %in% w_tot){
+                        w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
+                      }else{
+                        w_tot_2 = w_tot
+                      }
                     }else{
                       w_tot_2 = w_tot
                     }
+                    
+                    out_my = mydata[c(w_tot_2),]
+                    
+                    
                   }else{
-                    w_tot_2 = w_tot
+                    out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+                    
                   }
+                  #######################
+                  w_first = which(format(time_orig, format = "%m") == "01" &
+                                    format(time_orig, format = "%d") == "01" &
+                                    format(time_orig, format = "%H") == "00" &
+                                    format(time_orig, format = "%M") == "00" )
+                  y_first = as.numeric(format(time_orig, format = "%Y")[w_first])
                   
-                  out_my = mydata[c(w_tot_2),]
-                  
-                  
-                }else{
-                  out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
-                  
-                }
-                #######################
-                w_first = which(format(time_orig, format = "%m") == "01" &
-                                  format(time_orig, format = "%d") == "01" &
-                                  format(time_orig, format = "%H") == "00" &
-                                  format(time_orig, format = "%M") == "00" )
-                y_first = as.numeric(format(time_orig, format = "%Y")[w_first])
-                
-                if(length(w_first)!= 0){
-                  w1 = which(y_first == years[k])
-                  w2 = which(y_first == years[k]+1)
-                  
-                  w_tot = which(format(time_orig, format = "%Y") == years[k])
-                  w_tot = c(w_tot,w_first[w2])
-                  
-                  if(length(w1)!= 0){
-                    if(w_first[w1] %in% w_tot){
-                      w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
+                  if(length(w_first)!= 0){
+                    w1 = which(y_first == years[k])
+                    w2 = which(y_first == years[k]+1)
+                    
+                    w_tot = which(format(time_orig, format = "%Y") == years[k])
+                    w_tot = c(w_tot,w_first[w2])
+                    
+                    if(length(w1)!= 0){
+                      if(w_first[w1] %in% w_tot){
+                        w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
+                      }else{
+                        w_tot_2 = w_tot
+                      }
                     }else{
                       w_tot_2 = w_tot
                     }
+                    
+                    out_orig = orig_wihtout_dupli[c(w_tot_2),]
+                    
+                    
                   }else{
-                    w_tot_2 = w_tot
+                    out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
+                    
                   }
                   
-                  out_orig = orig_wihtout_dupli[c(w_tot_2),]
+                  # -----------------------------------------------------------------------------------------
                   
+                  # out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+                  colnames(out_my) = colnames(header)
+                  out_mydata=rbind(header[-1,],out_my)
+                  file_name_output = file_names[k]
+                  
+                  if(nrow(out_my) == 0){            #  <- risolvo problema legato alla generazione di file senza dati. 
+                    write_output_files = FALSE
+                  }
+                  
+                  
+                  # out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
+                  out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
+                  colnames(out_orig) = colnames(header)
+                  out_original=rbind(header[-1,],out_orig)
+                  file_name_original = file_names[k]
+                  # file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
+                  
+                  
+                  # create a dataframe database formatted
+                  
+                  # db_mydata = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+                  # db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
+                  # from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]
+                  # to_date = db_mydata[nrow(db_mydata),which(colnames(db_mydata) == datetime_header)]
+                  # db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = datetime_format)
+                  # colnames(db_mydata) = colnames(header)
+                  # db_mydata=rbind(header[-1,],db_mydata)
+                  # date_to_print_filename = paste(paste(format(from_date,format = "%Y"),format(from_date,format = "%m"),format(from_date,format = "%d"),
+                  #                                      format(from_date,format = "%H"),format(from_date,format = "%M"),sep = ""),
+                  #                                paste(format(to_date,format = "%Y"),format(to_date,format = "%m"),format(to_date,format = "%d"),
+                  #                                      format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
+                  
+                  if(write_output_files == TRUE){
+                    
+                    # keep updtate logger_info_file!
+                    w_logger = which(logger_info_csv[,1] == station_name)
+                    new_logger_info = cbind(station_name,header[1,1:8])
+                    colnames(new_logger_info) = colnames(logger_info_csv)
+                    logger_info_csv[w_logger,] = new_logger_info
+                    write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
+                    
+                    
+                    # write total .dat
+                    write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                    write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
+                    
+                    # write total .csv
+                    file_name_output_csv = paste(substring(file_name_output, 1, nchar(file_name_output)-4),".csv",sep="") 
+                    output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
+                    file.copy(from = paste(output_dir_data,file_name_output,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                    # write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
+                  }
                   
                 }else{
-                  out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
-                  
+                  # se non esiste il file vecchio? ==> posso scrivere subito il file cosi come è? 
                 }
-                
-                # -----------------------------------------------------------------------------------------
-                
-                # out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
-                colnames(out_my) = colnames(header)
-                out_mydata=rbind(header[-1,],out_my)
-                file_name_output = file_names[k]
-                
-                if(nrow(out_my) == 0){            #  <- risolvo problema legato alla generazione di file senza dati. 
-                  write_output_files = FALSE
-                }
-                
-                
-                # out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
-                out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
-                colnames(out_orig) = colnames(header)
-                out_original=rbind(header[-1,],out_orig)
-                file_name_original = file_names[k]
-                # file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
-                
-                
-                # create a dataframe database formatted
-                
-                # db_mydata = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
-                # db_mydata[, which(colnames(db_mydata) == datetime_header)] = as.POSIXct(db_mydata[, which(colnames(db_mydata) == datetime_header)],tz ='Etc/GMT-1',format = datetime_format)
-                # from_date = db_mydata[1,which(colnames(db_mydata) == datetime_header)]
-                # to_date = db_mydata[nrow(db_mydata),which(colnames(db_mydata) == datetime_header)]
-                # db_mydata[, which(colnames(db_mydata) == datetime_header)] = format(db_mydata[, which(colnames(db_mydata) == datetime_header)],format = datetime_format)
-                # colnames(db_mydata) = colnames(header)
-                # db_mydata=rbind(header[-1,],db_mydata)
-                # date_to_print_filename = paste(paste(format(from_date,format = "%Y"),format(from_date,format = "%m"),format(from_date,format = "%d"),
-                #                                      format(from_date,format = "%H"),format(from_date,format = "%M"),sep = ""),
-                #                                paste(format(to_date,format = "%Y"),format(to_date,format = "%m"),format(to_date,format = "%d"),
-                #                                      format(to_date,format = "%H"),format(to_date,format = "%M"),sep = "" ), sep = "_")
-                
-                if(write_output_files == TRUE){
-                  
-                  # keep updtate logger_info_file!
-                  w_logger = which(logger_info_csv[,1] == station_name)
-                  new_logger_info = cbind(station_name,header[1,1:8])
-                  colnames(new_logger_info) = colnames(logger_info_csv)
-                  logger_info_csv[w_logger,] = new_logger_info
-                  write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
-                  
-                  
-                  # write total .dat
-                  write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
-                  write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
-                  
-                  # write total .csv
-                  file_name_output_csv = paste(substring(file_name_output, 1, nchar(file_name_output)-4),".csv",sep="") 
-                  output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
-                  file.copy(from = paste(output_dir_data,file_name_output,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
-                  # write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
-                }
-                
-              }
-              
-              
-              # inserire qui conversione flag tmp
-              if(all(flag_new_duplicates_rows_tmp == 0)){
-                flag_new_duplicates_rows = 0
-              } else{
-                flag_new_duplicates_rows = 1
-              }
-              
-              if(all(flag_new_overlap_tmp == 0)){
-                flag_new_overlap = 0
-              } else{
-                flag_new_overlap = 1
-              }
-              
-              if(all(flag_new_missing_dates_tmp == 0)){
-                flag_new_missing_dates = 0
-              } else{
-                flag_new_missing_dates = 1
-              }
-              
-              if(record_check == 1){
-                if(all(flag_missing_records_new_tmp == 0)){
-                  flag_missing_records_new = 0
-                } else{
-                  flag_missing_records_new = 1
-                }
-              }else{
-                flag_missing_records_new = 50
               }
             }
             
+            # inserire qui conversione flag tmp
+            if(all(flag_new_duplicates_rows_tmp == 0)){
+              flag_new_duplicates_rows = 0
+            } else{
+              flag_new_duplicates_rows = 1
+            }
+            
+            if(all(flag_new_overlap_tmp == 0)){
+              flag_new_overlap = 0
+            } else{
+              flag_new_overlap = 1
+            }
+            
+            if(all(flag_new_missing_dates_tmp == 0)){
+              flag_new_missing_dates = 0
+            } else{
+              flag_new_missing_dates = 1
+            }
+            
+            if(record_check == 1){
+              if(all(flag_missing_records_new_tmp == 0)){
+                flag_missing_records_new = 0
+              } else{
+                flag_missing_records_new = 1
+              }
+            }else{
+              flag_missing_records_new = 50
+            }
           }
           
         }
+        
       }
     }
-    # }
   }
+  # }
+  # }
   
   # new_missing_index_date_tot
   

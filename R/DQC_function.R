@@ -612,6 +612,7 @@ DQC_function= function(input_dir,
                 }else{
                   
                   ######### new section ##########
+                  #aaa
                   # ~~~~~~~~~
                   if(write_output_files == TRUE){    # here???? 
                     

@@ -1053,27 +1053,55 @@ DQC_function= function(input_dir,
                           
                           rm(new_missing)
                           
+                          # -- split data in old and new files --
                           mmm_datetime = as.POSIXct(new_mydata$TIMESTAMP,format = datetime_format, tz = "Etc/GMT-1") 
                           w_old = which(format(mmm_datetime,format = "%m-%d %H:%M",tz = "Etc/GMT-1") ==  "01-01 00:00")
-                          new_mydata_old = new_mydata[1:w_old,]
+                          new_mydata_old = new_mydata[1:w_old,]         # <-- testare come funziona in caso di piu anni! forse da sistemare qualcosa prima!
                           new_mydata_new = new_mydata[(w_old+1) : nrow(new_mydata),]
+                          
+                          ooo_datetime = as.POSIXct(orig_data_new$TIMESTAMP,format = datetime_format, tz = "Etc/GMT-1")
+                          w_new_year = which(format(ooo_datetime,format = "%Y",tz = "Etc/GMT-1") == years[k])[1]
+                          
+                          if(format(ooo_datetime[w_new_year],format = "%m-%d %H:%M",tz = "Etc/GMT-1") == "01-01 00:00"){
+                            w_orig_old =  w_new_year - 2
+                          }else{
+                            w_orig_old = w_new_year - 1
+                          }
+                          orig_data_new_old = orig_data_new[1:w_orig_old,]         # <-- testare come funziona in caso di piu anni! forse da sistemare qualcosa prima!
+                          orig_data_new_new = orig_data_new[(w_orig_old+1) : nrow(orig_data_new),]
+                          
                           ##### da sistemare e finire! manca la parte se gap seguito da cambio strutttura!
                           
                           colnames(header) = header[1,]
-                          out_my = new_mydata
+                          
+                          #--- old file ---
+                          out_my_old = new_mydata_old
+                          colnames(out_my_old) = colnames(header)
+                          out_mydata_old=rbind(header[-1,],out_my_old)
+                          file_name_output_old = file_names_old
+                          
+                          #--- new file ---
+                          out_my = new_mydata_new
                           colnames(out_my) = colnames(header)
                           out_mydata=rbind(header[-1,],out_my)
                           file_name_output = file_names[k]
+                          
                           flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 0)  
                           
+                          #--- old file ---
+                          out_orig_old = orig_data_new_old
+                          out_orig_old[,which(colnames(out_orig_old)== datetime_header)] = format(out_orig_old[,which(colnames(out_orig_old)== datetime_header)], format = datetime_format)
+                          colnames(out_orig_old) = colnames(header)
+                          out_original_old=rbind(header[-1,],out_orig_old)
+                          file_name_original_old = file_names_old
                           
-                          # out_orig = orig_data_new[which(format(new_time_orig, format = "%Y") == years[k]),]
-                          out_orig = orig_data_new
+                          #--- new file ---
+                          out_orig = orig_data_new_new
                           out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
                           colnames(out_orig) = colnames(header)
                           out_original=rbind(header[-1,],out_orig)
-                          # file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
                           file_name_original = file_names[k]
+                          
                           if(write_output_files == TRUE){    # here????
                             
                             # keep updtate logger_info_file!
@@ -1084,7 +1112,9 @@ DQC_function= function(input_dir,
                             write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
                             
                             # write total .dat
+                            write.csv(out_mydata_old,paste(output_dir_data,file_name_output_old,sep = ""),quote = F,row.names = F, na = "NaN")
                             write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                            write.csv(out_original_old,paste(output_dir_raw,file_name_original_old,sep = ""),quote = F,row.names = F, na = "NaN")
                             write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
                             
                             # write total .csv
@@ -1105,6 +1135,8 @@ DQC_function= function(input_dir,
                     }
                     
                   }else{
+                   
+                    
                     
                     
                     # completare con azioni da svolgere se struttura header non identica e anno precendete esistente!

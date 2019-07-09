@@ -320,8 +320,19 @@ DQC_function= function(input_dir,
             
             new_missing_index_date_tot = c()
             new_overlap_tot = c()
+            
+            mydata_total = mydata
+            original_total = orig_wihtout_dupli
+            
             k=1
+
             for(k in 1: length(years)){
+              
+              # estrarre da mydata_total e original total solo i dati dall' year-01-01 00:15 al year+1-01-01 00:00
+              date_min = as.POSIXct(paste(years[k], "-01-01 00:15",sep = ""), format = datetime_format, tz = "Etc/GMT-1")
+              date_max = as.POSIXct(paste(years[k]+1, "-01-01 00:00",sep = ""), format = datetime_format, tz = "Etc/GMT-1")
+              mydata = mydata_total[time_data >= date_min & time_data <= date_max] 
+              orig_wihtout_dupli = original_total[time_orig >= date_min & time_orig <= date_max] 
               
               if(file.exists(paste(output_dir_data,file_names[k],sep = ""))){
                 
@@ -362,83 +373,87 @@ DQC_function= function(input_dir,
                 if(identical(old_header[-1,], header[-1,])){   # <-- delete  [-1,] when all station are updated. Substitute header new in old datatable. 
                   
                   # -- considero il dato delle yyyy-01-01 00:00 come appartenente all' anno precedente -- 
-                  w_first = which(format(time_mydata, format = "%m") == "01" &
-                                    format(time_mydata, format = "%d") == "01" &
-                                    format(time_mydata, format = "%H") == "00" &
-                                    format(time_mydata, format = "%M") == "00" )
-                  y_first = as.numeric(format(time_mydata, format = "%Y")[w_first])
+                  # w_first = which(format(time_mydata, format = "%m") == "01" &
+                  #                   format(time_mydata, format = "%d") == "01" &
+                  #                   format(time_mydata, format = "%H") == "00" &
+                  #                   format(time_mydata, format = "%M") == "00" )
+                  # y_first = as.numeric(format(time_mydata, format = "%Y")[w_first])
+                  # 
+                  # if(length(w_first)!= 0){
+                  #   w1 = which(y_first == years[k])
+                  #   w2 = which(y_first == years[k]+1)
+                  #   
+                  #   w_tot = which(format(time_mydata, format = "%Y") == years[k])
+                  #   w_tot = c(w_tot,w_first[w2])
+                  #   
+                  #   if(length(w1)!= 0){
+                  #     if(w_first[w1] %in% w_tot){
+                  #       w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
+                  #     }else{
+                  #       w_tot_2 = w_tot
+                  #     }
+                  #   }else{
+                  #     w_tot_2 = w_tot
+                  #   }
+                  #   
+                  #   df_toadd = mydata[c(w_tot_2),]
+                  #   
+                  #   
+                  # }else{
+                  #   df_toadd = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
+                  #   
+                  # }
+                  # #######################
+                  # w_first = which(format(time_orig, format = "%m") == "01" &
+                  #                   format(time_orig, format = "%d") == "01" &
+                  #                   format(time_orig, format = "%H") == "00" &
+                  #                   format(time_orig, format = "%M") == "00" )
+                  # y_first = as.numeric(format(time_orig, format = "%Y")[w_first])
+                  # 
+                  # if(length(w_first)!= 0){
+                  #   w1 = which(y_first == years[k])
+                  #   w2 = which(y_first == years[k]+1)
+                  #   
+                  #   w_tot = which(format(time_orig, format = "%Y") == years[k])
+                  #   w_tot = c(w_tot,w_first[w2])
+                  #   
+                  #   if(length(w1)!= 0){
+                  #     if(w_first[w1] %in% w_tot){
+                  #       w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
+                  #     }else{
+                  #       w_tot_2 = w_tot
+                  #     }
+                  #   }else{
+                  #     w_tot_2 = w_tot
+                  #   }
+                  #   
+                  #   df_toadd_raw = orig_wihtout_dupli[c(w_tot_2),]
+                  #   
+                  #   
+                  # }else{
+                  #   df_toadd_raw = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
+                  #   
+                  # }
                   
-                  if(length(w_first)!= 0){
-                    w1 = which(y_first == years[k])
-                    w2 = which(y_first == years[k]+1)
-                    
-                    w_tot = which(format(time_mydata, format = "%Y") == years[k])
-                    w_tot = c(w_tot,w_first[w2])
-                    
-                    if(length(w1)!= 0){
-                      if(w_first[w1] %in% w_tot){
-                        w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
-                      }else{
-                        w_tot_2 = w_tot
-                      }
-                    }else{
-                      w_tot_2 = w_tot
-                    }
-                    
-                    df_toadd = mydata[c(w_tot_2),]
-                    
-                    
-                  }else{
-                    df_toadd = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
-                    
-                  }
-                  #######################
-                  w_first = which(format(time_orig, format = "%m") == "01" &
-                                    format(time_orig, format = "%d") == "01" &
-                                    format(time_orig, format = "%H") == "00" &
-                                    format(time_orig, format = "%M") == "00" )
-                  y_first = as.numeric(format(time_orig, format = "%Y")[w_first])
-                  
-                  if(length(w_first)!= 0){
-                    w1 = which(y_first == years[k])
-                    w2 = which(y_first == years[k]+1)
-                    
-                    w_tot = which(format(time_orig, format = "%Y") == years[k])
-                    w_tot = c(w_tot,w_first[w2])
-                    
-                    if(length(w1)!= 0){
-                      if(w_first[w1] %in% w_tot){
-                        w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
-                      }else{
-                        w_tot_2 = w_tot
-                      }
-                    }else{
-                      w_tot_2 = w_tot
-                    }
-                    
-                    df_toadd_raw = orig_wihtout_dupli[c(w_tot_2),]
-                    
-                    
-                  }else{
-                    df_toadd_raw = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
-                    
-                  }
                   # -------------------------------------------------------------------------------
                   # append new data to old data if headers new and old are the same
                   
                   # df_toadd =  mydata[which(format(time_mydata, format = "%Y") == years[k]),]
-                  df_toadd[,which(colnames(df_toadd)== datetime_header)] = as.POSIXct(format(df_toadd[,which(colnames(df_toadd)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
+                  # df_toadd[,which(colnames(df_toadd)== datetime_header)] = as.POSIXct(format(df_toadd[,which(colnames(df_toadd)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
                   
                   
                   # new[order(new$TIMESTAMP),]
-                  new = rbind(old_data,df_toadd)
+                  # new = rbind(old_data,df_toadd)
+                  new = rbind(old_data,mydata)
                   new = new[order(new[,which(colnames(new) == datetime_header)]),]
                   
                   # append new raw data to old data if headers new and old are the same
-                  # df_toadd_raw = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
-                  df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)] = as.POSIXct(format(df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
                   
-                  new_raw = rbind(old_orig_data,df_toadd_raw)
+                  # df_toadd_raw = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
+                  # df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)] = as.POSIXct(format(df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
+                                   
+                  # new_raw = rbind(old_orig_data,df_toadd_raw)
+                  new_raw = rbind(old_orig_data,orig_wihtout_dupli)
                   new_raw = new_raw[order(new_raw[,which(colnames(new_raw) == datetime_header)]),]
                   
                   new_deletes_duplcated <- deletes_duplcated_data(DATA = new,DATETIME_HEADER = datetime_header)        
@@ -612,151 +627,117 @@ DQC_function= function(input_dir,
                 }else{
                   
                   ######### new section ##########
-                  #aaa
                   # ~~~~~~~~~
-                  if(write_output_files == TRUE){    # here???? 
-                    
-                    # rename total file
-                    
-                    j=0
-                    repeat{
-                      j=j+1
-                      file_names_old = paste(substring(file_names[k],1, nchar(file_names[k])-4),"_old",j,".dat",sep = "")
-                      if(!file.exists(paste(output_dir_data,file_names_old,sep = ""))){
-                        break
-                      }
-                    }
-                    file_names_total_data = file_names[k]
-                    
-                    file.rename(from = paste(output_dir_data,file_names_total_data,sep = ""),to = paste(output_dir_data,file_names_old,sep = ""))
-                    
-                    output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)
-                    file_names_old_csv = paste(substring(file_names_old, 1, nchar(file_names_old)-4),".csv",sep = "")
-                    file.copy(from = paste(output_dir_data,file_names_old,sep = ""),to = paste(output_dir_data_csv,file_names_old_csv,sep = ""))
-                    
-                    # rename raw data
-                    
-                    j=0
-                    repeat{
-                      j=j+1
-                      file_names_original_old = paste(substring(file_names[k],1, nchar(file_names[k])-4),"_old",j,".dat",sep = "")
-                      if(!file.exists(paste(output_dir_raw,file_names_original_old,sep = ""))){
-                        break
-                      }
-                    }
-                    file_names_raw_data = paste(substring(file_names[k],1,nchar(file_names[k])-4),".dat", sep = "")
-                    file.rename(from = paste(output_dir_raw,file_names_raw_data,sep = ""),to = paste(output_dir_raw,file_names_original_old,sep = ""))
-                    
-                    
-                    # ~~~~~~~~~
-                    w_first = which(format(time_mydata, format = "%m") == "01" &
-                                      format(time_mydata, format = "%d") == "01" &
-                                      format(time_mydata, format = "%H") == "00" &
-                                      format(time_mydata, format = "%M") == "00" )
-                    y_first = as.numeric(format(time_mydata, format = "%Y")[w_first])
-                    
-                    if(length(w_first)!= 0){
-                      w1 = which(y_first == years[k])
-                      w2 = which(y_first == years[k]+1)
-                      
-                      w_tot = which(format(time_mydata, format = "%Y") == years[k])
-                      w_tot = c(w_tot,w_first[w2])
-                      
-                      if(length(w1)!= 0){
-                        if(w_first[w1] %in% w_tot){
-                          w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
-                        }else{
-                          w_tot_2 = w_tot
-                        }
-                      }else{
-                        w_tot_2 = w_tot
-                      }
-                      
-                      out_my = mydata[c(w_tot_2),]
-                      
-                      
-                    }else{
-                      out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
-                      
-                    }
-                    #######################
-                    w_first = which(format(time_orig, format = "%m") == "01" &
-                                      format(time_orig, format = "%d") == "01" &
-                                      format(time_orig, format = "%H") == "00" &
-                                      format(time_orig, format = "%M") == "00" )
-                    y_first = as.numeric(format(time_orig, format = "%Y")[w_first])
-                    
-                    if(length(w_first)!= 0){
-                      w1 = which(y_first == years[k])
-                      w2 = which(y_first == years[k]+1)
-                      
-                      w_tot = which(format(time_orig, format = "%Y") == years[k])
-                      w_tot = c(w_tot,w_first[w2])
-                      
-                      if(length(w1)!= 0){
-                        if(w_first[w1] %in% w_tot){
-                          w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
-                        }else{
-                          w_tot_2 = w_tot
-                        }
-                      }else{
-                        w_tot_2 = w_tot
-                      }
-                      
-                      out_orig = orig_wihtout_dupli[c(w_tot_2),]
-                      
-                      
-                    }else{
-                      out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
-                      
-                    }
-                    
-                    # add missing records before in the new structure files
-                    first_new_datetime = as.POSIXct(out_my[1,which(colnames(out_my) == datetime_header)],tz = "Etc/GMT-1")
-                    
-                    all_dates = seq(from = last_old_datetime, to = first_new_datetime, by = datetime_sampling)
-                    all_dates = all_dates[-c(1,length(all_dates))]
-                    
-                    if(length(all_dates)>0){
-                      all_dates_df =  data.frame(matrix(nrow =length(all_dates), ncol = ncol(out_my)))
-                      colnames(all_dates_df) = colnames(out_my)
-                      all_dates_df[,which(colnames(all_dates_df) == datetime_header)] = format(all_dates,format = datetime_format,tz = "Etc/GMT-1")
-                      all_dates_df[,which(colnames(all_dates_df) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
-                      
-                      out_my = rbind(all_dates_df, out_my)
-                    }
+                  # if(write_output_files == TRUE){    # here???? 
+                  
+                  # add missing records before in the new structure files
+                  first_new_datetime = as.POSIXct(mydata[1,which(colnames(mydata) == datetime_header)],tz = "Etc/GMT-1")
+                  
+                  all_dates = seq(from = last_old_datetime, to = first_new_datetime, by = datetime_sampling)
+                  all_dates = all_dates[-c(1,length(all_dates))]
+                  
+                  mydata_tmp = mydata[,which(colnames(mydata) %in% c(datetime_header, record_header))]
+                  mydata_tmp[,which(colnames(mydata_tmp) == datetime_header)] = as.POSIXct(mydata_tmp[,which(colnames(mydata_tmp) == datetime_header)], format = datetime_format, tz = "Etc/GMT-1")
+                  
+                  olddata_tmp = old_data[,which(colnames(old_data) %in% c(datetime_header, record_header))]
+                  olddata_tmp[,which(colnames(olddata_tmp) == datetime_header)] = as.POSIXct(olddata_tmp[,which(colnames(olddata_tmp) == datetime_header)], format = datetime_format, tz = "Etc/GMT-1")
+                  
+                  mydata_rec_miss = rbind(olddata_tmp, mydata_tmp)
+                  rec_miss  <- missing_record(DATA = mydata_rec_miss, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+                  records_missing = rec_miss[[2]]
+                  records_restart = rec_miss[[3]]
+                  
+                  if(record_check == 1){
+                    flag_missing_records_new_tmp = rec_miss[[1]]
+                  }else{
+                    flag_missing_records_new_tmp = 50
+                  }
+                  
+                  if(record_check != 1 | flag_missing_records_new_tmp != 1){
+                    all_dates_df =  data.frame(matrix(nrow =length(all_dates), ncol = ncol(old_data)))
+                    colnames(all_dates_df) = colnames(old_data)
+                    all_dates_df[,which(colnames(all_dates_df) == datetime_header)] = format(all_dates,format = datetime_format,tz = "Etc/GMT-1")
+                    all_dates_df[,which(colnames(all_dates_df) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
+                    new_mydata_old = time_to_char(DATA = old_data,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
+                    new_mydata_old = rbind(new_mydata_old, all_dates_df)
                     
                     colnames(header) = header[1,]
-                    # out_my = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
-                    colnames(out_my) = colnames(header)
-                    out_mydata=rbind(header[-1,],out_my)
-                    file_name_output = file_names[k]
+                    colnames(old_header) = old_header[1,]
                     
+                    #--- old file ---
+                    out_my_old = new_mydata_old
+                    colnames(out_my_old) = colnames(old_header)
+                    out_mydata_old=rbind(old_header[-1,],out_my_old)
+                    file_name_output_old = file_names[k]
                     
-                    # out_orig = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
-                    out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
-                    colnames(out_orig) = colnames(header)
-                    out_original=rbind(header[-1,],out_orig)
-                    file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
-                    
-                    # keep updtate logger_info_file!
-                    w_logger = which(logger_info_csv[,1] == station_name)
-                    new_logger_info = cbind(station_name,header[1,1:8])
-                    colnames(new_logger_info) = colnames(logger_info_csv)
-                    logger_info_csv[w_logger,] = new_logger_info
-                    write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
-                    
-                    
-                    # write total .dat
-                    write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
-                    write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
-                    
-                    # write total .csv
-                    file_name_output_csv = paste(substring(file_name_output, 1, nchar(file_name_output)-4),".csv",sep="") 
-                    output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
-                    file.copy(from = paste(output_dir_data,file_name_output,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
-                    #
+                    if(write_output_files == TRUE){    # here???? 
+                      write.csv(out_mydata_old,paste(output_dir_data,file_name_output_old,sep = ""),quote = F,row.names = F, na = "NaN")
+                      file_name_output_csv = paste(substring(file_name_output_old, 1, nchar(file_name_output_old)-4),".csv",sep="") 
+                      output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
+                      file.copy(from = paste(output_dir_data,file_name_output_old,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                      
+                      # rename total data
+                      j=0
+                      repeat{
+                        j=j+1
+                        file_names_old = paste(substring(file_names[k],1, nchar(file_names[k])-4),"_old",j,".dat",sep = "")
+                        if(!file.exists(paste(output_dir_data,file_names_old,sep = ""))){
+                          break
+                        }
+                      }
+                      file_names_total_data = file_names[k]
+                      
+                      file.rename(from = paste(output_dir_data,file_names_total_data,sep = ""),to = paste(output_dir_data,file_names_old,sep = ""))
+                      
+                      output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)
+                      file_names_old_csv = paste(substring(file_names_old, 1, nchar(file_names_old)-4),".csv",sep = "")
+                      file.copy(from = paste(output_dir_data,file_names_old,sep = ""),to = paste(output_dir_data_csv,file_names_old_csv,sep = ""))
+                      
+                      # rename raw data
+                      j=0
+                      repeat{
+                        j=j+1
+                        file_names_original_old = paste(substring(file_names[k],1, nchar(file_names[k])-4),"_old",j,".dat",sep = "")
+                        if(!file.exists(paste(output_dir_raw,file_names_original_old,sep = ""))){
+                          break
+                        }
+                      }
+                      file_names_raw_data = paste(substring(file_names[k],1,nchar(file_names[k])-4),".dat", sep = "")
+                      file.rename(from = paste(output_dir_raw,file_names_raw_data,sep = ""),to = paste(output_dir_raw,file_names_original_old,sep = ""))
+                      
+                      #--- new file ---
+                      out_my = mydata
+                      colnames(out_my) = colnames(header)
+                      out_mydata=rbind(header[-1,],out_my)
+                      file_name_output = file_names[k]
+                      
+                      
+                      out_orig = orig_wihtout_dupli
+                      out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
+                      colnames(out_orig) = colnames(header)
+                      out_original=rbind(header[-1,],out_orig)
+                      file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
+                      
+                      # keep updtate logger_info_file!
+                      w_logger = which(logger_info_csv[,1] == station_name)
+                      new_logger_info = cbind(station_name,header[1,1:8])
+                      colnames(new_logger_info) = colnames(logger_info_csv)
+                      logger_info_csv[w_logger,] = new_logger_info
+                      write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
+                      
+                      
+                      # write total .dat
+                      write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                      write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
+                      
+                      # write total .csv
+                      file_name_output_csv = paste(substring(file_name_output, 1, nchar(file_name_output)-4),".csv",sep="") 
+                      output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
+                      file.copy(from = paste(output_dir_data,file_name_output,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                      
+                    }
                   }
+                  # }
                   ######### end new section ##########
                   
                   flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 1)
@@ -903,13 +884,13 @@ DQC_function= function(input_dir,
                   if(identical(old_header[-1,], header[-1,])){
                     w_first = which(format(time_mydata,format = "%m-%d %H:%M",tz = "Etc/GMT-1") ==  "01-01 00:00")
                     y_first = as.numeric(format(time_mydata, format = "%Y")[w_first])
-
+                    
                     if(length(w_first)!= 0){
                       w1 = which(y_first == years[k])
-                      w2 = which(y_first == years[k]+1)                    #
+                      w2 = which(y_first == years[k]+1)                    
                       w_tot = which(format(time_mydata, format = "%Y") == years[k])
                       w_tot = c(w_tot,w_first[w2])
-
+                      
                       if(length(w1)!= 0){
                         if(w_first[w1] %in% w_tot){
                           w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
@@ -937,7 +918,7 @@ DQC_function= function(input_dir,
                       w2 = which(y_first == years[k]+1)
                       w_tot = which(format(time_orig, format = "%Y") == years[k])
                       w_tot = c(w_tot,w_first[w2])
-
+                      
                       if(length(w1)!= 0){
                         if(w_first[w1] %in% w_tot){
                           w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
@@ -1135,7 +1116,7 @@ DQC_function= function(input_dir,
                     }
                     
                   }else{
-                   
+                    
                     
                     
                     

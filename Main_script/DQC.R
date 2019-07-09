@@ -87,7 +87,7 @@ mail_dir = paste(DQC_setting_dir,"/email_status/",sep = "")
 # To set TRUE if you wanto to bypass all files of data_input_dir
 # If it is FALSE every file was checked using the download table flag record_check (0 -> bypass, 1 --> check)
 
-BYPASS_ALL_RECORD_CHECK = FALSE
+BYPASS_ALL_RECORD_CHECK = TRUE
 
 # ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
 

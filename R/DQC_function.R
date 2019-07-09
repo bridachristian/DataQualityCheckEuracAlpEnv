@@ -331,8 +331,8 @@ DQC_function= function(input_dir,
               # estrarre da mydata_total e original total solo i dati dall' year-01-01 00:15 al year+1-01-01 00:00
               date_min = as.POSIXct(paste(years[k], "-01-01 00:15",sep = ""), format = datetime_format, tz = "Etc/GMT-1")
               date_max = as.POSIXct(paste(years[k]+1, "-01-01 00:00",sep = ""), format = datetime_format, tz = "Etc/GMT-1")
-              mydata = mydata_total[time_data >= date_min & time_data <= date_max] 
-              orig_wihtout_dupli = original_total[time_orig >= date_min & time_orig <= date_max] 
+              mydata = mydata_total[time_data >= date_min & time_data <= date_max,] 
+              orig_wihtout_dupli = original_total[time_orig >= date_min & time_orig <= date_max,] 
               
               if(file.exists(paste(output_dir_data,file_names[k],sep = ""))){
                 
@@ -882,72 +882,15 @@ DQC_function= function(input_dir,
                   rm(old_original_list)
                   
                   if(identical(old_header[-1,], header[-1,])){
-                    w_first = which(format(time_mydata,format = "%m-%d %H:%M",tz = "Etc/GMT-1") ==  "01-01 00:00")
-                    y_first = as.numeric(format(time_mydata, format = "%Y")[w_first])
-                    
-                    if(length(w_first)!= 0){
-                      w1 = which(y_first == years[k])
-                      w2 = which(y_first == years[k]+1)                    
-                      w_tot = which(format(time_mydata, format = "%Y") == years[k])
-                      w_tot = c(w_tot,w_first[w2])
-                      
-                      if(length(w1)!= 0){
-                        if(w_first[w1] %in% w_tot){
-                          w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
-                        }else{
-                          w_tot_2 = w_tot
-                        }
-                      }else{
-                        w_tot_2 = w_tot
-                      }
-                      df_toadd = mydata[c(w_tot_2),]
-                    }else{
-                      df_toadd = mydata[which(format(time_mydata, format = "%Y") == years[k]),]
-                    }
-                    # #######################
-                    w_first = which(format(time_orig,format = "%m-%d %H:%M",tz = "Etc/GMT-1") ==  "01-01 00:00")
-                    y_first = as.numeric(format(time_orig, format = "%Y")[w_first])
-                    # w_first = which(format(time_orig, format = "%m") == "01" &
-                    #                   format(time_orig, format = "%d") == "01" &
-                    #                   format(time_orig, format = "%H") == "00" &
-                    #                   format(time_orig, format = "%M") == "00" )
-                    # y_first = as.numeric(format(time_orig, format = "%Y")[w_first])
-                    # 
-                    if(length(w_first)!= 0){
-                      w1 = which(y_first == years[k])
-                      w2 = which(y_first == years[k]+1)
-                      w_tot = which(format(time_orig, format = "%Y") == years[k])
-                      w_tot = c(w_tot,w_first[w2])
-                      
-                      if(length(w1)!= 0){
-                        if(w_first[w1] %in% w_tot){
-                          w_tot_2 = w_tot[-c(which(w_tot == w_first[w1]))]
-                        }else{
-                          w_tot_2 = w_tot
-                        }
-                      }else{
-                        w_tot_2 = w_tot
-                      }
-                      df_toadd_raw = orig_wihtout_dupli[c(w_tot_2),]
-                    }else{
-                      df_toadd_raw = orig_wihtout_dupli[which(format(time_orig, format = "%Y") == years[k]),]
-                    }
                     
                     # -------------------------------------------------------------------------------
                     # append new data to old data if headers new and old are the same
-                    df_toadd[,which(colnames(df_toadd)== datetime_header)] = as.POSIXct(format(df_toadd[,which(colnames(df_toadd)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
-                    new = rbind(old_data,df_toadd)
+                    new = rbind(old_data,mydata)
                     new = new[order(new[,which(colnames(new) == datetime_header)]),]
                     
                     # -------------------------------------------------------------------------------
                     # append new raw data to old data if headers new and old are the same
-                    df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)] = as.POSIXct(format(df_toadd_raw[,which(colnames(df_toadd_raw)== datetime_header)],format = datetime_format),tz = "Etc/GMT-1")
-                    
-                    # -------------------------------------------------------------------------------
-                    new = rbind(old_data,df_toadd)
-                    new = new[order(new[,which(colnames(new) == datetime_header)]),]
-                    
-                    new_raw = rbind(old_orig_data,df_toadd_raw)
+                    new_raw = rbind(old_orig_data,orig_wihtout_dupli)
                     new_raw = new_raw[order(new_raw[,which(colnames(new_raw) == datetime_header)]),]
                     
                     new_deletes_duplcated <- deletes_duplcated_data(DATA = new,DATETIME_HEADER = datetime_header)        
@@ -1014,7 +957,6 @@ DQC_function= function(input_dir,
                         
                         if(record_check != 1 | flag_missing_records_new_tmp != 1){     
                           # We avoid to write output if record control is active (record_check = 1) and record has some issues (indicated by flag_append_new = -1)
-                          
                           # prepare data for output
                           
                           new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
@@ -1050,8 +992,6 @@ DQC_function= function(input_dir,
                           }
                           orig_data_new_old = orig_data_new[1:w_orig_old,]         # <-- testare come funziona in caso di piu anni! forse da sistemare qualcosa prima!
                           orig_data_new_new = orig_data_new[(w_orig_old+1) : nrow(orig_data_new),]
-                          
-                          ##### da sistemare e finire! manca la parte se gap seguito da cambio strutttura!
                           
                           colnames(header) = header[1,]
                           
@@ -1092,17 +1032,22 @@ DQC_function= function(input_dir,
                             logger_info_csv[w_logger,] = new_logger_info
                             write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
                             
-                            # write total .dat
+                            # write total .dat                            
+                            # year - 1 
                             write.csv(out_mydata_old,paste(output_dir_data,file_name_output_old,sep = ""),quote = F,row.names = F, na = "NaN")
-                            write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
                             write.csv(out_original_old,paste(output_dir_raw,file_name_original_old,sep = ""),quote = F,row.names = F, na = "NaN")
+                            # year 
+                            write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
                             write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
                             
-                            # write total .csv
-                            file_name_output_csv = paste(substring(file_name_output, 1, nchar(file_name_output)-4),".csv",sep="") 
+                            # write total .csv                            
                             output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
+                            # year - 1 
+                            file_name_output_csv = paste(substring(file_name_output_old, 1, nchar(file_name_output_old)-4),".csv",sep="") 
+                            file.copy(from = paste(output_dir_data,file_name_output_old,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                            # year 
+                            file_name_output_csv = paste(substring(file_name_output, 1, nchar(file_name_output)-4),".csv",sep="") 
                             file.copy(from = paste(output_dir_data,file_name_output,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
-                            # write.csv(db_mydata, paste(database_dir ,substring(file_name_output,1, nchar(file_name_output)-8),date_to_print_filename, ".csv",sep = ""),quote = F,row.names = F, na = "NaN")
                           }
                           
                         }

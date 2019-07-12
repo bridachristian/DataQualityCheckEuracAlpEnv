@@ -44,7 +44,7 @@ if(errors_list_critical$err_empty$Status == "N" &
   
   is.POSIXct <- function(x) inherits(x, "POSIXct")
   s = sapply(mydata, is.POSIXct)
-  w = which(s == T)
+  w = which(s == TRUE)
   
   end_date =  trunc(as.POSIXct(mydata[nrow(mydata),w], tz = "Etc/GMT-1"),units = "hours")
   dqc_date_2 = trunc(as.POSIXct(dqc_date, tz = "Etc/GMT-1"),units = "hours")

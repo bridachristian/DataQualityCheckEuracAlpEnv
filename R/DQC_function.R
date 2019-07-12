@@ -345,7 +345,7 @@ DQC_function= function(input_dir,
               
               # mydata[, which(colnames(mydata)== datetime_header)] = as.POSIXct( mydata[, which(colnames(mydata)== datetime_header)], format = datetime_format, tz ="Etc/GMT-1")
               # orig_wihtout_dupli[, which(colnames(orig_wihtout_dupli)== datetime_header)] = as.POSIXct( orig_wihtout_dupli[, which(colnames(orig_wihtout_dupli)== datetime_header)], format = datetime_format, tz ="Etc/GMT-1")
-
+              
               if(file.exists(paste(output_dir_data,file_names[k],sep = ""))){
                 
                 # import old data
@@ -569,10 +569,6 @@ DQC_function= function(input_dir,
                   
                 }else{
                   
-                  ######### new section ##########
-                  # ~~~~~~~~~
-                  # if(write_output_files == TRUE){    # here???? 
-                  
                   # add missing records before in the new structure files
                   first_new_datetime = as.POSIXct(mydata[1,which(colnames(mydata) == datetime_header)],tz = "Etc/GMT-1")
                   
@@ -606,93 +602,103 @@ DQC_function= function(input_dir,
                     
                     new_missing_index_date_tot = rbind(new_missing_index_date_tot,new_missing_index_date)
                     
-                  
-                  
-                  if(record_check != 1 | flag_missing_records_new_tmp != 1){
-                    all_dates_df =  data.frame(matrix(nrow =length(all_dates), ncol = ncol(old_data)))
-                    colnames(all_dates_df) = colnames(old_data)
-                    all_dates_df[,which(colnames(all_dates_df) == datetime_header)] = format(all_dates,format = datetime_format,tz = "Etc/GMT-1")
-                    all_dates_df[,which(colnames(all_dates_df) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
-                    new_mydata_old = time_to_char(DATA = old_data,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
-                    new_mydata_old = rbind(new_mydata_old, all_dates_df)
-                    
-                    colnames(header) = header[1,]
-                    colnames(old_header) = old_header[1,]
-                    
-                    #--- old file ---
-                    out_my_old = new_mydata_old
-                    colnames(out_my_old) = colnames(old_header)
-                    out_mydata_old=rbind(old_header[-1,],out_my_old)
-                    file_name_output_old = file_names[k]
-                    
-                    if(write_output_files == TRUE){    # here???? 
-                      write.csv(out_mydata_old,paste(output_dir_data,file_name_output_old,sep = ""),quote = F,row.names = F, na = "NaN")
-                      file_name_output_csv = paste(substring(file_name_output_old, 1, nchar(file_name_output_old)-4),".csv",sep="") 
-                      output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
-                      file.copy(from = paste(output_dir_data,file_name_output_old,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                    if(record_check != 1 | flag_missing_records_new_tmp != 1){
                       
-                      # rename total data
-                      j=0
-                      repeat{
-                        j=j+1
-                        file_names_old = paste(substring(file_names[k],1, nchar(file_names[k])-4),"_old",j,".dat",sep = "")
-                        if(!file.exists(paste(output_dir_data,file_names_old,sep = ""))){
-                          break
-                        }
+                      new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                      new_time_tot = as.POSIXct(new_mydata[,which(colnames(new_mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+                      new_time_missing = as.POSIXct(new_missing_index_date[,2], format = datetime_format, tz = "Etc/GMT-1")
+                      
+                      if(length(which(new_time_tot %in% new_time_missing )) == 0){
+                        flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,0)      # No missing dates
+                      }else{
+                        flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,1)      # YES missing dates
                       }
-                      file_names_total_data = file_names[k]
                       
-                      file.rename(from = paste(output_dir_data,file_names_total_data,sep = ""),to = paste(output_dir_data,file_names_old,sep = ""))
+                      all_dates_df =  data.frame(matrix(nrow =length(all_dates), ncol = ncol(old_data)))
+                      colnames(all_dates_df) = colnames(old_data)
+                      all_dates_df[,which(colnames(all_dates_df) == datetime_header)] = format(all_dates,format = datetime_format,tz = "Etc/GMT-1")
+                      all_dates_df[,which(colnames(all_dates_df) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
+                      new_mydata_old = time_to_char(DATA = old_data,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
+                      new_mydata_old = rbind(new_mydata_old, all_dates_df)
                       
-                      output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)
-                      file_names_old_csv = paste(substring(file_names_old, 1, nchar(file_names_old)-4),".csv",sep = "")
-                      file.copy(from = paste(output_dir_data,file_names_old,sep = ""),to = paste(output_dir_data_csv,file_names_old_csv,sep = ""))
+                      colnames(header) = header[1,]
+                      colnames(old_header) = old_header[1,]
                       
-                      # rename raw data
-                      j=0
-                      repeat{
-                        j=j+1
-                        file_names_original_old = paste(substring(file_names[k],1, nchar(file_names[k])-4),"_old",j,".dat",sep = "")
-                        if(!file.exists(paste(output_dir_raw,file_names_original_old,sep = ""))){
-                          break
+                      #--- old file ---
+                      new_mydata_old <- time_to_char(DATA = new_mydata_old, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                      out_my_old = new_mydata_old
+                      colnames(out_my_old) = colnames(old_header)
+                      out_mydata_old=rbind(old_header[-1,],out_my_old)
+                      file_name_output_old = file_names[k]
+                      
+                      if(write_output_files == TRUE){    # here???? 
+                        write.csv(out_mydata_old,paste(output_dir_data,file_name_output_old,sep = ""),quote = F,row.names = F, na = "NaN")
+                        file_name_output_csv = paste(substring(file_name_output_old, 1, nchar(file_name_output_old)-4),".csv",sep="") 
+                        output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
+                        file.copy(from = paste(output_dir_data,file_name_output_old,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                        
+                        # rename total data
+                        j=0
+                        repeat{
+                          j=j+1
+                          file_names_old = paste(substring(file_names[k],1, nchar(file_names[k])-4),"_old",j,".dat",sep = "")
+                          if(!file.exists(paste(output_dir_data,file_names_old,sep = ""))){
+                            break
+                          }
                         }
+                        file_names_total_data = file_names[k]
+                        
+                        file.rename(from = paste(output_dir_data,file_names_total_data,sep = ""),to = paste(output_dir_data,file_names_old,sep = ""))
+                        
+                        output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)
+                        file_names_old_csv = paste(substring(file_names_old, 1, nchar(file_names_old)-4),".csv",sep = "")
+                        file.copy(from = paste(output_dir_data,file_names_old,sep = ""),to = paste(output_dir_data_csv,file_names_old_csv,sep = ""))
+                        
+                        # rename raw data
+                        j=0
+                        repeat{
+                          j=j+1
+                          file_names_original_old = paste(substring(file_names[k],1, nchar(file_names[k])-4),"_old",j,".dat",sep = "")
+                          if(!file.exists(paste(output_dir_raw,file_names_original_old,sep = ""))){
+                            break
+                          }
+                        }
+                        file_names_raw_data = paste(substring(file_names[k],1,nchar(file_names[k])-4),".dat", sep = "")
+                        file.rename(from = paste(output_dir_raw,file_names_raw_data,sep = ""),to = paste(output_dir_raw,file_names_original_old,sep = ""))
+                        
+                        #--- new file ---
+                        mydata = time_to_char(DATA = mydata,DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                        out_my = mydata
+                        colnames(out_my) = colnames(header)
+                        out_mydata=rbind(header[-1,],out_my)
+                        file_name_output = file_names[k]
+                        
+                        orig_wihtout_dupli = time_to_char(DATA = orig_wihtout_dupli,DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                        out_orig = orig_wihtout_dupli
+                        out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
+                        colnames(out_orig) = colnames(header)
+                        out_original=rbind(header[-1,],out_orig)
+                        file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
+                        
+                        # keep updtate logger_info_file!
+                        w_logger = which(logger_info_csv[,1] == station_name)
+                        new_logger_info = cbind(station_name,header[1,1:8])
+                        colnames(new_logger_info) = colnames(logger_info_csv)
+                        logger_info_csv[w_logger,] = new_logger_info
+                        write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
+                        
+                        
+                        # write total .dat
+                        write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
+                        write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
+                        
+                        # write total .csv
+                        file_name_output_csv = paste(substring(file_name_output, 1, nchar(file_name_output)-4),".csv",sep="") 
+                        output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
+                        file.copy(from = paste(output_dir_data,file_name_output,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                        
                       }
-                      file_names_raw_data = paste(substring(file_names[k],1,nchar(file_names[k])-4),".dat", sep = "")
-                      file.rename(from = paste(output_dir_raw,file_names_raw_data,sep = ""),to = paste(output_dir_raw,file_names_original_old,sep = ""))
-                      
-                      #--- new file ---
-                      mydata = time_to_char(DATA = mydata,DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
-                      out_my = mydata
-                      colnames(out_my) = colnames(header)
-                      out_mydata=rbind(header[-1,],out_my)
-                      file_name_output = file_names[k]
-                      
-                      orig_wihtout_dupli = time_to_char(DATA = orig_wihtout_dupli,DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
-                      out_orig = orig_wihtout_dupli
-                      out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
-                      colnames(out_orig) = colnames(header)
-                      out_original=rbind(header[-1,],out_orig)
-                      file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
-                      
-                      # keep updtate logger_info_file!
-                      w_logger = which(logger_info_csv[,1] == station_name)
-                      new_logger_info = cbind(station_name,header[1,1:8])
-                      colnames(new_logger_info) = colnames(logger_info_csv)
-                      logger_info_csv[w_logger,] = new_logger_info
-                      write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
-                      
-                      
-                      # write total .dat
-                      write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
-                      write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
-                      
-                      # write total .csv
-                      file_name_output_csv = paste(substring(file_name_output, 1, nchar(file_name_output)-4),".csv",sep="") 
-                      output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
-                      file.copy(from = paste(output_dir_data,file_name_output,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
-                      
                     }
-                  }
                   }
                   ######### end new section ##########
                   
@@ -919,7 +925,6 @@ DQC_function= function(input_dir,
                           new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
                           orig_data_new <- time_to_char(DATA = orig_data_new, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
                           
-                          
                           new_time_tot = as.POSIXct(new_mydata[,which(colnames(new_mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
                           new_time_orig = as.POSIXct(orig_data_new[,which(colnames(orig_data_new) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
                           
@@ -1116,7 +1121,7 @@ DQC_function= function(input_dir,
                         
                         # --- write original ---
                         write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
-                       
+                        
                       }
                     }
                     flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 1)   # da verificare! 
@@ -1549,7 +1554,7 @@ DQC_function= function(input_dir,
       time_tot = time_tot[order(time_tot)]
       
       # time_missing <- missing_index_date[,2]
-      time_missing <- date_missing[,2]
+      time_missing <- as.POSIXct(date_missing[,2], format = datetime_format, tz = "Etc/GMT-1")
       
       
       df_missing <- data.frame(time_tot,rep("Dates in original file",times = length(time_tot)))

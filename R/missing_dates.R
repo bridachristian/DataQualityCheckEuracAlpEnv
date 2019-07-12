@@ -42,9 +42,10 @@ missing_dates = function(DATA ,DATETIME_HEADER = DATETIME_HEADER, RECORD_HEADER 
   w2= which(time_new %in% time_added)
   merge[w2,which(colnames(merge)==RECORD_HEADER)] = -1
 
-  df_merge = as.data.frame(merge)
-  df_merge = df_merge[,-which(colnames(merge) == DATETIME_HEADER)]
-  df_merge = cbind(time_new, df_merge)
+  df_merge = as.data.frame(merge) 
+  df_merge = cbind(format(time_new, format = datetime_format, tz = "Etc/GMT-1"), df_merge)
+  df_merge = df_merge[,-which(colnames(df_merge) == DATETIME_HEADER)]
+  
   colnames(df_merge)[1] = DATETIME_HEADER
 
   df_merge = df_merge[colnames(DATA)]

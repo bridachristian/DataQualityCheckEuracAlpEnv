@@ -844,6 +844,8 @@ DQC_function= function(input_dir,
                   
                   rm(old_original_list)
                   
+                  colnames(header) = header[1,]   #new
+                  
                   if(identical(old_header[-1,], header[-1,])){
                     
                     # -------------------------------------------------------------------------------
@@ -895,6 +897,7 @@ DQC_function= function(input_dir,
                       flag_new_overlap_tmp = c(flag_new_overlap_tmp,0)
                       w_last = which(new_mydata[,which(colnames(new_mydata) == datetime_header)] == last_old_datetime)
                       if(length(w_last) == 0){
+                        # ????
                         rec_miss  <- missing_record(DATA = new_mydata[w_last:nrow(new_mydata),], DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
                         
                       }else{
@@ -928,7 +931,7 @@ DQC_function= function(input_dir,
                           new_time_tot = as.POSIXct(new_mydata[,which(colnames(new_mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
                           new_time_orig = as.POSIXct(orig_data_new[,which(colnames(orig_data_new) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
                           
-                          new_time_missing = new_missing_index_date[,2]
+                          new_time_missing = as.POSIXct(new_missing_index_date[,2], format = datetime_format, tz = "Etc/GMT-1")
                           
                           if(length(which(new_time_tot %in% new_time_missing )) == 0){
                             flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,0)      # No missing dates
@@ -1061,70 +1064,99 @@ DQC_function= function(input_dir,
                       flag_missing_records_new_tmp = 50
                     }
                     
-                    if(record_check != 1 | flag_missing_records_new_tmp != 1){
+                    if(flag_missing_records_new_tmp != 1){
+                      new_missing  <- missing_dates(DATA = mydata_rec_miss,
+                                                    DATETIME_HEADER = datetime_header,
+                                                    RECORD_HEADER = record_header, 
+                                                    DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
+                      new_mydata = new_missing[[1]]
+                      new_missing_index_date = new_missing[[2]]
                       
-                      min_new = as.POSIXct(paste(years[k], "-01-01 00:15",sep = ""), format = datetime_format, tz = "Etc/GMT-1")
-                      max_old = as.POSIXct(paste(years[k], "-01-01 00:00",sep = ""), format = datetime_format, tz = "Etc/GMT-1")
-                      dates_old = all_dates[all_dates<= max_old ]
-                      dates_new = all_dates[all_dates>= min_new ]
+                      new_missing_index_date_tot = rbind(new_missing_index_date_tot,new_missing_index_date)
                       
-                      all_dates_df_old =  data.frame(matrix(nrow =length(dates_old), ncol = ncol(old_data)))
-                      colnames(all_dates_df_old) = colnames(old_data)
-                      all_dates_df_old[,which(colnames(all_dates_df_old) == datetime_header)] = format(dates_old,format = datetime_format,tz = "Etc/GMT-1")
-                      all_dates_df_old[,which(colnames(all_dates_df_old) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
-                      
-                      new_mydata_old = time_to_char(DATA = old_data,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
-                      new_mydata_old = rbind(new_mydata_old, all_dates_df_old)
-                      
-                      all_dates_df_new =  data.frame(matrix(nrow =length(dates_new), ncol = ncol(mydata)))
-                      colnames(all_dates_df_new) = colnames(mydata)
-                      all_dates_df_new[,which(colnames(all_dates_df_new) == datetime_header)] = format(dates_new,format = datetime_format,tz = "Etc/GMT-1")
-                      all_dates_df_new[,which(colnames(all_dates_df_new) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
-                      
-                      new_mydata_new = time_to_char(DATA = mydata,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
-                      new_mydata_new = rbind(all_dates_df_new,new_mydata_new )
-                      
-                      colnames(header) = header[1,]
-                      colnames(old_header) = old_header[1,]
-                      
-                      new_mydata_old = time_to_char(DATA = new_mydata_old,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
-                      out_my_old = new_mydata_old
-                      colnames(out_my_old) = colnames(old_header)
-                      out_mydata_old=rbind(old_header[-1,],out_my_old)
-                      file_name_output_old = file_names_old
-                      
-                      new_mydata_new = time_to_char(DATA = new_mydata_new,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
-                      out_my_new = new_mydata_new
-                      colnames(out_my_new) = colnames(header)
-                      out_mydata_new=rbind(header[-1,],out_my_new)
-                      file_name_output_new = file_names[k]
-                      
-                      orig_wihtout_dupli = time_to_char(DATA = orig_wihtout_dupli,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
-                      out_orig = orig_wihtout_dupli
-                      out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
-                      colnames(out_orig) = colnames(header)
-                      out_original=rbind(header[-1,],out_orig)
-                      file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
-                      
-                      if(write_output_files == TRUE){ 
-                        # --- write old ---
-                        write.csv(out_mydata_old,paste(output_dir_data,file_name_output_old,sep = ""),quote = F,row.names = F, na = "NaN")
-                        file_name_output_csv = paste(substring(file_name_output_old, 1, nchar(file_name_output_old)-4),".csv",sep="") 
-                        output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
-                        file.copy(from = paste(output_dir_data,file_name_output_old,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                      if(record_check != 1 | flag_missing_records_new_tmp != 1){
                         
-                        # --- write new ---
-                        write.csv(out_mydata_new,paste(output_dir_data,file_name_output_new,sep = ""),quote = F,row.names = F, na = "NaN")
-                        file_name_output_csv = paste(substring(file_name_output_new, 1, nchar(file_name_output_new)-4),".csv",sep="") 
-                        output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
-                        file.copy(from = paste(output_dir_data,file_name_output_new,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                        new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+                        new_time_tot = as.POSIXct(new_mydata[,which(colnames(new_mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
                         
-                        # --- write original ---
-                        write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
+                        new_time_missing = as.POSIXct(new_missing_index_date[,2],format = datetime_format, tz = "Etc/GMT-1")
                         
+                        if(length(which(new_time_tot %in% new_time_missing )) == 0){
+                          flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,0)      # No missing dates
+                        }else{
+                          flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,1)      # YES missing dates
+                        }
+                        
+                        rm(new_missing)
+                        #####
+                        
+                        
+                        
+                        min_new = as.POSIXct(paste(years[k], "-01-01 00:15",sep = ""), format = datetime_format, tz = "Etc/GMT-1")
+                        max_old = as.POSIXct(paste(years[k], "-01-01 00:00",sep = ""), format = datetime_format, tz = "Etc/GMT-1")
+                        dates_old = all_dates[all_dates<= max_old ]
+                        dates_new = all_dates[all_dates>= min_new ]
+                        
+                        all_dates_df_old =  data.frame(matrix(nrow =length(dates_old), ncol = ncol(old_data)))
+                        colnames(all_dates_df_old) = colnames(old_data)
+                        all_dates_df_old[,which(colnames(all_dates_df_old) == datetime_header)] = format(dates_old,format = datetime_format,tz = "Etc/GMT-1")
+                        all_dates_df_old[,which(colnames(all_dates_df_old) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
+                        
+                        new_mydata_old = time_to_char(DATA = old_data,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
+                        new_mydata_old = rbind(new_mydata_old, all_dates_df_old)
+                        
+                        all_dates_df_new =  data.frame(matrix(nrow =length(dates_new), ncol = ncol(mydata)))
+                        colnames(all_dates_df_new) = colnames(mydata)
+                        all_dates_df_new[,which(colnames(all_dates_df_new) == datetime_header)] = format(dates_new,format = datetime_format,tz = "Etc/GMT-1")
+                        all_dates_df_new[,which(colnames(all_dates_df_new) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
+                        
+                        new_mydata_new = time_to_char(DATA = mydata,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
+                        new_mydata_new = rbind(all_dates_df_new,new_mydata_new )
+                        
+                        colnames(header) = header[1,]
+                        colnames(old_header) = old_header[1,]
+                        
+                        new_mydata_old = time_to_char(DATA = new_mydata_old,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
+                        out_my_old = new_mydata_old
+                        colnames(out_my_old) = colnames(old_header)
+                        out_mydata_old=rbind(old_header[-1,],out_my_old)
+                        file_name_output_old = file_names_old
+                        
+                        new_mydata_new = time_to_char(DATA = new_mydata_new,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
+                        out_my_new = new_mydata_new
+                        colnames(out_my_new) = colnames(header)
+                        out_mydata_new=rbind(header[-1,],out_my_new)
+                        file_name_output_new = file_names[k]
+                        
+                        orig_wihtout_dupli = time_to_char(DATA = orig_wihtout_dupli,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
+                        out_orig = orig_wihtout_dupli
+                        out_orig[,which(colnames(out_orig)== datetime_header)] = format(out_orig[,which(colnames(out_orig)== datetime_header)], format = datetime_format)
+                        colnames(out_orig) = colnames(header)
+                        out_original=rbind(header[-1,],out_orig)
+                        file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
+                        
+                        if(write_output_files == TRUE){ 
+                          # --- write old ---
+                          write.csv(out_mydata_old,paste(output_dir_data,file_name_output_old,sep = ""),quote = F,row.names = F, na = "NaN")
+                          file_name_output_csv = paste(substring(file_name_output_old, 1, nchar(file_name_output_old)-4),".csv",sep="") 
+                          output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
+                          file.copy(from = paste(output_dir_data,file_name_output_old,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                          
+                          # --- write new ---
+                          write.csv(out_mydata_new,paste(output_dir_data,file_name_output_new,sep = ""),quote = F,row.names = F, na = "NaN")
+                          file_name_output_csv = paste(substring(file_name_output_new, 1, nchar(file_name_output_new)-4),".csv",sep="") 
+                          output_dir_data_csv = substring(output_dir_data, 1, nchar(output_dir_data)-10)  ### NOTA: cartella livello sopra (elimino il num di caratteri di Files_dat)
+                          file.copy(from = paste(output_dir_data,file_name_output_new,sep = ""), to = paste(output_dir_data_csv,file_name_output_csv,sep = ""), overwrite = T)
+                          
+                          # --- write original ---
+                          write.csv(out_original,paste(output_dir_raw,file_name_original,sep = ""),quote = F,row.names = F, na = "NaN")
+                          
+                        }
                       }
+                     flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 1)   # da verificare!
+                    }else{
+
                     }
-                    flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 1)   # da verificare! 
                   }
                   
                 }else{
@@ -1467,6 +1499,7 @@ DQC_function= function(input_dir,
     records_restart = as.data.frame(matrix(ncol = 6, nrow = 0))
     colnames(records_restart) = c("Datetime_From","Datetime_To", "Datetime_Missing"," Record_From", "Record_To","Record_Missing")
   }
+  
   if(!exists("records_restart_new")){
     records_restart_new = as.data.frame(matrix(ncol = 6, nrow = 0))
     colnames(records_restart_new) = c("Datetime_From","Datetime_To", "Datetime_Missing"," Record_From", "Record_To","Record_Missing")
@@ -1537,14 +1570,6 @@ DQC_function= function(input_dir,
       output_date_missing = list("N", NA)
       names(output_date_missing) =c("Status", "Values")
     }else{
-      
-      # ************
-      
-      
-      # #####
-      # seq.POSIXt(from = date_missing$Date[1],to = date_missing$Date[length(date_missing$Date)], by = datetime_sampling)
-      # 
-      # #####
       
       time_tot <- as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1' )
       # time_tot <- c(new_missing_index_date$Date, time_tot) 

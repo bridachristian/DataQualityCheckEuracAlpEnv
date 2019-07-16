@@ -19,9 +19,9 @@
 #'
 
 alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT = "%Y-%m-%d %H:%M",RECORD_HEADER, 
-                                    RANGE_DIR, RANGE_FILE, 
-                                    MAIL_DIR, MAIL_FILE_ALERT,
-                                    STATION, USE_FLAG,USE_RT_FLAG){
+                              RANGE_DIR, RANGE_FILE, 
+                              MAIL_DIR, MAIL_FILE_ALERT,
+                              STATION, USE_FLAG,USE_RT_FLAG){
   
   ######
   # DATA = cbind(DATA,rep(1000, times = nrow(DATA)))
@@ -231,8 +231,7 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
             
             df_NA = rbind(df_NA,df_NA_tmp)
           }
-        }
-        else{
+        }else{ ################################################################################### !!!!!!!!!!!!!!!!!!!!!! #######################
           df_NA_tmp =  as.data.frame(matrix(ncol = 5, nrow = 0))
           colnames(df_NA_tmp) = c("Variable", "From", "To", "Hours", "Extreme_value")
         }
@@ -276,10 +275,6 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
       df_to_add_oor[nrow(df_to_add_oor),which(colnames(df_to_add_oor) == STATION)] = 1
     }
   }
-  
-  # df_lower
-  # df_upper
-  # df_NA
   
   
   df_lower_merge = cbind(rep("Too_low", nrow(df_lower)),df_lower)

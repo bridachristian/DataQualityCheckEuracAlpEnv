@@ -62,7 +62,7 @@ print(project_dir)
 
 root_dir_home = "C:/Users/CBrida/Desktop/Anno_Zero/"
 data_output_dir =paste(root_dir_home,"/Output/",sep="")
-data_input_dir =paste(root_dir_home,"/Input/B1/RAW_0/",sep="")               # <- insert here the name of the folder to source data
+data_input_dir =paste(root_dir_home,"/Input/T4/RAW_0/",sep="")               # <- insert here the name of the folder to source data
 
 
 # root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/"
@@ -87,7 +87,7 @@ mail_dir = paste(DQC_setting_dir,"/email_status/",sep = "")
 # To set TRUE if you wanto to bypass all files of data_input_dir
 # If it is FALSE every file was checked using the download table flag record_check (0 -> bypass, 1 --> check)
 
-BYPASS_ALL_RECORD_CHECK = FALSE
+BYPASS_ALL_RECORD_CHECK = TRUE
 
 # ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
 
@@ -135,6 +135,7 @@ reciver = mail_config_info$reciver
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice #########################################################
 
+SEND_MAIL = FALSE            # SEND_MAIL = TRUE -> dqc send mail with report, SEND_MAIL = FALSE -> dqc donw't send any mail
 # -------------------------------
 print(mail_config_file)
 print(sender)
@@ -552,7 +553,7 @@ if(length(unique(file_group))  > 1){
           }
         }
         
-        if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){
+        if(any(status[-which(names(status) == "err_duplicates_rows")] == "Y")){ # devo escludere anche err_out_of_range??
           # paste(substring(output_dir,nchar(main_dir)),output_file,sep = "")
           # link = paste(main_dir_mapping_out, substring(output_dir_report_new,nchar(main_dir_mapping_in)), output_file_report,sep = "")
           link = paste(output_dir_report_new, output_file,sep = "")
@@ -589,7 +590,7 @@ if(length(unique(file_group))  > 1){
             
             # if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
             #                                 "err_overlap", "err_missing_record","err_restart_record")] == "N")){
-            download_table$Last_date[w_dwnl] = last_date
+            download_table$Last_date[w_dwnl] = format(last_date, format = datetime_format, tz = "Etc/GMT-1")
             download_table$Last_Modification[w_dwnl] = format(file_datetime, format = datetime_format)
             
             ### ------ NEW, TO TEST ------
@@ -607,11 +608,11 @@ if(length(unique(file_group))  > 1){
             
             write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
             
-          # --- new ---
+            # --- new ---
           }else{
             if(record_check == 1){
-            download_table$Stop_DQC[w_dwnl] = 1
-            write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
+              download_table$Stop_DQC[w_dwnl] = 1
+              write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
             }else{
               download_table$Stop_DQC[w_dwnl] = 0
               write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
@@ -717,33 +718,24 @@ if(length(unique(file_group))  > 1){
                                   report_dataframe = report_dataframe))
   
   
-  # ..... Data preparation for Database .....................................................................................................................................
   
-  # MANDARE MAIL !!!!
   print("--------------------------------------------------------------------------------------------------")
   
   report_output_dir <- paste(data_output_dir,"00_DQC_Reports/",sep = "")  # where to put output reports
   
-  my_subject = paste("Manual report:", project_unique,station_unique)
-  my_body = paste(output_dir_final,output_file_TOT,sep="")
-  # my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
-  # my_body = paste(url_webservice,project_unique,substring(report_output_dir, nchar(data_output_dir)),output_file_final,sep="")
-  
-  # my_body = paste(url_webservice,icinga_text,sep = "")
-  # icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")               # to disactivate when webservice is ready!
-  # icinga_text = paste(substring(output_dir,nchar(data_output_dir)),output_file,sep = "")        # to activate when webservice is ready!
-  
-  
-  send.mail(from = sender,
-            to = reciver,
-            subject = my_subject,
-            body = " ",
-            attach.files = my_body,
-            inline = T,
-            smtp = my_smtp,
-            authenticate = TRUE,
-            send = TRUE,html = F)
-  
+  if(SEND_MAIL == TRUE){    # Send mail only if SEND_MAIL == TRUE 
+    my_subject = paste("Manual report:", project_unique,station_unique)
+    my_body = paste(output_dir_final,output_file_TOT,sep="")
+    send.mail(from = sender,
+              to = reciver,
+              subject = my_subject,
+              body = " ",
+              attach.files = my_body,
+              inline = T,
+              smtp = my_smtp,
+              authenticate = TRUE,
+              send = TRUE,html = F)
+  }
   
 }
 

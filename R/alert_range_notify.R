@@ -19,9 +19,9 @@
 #'
 
 alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT = "%Y-%m-%d %H:%M",RECORD_HEADER, 
-                                    RANGE_DIR, RANGE_FILE, 
-                                    MAIL_DIR, MAIL_FILE_ALERT,
-                                    STATION, USE_FLAG,USE_RT_FLAG){
+                              RANGE_DIR, RANGE_FILE, 
+                              MAIL_DIR, MAIL_FILE_ALERT,
+                              STATION, USE_FLAG,USE_RT_FLAG){
   
   ######
   # DATA = cbind(DATA,rep(1000, times = nrow(DATA)))
@@ -92,11 +92,11 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
   colnames(df_to_add_oor)  = colnames(oor_flag)
   
   df_upper = as.data.frame(matrix(ncol = 5, nrow = 0))
-  colnames(df_upper) = c("Variable", "From", "To", "Hours", "Mean_Value")
+  colnames(df_upper) = c("Variable", "From", "To", "Hours", "Extreme_value")
   df_lower = as.data.frame(matrix(ncol = 5, nrow = 0))
-  colnames(df_lower) = c("Variable", "From", "To", "Hours", "Mean_Value")
+  colnames(df_lower) = c("Variable", "From", "To", "Hours", "Extreme_value")
   df_NA = as.data.frame(matrix(ncol = 5, nrow = 0))
-  colnames(df_NA) = c("Variable", "From", "To", "Hours", "Mean_Value")
+  colnames(df_NA) = c("Variable", "From", "To", "Hours", "Extreme_value")
   
   for(k in 1:ncol(new)){
     if((colnames(new)[k] %in% range$Variable) & (colnames(new)[k] %in% oor_flag$Variable)){
@@ -149,7 +149,7 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
                                       format(start_sss,format = DATETIME_FORMAT),
                                       format(end_sss,format = DATETIME_FORMAT),
                                       as.numeric(num_hour_diff),
-                                      mean(new[ sss[[s]] ,k],na.rm = T))
+                                      min(new[ sss[[s]] ,k],na.rm = T))
             colnames(df_lower_tmp) = colnames(df_lower)
             
             
@@ -158,7 +158,7 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
         }
         # else{
         #   df_lower_tmp =  as.data.frame(matrix(ncol = 5, nrow = 0))
-        #   colnames(df_lower_tmp) = c("Variable", "From", "To", "Hours", "Mean_Value")
+        #   colnames(df_lower_tmp) = c("Variable", "From", "To", "Hours", "Extreme_value")
         # }
         
         # ~ ~ ~ ~ data above upper limit ~ ~ ~ ~
@@ -186,7 +186,7 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
                                       # as.character(start_ttt),
                                       # as.character(end_ttt),
                                       as.character(num_hour_diff),
-                                      mean(new[ ttt[[t]] ,k],na.rm = T))
+                                      max(new[ ttt[[t]] ,k],na.rm = T))
             colnames(df_upper_tmp) = colnames(df_upper)
             
             
@@ -195,7 +195,7 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
         }
         # else{
         #   df_upper_tmp =  as.data.frame(matrix(ncol = 5, nrow = 0))
-        #   colnames(df_upper_tmp) = c("Variable", "From", "To", "Hours", "Mean_Value")
+        #   colnames(df_upper_tmp) = c("Variable", "From", "To", "Hours", "Extreme_value")
         # }
         
         
@@ -231,10 +231,9 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
             
             df_NA = rbind(df_NA,df_NA_tmp)
           }
-        }
-        else{
+        }else{ ################################################################################### !!!!!!!!!!!!!!!!!!!!!! #######################
           df_NA_tmp =  as.data.frame(matrix(ncol = 5, nrow = 0))
-          colnames(df_NA_tmp) = c("Variable", "From", "To", "Hours", "Mean_Value")
+          colnames(df_NA_tmp) = c("Variable", "From", "To", "Hours", "Extreme_value")
         }
         
         if(length(c(w_low,w_high,w_NA)) > 0){
@@ -276,10 +275,6 @@ alert_range_notify = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_FORMAT
       df_to_add_oor[nrow(df_to_add_oor),which(colnames(df_to_add_oor) == STATION)] = 1
     }
   }
-  
-  # df_lower
-  # df_upper
-  # df_NA
   
   
   df_lower_merge = cbind(rep("Too_low", nrow(df_lower)),df_lower)

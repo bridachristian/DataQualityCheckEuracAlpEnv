@@ -33,11 +33,11 @@ exclude_out_of_range_v3 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_F
   to_add = c()
   
   df_upper = as.data.frame(matrix(ncol = 5, nrow = 0))
-  colnames(df_upper) = c("Variable", "From", "To", "Hours", "Mean_Value")
+  colnames(df_upper) = c("Variable", "From", "To", "Hours", "Extreme_value")
   df_lower = as.data.frame(matrix(ncol = 5, nrow = 0))
-  colnames(df_lower) = c("Variable", "From", "To", "Hours", "Mean_Value")
+  colnames(df_lower) = c("Variable", "From", "To", "Hours", "Extreme_value")
   df_NA = as.data.frame(matrix(ncol = 5, nrow = 0))
-  colnames(df_NA) = c("Variable", "From", "To", "Hours", "Mean_Value")
+  colnames(df_NA) = c("Variable", "From", "To", "Hours", "Extreme_value")
   
   for(k in 1:ncol(new)){
     if(colnames(new)[k] %in% range$Variable){
@@ -72,7 +72,7 @@ exclude_out_of_range_v3 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_F
                                       format(start_sss,format = DATETIME_FORMAT),
                                       format(end_sss,format = DATETIME_FORMAT),
                                       as.numeric(num_hour_diff),
-                                      mean(new[ sss[[s]] ,k],na.rm = T))
+                                      min(new[ sss[[s]] ,k],na.rm = T))
             colnames(df_lower_tmp) = colnames(df_lower)
             
             
@@ -81,7 +81,7 @@ exclude_out_of_range_v3 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_F
         }
         # else{
         #   df_lower_tmp =  as.data.frame(matrix(ncol = 5, nrow = 0))
-        #   colnames(df_lower_tmp) = c("Variable", "From", "To", "Hours", "Mean_Value")
+        #   colnames(df_lower_tmp) = c("Variable", "From", "To", "Hours", "Extreme_value")
         # }
         
         # ~ ~ ~ ~ data above upper limit ~ ~ ~ ~
@@ -107,7 +107,7 @@ exclude_out_of_range_v3 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_F
                                       format(start_ttt,format = DATETIME_FORMAT),
                                       format(end_ttt,format = DATETIME_FORMAT),
                                       as.character(num_hour_diff),
-                                      mean(new[ ttt[[t]] ,k],na.rm = T))
+                                      max(new[ ttt[[t]] ,k],na.rm = T))
             colnames(df_upper_tmp) = colnames(df_upper)
             
             
@@ -116,7 +116,7 @@ exclude_out_of_range_v3 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_F
         }
         # else{
         #   df_upper_tmp =  as.data.frame(matrix(ncol = 5, nrow = 0))
-        #   colnames(df_upper_tmp) = c("Variable", "From", "To", "Hours", "Mean_Value")
+        #   colnames(df_upper_tmp) = c("Variable", "From", "To", "Hours", "Extreme_value")
         # }
         
         
@@ -153,7 +153,7 @@ exclude_out_of_range_v3 = function(DATA,DATETIME_HEADER = "TIMESTAMP",DATETIME_F
          }
         else{
           df_NA_tmp =  as.data.frame(matrix(ncol = 5, nrow = 0))
-          colnames(df_NA_tmp) = c("Variable", "From", "To", "Hours", "Mean_Value")
+          colnames(df_NA_tmp) = c("Variable", "From", "To", "Hours", "Extreme_value")
         }
         
         # new_status[,k] = ifelse(new[,k] < lower_limit, -1, new_status[,k])

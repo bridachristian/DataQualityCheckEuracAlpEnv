@@ -62,7 +62,7 @@ print(project_dir)
 
 root_dir_home = "C:/Users/CBrida/Desktop/Anno_Zero/"
 data_output_dir =paste(root_dir_home,"/Output/",sep="")
-data_input_dir =paste(root_dir_home,"/Input/T5/RAW_0/",sep="")               # <- insert here the name of the folder to source data
+data_input_dir =paste(root_dir_home,"/Input/T3/RAW_0/",sep="")               # <- insert here the name of the folder to source data
 
 
 # root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/"
@@ -717,8 +717,7 @@ if(length(unique(file_group))  > 1){
                                   report_dataframe = report_dataframe))
   
   
-  # ..... Data preparation for Database .....................................................................................................................................
-  
+
   # MANDARE MAIL !!!!
   print("--------------------------------------------------------------------------------------------------")
   

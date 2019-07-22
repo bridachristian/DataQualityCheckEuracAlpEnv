@@ -53,7 +53,7 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
       colnames(more_df) = colnames(more_df_tot)
       
       for (j in 1:length(group_more)){
-        more_df$`Too many columns`[j] = paste("N.col (diff):",data_ccc[group_more[[j]][2]]," (+",as.character(data_ccc[group_more[[j]][2]]-ncol(header_colnames)), ")",sep ="")
+        more_df$`Too many columns`[j] = paste("N.col: ",data_ccc[group_more[[j]][2]],"  (diff: +",as.character(data_ccc[group_more[[j]][2]]-ncol(header_colnames)), ")",sep ="")
         more_df$`From`[j] = paste("row",group_more[[j]][1])
         more_df$`To`[j] = paste("row",group_more[[j]][2])
         # more_df$`From datetime`[j] = data[group_more[[j]][1], which(header_colnames == DATETIME_HEADER)]
@@ -76,7 +76,7 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
         colnames(less_df) = colnames(less_df_tot)
         
         for (j in 1:length(group_less)){
-          less_df$`Too few columns`[j] = paste("N.col (diff):",data_ccc[group_less[[j]][2]]," (-",ncol(header_colnames)-data_ccc[group_less[[j]][2]], ")",sep ="")
+          less_df$`Too few columns`[j] = paste("N.col: ",data_ccc[group_less[[j]][2]],"  (diff: -",ncol(header_colnames)-data_ccc[group_less[[j]][2]], ")",sep ="")
           less_df$`From`[j] = paste("row",group_less[[j]][1])
           less_df$`To`[j] = paste("row",group_less[[j]][2])
           # less_df$`From datetime`[j] = data[group_less[[j]][1], which(header_colnames == DATETIME_HEADER)]

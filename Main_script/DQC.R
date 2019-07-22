@@ -36,7 +36,6 @@ library(xts)
 library(hwriter)
 library(labeling)
 library(optparse)
-library(optparse)
 
 
 option_list = list(
@@ -449,7 +448,7 @@ if(length(unique(file_group))  > 1){
         
         df_status = data.frame(STATION_NAME,t(status))
         
-        if(use_alert_station_flag == TRUE){
+        if(use_alert_station_flag == TRUE & any(status[which(names(status) == c("err_empty", "err_structure"))] == "Y")){
           range_flags = read.csv(paste(range_dir,range_file,sep = ""),stringsAsFactors = F)
           range_station = range_flags[,c(1,which(colnames(range_flags) == STATION_NAME))]
           colnames(range_station)[2] = "Station"

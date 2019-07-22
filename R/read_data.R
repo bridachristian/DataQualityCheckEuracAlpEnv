@@ -45,7 +45,7 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
     u_more = unique(data_ccc[more])
     more_df_tot = as.data.frame(matrix(nrow = 0, ncol = 3))
     # colnames(more_df_tot) = c("From row", "To row", "From datetime", "To datetime", "N.col (diff)")
-    colnames(more_df_tot) = c( "Too many columns (diff)","From row", "To row")
+    colnames(more_df_tot) = c( "Too many columns","From", "To")
     for(k in 1:length(u_more)){
       more_k = more[data_ccc[more] == u_more[k]]
       group_more = unname(tapply(more_k, cumsum(c(1, diff(more_k)) != 1), range))
@@ -53,9 +53,9 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
       colnames(more_df) = colnames(more_df_tot)
       
       for (j in 1:length(group_more)){
-        more_df$`Too many columns (diff)`[j] = paste(data_ccc[group_more[[j]][2]]," (+",as.character(data_ccc[group_more[[j]][2]]-ncol(header_colnames)), ")",sep ="")
-        more_df$`From row`[j] = group_more[[j]][1]
-        more_df$`To row`[j] = group_more[[j]][2]
+        more_df$`Too many columns`[j] = paste("N.col (diff):",data_ccc[group_more[[j]][2]]," (+",as.character(data_ccc[group_more[[j]][2]]-ncol(header_colnames)), ")",sep ="")
+        more_df$`From`[j] = paste("row",group_more[[j]][1])
+        more_df$`To`[j] = paste("row",group_more[[j]][2])
         # more_df$`From datetime`[j] = data[group_more[[j]][1], which(header_colnames == DATETIME_HEADER)]
         # more_df$`To datetime`[j] = data[group_more[[j]][2], which(header_colnames == DATETIME_HEADER)]
       }
@@ -67,7 +67,7 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
     if(length(less) > 0){
       u_less = unique(data_ccc[less])
       less_df_tot = as.data.frame(matrix(nrow = 0, ncol = 3))
-      colnames(less_df_tot) = c( "Too few columns (diff)","From row", "To row")
+      colnames(less_df_tot) = c( "Too few columns","From", "To")
       for(k in 1:length(u_less)){
         less_k = less[data_ccc[less] == u_less[k]]
         
@@ -76,9 +76,9 @@ read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , 
         colnames(less_df) = colnames(less_df_tot)
         
         for (j in 1:length(group_less)){
-          less_df$`Too few columns (diff)`[j] = paste(data_ccc[group_less[[j]][2]]," (-",ncol(header_colnames)-data_ccc[group_less[[j]][2]], ")",sep ="")
-          less_df$`From row`[j] = group_less[[j]][1]
-          less_df$`To row`[j] = group_less[[j]][2]
+          less_df$`Too few columns`[j] = paste("N.col (diff):",data_ccc[group_less[[j]][2]]," (-",ncol(header_colnames)-data_ccc[group_less[[j]][2]], ")",sep ="")
+          less_df$`From`[j] = paste("row",group_less[[j]][1])
+          less_df$`To`[j] = paste("row",group_less[[j]][2])
           # less_df$`From datetime`[j] = data[group_less[[j]][1], which(header_colnames == DATETIME_HEADER)]
           # less_df$`To datetime`[j] = data[group_less[[j]][2], which(header_colnames == DATETIME_HEADER)]
         }

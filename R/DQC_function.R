@@ -22,7 +22,8 @@ DQC_function= function(input_dir,
                        output_dir_raw,
                        use_alert_station_flag,
                        mail_file_alert,
-                       use_realtime_station_flag){
+                       use_realtime_station_flag,
+                       header_check){
   
   # ..... Define flags ..................................................................................................................................
   
@@ -74,36 +75,38 @@ DQC_function= function(input_dir,
     
     # logger_number = header[1,4]                                                                   # check logger numbers
     # software_version = header[1,6]
-    logger_info_csv = read.csv(file = logger_info_file, stringsAsFactors = F)
-    w_logger = which(logger_info_csv[,1] == station_name)
-    header_info = header[1,1:8]
-    
-    if(length(w_logger) == 0){
-      # logger_info_csv = rbind(logger_info_csv, c(station_name, logger_number, software_version))
-      new_logger_info = cbind(station_name,header_info)
-      colnames(new_logger_info) = colnames(logger_info_csv)
-      logger_info_csv = rbind(logger_info_csv, new_logger_info)
-      write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
-      flag_logger_number = 0
-    }else{
-      logger_info = logger_info_csv[w_logger,]
-      if(any(header_info[,-c(1,2)] != logger_info[,-c(1,2,3)])){
-        flag_logger_number = 1
-        
-        header_info = header_info[,-c(1,2)]     # difference on TOA and on Station_Name are admitted
-        logger_info = logger_info[,-c(2,3)]     # difference on TOA and on Station_Name are admitted
-        
-        w_diff = which(header_info != logger_info[,-1]) 
-        cc = colnames(logger_info[,-1])[w_diff]
-        new_h = as.character(header_info[w_diff])
-        old_h = as.character(logger_info[,-1][w_diff])
-        logger_difference = data.frame(cc,old_h,new_h)
-        colnames(logger_difference) = c("Column", "Old", "New")
-        
-        # logger_difference = gsub("_", " ", logger_difference$Column)   # remove underescore 
-        
-      }else{
+    if(header_check == TRUE){
+      logger_info_csv = read.csv(file = logger_info_file, stringsAsFactors = F)
+      w_logger = which(logger_info_csv[,1] == station_name)
+      header_info = header[1,1:8]
+      
+      if(length(w_logger) == 0){
+        # logger_info_csv = rbind(logger_info_csv, c(station_name, logger_number, software_version))
+        new_logger_info = cbind(station_name,header_info)
+        colnames(new_logger_info) = colnames(logger_info_csv)
+        logger_info_csv = rbind(logger_info_csv, new_logger_info)
+        write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
         flag_logger_number = 0
+      }else{
+        logger_info = logger_info_csv[w_logger,]
+        if(any(header_info[,-c(1,2)] != logger_info[,-c(1,2,3)])){
+          flag_logger_number = 1
+          
+          header_info = header_info[,-c(1,2)]     # difference on TOA and on Station_Name are admitted
+          logger_info = logger_info[,-c(2,3)]     # difference on TOA and on Station_Name are admitted
+          
+          w_diff = which(header_info != logger_info[,-1]) 
+          cc = colnames(logger_info[,-1])[w_diff]
+          new_h = as.character(header_info[w_diff])
+          old_h = as.character(logger_info[,-1][w_diff])
+          logger_difference = data.frame(cc,old_h,new_h)
+          colnames(logger_difference) = c("Column", "Old", "New")
+          
+          # logger_difference = gsub("_", " ", logger_difference$Column)   # remove underescore 
+          
+        }else{
+          flag_logger_number = 0
+        }
       }
     }
     
@@ -1320,84 +1323,6 @@ DQC_function= function(input_dir,
       
     }
   }
-  output_structure
-  # if(!is.na(flag_error_df) & (flag_error_df == 2)){
-  #   w1 = as.data.frame(which(data_star == "",arr.ind = T))
-  #   names(w1) = c("row", "col")
-  #   df = data.frame(  data_star[w1$row, which(header_colnames == datetime_header )], as.character(header_colnames)[w1$col])
-  #   colnames(df) = c(datetime_header, "Variable")
-  #   
-  #   u = unique(df$Variable)
-  #   
-  #   out_df = data.frame(matrix(ncol = 3, nrow = length(u)))
-  #   colnames(out_df) = c( "Empty cells", "From", "To")  
-  #   i=1
-  #   for(i in 1:length(u)){
-  #     df_date = as.POSIXct(df[,1],format = datetime_format, tz = "Etc/GMT-1") 
-  #     min_date = min(df_date)
-  #     max_date = max(df_date)
-  #     
-  #     seq_date = seq(min_date, max_date, by = datetime_sampling)
-  #     
-  #     
-  #     stat = rep(0, times = length(seq_date))
-  #     stat[which(seq_date %in% df_date )] = 1
-  #     stat = c(0,stat,0)
-  #     diff = diff(stat)
-  #     
-  #     start_blank = seq_date[which(diff == 1)]
-  #     end_blank = seq_date[which(diff == -1)-1]
-  #     
-  #     out_df$From[i] = format(start_blank, format = datetime_format)
-  #     out_df$To[i] =  format(end_blank, format = datetime_format)
-  #     out_df[i,1] = u[i]
-  #     
-  #   }
-  #   
-  #   output_structure = list("Y",out_df)
-  #   names(output_structure) = c("Status", "Values")
-  #   
-  #   
-  # }else{
-  #   
-  #   if(!is.na(flag_error_df) & (flag_error_df == 1)){}else{} | flag_error_df == -1 )){}
-  #     
-  #     if(max_col == ncol(header) | max_col == ncol(header)){  #### To check! Not sure that it works!
-  #       ncol_vect = c(ncol(header),ncol(data))
-  #       names(ncol_vect) = c("ncol_header", "ncol_data")
-  #     }else{
-  #       if(max_col >  ncol(header)){
-  #         ncol_vect = c(ncol(header),max_col)
-  #         names(ncol_vect) = c("ncol_header", "ncol_data")
-  #       }else{
-  #         if(max_col >  ncol(data)){
-  #           ncol_vect = c(max_col,ncol(header))
-  #           names(ncol_vect) = c("ncol_header", "ncol_data")
-  #         }
-  #       }
-  #     }
-  #     
-  #     output_structure = list("Y",ncol_vect)
-  #     names(output_structure) = c("Status", "Values")
-  #   }else{
-  #     output_structure = list("N",NA)
-  #     names(output_structure) = c("Status", "Values")
-  #     
-  #     # if(exists("df_difference")){
-  #     #   if(!is.na(flag_error_df) & (flag_error_df == 0  &  nrow(df_difference) != 0 )){
-  #     #     # structure_message = df_difference
-  #     #     output_structure = list("Y",df_difference)
-  #     #     names(output_structure) = c("Status", "Values")
-  #     #   }else{
-  #     #     output_structure = list("N",NA)
-  #     #     names(output_structure) = c("Status", "Values")
-  #     #   }
-  #     # }else{
-  #     #   output_structure = list("N",NA)
-  #     #   names(output_structure) = c("Status", "Values")
-  #     # }
-  #   }
-  # }
   
   # - - - -  Structure change: warning - - - - - - - - - - - - - 
   

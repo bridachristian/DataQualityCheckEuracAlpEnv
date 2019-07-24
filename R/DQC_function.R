@@ -545,12 +545,14 @@ DQC_function= function(input_dir,
                         
                         if(write_output_files == TRUE){    # here????
                           
-                          # keep updtate logger_info_file!
-                          w_logger = which(logger_info_csv[,1] == station_name)
-                          new_logger_info = cbind(station_name,header[1,1:8])
-                          colnames(new_logger_info) = colnames(logger_info_csv)
-                          logger_info_csv[w_logger,] = new_logger_info
-                          write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
+                          if(header_check == TRUE){
+                            # keep updtate logger_info_file!
+                            w_logger = which(logger_info_csv[,1] == station_name)
+                            new_logger_info = cbind(station_name,header[1,1:8])
+                            colnames(new_logger_info) = colnames(logger_info_csv)
+                            logger_info_csv[w_logger,] = new_logger_info
+                            write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
+                          }
                           
                           # write total .dat
                           write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
@@ -690,13 +692,14 @@ DQC_function= function(input_dir,
                         out_original=rbind(header[-1,],out_orig)
                         file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
                         
-                        # keep updtate logger_info_file!
-                        w_logger = which(logger_info_csv[,1] == station_name)
-                        new_logger_info = cbind(station_name,header[1,1:8])
-                        colnames(new_logger_info) = colnames(logger_info_csv)
-                        logger_info_csv[w_logger,] = new_logger_info
-                        write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
-                        
+                        if(header_check == TRUE){
+                          # keep updtate logger_info_file!
+                          w_logger = which(logger_info_csv[,1] == station_name)
+                          new_logger_info = cbind(station_name,header[1,1:8])
+                          colnames(new_logger_info) = colnames(logger_info_csv)
+                          logger_info_csv[w_logger,] = new_logger_info
+                          write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
+                        }
                         
                         # write total .dat
                         write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")
@@ -1013,14 +1016,15 @@ DQC_function= function(input_dir,
                           file_name_original = file_names[k]
                           
                           if(write_output_files == TRUE){    # here????
-                            
-                            # keep updtate logger_info_file!
-                            w_logger = which(logger_info_csv[,1] == station_name)
-                            new_logger_info = cbind(station_name,header[1,1:8])
-                            colnames(new_logger_info) = colnames(logger_info_csv)
-                            logger_info_csv[w_logger,] = new_logger_info
-                            write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
-                            
+                           
+                             if(header_check == TRUE){
+                              # keep updtate logger_info_file!
+                              w_logger = which(logger_info_csv[,1] == station_name)
+                              new_logger_info = cbind(station_name,header[1,1:8])
+                              colnames(new_logger_info) = colnames(logger_info_csv)
+                              logger_info_csv[w_logger,] = new_logger_info
+                              write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
+                            }
                             # write total .dat                            
                             # year - 1 
                             write.csv(out_mydata_old,paste(output_dir_data,file_name_output_old,sep = ""),quote = F,row.names = F, na = "NaN")
@@ -1188,13 +1192,14 @@ DQC_function= function(input_dir,
                   
                   if(write_output_files == TRUE){
                     
-                    # keep updtate logger_info_file!
-                    w_logger = which(logger_info_csv[,1] == station_name)
-                    new_logger_info = cbind(station_name,header[1,1:8])
-                    colnames(new_logger_info) = colnames(logger_info_csv)
-                    logger_info_csv[w_logger,] = new_logger_info
-                    write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
-                    
+                    if(header_check == TRUE){
+                      # keep updtate logger_info_file!
+                      w_logger = which(logger_info_csv[,1] == station_name)
+                      new_logger_info = cbind(station_name,header[1,1:8])
+                      colnames(new_logger_info) = colnames(logger_info_csv)
+                      logger_info_csv[w_logger,] = new_logger_info
+                      write.csv(logger_info_csv,logger_info_file,row.names = F, na = "")
+                    }
                     
                     # write total .dat
                     write.csv(out_mydata,paste(output_dir_data,file_name_output,sep = ""),quote = F,row.names = F, na = "NaN")

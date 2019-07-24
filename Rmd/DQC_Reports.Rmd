@@ -1,7 +1,10 @@
 ---
 # title: "Data Quality Check Report"
 # author: "Insitute for Alpine Environment, Eurac Research"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
 params:
     mydata_to_report:                 # dataframe of data processed
     report_mydata:                 # dataframe of data processed

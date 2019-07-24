@@ -61,7 +61,7 @@ print(project_dir)
 
 root_dir_home = "C:/Users/CBrida/Desktop/Anno_Zero/"
 data_output_dir =paste(root_dir_home,"/Output/",sep="")
-data_input_dir =paste(root_dir_home,"/Input/T6/RAW_0/",sep="")               # <- insert here the name of the folder to source data
+data_input_dir =paste(root_dir_home,"/Input/I1/RAW_0/2014/",sep="")               # <- insert here the name of the folder to source data
 
 
 # root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/"
@@ -89,6 +89,13 @@ mail_dir = paste(DQC_setting_dir,"/email_status/",sep = "")
 BYPASS_ALL_RECORD_CHECK = TRUE
 
 # ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+
+# To set TRUE if you wanto to check header and logger information (based on new station file standard)
+
+HEADER_CHECK = TRUE
+
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
@@ -368,6 +375,8 @@ if(length(unique(file_group))  > 1){
         use_alert_station_flag = use_alert_station_flag
         mail_file_alert = mail_file_alert
         use_realtime_station_flag = use_realtime_station_flag
+        header_check = HEADER_CHECK
+        
         
         DQC_results = DQC_function(input_dir,
                                    output_dir_data,
@@ -391,7 +400,8 @@ if(length(unique(file_group))  > 1){
                                    output_dir_raw,
                                    use_alert_station_flag,
                                    mail_file_alert,
-                                   use_realtime_station_flag)
+                                   use_realtime_station_flag,
+                                   header_check)
         
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]

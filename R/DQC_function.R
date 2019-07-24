@@ -613,15 +613,21 @@ DQC_function= function(input_dir,
                       new_time_missing = as.POSIXct(new_missing_index_date[,2], format = datetime_format, tz = "Etc/GMT-1")
                       
                       if(length(which(new_time_tot %in% new_time_missing )) == 0){
+                        all_dates_df =  data.frame(matrix(nrow =length(all_dates), ncol = ncol(old_data)))
+                        colnames(all_dates_df) = colnames(old_data)
+                        all_dates_df[,which(colnames(all_dates_df) == datetime_header)] = format(all_dates,format = datetime_format,tz = "Etc/GMT-1")
+
                         flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,0)      # No missing dates
                       }else{
+                        all_dates_df =  data.frame(matrix(nrow =length(all_dates), ncol = ncol(old_data)))
+                        colnames(all_dates_df) = colnames(old_data)
+                        all_dates_df[,which(colnames(all_dates_df) == datetime_header)] = format(all_dates,format = datetime_format,tz = "Etc/GMT-1")
+                        all_dates_df[,which(colnames(all_dates_df) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
+                        
                         flag_new_missing_dates_tmp = c(flag_new_missing_dates_tmp,1)      # YES missing dates
                       }
                       
-                      all_dates_df =  data.frame(matrix(nrow =length(all_dates), ncol = ncol(old_data)))
-                      colnames(all_dates_df) = colnames(old_data)
-                      all_dates_df[,which(colnames(all_dates_df) == datetime_header)] = format(all_dates,format = datetime_format,tz = "Etc/GMT-1")
-                      all_dates_df[,which(colnames(all_dates_df) == record_header)] = -1        # Record gap filled with NaN were flagged with RECORD = -1
+                      
                       new_mydata_old = time_to_char(DATA = old_data,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
                       new_mydata_old = rbind(new_mydata_old, all_dates_df)
                       

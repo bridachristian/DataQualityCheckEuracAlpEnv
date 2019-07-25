@@ -344,11 +344,23 @@ DQC_function= function(input_dir,
               # estrarre da mydata_total e original total solo i dati dall' year-01-01 00:15 al year+1-01-01 00:00
               date_min = as.POSIXct(paste(years[k], "-01-01 00:15",sep = ""), format = datetime_format, tz = "Etc/GMT-1")
               date_max = as.POSIXct(paste(years[k]+1, "-01-01 00:00",sep = ""), format = datetime_format, tz = "Etc/GMT-1")
-              mydata = mydata_total[which(time_data >= date_min & time_data <= date_max),] 
+              mydata = mydata_total[which(time_mydata >= date_min & time_mydata <= date_max),] 
               orig_wihtout_dupli = original_total[which(time_orig >= date_min & time_orig <= date_max),] 
               
               # mydata[, which(colnames(mydata)== datetime_header)] = as.POSIXct( mydata[, which(colnames(mydata)== datetime_header)], format = datetime_format, tz ="Etc/GMT-1")
               # orig_wihtout_dupli[, which(colnames(orig_wihtout_dupli)== datetime_header)] = as.POSIXct( orig_wihtout_dupli[, which(colnames(orig_wihtout_dupli)== datetime_header)], format = datetime_format, tz ="Etc/GMT-1")
+              
+              if(k > 1){
+                if( flag_missing_records_new_tmp[k-1] == 1){
+                  check_record_flag = 1
+                }else{ 
+                  check_record_flag = 0
+                }
+              }else{
+                check_record_flag = 0
+              }
+              
+              if(check_record_flag == 0){
               
               if(file.exists(paste(output_dir_data,file_names[k],sep = ""))){
                 
@@ -471,13 +483,13 @@ DQC_function= function(input_dir,
                     records_restart_new = rec_miss[[3]]
                     
                     if(record_check == 1){
-                      flag_missing_records_new_tmp = rec_miss[[1]]
+                      flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, rec_miss[[1]])
                     }else{
-                      flag_missing_records_new_tmp = 50
+                      flag_missing_records_new_tmp = c(flag_missing_records_new_tmp,50)
                     }
                     # ----- new!!!! ------
                     
-                    if(flag_missing_records_new_tmp != 1){
+                    if(flag_missing_records_new_tmp[length(flag_missing_records_new_tmp)] != 1){
                       new_missing  <- missing_dates(DATA = new_mydata,
                                                     DATETIME_HEADER = datetime_header,
                                                     RECORD_HEADER = record_header, 
@@ -489,7 +501,7 @@ DQC_function= function(input_dir,
                       
                       
                       
-                      if(record_check != 1 | flag_missing_records_new_tmp != 1){     
+                      if(record_check != 1 | flag_missing_records_new_tmp[length(flag_missing_records_new_tmp)] != 1){     
                         # We avoid to write output if record control is active (record_check = 1) and record has some issues (indicated by flag_append_new = -1)
                         
                         # prepare data for output
@@ -516,7 +528,7 @@ DQC_function= function(input_dir,
                         colnames(out_my) = colnames(header)
                         out_mydata=rbind(header[-1,],out_my)
                         file_name_output = file_names[k]
-                        flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 0)  
+                        # flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 0)  
                         
                         
                         # out_orig = orig_data_new[which(format(new_time_orig, format = "%Y") == years[k]),]
@@ -593,12 +605,12 @@ DQC_function= function(input_dir,
                   records_restart = rec_miss[[3]]
                   
                   if(record_check == 1){
-                    flag_missing_records_new_tmp = rec_miss[[1]]
+                    flag_missing_records_new_tmp = c(flag_missing_records_new_tmp,rec_miss[[1]])
                   }else{
-                    flag_missing_records_new_tmp = 50
+                    flag_missing_records_new_tmp = c(flag_missing_records_new_tmp,50)
                   }
                   
-                  if(flag_missing_records_new_tmp != 1){
+                  if(flag_missing_records_new_tmp[length(flag_missing_records_new_tmp)] != 1){
                     new_missing  <- missing_dates(DATA = mydata_rec_miss,
                                                   DATETIME_HEADER = datetime_header,
                                                   RECORD_HEADER = record_header, 
@@ -608,7 +620,7 @@ DQC_function= function(input_dir,
                     
                     new_missing_index_date_tot = rbind(new_missing_index_date_tot,new_missing_index_date)
                     
-                    if(record_check != 1 | flag_missing_records_new_tmp != 1){
+                    if(record_check != 1 | flag_missing_records_new_tmp[length(flag_missing_records_new_tmp)] != 1){
                       
                       new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
                       new_time_tot = as.POSIXct(new_mydata[,which(colnames(new_mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
@@ -715,7 +727,7 @@ DQC_function= function(input_dir,
                   }
                   ######### end new section ##########
                   
-                  flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 1) # ????
+                  # flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 1) # ????
                   
                   header_t = as.data.frame(t(header))
                   old_header_t = as.data.frame(t(old_header))
@@ -920,11 +932,11 @@ DQC_function= function(input_dir,
                       records_restart_new = rec_miss[[3]]
                       
                       if(record_check == 1){
-                        flag_missing_records_new_tmp = rec_miss[[1]]
+                        flag_missing_records_new_tmp =c(flag_missing_records_new_tmp,rec_miss[[1]])
                       }else{
-                        flag_missing_records_new_tmp = 50
+                        flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 50)
                       }
-                      if(flag_missing_records_new_tmp != 1){
+                      if(flag_missing_records_new_tmp[length(flag_missing_records_new_tmp)] != 1){
                         new_missing  <- missing_dates(DATA = new_mydata,
                                                       DATETIME_HEADER = datetime_header,
                                                       RECORD_HEADER = record_header, 
@@ -934,7 +946,7 @@ DQC_function= function(input_dir,
                         
                         new_missing_index_date_tot = rbind(new_missing_index_date_tot,new_missing_index_date)
                         
-                        if(record_check != 1 | flag_missing_records_new_tmp != 1){     
+                        if(record_check != 1 | flag_missing_records_new_tmp[length(flag_missing_records_new_tmp)] != 1){     
                           # We avoid to write output if record control is active (record_check = 1) and record has some issues (indicated by flag_append_new = -1)
                           # prepare data for output
                           
@@ -997,7 +1009,7 @@ DQC_function= function(input_dir,
                           out_mydata=rbind(header[-1,],out_my)
                           file_name_output = file_names[k]
                           
-                          flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 0)  
+                          # flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 0)  
                           
                           #--- old file ---
                           orig_data_new_old = time_to_char(DATA = orig_data_new_old,DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
@@ -1073,12 +1085,12 @@ DQC_function= function(input_dir,
                     
                     
                     if(record_check == 1){
-                      flag_missing_records_new_tmp = rec_miss[[1]]
+                      flag_missing_records_new_tmp = c(flag_missing_records_new_tmp,rec_miss[[1]])
                     }else{
-                      flag_missing_records_new_tmp = 50
+                      flag_missing_records_new_tmp = c(flag_missing_records_new_tmp,50)
                     }
                     
-                    if(flag_missing_records_new_tmp != 1){
+                    if(flag_missing_records_new_tmp[length(flag_missing_records_new_tmp)] != 1){
                       new_missing  <- missing_dates(DATA = mydata_rec_miss,
                                                     DATETIME_HEADER = datetime_header,
                                                     RECORD_HEADER = record_header, 
@@ -1088,7 +1100,7 @@ DQC_function= function(input_dir,
                       
                       new_missing_index_date_tot = rbind(new_missing_index_date_tot,new_missing_index_date)
                       
-                      if(record_check != 1 | flag_missing_records_new_tmp != 1){
+                      if(record_check != 1 | flag_missing_records_new_tmp[length(flag_missing_records_new_tmp)] != 1){
                         
                         new_mydata <- time_to_char(DATA = new_mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
                         new_time_tot = as.POSIXct(new_mydata[,which(colnames(new_mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
@@ -1167,7 +1179,7 @@ DQC_function= function(input_dir,
                           
                         }
                       }
-                     flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 1)   # da verificare!
+                     # flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 1)   # da verificare!
                     }else{
 
                     }
@@ -1214,6 +1226,7 @@ DQC_function= function(input_dir,
                   
                   
                 }
+              }
               }
             }
             

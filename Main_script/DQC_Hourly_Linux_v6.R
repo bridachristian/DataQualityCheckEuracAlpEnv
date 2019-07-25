@@ -110,6 +110,14 @@ reciver = mail_config_info$reciver
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice
 
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+
+# To set TRUE if you wanto to check header and logger information (based on new station file standard)
+
+HEADER_CHECK = TRUE
+
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+
 print(mail_config_file)
 print(sender)
 print(reciver)
@@ -254,7 +262,7 @@ for(PROJECT in project_type){
                                              "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",
-                                             "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE",
+                                             "warning_file_dir","warning_report_RMD","mail_config","mail_config_file","mail_config_info","mail_file","HOURS_OFFLINE","LOGGERNET_OFFLINE","HEADER_CHECK",
                                              "sender", "reciver" ,"my_smtp","loggernet_status_prj","loggernet_status","project_type","use_alert_station_flag","mail_dir","url_webservice","mail_file_alert","use_realtime_station_flag")))
     
     
@@ -406,7 +414,7 @@ for(PROJECT in project_type){
         use_alert_station_flag = use_alert_station_flag
         mail_file_alert = mail_file_alert
         use_realtime_station_flag = use_realtime_station_flag
-        
+        header_check = HEADER_CHECK
         # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
         # output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
@@ -435,7 +443,8 @@ for(PROJECT in project_type){
                                    output_dir_raw,
                                    use_alert_station_flag,
                                    mail_file_alert,
-                                   use_realtime_station_flag)
+                                   use_realtime_station_flag,
+                                   header_check)
         
         
         mydata = DQC_results[[1]]

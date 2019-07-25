@@ -125,6 +125,13 @@ reciver = mail_config_info$reciver
 my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice #########################################################
 # -------------------------------
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+
+# To set TRUE if you wanto to check header and logger information (based on new station file standard)
+
+HEADER_CHECK = TRUE
+
+# * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 
 print(mail_config_file)
 print(sender)
@@ -399,6 +406,8 @@ for(PROJECT in project_type){
         use_alert_station_flag = use_alert_station_flag
         mail_file_alert = mail_file_alert
         use_realtime_station_flag = use_realtime_station_flag
+        header_check = HEADER_CHECK
+        
         # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
         # output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
@@ -427,7 +436,8 @@ for(PROJECT in project_type){
                                    output_dir_raw,
                                    use_alert_station_flag,
                                    mail_file_alert,
-                                   use_realtime_station_flag)
+                                   use_realtime_station_flag,
+                                   header_check)
         
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]

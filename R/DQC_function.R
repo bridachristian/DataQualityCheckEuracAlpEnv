@@ -1201,7 +1201,7 @@ DQC_function= function(input_dir,
                   colnames(out_orig) = colnames(header)
                   out_original=rbind(header[-1,],out_orig)
                   file_name_original = paste(substring(file_names[k], 1, nchar(file_names[k])-4), ".dat",sep = "")
-                  
+                  flag_missing_records_new_tmp = c(flag_missing_records_new_tmp, 0)
                   if(write_output_files == TRUE){
                     
                     if(header_check == TRUE){

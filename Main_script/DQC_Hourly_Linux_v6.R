@@ -455,17 +455,22 @@ for(PROJECT in project_type){
         mylist <- split(flags_df$value, seq(nrow(flags_df)))
         names(mylist) = flags_df$flag_names
         
-        if(mylist$flag_empty == 0  & mylist$flag_error_df == 0 & mylist$flag_date == 0){
-          out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
-                                    # "_",
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
-                                    substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
-                                    sep = "")
-          
-          last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
-          
+        status = unlist(lapply(errors,function(x) x[[1]]))
+        
+        if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
+                                            "err_overlap")] == "N")){
+          if(record_check != 1 | (record_check == 1 & all(status[names(status) %in% c( "err_missing_record","err_restart_record")] == "N"))){
+            # if(mylist$flag_empty == 0  & mylist$flag_error_df == 0 & mylist$flag_date == 0){
+            out_filename_date = paste(substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],1,4),
+                                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],6,7),
+                                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],9,10),
+                                      # "_",
+                                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],12,13),
+                                      substring(mydata[nrow(mydata),which(colnames(mydata) == datetime_header)],15,16),
+                                      sep = "")
+            
+            last_date = mydata[nrow(mydata),which(colnames(mydata)== datetime_header)]
+          }
         } else {
           out_filename_date = "no_datetime"
         }
@@ -475,7 +480,7 @@ for(PROJECT in project_type){
         
         # date_DQC = as.POSIXct(format(Sys.time(),format = "%Y-%m-%d %H:%M"), tz = 'Etc/GMT-1')
         
-        status = unlist(lapply(errors,function(x) x[[1]]))
+        # status = unlist(lapply(errors,function(x) x[[1]]))
         data_errors = lapply(errors,function(x) x[[2]])
         w_yes = which(status == "Y")
         
@@ -520,7 +525,7 @@ for(PROJECT in project_type){
           
           dqc_date_write = paste(format(dqc_date,"%Y"),format(dqc_date,"%m"),format(dqc_date,"%d"),format(dqc_date,"%H"),format(dqc_date,"%M"),sep = "")
           
-          if(any(status[critical_errors] == "Y")){
+          if(any(status[critical_errors] == "Y")){ # ???
             
             # err_vect = substring(critical_errors[which(status[critical_errors] == "Y")],5,nchar(critical_errors[which(status[critical_errors] == "Y")])) # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
             err_vect = critical_string[which(status[critical_errors] == "Y")] # Possibile solo stringa: --> non funziona se piu errori! (possibile missing/restart in contemporanea)
@@ -612,7 +617,29 @@ for(PROJECT in project_type){
         
         
         # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+        if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
+                                             "err_overlap")] == "N")){
+          if(record_check != 1 | (record_check == 1 & all(status[names(status) %in% c( "err_missing_record","err_restart_record")] == "N"))){
+            
+            # if(all(status[names(status) %in% c( "err_no_new_data","err_empty","err_structure",
+            #                                 "err_overlap", "err_missing_record","err_restart_record")] == "N")){
+            download_table$Last_date[w_dwnl] = format(last_date, format = datetime_format, tz = "Etc/GMT-1")
+            download_table$Last_Modification[w_dwnl] = format(date_last_modif_file, format = datetime_format)
+            download_table$record_check[w_dwnl] = 1 
+            write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
+            
+          }
+          # else{
+          #   if(record_check == 1){
+          #     download_table$Stop_DQC[w_dwnl] = 1
+          #     write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
+          #   }else{
+          #     download_table$Stop_DQC[w_dwnl] = 0
+          #     write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
+          #   }
+          }
         
+        #  VVVVVV not working properly --> to test if we can delete it VVVVVV
         if(!is.na(mylist$flag_missing_dates)){
           # if(mylist$flag_logger_number == 0){
           if(mylist$flag_new_overlap == 1){
@@ -630,15 +657,15 @@ for(PROJECT in project_type){
                              NA)
             }
           }else{
-            download_table$Last_date[w_dwnl] = last_date
-            download_table$Last_Modification[w_dwnl] = date_last_modif_file
-            
-            # if(download_table$record_check[w_dwnl] == 0){
-            #   download_table$record_check[w_dwnl] = 1
-            # }
-            
-            download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
-            write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
+            # download_table$Last_date[w_dwnl] = last_date
+            # download_table$Last_Modification[w_dwnl] = date_last_modif_file
+            # 
+            # # if(download_table$record_check[w_dwnl] == 0){
+            # #   download_table$record_check[w_dwnl] = 1
+            # # }
+            # 
+            # download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
+            # write.csv(download_table,paste(download_table_dir,"download_table.csv",sep = ""),quote = F,row.names = F)
             
             if(write_output_report == TRUE){
               final_info = c(STATION_NAME, "Analyzed and write output",
@@ -674,7 +701,8 @@ for(PROJECT in project_type){
           
           
         }
-        
+        #  ^^^^^^ not working properly --> to test if we can delete it ^^^^^^
+          
         
         
       } else {

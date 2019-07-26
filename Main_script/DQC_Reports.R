@@ -620,7 +620,7 @@ for(PROJECT in project_type){
                                             "err_overlap")] == "N")){
           if(record_check != 1 | (record_check == 1 & all(status[names(status) %in% c( "err_missing_record","err_restart_record")] == "N"))){
             
-            download_table$Last_date[w_dwnl] = last_date
+            download_table$Last_date[w_dwnl] = format(last_date, format = datetime_format)
             download_table$Last_Modification[w_dwnl] = format(date_last_modif_file, format = datetime_format)
             download_table$record_check[w_dwnl] = 1    # NEW! Record check activated every time!
             

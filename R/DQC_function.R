@@ -114,179 +114,214 @@ DQC_function= function(input_dir,
     if(flag_error_df == 0){
       time_data = data[,which(colnames(data)==datetime_header)]
       time_data = time_data[order(time_data)]
+      ###################################################################################################
       
+      # check overlap comparing the all new file with the old files alreary saved!
+      
+      years = unique(format(time_data, format = "%Y", tz = "Etc/GMT-1"))
+      y = 1
+      old_data = data.frame(matrix(ncol = ncol(data), nrow = 0))
+      colnames(old_data) = colnames(data)
+      for(y in 1: length(years)){
+        file_name_old <- paste(station_name, "_", years[y],".dat",sep = "")
+        old_import <- read_data(INPUT_DATA_DIR = output_dir_raw, FILE_NAME = file_name_old,                             # read and import data well formatted
+                                DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format, DATETIME_SAMPLING = datetime_sampling,
+                                DATA_FROM_ROW = data_from_row, HEADER_ROW_NUMBER = header_row_number)  
+        old_import_data = old_import [[3]]
+        old_data = rbind(old_data,old_import_data)
+        gc(reset = T)
+      }
+      
+      overlap_data = rbind(old_data, data)
+      overlap_data = overlap_data[order(overlap_data[,which(colnames(overlap_data)==datetime_header)]),]
+      
+      deletes_duplcated <- deletes_duplcated_data(DATA = overlap_data,DATETIME_HEADER = datetime_header)         # <- Deletes identical rows if found
+      deletes_duplcated_mydata <- deletes_duplcated [[1]]
+      deletes_duplcated_data <- deletes_duplcated [[2]]
+      deletes_duplcated_data = time_to_char(DATA = deletes_duplcated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+      
+      overlap <- detect_overlap(DATA = deletes_duplcated_mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
+      
+      ###################################################################################################
       data = data[order(data[,which(colnames(data)==datetime_header)]),] 
       
-      if(is.na(start_date)){
+      if(length(overlap) != 0){
         
-        original = data
-        mydata = data    
-        flag_date = 0
-        
-        rm(data)
+        flag_overlap = 1
+        overlap[,1]<- overlap[,1] + data_from_row - 1
+        colnames(overlap)[1]= "File Row"
         
       }else{
-        recent_date = format(time_data[length(time_data)], format = datetime_format)
-        if(as.POSIXct(start_date,tz = 'Etc/GMT-1') < time_data[length(time_data)]){
-          w_date = which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))
+        if(is.na(start_date)){
           
-          if(length(w_date) != 0){
-            original = data[(w_date[1] + 1):nrow(data),]      # possible issues in data subset!!! to check 
-            mydata = data[(w_date[1] + 1):nrow(data),]
-            
-            flag_date = 0
-            
-            rm(data)
-          }else{
-            original = data
-            mydata = data 
-            
-            flag_date = 0 
-            
-            rm(data)
-          } 
-        } else {
+          original = data
+          mydata = data    
+          flag_date = 0
           
-          flag_date = 1
-        }
-      }
-      
-      
-      if(flag_date == 0){
-        deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = datetime_header)         # <- Deletes identical rows if found
-        mydata = deletes_duplcated [[1]]
-        duplicated_data = deletes_duplcated [[2]]
-        duplicated_data = time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
-        
-        rm(deletes_duplcated)
-        
-        if(unique(as.character(duplicated_data[1,])) == "---"){
-          flag_duplicates_rows = 0
-        } else{
-          flag_duplicates_rows = 1
-        }
-        
-        data_in_old_files <- deletes_old_datetime(DATA = mydata,DATETIME_HEADER = datetime_header)  
-        mydata = data_in_old_files [[1]]
-        old_data = data_in_old_files[[2]]
-        
-        rm(data_in_old_files)
-        
-        orig_wihtout_dupli = mydata
-        
-        overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
-        
-        
-        if(length(overlap) != 0){
-          
-          flag_overlap = 1
-          overlap[,1]<- overlap[,1] + data_from_row - 1
-          colnames(overlap)[1]= "File Row"
+          rm(data)
           
         }else{
+          recent_date = format(time_data[length(time_data)], format = datetime_format)
+          if(as.POSIXct(start_date,tz = 'Etc/GMT-1') < time_data[length(time_data)]){
+            w_date = which(time_data == as.POSIXct(start_date,tz = 'Etc/GMT-1'))
+            
+            if(length(w_date) != 0){
+              original = data[(w_date[1] + 1):nrow(data),]      # possible issues in data subset!!! to check 
+              mydata = data[(w_date[1] + 1):nrow(data),]
+              
+              flag_date = 0
+              
+              rm(data)
+            }else{
+              original = data
+              mydata = data 
+              
+              flag_date = 0 
+              
+              rm(data)
+            } 
+          } else {
+            
+            flag_date = 1
+          }
+        }
+        
+        
+        if(flag_date == 0){
+          deletes_duplcated <- deletes_duplcated_data(DATA = mydata,DATETIME_HEADER = datetime_header)         # <- Deletes identical rows if found
+          mydata = deletes_duplcated [[1]]
+          duplicated_data = deletes_duplcated [[2]]
+          duplicated_data = time_to_char(DATA = duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
           
-          flag_overlap = 0
+          rm(deletes_duplcated)
           
-          # inserire qui controllo sul numero dei record. Ricorda di togliere le date inserite (missing dates --> record = -1) 
-          
-          rec_miss  <- missing_record(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
-          records_missing = rec_miss[[2]]
-          records_restart = rec_miss[[3]]
-          
-          if(record_check == 1){
-            flag_missing_records = rec_miss[[1]]
-          }else{
-            flag_missing_records = 50  
+          if(unique(as.character(duplicated_data[1,])) == "---"){
+            flag_duplicates_rows = 0
+          } else{
+            flag_duplicates_rows = 1
           }
           
-          if(flag_missing_records != 1){
+          data_in_old_files <- deletes_old_datetime(DATA = mydata,DATETIME_HEADER = datetime_header)  
+          mydata = data_in_old_files [[1]]
+          old_data = data_in_old_files[[2]]
+          
+          rm(data_in_old_files)
+          
+          orig_wihtout_dupli = mydata
+          
+          overlap <- detect_overlap(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
+          
+          
+          if(length(overlap) != 0){
             
-            missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
-            mydata = missing[[1]]
-            missing_index_date = missing[[2]]
+            flag_overlap = 1
+            overlap[,1]<- overlap[,1] + data_from_row - 1
+            colnames(overlap)[1]= "File Row"
             
-            rm(missing)
+          }else{
             
-            # ALERT OUT OF RANGE --> ANY MYDATA MODIFICATION
-            alert_range <- alert_range_notify(DATA = mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format, RECORD_HEADER = record_header,
-                                              RANGE_DIR = range_dir, RANGE_FILE = range_file, 
-                                              MAIL_DIR = mail_dir, MAIL_FILE_ALERT = mail_file_alert,
-                                              STATION = STATION_NAME, 
-                                              USE_FLAG = use_alert_station_flag,USE_RT_FLAG = use_realtime_station_flag) # <- Substitute with NA data out of phisical range
-            alert_out_of_range_table = alert_range[[1]]
-            alert_variable_new = alert_range[[2]]
-            alert_variable_to_set = alert_range[[3]]
+            flag_overlap = 0
             
+            # inserire qui controllo sul numero dei record. Ricorda di togliere le date inserite (missing dates --> record = -1) 
             
-            # OUT OF RANGE --> DELATE DATA OUT OF RANGE
-            range <- exclude_out_of_range_v3(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, 
-                                             RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
-            mydata_out_of_range = range[[1]]               # don't subsitute out of range data with NaN 
-            out_of_range_table = range[[2]]
-            # check_out_of_range = range[[2]]
-            variable_new = range[[3]]
-            variable_to_set = range[[4]]
+            rec_miss  <- missing_record(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling, DATETIME_FORMAT = datetime_format)  # <- fill missing dates with NA
+            records_missing = rec_miss[[2]]
+            records_restart = rec_miss[[3]]
             
-            rm(range)
-            
-            
-            # ..... Flags .....................................................................................................................................
-            
-            if(length(variable_to_set) != 0 | length(alert_variable_to_set) != 0){
-              flag_range_variable_to_set = 1
+            if(record_check == 1){
+              flag_missing_records = rec_miss[[1]]
             }else{
-              flag_range_variable_to_set = 0
+              flag_missing_records = 50  
             }
             
-            if(length(variable_new) != 0 | length(alert_variable_new) != 0 ){
-              flag_range_variable_new = 1
-            }else{
-              flag_range_variable_new = 0
+            if(flag_missing_records != 1){
+              
+              missing  <- missing_dates(DATA = mydata, DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, DATETIME_SAMPLING = datetime_sampling)  # <- fill missing dates with NA
+              mydata = missing[[1]]
+              missing_index_date = missing[[2]]
+              
+              rm(missing)
+              
+              # ALERT OUT OF RANGE --> ANY MYDATA MODIFICATION
+              alert_range <- alert_range_notify(DATA = mydata, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format, RECORD_HEADER = record_header,
+                                                RANGE_DIR = range_dir, RANGE_FILE = range_file, 
+                                                MAIL_DIR = mail_dir, MAIL_FILE_ALERT = mail_file_alert,
+                                                STATION = STATION_NAME, 
+                                                USE_FLAG = use_alert_station_flag,USE_RT_FLAG = use_realtime_station_flag) # <- Substitute with NA data out of phisical range
+              alert_out_of_range_table = alert_range[[1]]
+              alert_variable_new = alert_range[[2]]
+              alert_variable_to_set = alert_range[[3]]
+              
+              
+              # OUT OF RANGE --> DELATE DATA OUT OF RANGE
+              range <- exclude_out_of_range_v3(DATA = mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header, 
+                                               RANGE_DIR = range_dir, RANGE_FILE = range_file) # <- Substitute with NA data out of phisical range
+              mydata_out_of_range = range[[1]]               # don't subsitute out of range data with NaN 
+              out_of_range_table = range[[2]]
+              # check_out_of_range = range[[2]]
+              variable_new = range[[3]]
+              variable_to_set = range[[4]]
+              
+              rm(range)
+              
+              
+              # ..... Flags .....................................................................................................................................
+              
+              if(length(variable_to_set) != 0 | length(alert_variable_to_set) != 0){
+                flag_range_variable_to_set = 1
+              }else{
+                flag_range_variable_to_set = 0
+              }
+              
+              if(length(variable_new) != 0 | length(alert_variable_new) != 0 ){
+                flag_range_variable_new = 1
+              }else{
+                flag_range_variable_new = 0
+              }
+              
+              if(nrow(alert_out_of_range_table) == 0){
+                flag_out_of_range_ALERT = 0
+              }else{
+                flag_out_of_range_ALERT = 1
+              }
+              
+              
+              if(nrow(out_of_range_table) == 0){
+                flag_out_of_range = 0
+              }else{
+                flag_out_of_range = 1
+              }
+              
+              # if(1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
+              #   flag_out_of_range = 1
+              # }else{
+              #   if(-1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
+              #     flag_out_of_range = 1
+              #   }else{
+              #     flag_out_of_range = 0
+              #   }
+              # }
+              
+              
+              # time_tot = as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+              time_tot = as.POSIXct(mydata_out_of_range[,which(colnames(mydata_out_of_range) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
+              time_missing = missing_index_date[,2]
+              
+              if(length(which(time_tot %in% time_missing )) == 0){
+                flag_missing_dates = 0      # No missing dates
+              }else{
+                flag_missing_dates = 1      # YES missing dates
+              }
+              
+              mydata <- time_to_char(DATA = mydata_out_of_range, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+              # mydata_1 = mydata
             }
-            
-            if(nrow(alert_out_of_range_table) == 0){
-              flag_out_of_range_ALERT = 0
-            }else{
-              flag_out_of_range_ALERT = 1
-            }
-            
-            
-            if(nrow(out_of_range_table) == 0){
-              flag_out_of_range = 0
-            }else{
-              flag_out_of_range = 1
-            }
-            
-            # if(1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
-            #   flag_out_of_range = 1
-            # }else{
-            #   if(-1 %in% unique(unlist(apply(X = check_out_of_range[,-which(colnames(check_out_of_range) == datetime_header)],MARGIN = 2, unique)))){
-            #     flag_out_of_range = 1
-            #   }else{
-            #     flag_out_of_range = 0
-            #   }
-            # }
-            
-            
-            # time_tot = as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
-            time_tot = as.POSIXct(mydata_out_of_range[,which(colnames(mydata_out_of_range) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
-            time_missing = missing_index_date[,2]
-            
-            if(length(which(time_tot %in% time_missing )) == 0){
-              flag_missing_dates = 0      # No missing dates
-            }else{
-              flag_missing_dates = 1      # YES missing dates
-            }
-            
-            mydata <- time_to_char(DATA = mydata_out_of_range, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
-            # mydata_1 = mydata
           }
         }
       }
+      # }
     }
-    # }
   }
-  
   
   
   # missing_index_date
@@ -298,8 +333,8 @@ DQC_function= function(input_dir,
   if(flag_empty == 0){
     # if(flag_logger_number == 0){
     if(flag_error_df == 0){
-      if(flag_date == 0){
-        if(flag_overlap == 0){
+      if(flag_overlap == 0){
+        if(flag_date == 0){
           if(flag_missing_records != 1){
             # if(write_output_files == TRUE){    # here????
             

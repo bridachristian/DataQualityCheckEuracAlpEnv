@@ -346,23 +346,6 @@ for(PROJECT in project_type){
       
     }
     
-    # if(dir.exists(paste(database_file_dir,STATION_NAME,"/", sep = ""))){                # create subfolder to store mini files for database organized by station name 
-    #   if(dir.exists(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))){ 
-    #     database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
-    #   }else{
-    #     dir.create(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))
-    #     dir.create(paste(database_file_dir,STATION_NAME,"/Pics/", sep = ""))
-    #     database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
-    #     
-    #   }
-    # }else{
-    #   dir.create(paste(database_file_dir,STATION_NAME,"/", sep = "")) 
-    #   dir.create(paste(database_file_dir,STATION_NAME,"/Data/", sep = ""))
-    #   dir.create(paste(database_file_dir,STATION_NAME,"/Pics/", sep = ""))
-    #   database_file_dir_new = paste(database_file_dir,STATION_NAME,"/Data/", sep = "")
-    # }
-    
-    
     
     if(dwnl_info$Stop_DQC == 0){
       

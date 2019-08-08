@@ -118,10 +118,11 @@ DQC_function= function(input_dir,
       
       # check overlap comparing the all new file with the old files alreary saved!
       
-      years = unique(format(time_data, format = "%Y", tz = "Etc/GMT-1"))
-      y = 1
+      years = as.numeric(unique(format(time_data, format = "%Y", tz = "Etc/GMT-1")))
       old_data = data.frame(matrix(ncol = ncol(data), nrow = 0))
       colnames(old_data) = colnames(data)
+      
+      y = 1
       for(y in 1: length(years)){
         file_name_old <- paste(station_name, "_", years[y],".dat",sep = "")
         old_import <- read_data(INPUT_DATA_DIR = output_dir_raw, FILE_NAME = file_name_old,                             # read and import data well formatted
@@ -444,7 +445,14 @@ DQC_function= function(input_dir,
                     # -------------------------------------------------------------------------------
                     # append new data to old data if headers new and old are the same
                     
-                    new = rbind(old_data,mydata)
+                    # ~ ~ ~ done to prevent wrong overlaps ~ ~ ~  
+                    mydata_start = mydata[1,which(colnames(old_data) == datetime_header)]
+                    time_old = old_data[,which(colnames(old_data) == datetime_header)]
+                    old_data_tmp = old_data[which(time_old < mydata_start),]
+                    new = rbind(old_data_tmp,mydata)
+                    # ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ 
+                    
+                    # new = rbind(old_data,mydata)
                     new = new[order(new[,which(colnames(new) == datetime_header)]),]
                     
                     # append new raw data to old data if headers new and old are the same
@@ -489,8 +497,8 @@ DQC_function= function(input_dir,
                     new_duplicated_data = time_to_char(DATA = new_duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
                     raw_new_duplicated_data = time_to_char(DATA = raw_new_duplicated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
                     
-                    # new_overlap <- detect_overlap(DATA = new_mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header) 
-                    new_overlap <- detect_overlap(DATA = raw_new_mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header) 
+                    # new_overlap <- detect_overlap(DATA = new_mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)
+                    new_overlap <- detect_overlap(DATA = raw_new_mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)
                     new_overlap_tot = rbind(new_overlap_tot, new_overlap)
                     if(length(new_overlap) == 0){
                       

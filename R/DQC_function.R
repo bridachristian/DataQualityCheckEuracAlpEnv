@@ -156,6 +156,8 @@ DQC_function= function(input_dir,
         colnames(overlap)[1]= "File Row"
         
       }else{
+        flag_overlap = 0
+        
         if(is.na(start_date)){
           
           original = data

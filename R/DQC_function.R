@@ -127,21 +127,25 @@ DQC_function= function(input_dir,
         old_import <- read_data(INPUT_DATA_DIR = output_dir_raw, FILE_NAME = file_name_old,                             # read and import data well formatted
                                 DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format, DATETIME_SAMPLING = datetime_sampling,
                                 DATA_FROM_ROW = data_from_row, HEADER_ROW_NUMBER = header_row_number)  
+        old_import_header = old_import [[1]]
         old_import_data = old_import [[3]]
         old_data = rbind(old_data,old_import_data)
         gc(reset = T)
       }
       
-      overlap_data = rbind(old_data, data)
-      overlap_data = overlap_data[order(overlap_data[,which(colnames(overlap_data)==datetime_header)]),]
-      
-      deletes_duplcated <- deletes_duplcated_data(DATA = overlap_data,DATETIME_HEADER = datetime_header)         # <- Deletes identical rows if found
-      deletes_duplcated_mydata <- deletes_duplcated [[1]]
-      deletes_duplcated_data <- deletes_duplcated [[2]]
-      deletes_duplcated_data = time_to_char(DATA = deletes_duplcated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
-      
-      overlap <- detect_overlap(DATA = deletes_duplcated_mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
-      
+      if(identical(old_import_header[-1,], header[-1,])){
+        overlap_data = rbind(old_data, data)
+        overlap_data = overlap_data[order(overlap_data[,which(colnames(overlap_data)==datetime_header)]),]
+        
+        deletes_duplcated <- deletes_duplcated_data(DATA = overlap_data,DATETIME_HEADER = datetime_header)         # <- Deletes identical rows if found
+        deletes_duplcated_mydata <- deletes_duplcated [[1]]
+        deletes_duplcated_data <- deletes_duplcated [[2]]
+        deletes_duplcated_data = time_to_char(DATA = deletes_duplcated_data, DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format)
+        
+        overlap <- detect_overlap(DATA = deletes_duplcated_mydata,DATETIME_HEADER = datetime_header, RECORD_HEADER = record_header)          # <- Detect overlap
+      }else{
+        overlap = NULL
+      }
       ###################################################################################################
       data = data[order(data[,which(colnames(data)==datetime_header)]),] 
       

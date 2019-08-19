@@ -312,7 +312,7 @@ DQC_function= function(input_dir,
               
               # time_tot = as.POSIXct(mydata[,which(colnames(mydata) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
               time_tot = as.POSIXct(mydata_out_of_range[,which(colnames(mydata_out_of_range) == datetime_header)], format = datetime_format, tz = 'Etc/GMT-1')
-              time_missing = missing_index_date[,2]
+              time_missing = as.POSIXct(missing_index_date[,2], format = datetime_format, tz = 'Etc/GMT-1')
               
               if(length(which(time_tot %in% time_missing )) == 0){
                 flag_missing_dates = 0      # No missing dates

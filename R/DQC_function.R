@@ -125,12 +125,14 @@ DQC_function= function(input_dir,
       y = 1
       for(y in 1: length(years)){
         file_name_old <- paste(station_name, "_", years[y],".dat",sep = "")
+        if(file.exists(paste(output_dir_raw,file_name_old,sep = ""))){
         old_import <- read_data(INPUT_DATA_DIR = output_dir_raw, FILE_NAME = file_name_old,                             # read and import data well formatted
                                 DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format, DATETIME_SAMPLING = datetime_sampling,
                                 DATA_FROM_ROW = data_from_row, HEADER_ROW_NUMBER = header_row_number)  
         old_import_header = old_import [[1]]
         old_import_data = old_import [[3]]
         old_data = rbind(old_data,old_import_data)
+        }
         gc(reset = T)
       }
       

@@ -344,7 +344,7 @@ DQC_function= function(input_dir,
     if(flag_error_df == 0){
       if(flag_overlap == 0){
         if(flag_date == 0){
-          if(flag_missing_records != 1){
+          # if(flag_missing_records != 1){
             # if(write_output_files == TRUE){    # here????
             
             time_mydata = as.POSIXct(mydata[,which(colnames(mydata)== datetime_header)],format = datetime_format, tz = 'Etc/GMT-1')

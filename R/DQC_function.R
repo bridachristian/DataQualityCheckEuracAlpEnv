@@ -131,7 +131,11 @@ DQC_function= function(input_dir,
                                   DATA_FROM_ROW = data_from_row, HEADER_ROW_NUMBER = header_row_number)  
           old_import_header = old_import [[1]]
           old_import_data = old_import [[3]]
+          if(identical(old_import_header[-1,], header[-1,])){
           old_data = rbind(old_data,old_import_data)
+          }
+        }else{
+          old_import_header = NULL # <- tmp solution to fix bug due to new station!
         }
         gc(reset = T)
       }

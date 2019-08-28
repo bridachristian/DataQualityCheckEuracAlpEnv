@@ -23,7 +23,8 @@ DQC_function= function(input_dir,
                        use_alert_station_flag,
                        mail_file_alert,
                        use_realtime_station_flag,
-                       header_check){
+                       header_check
+                       sep){
   
   # ..... Define flags ..................................................................................................................................
   
@@ -61,7 +62,7 @@ DQC_function= function(input_dir,
     
     flag_empty = 0
     
-    data_import <- read_data(INPUT_DATA_DIR = input_dir, FILE_NAME = file_name,                             # read and import data well formatted
+    data_import <- read_data(INPUT_DATA_DIR = input_dir, FILE_NAME = file_name, SEP = sep,                           # read and import data well formatted
                              DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format, DATETIME_SAMPLING = datetime_sampling,
                              DATA_FROM_ROW = data_from_row, HEADER_ROW_NUMBER = header_row_number)  
     header = data_import [[1]]
@@ -126,7 +127,7 @@ DQC_function= function(input_dir,
       for(y in 1: length(years)){
         file_name_old <- paste(station_name, "_", years[y],".dat",sep = "")
         if(file.exists(paste(output_dir_raw,file_name_old,sep = ""))){
-          old_import <- read_data(INPUT_DATA_DIR = output_dir_raw, FILE_NAME = file_name_old,                             # read and import data well formatted
+          old_import <- read_data(INPUT_DATA_DIR = output_dir_raw, FILE_NAME = file_name_old,  SEP = sep,                           # read and import data well formatted
                                   DATETIME_HEADER = datetime_header, DATETIME_FORMAT = datetime_format, DATETIME_SAMPLING = datetime_sampling,
                                   DATA_FROM_ROW = data_from_row, HEADER_ROW_NUMBER = header_row_number)  
           old_import_header = old_import [[1]]
@@ -415,6 +416,7 @@ DQC_function= function(input_dir,
                   # import old data
                   old_data_list = read_data(INPUT_DATA_DIR = output_dir_data,
                                             FILE_NAME = file_names[k],
+                                            SEP = sep,
                                             DATETIME_HEADER = datetime_header,
                                             DATETIME_FORMAT = datetime_format, 
                                             DATA_FROM_ROW = data_from_row, 
@@ -422,6 +424,7 @@ DQC_function= function(input_dir,
                   
                   old_original_list = read_data(INPUT_DATA_DIR = output_dir_raw,
                                                 FILE_NAME = paste(substring(file_names[k],1, nchar(file_names[k])-4),".dat",sep = ""),
+                                                SEP = sep,
                                                 DATETIME_HEADER = datetime_header,
                                                 DATETIME_FORMAT = datetime_format,
                                                 DATA_FROM_ROW = data_from_row,
@@ -893,6 +896,7 @@ DQC_function= function(input_dir,
                   if(file.exists(paste(output_dir_data,file_names_old,sep = ""))){
                     old_data_list = read_data(INPUT_DATA_DIR = output_dir_data,
                                               FILE_NAME = file_names_old,
+                                              SEP = sep,
                                               DATETIME_HEADER = datetime_header,
                                               DATETIME_FORMAT = datetime_format, 
                                               DATA_FROM_ROW = data_from_row, 
@@ -900,6 +904,7 @@ DQC_function= function(input_dir,
                     
                     old_original_list = read_data(INPUT_DATA_DIR = output_dir_raw,
                                                   FILE_NAME = paste(substring(file_names_old,1, nchar(file_names_old)-4),".dat",sep = ""),
+                                                  SEP = sep,
                                                   DATETIME_HEADER = datetime_header,
                                                   DATETIME_FORMAT = datetime_format,
                                                   DATA_FROM_ROW = data_from_row,

@@ -61,7 +61,7 @@ print(project_dir)
 
 root_dir_home = "C:/Users/CBrida/Desktop/Anno_Zero/"
 data_output_dir =paste(root_dir_home,"/Output/",sep="")
-data_input_dir =paste(root_dir_home,"/Input/I1/RAW_0/2014/",sep="")               # <- insert here the name of the folder to source data
+data_input_dir =paste(root_dir_home,"/Input/M1old/RAW_0/",sep="")               # <- insert here the name of the folder to source data
 
 
 # root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/"
@@ -172,6 +172,7 @@ range_file_ZERO =  "Range_0.csv"
 # use_alert_station_flag = TRUE        # <-- IN REPORT DON'T SHOW ANALYZE VARIABLES SET AS 0 IN RANGE FILE
 use_alert_station_flag = TRUE        # <-- use range file flags. Default: TRUE
 use_realtime_station_flag = FALSE        # <-- use out_of_range file flags. Default: FALSE
+sep = ","
 
 write_output_files =  "TRUE"
 # write_output_files =  "TRUE"
@@ -376,7 +377,7 @@ if(length(unique(file_group))  > 1){
         mail_file_alert = mail_file_alert
         use_realtime_station_flag = use_realtime_station_flag
         header_check = HEADER_CHECK
-        
+        sep = sep
         
         DQC_results = DQC_function(input_dir,
                                    output_dir_data,
@@ -401,7 +402,8 @@ if(length(unique(file_group))  > 1){
                                    use_alert_station_flag,
                                    mail_file_alert,
                                    use_realtime_station_flag,
-                                   header_check)
+                                   header_check,
+                                   sep)
         
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]

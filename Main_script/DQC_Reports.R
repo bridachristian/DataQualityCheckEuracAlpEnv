@@ -164,6 +164,7 @@ for(PROJECT in project_type){
   # use_alert_station_flag = TRUE        # <-- IN REPORT DON'T SHOW ANALYZE VARIABLES SET AS 0 IN RANGE FILE
   use_alert_station_flag = TRUE        # <-- use range file flags. Default: TRUE
   use_realtime_station_flag = FALSE        # <-- use out_of_range file flags. Default: FALSE
+  sep = ","
   
   write_output_files =  "FALSE"
   # write_output_files =  "TRUE"
@@ -390,6 +391,7 @@ for(PROJECT in project_type){
         mail_file_alert = mail_file_alert
         use_realtime_station_flag = use_realtime_station_flag
         header_check = HEADER_CHECK
+        sep = sep
         
         # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
@@ -420,7 +422,8 @@ for(PROJECT in project_type){
                                    use_alert_station_flag,
                                    mail_file_alert,
                                    use_realtime_station_flag,
-                                   header_check)
+                                   header_check,
+                                   sep)
         
         mydata = DQC_results[[1]]
         flags_df = DQC_results[[2]]

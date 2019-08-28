@@ -147,6 +147,7 @@ for(PROJECT in project_type){
   range_file =  "Range.csv"
   use_alert_station_flag = TRUE
   use_realtime_station_flag = TRUE        # <-- use out_of_range file flags. Default: TRUE
+  sep = ","
   
   
   write_output_files =  "TRUE"
@@ -416,6 +417,7 @@ for(PROJECT in project_type){
         mail_file_alert = mail_file_alert
         use_realtime_station_flag = use_realtime_station_flag
         header_check = HEADER_CHECK
+        sep = sep
         # issue_flags_file = paste(issue_flags_dir,"/",STATION_NAME,".csv",sep = "")
         
         # output_file_report = paste("DQC_Report_",STATION_NAME,"_tmp.html",sep = "")
@@ -445,7 +447,8 @@ for(PROJECT in project_type){
                                    use_alert_station_flag,
                                    mail_file_alert,
                                    use_realtime_station_flag,
-                                   header_check)
+                                   header_check,
+                                   sep)
         
         
         mydata = DQC_results[[1]]

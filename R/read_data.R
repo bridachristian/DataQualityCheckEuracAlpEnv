@@ -7,6 +7,7 @@
 #'  @param DATETIME_SAMPLING datetime sampling (default "15 min")
 #'  @param DATA_FROM_ROW the number of row of the first value
 #'  @param HEADER_ROW_NUMBER the number of row of the header
+#'  @param SEP  the separator character
 #'
 #'  @return a list containing a data.frame of header, a data.frame of column names, a data.frame of data
 #'
@@ -17,18 +18,20 @@
 #'  read_data(INPUT_DATA_DIR = "Your input file storage", FILE_NAME = "Your data name", DATETIME_HEADER = "Your datetime headere" , DATETIME_FORMAT = "Your datetime format", DATA_FROM_ROW = "The row of your first data", HEADER_ROW_NUMBER = "The row of your data column names")
 
 # DATETIME_FORMAT = "%Y-%m-d %H:%M"
-read_data = function(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP" , DATETIME_FORMAT = "%Y-%m-%d %H:%M",DATETIME_SAMPLING = "15 min", DATA_FROM_ROW = 5, HEADER_ROW_NUMBER = 2){
+read_data = function(INPUT_DATA_DIR, FILE_NAME, SEP = ",", DATETIME_HEADER = "TIMESTAMP" , DATETIME_FORMAT = "%Y-%m-%d %H:%M",DATETIME_SAMPLING = "15 min", DATA_FROM_ROW = 5, HEADER_ROW_NUMBER = 2){
   
-  header <- read.csv(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), nrows = DATA_FROM_ROW - 1,header = F,stringsAsFactors = F,na.strings = c(NA, "NaN", "NAN"))
+  header <- read.csv(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""),sep = SEP, nrows = DATA_FROM_ROW - 1,header = F,stringsAsFactors = F,na.strings = c(NA, "NaN", "NAN"))
   header_colnames <- header[HEADER_ROW_NUMBER,]
-  data <- read.csv(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), skip = DATA_FROM_ROW - 1,header = F,stringsAsFactors = F,na.strings = c(NA, "NaN", "NAN"))
+  data <- read.csv(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""),sep = SEP, skip = DATA_FROM_ROW - 1,header = F,stringsAsFactors = F,na.strings = c(NA, "NaN", "NAN"))
   
-  data_star <- read.csv(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), skip = HEADER_ROW_NUMBER - 1,header = F,stringsAsFactors = F)
+  data[, which(header_colnames != datetime_header)] <- sapply(data[, which(header_colnames != datetime_header)], function(x) as.numeric(x)) # <- convert all to numeric
+  
+  data_star <- read.csv(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""),sep = SEP, skip = HEADER_ROW_NUMBER - 1,header = F,stringsAsFactors = F)
   data_star = data_star[-c(1:(DATA_FROM_ROW-HEADER_ROW_NUMBER)),]
   
   # max_col = max(count.fields(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), sep = ','), na.rm = T)
   
-  ccc  = count.fields(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), sep = ',')
+  ccc  = count.fields(paste(INPUT_DATA_DIR, FILE_NAME,sep = ""), sep = SEP)
   header_ccc = ccc[1:(DATA_FROM_ROW-1)]
   data_ccc = ccc[(DATA_FROM_ROW):length(ccc)]
   

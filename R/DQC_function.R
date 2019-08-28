@@ -23,7 +23,7 @@ DQC_function= function(input_dir,
                        use_alert_station_flag,
                        mail_file_alert,
                        use_realtime_station_flag,
-                       header_check
+                       header_check,
                        sep){
   
   # ..... Define flags ..................................................................................................................................

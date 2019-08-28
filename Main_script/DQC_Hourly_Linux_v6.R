@@ -260,7 +260,7 @@ for(PROJECT in project_type){
     gc(reset = T)
     
     rm(list = setdiff(ls(all.names = TRUE),c("date_DQC","main_dir","PROJECT","DQC_setting_dir","t","data_from_row","datetime_format","datetime_header","datetime_sampling","loggernet_status",
-                                             "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj",
+                                             "download_table","download_table_dir","issue_counter", "issue_counter_dir","issue_counter_proj","sep",
                                              "files_available","files_available_project","header_row_number","input_dir","data_output_dir","output_dir_raw","report_output_dir","project_dir",
                                              "range_dir","range_file","record_header","Rmd_report_generator","write_output_files","write_output_report","flag_names",
                                              "report_start", "final_dataframe","output_dir_report", "database_file_dir","logger_info_file","MESSAGE_EVERY_TIMES","issue_flags_dir",

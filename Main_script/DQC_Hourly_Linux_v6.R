@@ -78,7 +78,7 @@ PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
 logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.csv", sep = "")
-range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
+range_dir <- paste(DQC_setting_dir,"/Process/Range/Hourly/", sep = "")
 download_table_dir <- paste(DQC_setting_dir,"/Process/Download_tables/Hourly/", sep = "")
 
 warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")

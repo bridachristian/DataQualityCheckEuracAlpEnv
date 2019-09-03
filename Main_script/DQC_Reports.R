@@ -88,7 +88,7 @@ input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep =
 DQC_setting_dir <- paste(main_dir,"/Stations_Data/DQC/",sep = "")
 
 logger_info_file <- paste(DQC_setting_dir,"/Process/Logger_number_and_software.csv", sep = "")
-range_dir <- paste(DQC_setting_dir,"/Process/", sep = "")
+range_dir <- paste(DQC_setting_dir,"/Process/Range/Weekly/", sep = "")
 download_table_dir <- paste(DQC_setting_dir,"/Process/Download_tables/Weekly/", sep = "")
 
 warning_report_RMD = paste(project_dir,"/Rmd/DQC_Warning_Reports.Rmd",sep = "")

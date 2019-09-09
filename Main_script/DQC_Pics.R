@@ -293,8 +293,8 @@ for(PROJECT in project_type){
     if(length(file_raw) != 0){
       
       size = file.size(file) # Size!
-      
-      corrupt = corr_pics(pics = file) # Corrupt! If the lower half of the pics has the same color the image was classified corrupted!
+      corrupt = unlist(lapply(X = file, FUN = corr_pics))
+      # corrupt = corr_pics(pics = file) # Corrupt! If the lower half of the pics has the same color the image was classified corrupted!
       # create new_names
       color = substring(file_raw,1,1)
       d_pics = paste(substring(file_raw,2,nchar(file_raw)-4),"0",sep = "")
@@ -327,6 +327,7 @@ for(PROJECT in project_type){
         # NB --> file.copy NON sovrascrive !!!!
         
         # CHECK SIZE and CORRUPTED PICS
+        
         w = which(df$file_size > bytes_threshold & df$file_corrupt == FALSE)  # move to a specific folder pics corrupted. The treshold on file size is 10 KB (= 10000 B)
         w_not = which(df$file_size <= bytes_threshold | df$file_corrupt == TRUE) 
         

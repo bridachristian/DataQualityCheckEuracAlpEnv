@@ -125,7 +125,7 @@ my_smtp = mail_config_info$my_smtp
 url_webservice = mail_config_info$url_webservice #########################################################
 # -------------------------------
 
-bytes_threshold  = 10000   # define the threshold on file size!
+bytes_threshold  = 20480   # define the threshold on file size: 20480 Byte ~ 20KB
 
 
 if(!file.exists(paste(DQC_setting_dir,"lock_pics.lock",sep = ""))){

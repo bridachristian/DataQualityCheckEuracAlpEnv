@@ -32,6 +32,8 @@ library(xts)
 library(hwriter)
 library(labeling)
 library(optparse)
+library(jpeg)
+
 
 option_list = list(
   make_option(c("-md", "--maindir"), type="character", default="/shared/", 
@@ -290,7 +292,9 @@ for(PROJECT in project_type){
     
     if(length(file_raw) != 0){
       
-      size = file.size(file)
+      size = file.size(file) # Size!
+      
+      corrupt = corr_pics(pics = file) # Corrupt! If the lower half of the pics has the same color the image was classified corrupted!
       # create new_names
       color = substring(file_raw,1,1)
       d_pics = paste(substring(file_raw,2,nchar(file_raw)-4),"0",sep = "")
@@ -309,9 +313,10 @@ for(PROJECT in project_type){
       color_new[which(color == "R")] = "RGB" 
       
       file_new_names = paste(STATION_NAME, "_", color_new, "_", d_to_write,".jpg",sep = "")
-      df = data.frame(file_raw, file_new_names, datetime, size)
+      df = data.frame(file_raw, file_new_names, datetime, size,corrupt)
       df = df[order(df$datetime),]
       colnames(df)[4] = "file_size"
+      colnames(df)[5] = "file_corrupt"
       
       if(length(file) > 0 ){   
         output_no_pics = list("N", NA)
@@ -321,8 +326,9 @@ for(PROJECT in project_type){
         # file.copy(from = file,to = paste(backup_dir_pics,"/", file_raw,sep = "")) # copio file da cartella loggernet a cartella di backup
         # NB --> file.copy NON sovrascrive !!!!
         
-        w = which(df$file_size > bytes_threshold)  # move to a specific folder pics corrupted. The treshold on file size is 10 KB (= 10000 B)
-        w_not = which(df$file_size <= bytes_threshold) 
+        # CHECK SIZE and CORRUPTED PICS
+        w = which(df$file_size > bytes_threshold & df$file_corrupt == FALSE)  # move to a specific folder pics corrupted. The treshold on file size is 10 KB (= 10000 B)
+        w_not = which(df$file_size <= bytes_threshold | df$file_corrupt == TRUE) 
         
         pics_ok_old_name = df$file_raw[w] # <-- original name!
         pics_ok_new_name = df$file_new_names[w] # <-- new name!

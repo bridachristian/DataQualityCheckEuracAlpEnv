@@ -133,7 +133,7 @@ DQC_function= function(input_dir,
           old_import_header = old_import [[1]]
           old_import_data = old_import [[3]]
           if(identical(old_import_header[-1,], header[-1,])){
-          old_data = rbind(old_data,old_import_data)
+            old_data = rbind(old_data,old_import_data)
           }
         }else{
           old_import_header = NULL # <- tmp solution to fix bug due to new station!
@@ -1584,16 +1584,27 @@ DQC_function= function(input_dir,
     
     # ************
     if(nrow(table_missing_record) >0){
-      record_missing = seq(from = as.POSIXct(table_missing_record$Last.date.Before, format = datetime_format, tz ="Etc/GMT-1"),
-                           to   = as.POSIXct(table_missing_record$First.date.After, format = datetime_format, tz ="Etc/GMT-1"), by = datetime_sampling)
-      record_missing = record_missing[-c(1,length(record_missing))]
-    }else{record_missing = c()}
-    if(nrow(table_restart_record) >0){
-      record_restart = seq(from = as.POSIXct(table_restart_record$Last.date.Before, format = datetime_format, tz ="Etc/GMT-1"),
-                           to   = as.POSIXct(table_restart_record$First.date.After, format = datetime_format, tz ="Etc/GMT-1"), by = datetime_sampling) 
-      record_restart = record_restart[-c(1,length(record_restart))]
+      record_missing = as.POSIXct(rep(NA, 0))
+      for( k in 1:nrow(table_missing_record)){
+        record_missing_tmp = seq(from = as.POSIXct(table_missing_record$Last.date.Before[k], format = datetime_format, tz ="Etc/GMT-1"),
+                           to   = as.POSIXct(table_missing_record$First.date.After[k], format = datetime_format, tz ="Etc/GMT-1"), by = datetime_sampling)
+      record_missing_tmp = record_missing_tmp[-c(1,length(record_missing_tmp))]
+      record_missing = c(record_missing, record_missing_tmp)
       
-    }else{record_restart = c()}
+      }
+    }else{record_missing = as.POSIXct(rep(NA, 0))}
+    
+    if(nrow(table_restart_record) >0){
+      # NON funziona in caso di più ripartenze del logger --> to fix!
+      k=1
+      record_restart = as.POSIXct(rep(NA, 0))
+      for( k in 1:nrow(table_restart_record)){
+        record_restart_tmp = seq(from = as.POSIXct(table_restart_record$Last.date.Before[k], format = datetime_format, tz ="Etc/GMT-1"),
+                                 to   = as.POSIXct(table_restart_record$First.date.After[k], format = datetime_format, tz ="Etc/GMT-1"), by = datetime_sampling) 
+        record_restart_tmp = record_restart_tmp[-c(1,length(record_restart_tmp))]
+        record_restart = c(record_restart, record_restart_tmp)
+      }
+    }else{record_restart = as.POSIXct(rep(NA, 0))}
     
     record_tot = c(record_missing, record_restart)
     
@@ -1627,6 +1638,7 @@ DQC_function= function(input_dir,
       
       df_missing = cbind(df_missing, y,Status_num)
       Status_num_NA=df_missing
+      
       Status_num_NA = Status_num_NA[,-c(2,3)]
       
       differ = c(0,diff(Status_num_NA$Status_num))

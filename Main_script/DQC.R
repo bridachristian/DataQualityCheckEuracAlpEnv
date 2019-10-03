@@ -59,18 +59,19 @@ print(data_input_dir)
 print(project_dir)
 
 
-root_dir_home = "C:/Users/CBrida/Desktop/Anno_Zero/"
-data_output_dir =paste(root_dir_home,"/Output/",sep="")
-data_input_dir =paste(root_dir_home,"/Input/M1old/RAW_0/",sep="")               # <- insert here the name of the folder to source data
+#                                                                                 # change every time the folder
+
+root_dir_home = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/RESULTS/M1old/" # <- insert here the path of working directory (input/outpu)
+data_output_dir =paste(root_dir_home,"/02_dqc/",sep="")             # <- insert here the name of the folder to write  outputs
+data_input_dir =paste(root_dir_home,"/01_append/",sep="")               # <- insert here the name of the folder to source data
+# report_output_dir <- paste(data_output_dir,"/00_DQC_Reports/",sep = "")  # <- where reports are saved
+report_output_dir <- paste(data_output_dir,"",sep = "")  # <- where reports are saved
 
 
-# root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/"
-root_dir = "C:/Users/CBrida/Desktop/Anno_Zero/"
+root_dir = "H:/Projekte/Klimawandel/Experiment/data/2order/DQC/Anno_Zero/" # <- insert here the path of general folder (Settings etc...)
+# root_dir = "C:/Users/CBrida/Desktop/Anno_Zero/"
 
-# data_output_dir =paste(root_dir,"/Output/",sep="")
-# data_input_dir =paste(root_dir,"/Input/S4/RAW_0/",sep="")               # <- insert here the name of the folder to source data
-report_output_dir <- paste(data_output_dir,"/00_DQC_Reports/",sep = "")  # where to put output reports
-DQC_setting_dir = paste(root_dir,"/Setting/",sep="")
+DQC_setting_dir = paste(root_dir,"/Setting/",sep="")                        #
 # project_dir = paste(root_dir,"/DQC/dataqualitycheckeuracalpenv/",sep="")
 project_dir = "C:/Users/CBrida/Desktop/GitLab/dataqualitycheckeuracalpenv/"
 
@@ -93,7 +94,7 @@ BYPASS_ALL_RECORD_CHECK = TRUE
 
 # To set TRUE if you wanto to check header and logger information (based on new station file standard)
 
-HEADER_CHECK = TRUE
+HEADER_CHECK = FALSE
 
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 

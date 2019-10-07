@@ -1,4 +1,6 @@
-#' This function checks a data file evaluating structures problems, missing and overlapping data, overrange data and writing different data files for different pourpuse. 
+#' @title DQC_function
+#' 
+#' @description This function checks a data file evaluating structures problems, missing and overlapping data, overrange data and writing different data files for different pourpuse. 
 #' It is the core of the DQC scripts. It can be applied for every single files or in a operative method for a near real time monitoring. 
 #' This function use different functions and process to manage data append and structured storage.  
 #'
@@ -9,10 +11,10 @@
 #' @param project_dir NOT USED! character: It is the main directory used to distinguish different project
 #' @param data_from_row numeric: when you open a file it is the numer of the first row of data (header excluded!)
 #' @param header_row_number numeric: when you open a file it iis the numeber of the row indicating the real header or column names
-#' @param datetime_header character: is the name of the column indicates the datetime. For examples "TIMESTAMP"
-#' @param datetime_format character: is the datetime format. For examples "%Y-%m-%d %H:%M"
-#' @param datetime_sampling character: is the time sampling interval. For examples "15 min" 
-#' @param record_header character: is the name of the column indicates the record. For examples "RECORD"
+#' @param datetime_header character: is the name of the column indicates the datetime. For examples TIMESTAMP
+#' @param datetime_format character: is the datetime format in POSIXct style
+#' @param datetime_sampling character: is the time sampling interval. For examples: 15 min 
+#' @param record_header character: is the name of the column indicates the record. For examples: RECORD
 #' @param sep character: is the character indicating the separator in the input file
 #' @param range_file character: is the name of the file containg the limits of overrange data  # NOTE --> add range_dir to input of DQC_function and adapt all scripts!
 #' @param write_output_files logical: is a flag that indicates the necessity of writing the total/raw files.

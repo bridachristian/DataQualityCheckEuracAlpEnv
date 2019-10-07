@@ -2,9 +2,7 @@
 % Please edit documentation in R/DQC_function.R
 \name{DQC_function}
 \alias{DQC_function}
-\title{This function checks a data file evaluating structures problems, missing and overlapping data, overrange data and writing different data files for different pourpuse. 
-It is the core of the DQC scripts. It can be applied for every single files or in a operative method for a near real time monitoring. 
-This function use different functions and process to manage data append and structured storage.}
+\title{DQC_function}
 \usage{
 DQC_function(input_dir, output_dir_data, output_dir_report, project_dir,
   data_from_row, header_row_number, datetime_header, datetime_format,
@@ -26,13 +24,13 @@ DQC_function(input_dir, output_dir_data, output_dir_report, project_dir,
 
 \item{header_row_number}{numeric: when you open a file it iis the numeber of the row indicating the real header or column names}
 
-\item{datetime_header}{character: is the name of the column indicates the datetime. For examples "TIMESTAMP"}
+\item{datetime_header}{character: is the name of the column indicates the datetime. For examples TIMESTAMP}
 
-\item{datetime_format}{character: is the datetime format. For examples "%Y-%m-%d %H:%M"}
+\item{datetime_format}{character: is the datetime format in POSIXct style}
 
-\item{datetime_sampling}{character: is the time sampling interval. For examples "15 min"}
+\item{datetime_sampling}{character: is the time sampling interval. For examples: 15 min}
 
-\item{record_header}{character: is the name of the column indicates the record. For examples "RECORD"}
+\item{record_header}{character: is the name of the column indicates the record. For examples: RECORD}
 
 \item{range_file}{character: is the name of the file containg the limits of overrange data  # NOTE --> add range_dir to input of DQC_function and adapt all scripts!}
 

@@ -43,7 +43,9 @@ option_list = list(
   make_option(c("-md", "--maindir"), type="character", default="/shared/", 
               help="set the main dir", metavar="character"),
   make_option(c("-pd", "--prjdir"), type="character", default="/home/cbrida/DataQualityCheckEuracAlpEnv/", 
-              help="set the project dir", metavar="character")
+              help="set the project dir", metavar="character"),
+  make_option(c("-prj", "--prj"), type="character", 
+              help="set the project", metavar="character")
 ); 
 
 opt_parser = OptionParser(option_list=option_list);
@@ -51,9 +53,12 @@ opt = parse_args(opt_parser);
 
 main_dir = opt$maindir
 project_dir = opt$prjdir
+project_type = opt$prj
 
 print(main_dir)
 print(project_dir)
+print(project_type)
+
 
 # Sys.setenv(RSTUDIO_PANDOC = "/usr/lib/rstudio/bin/pandoc/")
 # .....................................................................................................................................................
@@ -71,9 +76,9 @@ main_dir_mapping_out = "\\\\smb.scientificnet.org\\alpenv"    # <-- "Z:/" or "/s
 # main_dir = "/shared/test_christian/"
 # main_dir = "H:/Projekte/LTER/03_Arbeitsbereiche/BriCh/shared/test_christian/"
 
-project_type = c("LTER","MONALISA")
+# project_type = c("LTER","MONALISA")
 
-PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
+# PROJECT = "LTER" # Possible project: "LTER"; "MONALISA";
 
 input_dir <- paste(main_dir,"/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are
 # input_dir <- paste("/shared","/Stations_Data/Data/LoggerNet_Raw_Data/Data/",sep = "")                    # where input files are

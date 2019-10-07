@@ -15,7 +15,7 @@ The stations belong to 2 project:
 -   [LTSER Matsch/Mazia](http://lter.eurac.edu/en) a project to monitoring climate change in term of ecological and hydrological impacts. The project belogns to [LTER network](http://www.lteritalia.it/) (Long Term Ecological Research) and the research sites are located in Matsch/Mazia valley
 -   [MONALISA](http://monalisasos.eurac.edu/sos/) a project to monitoring alpine environments in South Tyrol
 
-The first target is to manage and check real time data, collect them, detect possible bugs and outliers, and save, if it is possible in a regular time series usable from researcher. To do that we developed the script **DQC\_Hourly\_Linux\_v6.R** (further details below) that runs in a cronjob every hour. The second is a detailed analysis of troubles occoured in the last week. This is done by the script **DQC\_Hourly\_Linux\_v6.R** and is a tool for mainenace to detect anomlies on sensors that requires a repair. This script runs automatically (cronjob) every week The third is an analysis of a group of files belongs to the same stations. It is used to check old data and old files, to detect structure change and to highline the typical problem of the manual preprocesing. The script that do that is "DQC.R" and is used to prepare hystorical data.
+The first target is to manage and check real time data, collect them, detect possible bugs and outliers, and save, if it is possible in a regular time series usable from researcher. To do that we developed the script **DQC\_Hourly\_Linux\_v6.R** (further details below) that runs in a cronjob every hour. The second is a detailed analysis of troubles occoured in the last week. This is done by the script **DQC\_Reports.R** and is a tool for mainenace to detect anomlies on sensors that requires a repair. This script runs automatically (cronjob) every week The third is an analysis of a group of files belongs to the same stations. It is used to check old data and old files, to detect structure change and to highline the typical problem of the manual preprocesing. The script that do that is "DQC.R" and is used to prepare hystorical data.
 
 The first and the second script run on HPCgeo01 a virtual machine Linux prepared by the [ICT](http://www.eurac.edu/en/aboutus/organisation/servicedepartments/ict/Pages/default.aspx). The third script runs locally on a Windows machine, we are working on the portability and to try to generalize input structure.
 
@@ -31,37 +31,9 @@ Clone the entire repository from [https://gitlab.inf.unibz.it/Christian.Brida/da
 
 Download the package from [GitLab](%22https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git%22)
 
-``` r
-install_packages("devtools")
-library(devtools)
-devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git",credentials = git2r::cred_user_pass("username@eurac.edu", getPass::getPass()))
-library("DataQualityCheckEuracAlpEnv")
-```
-
 For credential ask directly to [Christian.Brida@eurac.edu](Christian.Brida@eurac.edu) (Institute for Alpine Environment) or [Luca.Cattani@eurac.edu](Luca.Cattani@eurac.edu) (ICT)
 
 2.3 Dowload libraries
-
-``` r
-install_github("alexsanjoseph/compareDF")
-install.packages("zoo")
-install.packages("knitr")
-install.packages("ggplot2")
-install.packages("reshape2")
-install.packages("DT")
-install.packages("htmltools")
-install.packages("rmarkdown")
-install.packages("yaml")
-install.packages("highr")
-install.packages("mailR")
-install.packages("XML")
-install.packages("xtable")
-install.packages("dygraphs")
-install.packages("xts")
-install.packages("hwriter")
-install.packages("labeling")
-install.packages("optparse")
-```
 
 3. Function description
 -----------------------

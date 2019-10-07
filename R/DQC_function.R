@@ -1,4 +1,33 @@
-
+#' This function checks a data file evaluating structures problems, missing and overlapping data, overrange data and writing different data files for different pourpuse. 
+#' It is the core of the DQC scripts. It can be applied for every single files or in a operative method for a near real time monitoring. 
+#' This function use different functions and process to manage data append and structured storage.  
+#'
+#' @param input_dir character: is the directory where to source input data file
+#' @param output_dir_data character: is the directory where total data are stored
+#' @param output_dir_raw character: is the directory where raw data are stored
+#' @param output_dir_report  NOT USED! character:  It is the directory where report/alert files are stored
+#' @param project_dir NOT USED! character: It is the main directory used to distinguish different project
+#' @param data_from_row numeric: when you open a file it is the numer of the first row of data (header excluded!)
+#' @param header_row_number numeric: when you open a file it iis the numeber of the row indicating the real header or column names
+#' @param datetime_header character: is the name of the column indicates the datetime. For examples "TIMESTAMP"
+#' @param datetime_format character: is the datetime format. For examples "%Y-%m-%d %H:%M"
+#' @param datetime_sampling character: is the time sampling interval. For examples "15 min" 
+#' @param record_header character: is the name of the column indicates the record. For examples "RECORD"
+#' @param sep character: is the character indicating the separator in the input file
+#' @param range_file character: is the name of the file containg the limits of overrange data  # NOTE --> add range_dir to input of DQC_function and adapt all scripts!
+#' @param write_output_files logical: is a flag that indicates the necessity of writing the total/raw files.
+#' @param write_output_report NOT USED! logical: is a flag that indicates the necessity of writing the report files.
+#' @param file_name character: is the file name of file to process
+#' @param station_name character: is the name of station to process. It could be extracted with rules from file_name
+#' @param start_date POSIXct: is the date of the first data to check
+#' @param logger_info_file character: is the name of the file used to compare headers and higlight changes
+#' @param record_check numeric: is a flag that indicates if check (record_check = 1) or not (record_check = 0) if the records are continuous
+#' @param mail_file_alert character: is the name of the file that indicates if to check overrange and  to manage sending mail
+#' @param use_alert_station_flag logical: is a flag to decide to use or not the station flags in range file # --> To clarify the usage
+#' @param use_realtime_station_flag:  is a flag indicates to decide to use or not the station flags in range file # --> To clarify the usage
+#' @param header_check logical: is a flag that indicates if you wanto to check header and logger information (based on new station file standard) (TRUE --> check all!)
+#'
+#' @return A list. The list contains: 1. A dataframe of th complete header 2. A dataframe of data column names 3. A dataframe of data 4. A list of errors 5.A dataframe of data without out of range data
 
 DQC_function= function(input_dir,
                        output_dir_data,
@@ -1248,9 +1277,8 @@ DQC_function= function(input_dir,
                     }
                     
                   }else{
-                    # se non esiste il file vecchio? ==> posso scrivere subito il file cosi come è? 
-                    colnames(header) = header[1,]
                     
+                    colnames(header) = header[1,]  
                     mydata = time_to_char(DATA = mydata,DATETIME_HEADER = datetime_header,DATETIME_FORMAT = datetime_format)
                     out_my = mydata
                     colnames(out_my) = colnames(header)
@@ -1587,15 +1615,14 @@ DQC_function= function(input_dir,
       record_missing = as.POSIXct(rep(NA, 0))
       for( k in 1:nrow(table_missing_record)){
         record_missing_tmp = seq(from = as.POSIXct(table_missing_record$Last.date.Before[k], format = datetime_format, tz ="Etc/GMT-1"),
-                           to   = as.POSIXct(table_missing_record$First.date.After[k], format = datetime_format, tz ="Etc/GMT-1"), by = datetime_sampling)
-      record_missing_tmp = record_missing_tmp[-c(1,length(record_missing_tmp))]
-      record_missing = c(record_missing, record_missing_tmp)
-      
+                                 to   = as.POSIXct(table_missing_record$First.date.After[k], format = datetime_format, tz ="Etc/GMT-1"), by = datetime_sampling)
+        record_missing_tmp = record_missing_tmp[-c(1,length(record_missing_tmp))]
+        record_missing = c(record_missing, record_missing_tmp)
+        
       }
     }else{record_missing = as.POSIXct(rep(NA, 0))}
     
     if(nrow(table_restart_record) >0){
-      # NON funziona in caso di più ripartenze del logger --> to fix!
       k=1
       record_restart = as.POSIXct(rep(NA, 0))
       for( k in 1:nrow(table_restart_record)){

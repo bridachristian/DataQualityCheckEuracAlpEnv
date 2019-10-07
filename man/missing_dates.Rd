@@ -12,12 +12,13 @@ missing_dates(DATA, DATETIME_HEADER = DATETIME_HEADER,
  @param DATETIME_HEADER header corresponding to datetime
  @param RECORD_HEADER header corresponding to record
  @param DATETIME_SAMPLING time sampling (e.g. "15 min", "hour". See seq.POSIXt {base} on website)
- 
- @return a data.frame which contains a continuos timeseries
- 
- @export
- 
- @examples
+}
+\details{
+@return a data.frame which contains a continuos timeseries
+
+@export
+
+@examples
  missing_dates(DATA = mydata ,DATETIME_HEADER = "TIMESTAMP", RECORD_HEADER = "Record", DATETIME_SAMPLING = "15 min")
  missing_dates(DATA = your data.frame ,DATETIME_HEADER = "your datetime header", RECORD_HEADER = "your datetime record", DATETIME_SAMPLING = "your datetime sampling")
 }

@@ -4,23 +4,28 @@
 \alias{read_data}
 \title{This function read .csv and .dat file and adjust headers and time format}
 \usage{
-read_data(INPUT_DATA_DIR, FILE_NAME, DATETIME_HEADER = "TIMESTAMP",
-  DATETIME_FORMAT = "yyyy-mm-dd HH:MM", DATA_FROM_ROW = 5,
+read_data(INPUT_DATA_DIR, FILE_NAME, SEP = ",",
+  DATETIME_HEADER = "TIMESTAMP",
+  DATETIME_FORMAT = "\%Y-\%m-\%d \%H:\%M",
+  DATETIME_SAMPLING = "15 min", DATA_FROM_ROW = 5,
   HEADER_ROW_NUMBER = 2)
 }
 \description{
 @param INPUT_DATA_DIR directory where input file is stored
- @param FILE_NAME name of file to read. Admitted files .csv and .dat 
+ @param FILE_NAME name of file to read. Admitted files .csv and .dat
  @param DATETIME_HEADER header corresponding to datetime
  @param DATETIME_FORMAT format of datetime (E.g. "yyyy-mm-dd HH:MM")
+ @param DATETIME_SAMPLING datetime sampling (default "15 min")
  @param DATA_FROM_ROW the number of row of the first value
  @param HEADER_ROW_NUMBER the number of row of the header
- 
- @return a list containing a data.frame of header, a data.frame of column names, a data.frame of data
- 
- @export
- 
- @examples
+ @param SEP  the separator character
+}
+\details{
+@return a list containing a data.frame of header, a data.frame of column names, a data.frame of data
+
+@export
+
+@examples
  read_data(INPUT_DATA_DIR = "~/Data/Input/", FILE_NAME = "M4s.dat", DATETIME_HEADER = "TIMESTAMP" , DATETIME_FORMAT = "yyyy-mm-dd HH:MM", DATA_FROM_ROW = 5, HEADER_ROW_NUMBER = 2)
  read_data(INPUT_DATA_DIR = "Your input file storage", FILE_NAME = "Your data name", DATETIME_HEADER = "Your datetime headere" , DATETIME_FORMAT = "Your datetime format", DATA_FROM_ROW = "The row of your first data", HEADER_ROW_NUMBER = "The row of your data column names")
 }

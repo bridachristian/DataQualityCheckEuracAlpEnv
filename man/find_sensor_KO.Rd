@@ -4,7 +4,8 @@
 \alias{find_sensor_KO}
 \title{This function reject all values greater than max and smaller than min in a data.frame}
 \usage{
-find_sensor_KO(DATA, DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR, RANGE_FILE)
+find_sensor_KO(DATA, DATETIME_HEADER = "TIMESTAMP", SUPPORT_DIR,
+  RANGE_FILE)
 }
 \arguments{
 \item{DATA}{data.frame of timeseries}

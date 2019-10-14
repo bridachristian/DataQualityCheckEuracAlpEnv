@@ -35,15 +35,31 @@ For credential ask directly to [Christian.Brida@eurac.edu](Christian.Brida@eurac
 
 2.3 Dowload libraries
 
-3. Function description
------------------------
+3. Process
+----------
+
+This package is a collection of scripts used to manage data and pictures flow from the stations to a storage. Here we describe how the scripts work and which are the roles!
+
+Every hour on the HPCgeo01 run three scripts (in a crontab):
+
+-   at 15' every pictures downloaded from the station were readed from the loggernet folder by **DQC\_Pics.R**, checked and stored inside every station subfolder, so you can have under the same folder data raw, data total, data processed, pics and reports.
+
+-   at 25' the script **DQC\_Move\_Wrong\_Files.R** move out of the loggernet folder all the files whith wrong names. What does it mean? The name of files downloaded with loggernet is composed is composed of two parts: the station name defined in loggernet and the table name defined by the station software. In turn the loggernet station name is defined as the name of the project plus the name of the station name. Here an example for the station B1: the loggernet station name is LTER\_B1 and the table name is B1, therefore the file name is LTER\_B1\_B1.dat. This script check if the station name and the table name are the same, otherwise there is an error on the IP assingment. The dynamicDNS doesn't assign the proper DNS at the station. The wrong files were archived in a storage folder to backup and to future analysis.
+
+-   at 30' the script **DQC\_Hourly\_Linux\_v6.R** check the data downloaded from the station, highlighting
+
+4. Feauters
+-----------
+
+X. Functions
+------------
 
 The 3 scripts named before are structured in this way: a file management system to prepare files, folders and to summaryze results. Inside there is a core script that apply some function in the proper oreder, every function are indipendent but some actions need to be executed consecutively.
 
 A detailed function are available [here](https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv/blob/master/Functions_description.Rmd)
 
-4. Scripts description
-----------------------
+X+1. Scripts description
+------------------------
 
 ##### Contributors & Contacts:
 

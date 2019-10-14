@@ -22,7 +22,8 @@ Sys.setenv(TZ = "Etc/GMT-1")
 
 
 DQC_lock = "lock_DQC.lock"
-report_lock = "lock_report.lock"
+report_lock_LTER = "lock_report_LTER.lock"
+report_lock_MONALISA = "lock_report_MONALISA.lock"
 
 mail_file = "mail_config.xml"
 
@@ -86,7 +87,38 @@ if(file.exists(file_to_check)){
 # report locked
 # -----------------------------------------------------------------------------------------------------
 
-file_to_check = paste(main_dir,"Stations_Data/DQC/",report_lock,sep = "")
+file_to_check = paste(main_dir,"Stations_Data/DQC/",report_lock_LTER,sep = "")
+
+
+if(file.exists(file_to_check)){
+  # file.mtime(file_to_check)
+  date_last_modif_file = as.character(format(file.mtime(file_to_check),format = "%Y-%m-%d %H:%M"))
+  
+  # ----- station offline  ------
+  
+  h_last_modif_file = trunc(as.POSIXct(date_last_modif_file, tz = "Etc/GMT-1"),units = "hours")
+  h_system = trunc(sys_time,units = "hours")
+  
+  hours_diff = as.numeric(difftime(time1 = h_system, time2 = h_last_modif_file, tz = "Etc/GMT-1",units = "hours"))
+  
+  if(hours_diff == 168+1 | hours_diff%%168 == 0){ # <-- no resto => hours_diff is multiple of HOURS_OFFLINE. exclude case of hours_diff is less than 24h 
+    
+    my_subject = paste("Report locked!")
+    my_body = paste("Report locked from:", date_last_modif_file)
+    my_smtp = list(host.name = my_smtp$host.name,port = my_smtp$port,user.name = my_smtp$user.name,passwd = my_smtp$passwd,ssl = my_smtp$ssl)
+    
+    send.mail(from = sender,
+              to = reciver,
+              subject = my_subject,
+              body = my_body,
+              smtp = my_smtp,
+              authenticate = TRUE,
+              send = TRUE)
+    
+  }
+}
+
+file_to_check= paste(main_dir,"Stations_Data/DQC/",report_lock_MONALISA,sep = "")
 
 
 if(file.exists(file_to_check)){

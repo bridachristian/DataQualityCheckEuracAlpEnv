@@ -144,8 +144,8 @@ print(reciver)
 print(input_dir)
 
 
-if(!file.exists(paste(DQC_setting_dir,"lock_report.lock",sep = ""))){
-  file.create(paste(DQC_setting_dir,"lock_report.lock",sep = ""))
+if(!file.exists(paste(DQC_setting_dir,"lock_report_",project_type, ".lock",sep = ""))){
+  file.create(paste(DQC_setting_dir,"lock_report_",project_type, ".lock",sep = ""))
 }
 
 # -------------------------------# -------------------------------# -------------------------------# -------------------------------# -------------------------------
@@ -730,7 +730,7 @@ for(PROJECT in project_type){
 }
 
 
-file.remove(paste(DQC_setting_dir,"lock_report.lock",sep = ""))
+file.remove(paste(DQC_setting_dir,"lock_report_",project_type, ".lock",sep = ""))
 
 print("------------------------------------------------------------------------------------------")
 print(Sys.time())

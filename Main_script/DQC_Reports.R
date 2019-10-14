@@ -694,10 +694,29 @@ for(PROJECT in project_type){
                              format(date_DQC,format = "%m"),
                              format(date_DQC,format = "%d"),".html", sep = "")
   
+  j=0
   output_dir_final = output_dir_report
+  
+  repeat{
+    if(!file.exists(paste(output_dir_final,output_file_final,sep = ""))){
+      output_file = output_file_final
+      break
+    }else{
+      j=j+1
+      output_file_new = paste(substring(output_file_final,1, nchar(output_file_final)-5),"(",j,").html",sep = "")
+      if(!file.exists(paste(output_dir_final,output_file_new,sep = ""))){
+        output_file = output_file_new
+        break
+      }
+    }
+    
+  }
+  
+  
   rm(params)
   rmarkdown::render(input = input_final,
-                    output_file = output_file_final ,
+                    # output_file = output_file_final ,
+                    output_file = output_file ,
                     output_dir = output_dir_final,
                     params = list(PROJECT = PROJECT,
                                   date_DQC = date_DQC ,
@@ -714,7 +733,8 @@ for(PROJECT in project_type){
   my_subject = paste(PROJECT,"report")
   # my_body = paste(output_dir_final,output_file_final,sep="")
   # my_body = paste(main_dir_mapping_out, substring(output_dir_final, nchar(main_dir_mapping_in)),output_file_final,sep="")
-  my_body = paste(url_webservice,PROJECT,substring(report_output_dir, nchar(data_output_dir)),output_file_final,sep="")
+  # my_body = paste(url_webservice,PROJECT,substring(report_output_dir, nchar(data_output_dir)),output_file_final,sep="")
+  my_body = paste(url_webservice,PROJECT,substring(report_output_dir, nchar(data_output_dir)),output_file,sep="")
   
   # my_body = paste(url_webservice,icinga_text,sep = "")
   # icinga_text = paste(substring(output_dir,nchar('/shared/')),output_file,sep = "")               # to disactivate when webservice is ready!

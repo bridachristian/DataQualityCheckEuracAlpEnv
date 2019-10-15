@@ -1,7 +1,7 @@
 <!-- toc: true -->
 <!-- toc_float: true -->
-Package DataQualityCheckEuracAlpEnv
-===================================
+Package **DataQualityCheckEuracAlpEnv**
+=======================================
 
 #### Tools for data quality check of microclimate stations network of [Institute of Alpine Environment - Eurac Research](http://www.eurac.edu/en/research/mountains/alpenv/Pages/default.aspx)
 
@@ -137,12 +137,12 @@ Repository structure
 Contributors & Contacts:
 ------------------------
 
--   Brida Christian - Institute for Alpine Environment
-    [website](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=39787)
+-   Brida Christian - Institute for Alpine Environment -
+    [website](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=39787),
     [GitLab](https://gitlab.inf.unibz.it/Christian.Brida)
--   Zandonai Alessandro - Institute for Alpine Environment
-    \[website\]<http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=23703>)
--   Genova Giulio - Institute for Alpine Environment
+-   Zandonai Alessandro - Institute for Alpine Environment -
+    [website](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=23703)
+-   Genova Giulio - Institute for Alpine Environment -
     [website](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=41527)
--   Luca Cattani - Information Technologies
+-   Luca Cattani - Information Technologies -
     [website](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=41206)

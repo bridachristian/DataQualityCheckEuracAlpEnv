@@ -137,7 +137,12 @@ Repository structure
 Contributors & Contacts:
 ------------------------
 
--   Brida Christian [mail](Christian.Brida@eurac.edu)
--   Genova Giulio
--   Zandonai Alessandro
--   Luca Cattani
+-   Brida Christian - Institute for Alpine Environment
+    [website](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=39787)
+    [GitLab](https://gitlab.inf.unibz.it/Christian.Brida)
+-   Zandonai Alessandro - Institute for Alpine Environment
+    \[website\]<http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=23703>)
+-   Genova Giulio - Institute for Alpine Environment
+    [website](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=41527)
+-   Luca Cattani - Information Technologies
+    [website](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=41206)

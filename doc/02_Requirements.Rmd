@@ -3,15 +3,15 @@ title: "DataQualityCheckEuracAlpEnv"
 output: 
     md_document
 ---
-
+TO WRITE ALL! TO COMPLETE
 <!-- md_document -->
 <!-- github_document -->
 
 # **Requirements**
 
-This file try to explain what the scripts do and what is needed to work. Every script has a folder structure and support files used to manage the regular data processing and to manage manual data fixing. Here we describe the detailes of this strutcture and the features of the scripts
+This file try to explain what the scripts do and what is needed to work. Every script has a folder structure and support files used to manage the regular data processing and to manage manual data fixing. Here we describe the detailes of this strutcture and the features of the scripts.
 
-## Real time data
+## 1. Real time data
    This section want to explain how the real time data was managed. In particular how it was checked, collected, and alert when data errors occouring. To do that we developed the script **DQC_Hourly_Linux_v6.R**  that runs in a cronjob *every hour*. It is used for urgent problems. To decide when a notice is needed this script is paired with **DQC_Reset_Mail_Status.R **. 
    
    ** TO COMPLETE ** 

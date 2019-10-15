@@ -1,15 +1,16 @@
-<!-- md_document -->
-<!-- github_document -->
+TO WRITE ALL! TO COMPLETE <!-- md_document --> <!-- github_document -->
+
 **Requirements**
 ================
 
 This file try to explain what the scripts do and what is needed to work.
 Every script has a folder structure and support files used to manage the
 regular data processing and to manage manual data fixing. Here we
-describe the detailes of this strutcture and the features of the scripts
+describe the detailes of this strutcture and the features of the
+scripts.
 
-Real time data
---------------
+1. Real time data
+-----------------
 
 This section want to explain how the real time data was managed. In
 particular how it was checked, collected, and alert when data errors

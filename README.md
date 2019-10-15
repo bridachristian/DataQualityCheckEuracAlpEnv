@@ -1,14 +1,9 @@
-<!-- md_document: -->
-
-<!-- toc: true -->
-<!-- toc_float: true -->
 Package **DataQualityCheckEuracAlpEnv**
 ---------------------------------------
 
-<font size="4"> Tools for data quality check of microclimate stations
-network of [Institute of Alpine Environment - Eurac
+Tools for data quality check of microclimate stations network of
+[Institute of Alpine Environment - Eurac
 Research](http://www.eurac.edu/en/research/mountains/alpenv/Pages/default.aspx)
-</font>
 
 Introduction
 ------------

@@ -5,17 +5,20 @@
 
 This file try to explain what the scripts do and what is needed to work.
 Every script has a folder structure and support files used to manage the
-regular data processing and to manage manual data fixing.
+regular data processing and to manage manual data fixing. Here we
+describe the detailes of this strutcture and the features of the scripts
 
 Real time data
 --------------
 
-1.  Manage and check real time data, collect them, detect possible bugs
-    and outliers, and save, if it is possible in a regular time series
-    usable from researcher. To do that we developed the script
-    **DQC\_Hourly\_Linux\_v6.R** that runs in a cronjob every hour. It
-    is used for urgent problems. To decide when a notice is needed this
-    script is paired with **DQC\_Reset\_Mail\_Status.R **.
+This section want to explain how the real time data was managed. In
+particular how it was checked, collected, and alert when data errors
+occouring. To do that we developed the script
+**DQC\_Hourly\_Linux\_v6.R** that runs in a cronjob *every hour*. It is
+used for urgent problems. To decide when a notice is needed this script
+is paired with **DQC\_Reset\_Mail\_Status.R **.
+
+\*\* TO COMPLETE \*\*
 
 Real time pics
 --------------

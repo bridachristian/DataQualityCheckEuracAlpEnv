@@ -1,18 +1,20 @@
--   [DataQualityCheckEuracAlpEnv](#dataqualitycheckeuracalpenv)
+-   [Package
+    DataQualityCheckEuracAlpEnv](#package-dataqualitycheckeuracalpenv)
+    -   [Tools for data quality check of microclimate stations network
+        of [Institute of Alpine Environment - Eurac
+        Research](http://www.eurac.edu/en/research/mountains/alpenv/Pages/default.aspx)](#tools-for-data-quality-check-of-microclimate-stations-network-of-institute-of-alpine-environment---eurac-research)
 -   [Introduction](#introduction)
 -   [Goals](#goals)
 -   [How to install](#how-to-install)
 -   [Repository structure](#repository-structure)
 -   [Contributors & Contacts:](#contributors-contacts)
 
-      <!-- toc_float: true -->
+<!-- toc: true -->
+<!-- toc_float: true -->
+Package DataQualityCheckEuracAlpEnv
+-----------------------------------
 
-DataQualityCheckEuracAlpEnv
----------------------------
-
-Tools for data quality check of microclimate stations network of
-[Institute of Alpine Environment - Eurac
-Research](http://www.eurac.edu/en/research/mountains/alpenv/Pages/default.aspx)
+#### Tools for data quality check of microclimate stations network of [Institute of Alpine Environment - Eurac Research](http://www.eurac.edu/en/research/mountains/alpenv/Pages/default.aspx)
 
 Introduction
 ------------

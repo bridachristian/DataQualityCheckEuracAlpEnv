@@ -4,10 +4,11 @@ output:
   md_document:
       toc: true
 ---
-      <!-- toc_float: true -->
+<!-- toc: true -->
+<!-- toc_float: true -->
 
-##DataQualityCheckEuracAlpEnv
-Tools for data quality check of microclimate stations network of [Institute of Alpine Environment - Eurac Research](http://www.eurac.edu/en/research/mountains/alpenv/Pages/default.aspx)
+##  Package DataQualityCheckEuracAlpEnv
+#### Tools for data quality check of microclimate stations network of [Institute of Alpine Environment - Eurac Research](http://www.eurac.edu/en/research/mountains/alpenv/Pages/default.aspx)
 
 ## Introduction
 

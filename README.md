@@ -1,6 +1,4 @@
--   [Tools for data quality check of microclimate stations network of
-    [Institute of Alpine Environment - Eurac
-    Research](http://www.eurac.edu/en/research/mountains/alpenv/Pages/default.aspx)](#tools-for-data-quality-check-of-microclimate-stations-network-of-institute-of-alpine-environment---eurac-research)
+-   [DataQualityCheckEuracAlpEnv](#dataqualitycheckeuracalpenv)
 -   [Introduction](#introduction)
 -   [Goals](#goals)
 -   [How to install](#how-to-install)
@@ -9,7 +7,12 @@
 
       <!-- toc_float: true -->
 
-### Tools for data quality check of microclimate stations network of [Institute of Alpine Environment - Eurac Research](http://www.eurac.edu/en/research/mountains/alpenv/Pages/default.aspx)
+DataQualityCheckEuracAlpEnv
+---------------------------
+
+Tools for data quality check of microclimate stations network of
+[Institute of Alpine Environment - Eurac
+Research](http://www.eurac.edu/en/research/mountains/alpenv/Pages/default.aspx)
 
 Introduction
 ------------

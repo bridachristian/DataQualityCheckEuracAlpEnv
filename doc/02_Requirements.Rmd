@@ -1,41 +1,72 @@
 ---
-title: "Introduction"
-author: "Institute for Alpine Environment -  Eurac Research"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Vignette Title}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+title: "DataQualityCheckEuracAlpEnv" 
+output: 
+    md_document
 ---
+TO WRITE ALL! TO COMPLETE
+<!-- md_document -->
+<!-- github_document -->
 
-##  Package **DataQualityCheckEuracAlpEnv**
+# **Requirements**
 
-Tools for data quality check of microclimate stations network of [Institute of Alpine Environment - Eurac Research](http://www.eurac.edu/en/research/mountains/alpenv/Pages/default.aspx)
+The requirements depends on the your work porpuse. Depending if you want to use only the functions in the R package to create your own data quality check system or if you want to use the algorithms implemented in the R and Rmarkdown scripts. In the first case the procedures is the usual procedure to install the package directly from **git** to **R** using the package *devtools*. The second porpuse allow to use the scripts already prepared and configured for the standard usage in the Institute for Alpine Environment, Eurac. To to that you have to clone the repository on your local pc and run the scripts from there. 
 
-## Introduction
+In this document we want to explain how to install the package, clone in your local pc, check available updates and the libraries required to run the scripts.
 
-The R package DataQualityCheckEuracAlpEnv provide functions and examples to manage data quality for automatic microclimatic stations network. The stations collect data of many sensors and send datatables at regular intervals via GSM using [Loggernet](https://www.campbellsci.com/loggernet), a software developed by Campbell Scientific to manage loggers. Many problems affects raw data due to missing connections, due to manual preprocessing or due to software updates. We need to check if the data downloaded were well formatted and detect, as soon as possbile, failures of the sensors installed.
-For these reasons we developed the DataQualityCheckEuracAlpEnv package containg usefull functions and scripts to different purpose.
 
-The newtwork of stations managed by Institute of Alpine Environment consist in 28 microclimatic stations used mainly for research purpose, ecology, hydrology and climate change impact are the study fields.
+## Install the package
+What is a package? How to install? [Answer](https://www.datacamp.com/community/tutorials/r-packages-guide) 
+(<font size="2">*Any question about credentials ask to [Eurac ICT](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=41206) or to the [Author](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=39787)*</font>)
 
-The stations belong to 2 project: 
     
-+   [LTSER Matsch/Mazia](http://lter.eurac.edu/en) a project to monitoring climate change in term of ecological and hydrological impacts. The project belogns to [LTER network](http://www.lteritalia.it/) (Long Term Ecological Research) and the research sites are located in Matsch/Mazia valley 
-+   [MONALISA](http://monalisasos.eurac.edu/sos/) a project to monitoring alpine environments in South Tyrol
-
-## Goals
-
-  1.  Manage and check real time data, collect them, detect possible bugs and outliers, and save, if it is possible in a regular time series usable from researcher. To do that we developed the script **DQC_Hourly_Linux_v6.R**  that runs in a cronjob every hour. It is used for urgent problems. To decide when a notice is needed this script is paired with **DQC_Reset_Mail_Status.R **.
+  + on HPCgeo01 linux machine, the credentials token is defined in the file .git-credentials:
   
+    ```{r eval=FALSE, echo=TRUE}
+      if (!require("devtools")) install.packages("devtools")
+      library(devtools)
+      devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git", credentials = git2r::cred_token())
+      library(DataQualityCheckEuracAlpEnv)
+        
+    ```
+
+  + on a Windows machine, the credentials token is created by the package develper in GitLab settings
+    ```{r eval=FALSE, echo=TRUE}
+      if (!require("devtools")) install.packages("devtools")
+      library(devtools)
+      devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git",credentials = git2r::cred_user_pass("Christian.Brida@eurac.edu", getPass::getPass()))
+      library(DataQualityCheckEuracAlpEnv)
+      
+    ```
+
+
+
+This file try to explain what the scripts do and what is needed to work. Every script has a folder structure and support files used to manage the regular data processing and to manage manual data fixing. Here we describe the detailes of this strutcture and the features of the scripts.
+
+## 1. Real time data
+   This section want to explain how the real time data was managed. In particular how it was checked, collected, and alert when data errors occouring. To do that we developed the script **DQC_Hourly_Linux_v6.R**  that runs in a cronjob *every hour*. It is used for urgent problems. To decide when a notice is needed this script is paired with **DQC_Reset_Mail_Status.R **. 
+   
+   ** TO COMPLETE ** 
+  
+## Real time pics
   2.  Manage and check pics. The script **DQC_Pics.R** collect and organize pics coming from the stations to the storage, highlighting possible corruption to prevent wrong pubblication of bad quality pictures on the website
-  
+ 
+## Weekly summary  
   3.  Analysis of troubles occoured in the last period. This is done by the script **DQC_Reports.R**. It is a tool for mainenace to have an overview of the healt status of the stations and sensors, detecting anomlies and exceptional events. This script runs automatically (cronjob) every week. 
   
+## Historical data  
   4.  Analysis and fixing of historical data. It is used to check old data and old files, to detect structure change and to highline the typical problem of the manual preprocesing. The script that do that is **DQC.R** and is used to prepare hystorical data.
     
+## Wrong files
   5.  Clean download data folder moving in a subfolder data with wrong file names. The script **DQC_Move_Wrong_Files.R** detect possible IP errors analyzing the file name.
+
+
+
+
+
+
+
+
+
 
 For stability reason the scripts run on a Linux virtual machine called HPCgeo01 prepared by the [ICT](http://www.eurac.edu/en/aboutus/organisation/servicedepartments/ict/Pages/default.aspx). 
 For the historical analysis the script was structured for an usage on a Windows machine. We are developing an user friendly interface to help the user to configure paths structure and settings. 
@@ -86,7 +117,7 @@ git clone https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpen
   
   +   **man**: automatic documentation of function generated using the package *devtools* 
     
-  +   **vignettes**: documentation and explanations of scripts and procedures
+  +   **doc**: documentation and explanations of scripts and procedures
     
   +   **other**: various
 

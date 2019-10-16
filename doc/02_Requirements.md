@@ -3,6 +3,50 @@ TO WRITE ALL! TO COMPLETE <!-- md_document --> <!-- github_document -->
 **Requirements**
 ================
 
+The requirements depends on the your work porpuse. Depending if you want
+to use only the functions in the R package to create your own data
+quality check system or if you want to use the algorithms implemented in
+the R and Rmarkdown scripts. In the first case the procedures is the
+usual procedure to install the package directly from **git** to **R**
+using the package *devtools*. The second porpuse allow to use the
+scripts already prepared and configured for the standard usage in the
+Institute for Alpine Environment, Eurac. To to that you have to clone
+the repository on your local pc and run the scripts from there.
+
+In this document we want to explain how to install the package, clone in
+your local pc, check available updates and the libraries required to run
+the scripts.
+
+Install the package
+-------------------
+
+What is a package? How to install?
+[Answer](https://www.datacamp.com/community/tutorials/r-packages-guide)
+(<font size="2">*Any question about credentials ask to [Eurac
+ICT](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=41206)
+or to the
+[Author](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=39787)*</font>)
+
+-   on HPCgeo01 linux machine, the credentials token is defined in the
+    file .git-credentials:
+
+        ```r
+        if (!require("devtools")) install.packages("devtools")
+        library(devtools)
+        devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git", credentials = git2r::cred_token())
+        library(DataQualityCheckEuracAlpEnv)
+        ```
+
+-   on a Windows machine, the credentials token is created by the
+    package develper in GitLab settings
+
+        ```r
+        if (!require("devtools")) install.packages("devtools")
+        library(devtools)
+        devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git",credentials = git2r::cred_user_pass("Christian.Brida@eurac.edu", getPass::getPass()))
+        library(DataQualityCheckEuracAlpEnv)
+        ```
+
 This file try to explain what the scripts do and what is needed to work.
 Every script has a folder structure and support files used to manage the
 regular data processing and to manage manual data fixing. Here we

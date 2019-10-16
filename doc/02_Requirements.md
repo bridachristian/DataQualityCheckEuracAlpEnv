@@ -27,25 +27,21 @@ ICT](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=41206
 or to the
 [Author](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=39787)*</font>)
 
-    +   on HPCgeo01 linux machine, the credentials token is defined in the file .git-credentials:
+-   on HPCgeo01 linux machine, the credentials token is defined in the
+    file .git-credentials:
 
+          if (!require("devtools")) install.packages("devtools")
+          library(devtools)
+          devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git", credentials = git2r::cred_token())
+          library(DataQualityCheckEuracAlpEnv)
 
-      ```r
-      if (!require("devtools")) install.packages("devtools")
-      library(devtools)
-      devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git", credentials = git2r::cred_token())
-      library(DataQualityCheckEuracAlpEnv)
-      ```
+-   on a Windows machine, the credentials token is created by the
+    package develper in GitLab settings
 
-    +   on a Windows machine, the credentials token is created by the package develper in GitLab settings
-
-
-      ```r
-      if (!require("devtools")) install.packages("devtools")
-      library(devtools)
-      devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git",credentials = git2r::cred_user_pass("Christian.Brida@eurac.edu", getPass::getPass()))
-      library(DataQualityCheckEuracAlpEnv)
-      ```
+          if (!require("devtools")) install.packages("devtools")
+          library(devtools)
+          devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git",credentials = git2r::cred_user_pass("Christian.Brida@eurac.edu", getPass::getPass()))
+          library(DataQualityCheckEuracAlpEnv)
 
 This file try to explain what the scripts do and what is needed to work.
 Every script has a folder structure and support files used to manage the

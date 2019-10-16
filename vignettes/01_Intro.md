@@ -130,7 +130,8 @@ Repository structure
 -   **man**: automatic documentation of function generated using the
     package *devtools*
 
--   **doc**: documentation and explanations of scripts and procedures
+-   **vignettes**: documentation and explanations of scripts and
+    procedures
 
 -   **other**: various
 

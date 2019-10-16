@@ -19,21 +19,22 @@ What is a package? How to install? [Answer](https://www.datacamp.com/community/t
 (<font size="2">*Any question about credentials ask to [Eurac ICT](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=41206) or to the [Author](http://www.eurac.edu/it/aboutus/people/Pages/staffdetails.aspx?persId=39787)*</font>)
 
   +   on HPCgeo01 linux machine, the credentials token is defined in the file .git-credentials:
-        ```{r eval=FALSE, echo=TRUE}
-        if (!require("devtools")) install.packages("devtools")
-        library(devtools)
-        devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git", credentials = git2r::cred_token())
-        library(DataQualityCheckEuracAlpEnv)
-        ```
+      ```{r eval=FALSE, echo=TRUE}
+      if (!require("devtools")) install.packages("devtools")
+      library(devtools)
+      devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git", credentials = git2r::cred_token())
+      library(DataQualityCheckEuracAlpEnv)
+        
+      ```
 
   +   on a Windows machine, the credentials token is created by the package develper in GitLab settings
-        ```{r eval=FALSE, echo=TRUE}
-        if (!require("devtools")) install.packages("devtools")
-        library(devtools)
-        devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git",credentials = git2r::cred_user_pass("Christian.Brida@eurac.edu", getPass::getPass()))
-        library(DataQualityCheckEuracAlpEnv)
-        
-        ```
+      ```{r eval=FALSE, echo=TRUE}
+      if (!require("devtools")) install.packages("devtools")
+      library(devtools)
+      devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git",credentials = git2r::cred_user_pass("Christian.Brida@eurac.edu", getPass::getPass()))
+      library(DataQualityCheckEuracAlpEnv)
+      
+      ```
 
 
 

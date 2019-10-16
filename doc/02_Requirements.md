@@ -30,22 +30,12 @@ or to the
 -   on HPCgeo01 linux machine, the credentials token is defined in the
     file .git-credentials:
 
-        ```r
-        if (!require("devtools")) install.packages("devtools")
-        library(devtools)
-        devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git", credentials = git2r::cred_token())
-        library(DataQualityCheckEuracAlpEnv)
-        ```
+    `r   if (!require("devtools")) install.packages("devtools")   library(devtools)   devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git", credentials = git2r::cred_token())   library(DataQualityCheckEuracAlpEnv)`
 
 -   on a Windows machine, the credentials token is created by the
     package develper in GitLab settings
 
-        ```r
-        if (!require("devtools")) install.packages("devtools")
-        library(devtools)
-        devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git",credentials = git2r::cred_user_pass("Christian.Brida@eurac.edu", getPass::getPass()))
-        library(DataQualityCheckEuracAlpEnv)
-        ```
+    `r   if (!require("devtools")) install.packages("devtools")   library(devtools)   devtools::install_git("https://gitlab.inf.unibz.it/Christian.Brida/dataqualitycheckeuracalpenv.git",credentials = git2r::cred_user_pass("Christian.Brida@eurac.edu", getPass::getPass()))   library(DataQualityCheckEuracAlpEnv)`
 
 This file try to explain what the scripts do and what is needed to work.
 Every script has a folder structure and support files used to manage the

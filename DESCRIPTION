@@ -1,7 +1,7 @@
 Package: DataQualityCheckEuracAlpEnv
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.2.0
+Version: 0.3.0
 Author: Christian Brida
 Maintainer: Christian Brida <Christian.Brida@eurac.edu>
 Description: Tools for data quality check of Automatic Weather Station network

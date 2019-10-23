@@ -40,11 +40,11 @@ library(optparse)
 
 
 option_list = list(
-  make_option(c("-md", "--maindir"), type="character", default="/shared/", 
+  make_option(c("md", "--maindir"), type="character", default="/shared/",
               help="set the main dir", metavar="character"),
-  make_option(c("-pd", "--prjdir"), type="character", default="/home/cbrida/DataQualityCheckEuracAlpEnv/", 
+  make_option(c("pd", "--prjdir"), type="character", default="/home/cbrida/DataQualityCheckEuracAlpEnv/",
               help="set the project dir", metavar="character")
-); 
+);
 
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
@@ -81,34 +81,34 @@ if(!file.exists(paste(DQC_setting_dir,"lock_ip_wrong.lock",sep = ""))){
 
 for(PROJECT in project_type){
   files_available_raw = dir(input_dir,pattern = ".dat")                  # <-- Admitted pattern:  ".dat" or ".csv"
-  
+
   files_backup = files_available_raw[grepl(pattern = "backup",x = files_available_raw)]
-  
-  files_available_raw = files_available_raw[grepl(pattern = ".dat$",x = files_available_raw)]      
-  files_available_raw = files_available_raw[!grepl(pattern ="backup",x = files_available_raw)]          # REMOVE FILES WITH WRONG NAMES (.dat.backup not admitted) 
-  
-  files_available = files_available_raw[grepl(pattern = paste("^",PROJECT,sep = ""),x = files_available_raw)]          
+
+  files_available_raw = files_available_raw[grepl(pattern = ".dat$",x = files_available_raw)]
+  files_available_raw = files_available_raw[!grepl(pattern ="backup",x = files_available_raw)]          # REMOVE FILES WITH WRONG NAMES (.dat.backup not admitted)
+
+  files_available = files_available_raw[grepl(pattern = paste("^",PROJECT,sep = ""),x = files_available_raw)]
   files_no_project = substring(files_available, nchar(PROJECT)+2, nchar(files_available)-4)
-  
+
   if(length(files_no_project) > 0){
     u1 =c()
     logg_data_NAME = c()
     table_data_NAME = c()
-    
+
     for(h in 1:length(files_no_project)){
       u1[h] = gregexpr(files_no_project,pattern = "_")[[h]][1]   # <- here we find the sencond "[[1]][2]" underscore!!!!!
       logg_data_NAME[h] = substring(text = files_no_project[h],first = 1,last = u1[h]-1)
       table_data_NAME[h] = substring(text = files_no_project[h],first = u1[h]+1,last = nchar(files_no_project[h]))
-    }  
+    }
     df_files = data.frame(files_available, logg_data_NAME, table_data_NAME,stringsAsFactors = F)
     colnames(df_files) = c("Files", "LoggerNet_name", "Datatable_name")
-    
+
     files_wrong = df_files$Files[which(df_files$LoggerNet_name != df_files$Datatable_name)]
-    
+
   } else{
     files_wrong = files_no_project
   }
-  
+
   if(length(files_wrong) > 0 ){
     for(k in 1:length(files_wrong)){
       f =  file.copy(from = paste(input_dir,files_wrong[k],sep = ""), to = paste(ip_errors_dir,files_wrong[k],sep = ""),overwrite = F)
@@ -122,19 +122,19 @@ for(PROJECT in project_type){
             break
           }
         }
-        
+
         f2 = file.copy(from = paste(input_dir,files_wrong[k],sep = ""), to = paste(ip_errors_dir,files_wrong_new,sep = ""),overwrite = F)
-        
+
         if(f2 == TRUE){
           file.remove(paste(input_dir,files_wrong[k],sep = ""))
-          
+
         }
       }else{
         file.remove(paste(input_dir,files_wrong[k],sep = ""))
       }
     }
   }
-  
+
 }
 
 file.remove(paste(DQC_setting_dir,"lock_ip_wrong.lock",sep = ""))

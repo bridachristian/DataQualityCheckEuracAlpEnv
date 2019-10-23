@@ -18,11 +18,11 @@ library("DataQualityCheckEuracAlpEnv")
 library(optparse)
 
 option_list = list(
-  make_option(c("-md", "--maindir"), type="character", default="/shared/", 
+  make_option(c("md", "--maindir"), type="character", default="/shared/",
               help="set the main dir", metavar="character"),
-  make_option(c("-pd", "--prjdir"), type="character", default="/home/cbrida/DataQualityCheckEuracAlpEnv/", 
+  make_option(c("pd", "--prjdir"), type="character", default="/home/cbrida/DataQualityCheckEuracAlpEnv/",
               help="set the project dir", metavar="character")
-); 
+);
 
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
@@ -47,13 +47,13 @@ if(!file.exists(paste(DQC_setting_dir,"lock_reset.lock",sep = ""))){
   file.create(paste(DQC_setting_dir,"lock_reset.lock",sep = ""))
 }
 
-mail_status_dir <- paste(main_dir,"/Stations_Data/DQC/Process/email_status/",sep = "")  
+mail_status_dir <- paste(main_dir,"/Stations_Data/DQC/Process/email_status/",sep = "")
 mail_status_file <- "mail_status.csv"
 
-oor_status_dir <- paste(main_dir,"/Stations_Data/DQC/Process/email_status/",sep = "")  
+oor_status_dir <- paste(main_dir,"/Stations_Data/DQC/Process/email_status/",sep = "")
 oor_status_file <- "out_of_range.csv"
 
-mail_file = read.csv(paste(mail_status_dir,mail_status_file,sep = ""),stringsAsFactors = F)     # read and reset mail_status.csv 
+mail_file = read.csv(paste(mail_status_dir,mail_status_file,sep = ""),stringsAsFactors = F)     # read and reset mail_status.csv
 
 mail_file[mail_file == 0] = 1
 mail_file[which(mail_file$Err_name %in% c("err_out_of_range","err_duplicates_rows")), 3:ncol(mail_file)] = 0
